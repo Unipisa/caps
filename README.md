@@ -14,7 +14,7 @@ composer install
 ## Sviluppo
 ```
 cd app
-cp config/app.default.php config/app.php # Configurazione locale
+ln -s config/app.default.php config/app.php # Configurazione locale
 bin/cake migrations migrate # Crea o aggiorna il database
 bin/cake server # run a development server
 ```

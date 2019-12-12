@@ -6,6 +6,10 @@
 /tmp/*
 /vendor/*
 
+# Project specific files #
+##########################
+/caps.sqlite
+
 # OS generated files #
 ######################
 .DS_Store
