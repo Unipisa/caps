@@ -1,6 +1,13 @@
-apt install composer
-apt install php-mbstring php-intl php-xml
+installazione
+==
 
-cd app
-composer install
-bin/cake server # run development server
+    apt install composer
+    apt install php-mbstring php-intl php-xml
+    apt install sqlite3  # for development
+    cd app
+    composer install
+
+sviluppo
+==
+    cd app
+    bin/cake server # run a development server
