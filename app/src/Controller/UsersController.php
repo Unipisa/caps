@@ -9,19 +9,12 @@ use Cake\View\Exception\MissingTemplateException;
 use App\Controller\Event;
 use App\Model\Entity\User;
 
-// App::uses('UnipiAuthenticate', 'Controller/Component/Auth');
-
 class UsersController extends AppController {
 
     public $uses = array(
         'User',
         'Proposal'
     );
-
-    public function initialize()
-    {
-        parent::initialize();
-    }
 
     public function beforeFilter($event) {
         parent::beforeFilter($event);
@@ -31,6 +24,7 @@ class UsersController extends AppController {
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if ($user) {
+                $this->Auth->setUser($user);
 
 	        	// If the user is an admin, show the administration panel...
                 if ($user['admin']) {
@@ -63,7 +57,7 @@ class UsersController extends AppController {
 
                 // ... if they still have to submit a plan, show a new form...
                 if ($planId) {
-                    return $this->redirect($this->Auth->redirectUrl());
+                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'add' ]));
                 }
 
 		        // ... otherwise create a new user and a new plan.
@@ -77,9 +71,9 @@ class UsersController extends AppController {
 
                 if ($this->Users->save($newuser)) {
                     // FIXME: Proposal creation logic does not work in its current form
-                    $this->request->data['Proposal']['user_id'] = $this->User->id;
-                    $this->Users->Proposal->save($this->request->data);
-                    return $this->redirect($this->Auth->redirectUrl());
+                    // $this->request->data['Proposal']['user_id'] = $this->User->id;
+                    // $this->Users->Proposal->save($this->request->data);
+                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'view' ]));
                 }
 
                 throw new NotFoundException();

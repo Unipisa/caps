@@ -77,7 +77,7 @@ return [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => env('SECURITY_SALT', '__SALT__'),
+        'salt' => env('SECURITY_SALT', 'cc1b5df507451690927ffffba762595a79ef736a7d49ac32cd136d0f09d56ad0'),
     ],
 
     /**

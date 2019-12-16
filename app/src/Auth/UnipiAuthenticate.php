@@ -46,6 +46,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
                 'user' => $data['username'],
                 'name' => 'Utente Dimostrativo',
                 'role' => 'student',
+                'number' => '000000',
                 'admin' => in_array($data['username'], $config['admins'])
             );
         }
