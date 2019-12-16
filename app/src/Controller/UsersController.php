@@ -1,6 +1,15 @@
 <?php
 
-App::uses('UnipiAuthenticate', 'Controller/Component/Auth');
+namespace App\Controller;
+
+use Cake\Core\Configure;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
+use Cake\View\Exception\MissingTemplateException;
+use App\Controller\Event;
+use App\Model\Entity\User;
+
+// App::uses('UnipiAuthenticate', 'Controller/Component/Auth');
 
 class UsersController extends AppController {
 
@@ -9,15 +18,19 @@ class UsersController extends AppController {
         'Proposal'
     );
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-        $this->Auth->allow('login');
+    public function initialize()
+    {
+        parent::initialize();
+    }
+
+    public function beforeFilter($event) {
+        parent::beforeFilter($event);
     }
 
     public function login() {
         if ($this->request->is('post')) {
-            if ($this->Auth->login()) {
-                $user = AuthComponent::user();
+            $user = $this->Auth->identify();
+            if ($user) {
 
 	        	// If the user is an admin, show the administration panel...
                 if ($user['admin']) {
@@ -34,9 +47,9 @@ class UsersController extends AppController {
 
 		        // ... if they have a submitted plan, show that...
                 $username = $user['user'];
-                $owner = $this->User->find('first', array(
-                    'conditions' => array('User.username' => $username)
-                ));
+                $owner = $this->Users->find()
+                    ->where([ 'username' => $username ])
+                    ->first();
 
                 if ($owner) {
                     $planId = $owner['Proposal']['id'];
@@ -54,11 +67,18 @@ class UsersController extends AppController {
                 }
 
 		        // ... otherwise create a new user and a new plan.
-                $this->request->data['User']['name'] = ucwords(strtolower($user['name']));
-                $this->request->data['User']['number'] = $user['number'];
-                if ($this->User->save($this->request->data)) {
+		        $newuser = $this->Users->newEntity();
+		        $newuser = $this->Users->patchEntity($newuser, [
+		            'User' => [
+		                'name' => ucwords(strtolower($user['name'])),
+		                'number' => $user['number']
+		            ]
+		        ]);
+
+                if ($this->Users->save($newuser)) {
+                    // FIXME: Proposal creation logic does not work in its current form
                     $this->request->data['Proposal']['user_id'] = $this->User->id;
-                    $this->User->Proposal->save($this->request->data);
+                    $this->Users->Proposal->save($this->request->data);
                     return $this->redirect($this->Auth->redirectUrl());
                 }
 

@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use App\Auth;
 
 /**
  * Application Controller
@@ -45,7 +46,9 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
-        $this->loadComponent('Authentication.Authentication');
+
+        $this->loadComponent('Auth', [ 'authenticate' => [ 'Unipi' ] ]);
+        // $this->loadComponent('Authentication.Authentication');
 
         /*
          * Enable the following component for recommended CakePHP security settings.
