@@ -1,0 +1,440 @@
+ul, li {
+    margin: 0;
+}
+
+select {
+    padding: 1%;
+    vertical-align: 45%;
+    width: 100%;
+}
+
+input {
+    font-size: 120%;
+    vertical-align: 30%;
+}
+
+table {
+    margin-bottom: 3%;
+}
+
+.attribution {
+    float: left;
+}
+
+.success {
+    padding: 0.8em;
+}
+
+.actions li {
+    display: inline;
+}
+
+#header h1 {
+    height: 60px;
+    padding: 0 0 0 70px;
+    background-image: url("img/cherubino_white.png"), url("img/logo_white.png");
+    background-position: 0 0, right bottom;
+}
+
+#proposalForm h3 {
+    float: left;
+}
+
+#proposalForm nav {
+    float: right;
+}
+
+#proposalForm hr {
+    padding: 1px 0;
+    margin: 1% 0;
+    clear: both;
+    background-color: rgb(44, 104, 119);
+}
+
+#proposalForm ul {
+    clear: both;
+    padding: 1% 0;
+    list-style-type: none;
+}
+
+#proposalForm ul li {
+    margin-bottom: 6px;
+}
+
+#proposalForm ul li select.exam {
+    margin-right: 5%;
+    width: 72.5%;
+}
+
+#proposalForm ul li select.exam+a.delete {
+    margin-left: 15%;
+}
+
+#proposalForm ul li input.exam {
+    margin-right: 5%;
+    width: 70%;
+}
+
+#proposalForm ul li select.credits {
+    margin-right: 5%;
+    width: 10%;
+}
+
+#proposalForm ul li input.credits {
+    margin-right: 5%;
+    width: 7.5%;
+}
+
+#proposalForm ul li a.delete {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url("img/trash.png");
+}
+
+#proposalForm ul li a.delete:hover,
+#proposalForm ul li a.delete:active,
+#proposalForm ul li a.delete:focus {
+    background-position: right 30px;
+}
+
+#proposalForm .actions {
+    margin-left: 24px;
+}
+
+#proposalForm .actions li:first-child {
+    margin-right: 24px;
+}
+
+.creditsError {
+    color: rgb(238, 51, 34);
+}
+
+.planActions {
+    list-style-type: none;
+}
+
+.planActions li {
+    width: 33%;
+    display: inline-block;
+    text-align: center;
+}
+
+.planActions li a {
+    padding: 3% 33%;
+    font-size: 110%;
+    border:1px solid #bbb;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
+}
+
+.planActions .accept,
+.actions .accept {
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
+    background:#62af56;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#76BF6B), to(#3B8230));
+    background-image: -webkit-linear-gradient(top, #76BF6B, #3B8230);
+    background-image: -moz-linear-gradient(top, #76BF6B, #3B8230);
+    border-color: #25691a;
+}
+
+.planActions .accept:hover,
+.actions .accept:hover {
+    background: #5BA150;
+    border-color: #25691a;
+}
+
+.planActions .reject,
+.actions .reject {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+    background: #c43c35;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35));
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: linear-gradient(top, #ee5f5b, #c43c35);
+    border-color: #7f1711;
+}
+
+.planActions .reject:hover,
+.actions .reject:hover {
+    background: #c43c35;
+    border-color: #7f1711;
+}
+
+.planActions .back {
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	background: #ffcc00;
+	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800));
+	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -o-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: linear-gradient(top, #ffcc00, #E6B800);
+    border-color: #a68500;
+}
+
+.planActions .back:hover {
+	background: #ffcc00;
+    border-color: #a68500;
+}
+
+.bureaucracy {
+    display: none;
+}
+
+.nyanCat {
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 301px;
+    height: 119px;
+    background: url("img/nyan.gif");
+}
+
+.status {
+    list-style-type: none;
+    margin-right: 5%;
+    padding-right: 8px;
+    margin-top: 16px;
+    text-align: right;
+}
+
+.status li {
+    display: inline-block;
+    font-size: 24px;
+    margin-left: 1%;
+}
+
+.status li a {
+    padding: 3% 10px;
+    font-size: 110%;
+    border:1px solid #bbb;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
+}
+
+.status .logout {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+    background: #c43c35;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35));
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: linear-gradient(top, #ee5f5b, #c43c35);
+    border-color: #7f1711;
+}
+
+.status .logout:hover,
+.status .logout:active {
+    background: #c43c35;
+    border-color: #7f1711;
+}
+
+.caps-admin-navigation {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.caps-admin-navigation ul li {
+    width: 24%;
+    display: inline-block;
+    text-align: center;
+} 
+
+.caps-admin-navigation ul li a {
+    padding: 3% 33%;
+    font-size: 110%;
+    background: #dcdcdc;  
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#dcdcdc));
+    background-image: -webkit-linear-gradient(top, #fefefe, #dcdcdc);
+    background-image: -moz-linear-gradient(top, #fefefe, #dcdcdc);
+    background-image: -ms-linear-gradient(top, #fefefe, #dcdcdc);
+    background-image: -o-linear-gradient(top, #fefefe, #dcdcdc);
+    background-image: linear-gradient(top, #fefefe, #dcdcdc);
+    color:#333;
+    border:1px solid #bbb;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    text-shadow: #fff 0px 1px 0px;
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.caps-admin-navigation ul li a:hover {
+    background: #ededed;
+    border-color: #acacac;
+    text-decoration: none;
+}
+
+.caps-admin-navigation ul li a:active {
+    background: #eee;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#eee));
+    background-image: -webkit-linear-gradient(top, #dfdfdf, #eee);
+    background-image: -moz-linear-gradient(top, #dfdfdf, #eee);
+    background-image: -ms-linear-gradient(top, #dfdfdf, #eee);
+    background-image: -o-linear-gradient(top, #dfdfdf, #eee);
+    background-image: linear-gradient(top, #dfdfdf, #eee);
+    text-shadow: #eee 0px 1px 0px;
+    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+    border-color: #aaa;
+    text-decoration: none;
+}
+
+.caps-admin-navigation ul li.selected a {
+    color: #e32;
+}
+
+.caps-admin-navigation ul li.caps-update-link a,
+.caps-admin-navigation ul li.caps-admin-link a {
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	background: #ffcc00;
+	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800));
+	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: -o-linear-gradient(top, #ffcc00, #E6B800);
+	background-image: linear-gradient(top, #ffcc00, #E6B800);
+    border-color: #a68500;
+}
+
+.caps-admin-add ul {
+    width: 100%;
+    list-style-type: none;
+    margin-top: 30px;
+}
+
+.caps-admin-add ul li a {
+    color: #fff;
+    width: 100%;
+    display: block;
+    text-align: center;
+    padding: 1% 0;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
+    background:#62af56;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#76BF6B), to(#3B8230));
+    background-image: -webkit-linear-gradient(top, #76BF6B, #3B8230);
+    background-image: -moz-linear-gradient(top, #76BF6B, #3B8230);
+    border: 1px solid #25691a;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+}   
+
+.caps-admin-add ul li a:hover {
+    background: #5BA150;
+    border-color: #25691a;
+}
+
+.caps-done,
+.caps-exams,
+.caps-frozen,
+.caps-todo {
+    margin-bottom: 30px;
+}
+
+.caps-pagination {
+    font-size: 24px;
+    text-align: center; 
+}
+
+.caps-admin-curriculum-name {
+    width: 70%;
+}
+
+input.caps-admin-curriculum-exam-submit,
+input.caps-admin-curriculum-group-submit,
+input.caps-admin-curriculum-submit {
+    font-size: 120%;
+    margin-left: 10px;
+    padding: 1% 2%;
+}
+
+hr.caps-admin-curriculum {
+    padding: 1px 0;
+    margin: 1% 0;
+    clear: both;
+    background-color: rgb(44, 104, 119);
+}
+
+.caps-admin-curriculum-exam-name,
+.caps-admin-curriculum-exam-name-choose,
+.caps-admin-curriculum-group-name-choose {
+    width: 70%;
+}
+
+.caps-admin-curriculum-exam-year,
+.caps-admin-curriculum-exam-year-choose,
+.caps-admin-curriculum-group-year-choose,
+.caps-admin-curriculum-exam-actions {
+    width: 15%;
+}
+
+.caps-admin-curriculum-exam-year-choose,
+.caps-admin-curriculum-group-year-choose {
+    margin-left: 10px;
+}
+
+.caps-admin-proposal-name,
+.caps-admin-proposal-actions {
+    width: 20%;
+}
+
+.caps-admin-proposal-pds {
+    width: 60%;
+}
+
+.caps-admin-groups-id,
+.caps-admin-curricula-id {
+    width: 5%;
+}
+
+.caps-admin-groups-name,
+.caps-admin-curricula-name {
+    width: 75%;
+}
+
+.caps-admin-groups-actions,
+.caps-admin-curricula-actions {
+    width: 20%;
+}
+
+.caps-admin-exams-name {
+    width: 60%; 
+}
+
+.caps-admin-exams-id,
+.caps-admin-exams-code,
+.caps-admin-exams-sector,
+.caps-admin-exams-credits {
+    width: 5%;
+}
+
+.caps-admin-exams-actions {
+    width: 20%; 
+}

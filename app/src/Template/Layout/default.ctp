@@ -1,57 +1,104 @@
 <?php
 /**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ *
+ * PHP 5
+ *
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @package       app.View.Layouts
+ * @since         CakePHP(tm) v 0.10.0.1076
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$capsDescription = __d('caps_dev', 'Compilazione Assistita Piani di Studio — Matematica');
+$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <?= $this->Html->charset() ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <?= $cakeDescription ?>:
-        <?= $this->fetch('title') ?>
-    </title>
-    <?= $this->Html->meta('icon') ?>
+	<?php echo $this->Html->charset(); ?>
+	<title>
+        <?php echo $capsDescription ?>
+	</title>
+	<?php
+		echo $this->Html->meta('icon');
 
-    <?= $this->Html->css('base.css') ?>
-    <?= $this->Html->css('style.css') ?>
+        echo $this->Html->css('cake.generic');
+        // echo $this->Html->css('chosen.min');
+        echo $this->Html->css('caps');
+        echo $this->Html->css('caps.print', array('media' => 'print'));
 
-    <?= $this->fetch('meta') ?>
-    <?= $this->fetch('css') ?>
-    <?= $this->fetch('script') ?>
+        echo $this->Html->script('jquery-1.10.2.min');
+        // echo $this->Html->script('chosen.jquery.min');
+        /* if (is_file(WWW_ROOT . 'js' . DS . $this->params['controller'] . DS . $this->params['action'] . '.js')) {
+            echo $this->Html->script($this->params['controller'] . '/' . $this->params['action']);
+        } */
+	?>
 </head>
 <body>
-    <nav class="top-bar expanded" data-topbar role="navigation">
-        <ul class="title-area large-3 medium-4 columns">
-            <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
-            </li>
-        </ul>
-        <div class="top-bar-section">
-            <ul class="right">
-                <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li>
-            </ul>
+	<div id="container">
+        <div id="header">
+            <h1>
+                <?php
+                    echo $this->Html->link(
+                        'Compilazione Assistita<br/>Piani di Studio<br/>Matematica',
+                        '/',
+                        array(
+                            'escape' => false
+                        )
+                    );
+                ?>
+            </h1>
         </div>
-    </nav>
-    <?= $this->Flash->render() ?>
-    <div class="container clearfix">
-        <?= $this->fetch('content') ?>
-    </div>
-    <footer>
-    </footer>
+		<div id="content">
+			<?php echo $this->Flash->render(); ?>
+            <?php if (isset($owner)): ?>
+                <ul class='status'>
+                    <li>
+                        <?php echo $owner['User']['name']; ?>
+                    </li>
+                    <li>
+                        <?php
+                            echo $this->Html->link(
+                                'Logout',
+                                array(
+                                      'controller' => 'users',
+                                      'action' => 'logout'
+                                ),
+                                array(
+                                      'class' => 'logout'
+                                )
+                            ); 
+                        ?>
+                    </li>
+                </ul>
+            <?php endif; ?>
+			<?php echo $this->fetch('content'); ?>
+		</div>
+        <div id="footer">
+            <p class="attribution">
+                Trash Can designed by <a href="http://thenounproject.com/rubensteeman">Ruben Steeman</a> from the <a href="http://www.thenounproject.com/">Noun Project</a>
+            </p>
+            <?php
+                echo $this->Html->link(
+                    $this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
+                    'http://www.cakephp.org/',
+                    array('target' => '_blank', 'escape' => false)
+                );
+            ?>
+        </div>
+	</div>
+    <?php // $this->Js->writeBuffer(); 
+    ?>
+    <?php // echo $this->element('sql_dump'); 
+    ?>
 </body>
 </html>
