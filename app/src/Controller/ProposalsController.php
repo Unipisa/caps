@@ -114,14 +114,15 @@ class ProposalsController extends AppController {
         $username = $user['user'];
 
         // Find the user in the database matching the one logged in
-        $users_table = TableRegistry::getTableLocator()->get('Users');
-        $owner = $users_table->find()->contain([ 'Proposals' ])
+        $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
             ->where([ 'Users.username' => $username ])
             ->firstOrFail();
 
         if ($owner) {
             $proposal = $owner['proposal'];
             $proposalId = $proposal['id'];
+
+            $proposal = $this->Proposals->findById($proposalId)->contain([ 'Curricula', 'Users' ])->firstOrFail();
 
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
@@ -140,7 +141,7 @@ class ProposalsController extends AppController {
                 }
             }
 
-            $this->set('curricula', $this->Proposal->Curriculum->find('list'));
+            $this->set('curricula', $this->Proposals->Curricula->find('list'));
             $this->set('owner', $owner);
         } else {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));

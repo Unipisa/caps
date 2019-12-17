@@ -79,7 +79,7 @@ class UsersController extends AppController {
                         $this->log("Error saving user's proposal with ID = " . $p->id);
                     }
 
-                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'view', $p->id ]));
+                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'add' ]));
                 }
                 else {
                     $this->log('Failed to add user: ' . $user['name'] . ' to the database');

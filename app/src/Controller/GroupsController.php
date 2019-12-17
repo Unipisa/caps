@@ -24,7 +24,7 @@ class GroupsController extends AppController {
     }
 
     public function index () {
-        $groups = $this->Groups->find('all');
+        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
 
         $this->set('groups', $groups);
         $this->set('_serialize', array('groups'));

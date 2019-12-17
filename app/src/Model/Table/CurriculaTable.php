@@ -41,6 +41,10 @@ class CurriculaTable extends Table
             'targetForeignKey' => 'proposal_id',
             'joinTable' => 'curricula_proposals'
         ]);
+
+        $this->hasMany('FreeChoiceExams');
+        $this->hasMany('CompulsoryExams');
+        $this->hasMany('CompulsoryGroups');
     }
 
     /**
