@@ -17,14 +17,6 @@ class ProposalsController extends AppController {
         $this->loadComponent('Paginator');
     }
 
-    public $uses = array(
-        'ChosenExam',
-        'ChosenFreeChoiceExam',
-        'Exam',
-        'User',
-        'Proposal'
-    );
-
     private function done()
     {
         return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])

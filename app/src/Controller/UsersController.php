@@ -11,11 +11,6 @@ use App\Model\Entity\User;
 
 class UsersController extends AppController {
 
-    public $uses = array(
-        'User',
-        'Proposal'
-    );
-
     public function beforeFilter($event) {
         parent::beforeFilter($event);
     }

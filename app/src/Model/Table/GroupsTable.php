@@ -21,7 +21,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Group[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Group findOrCreate($search, callable $callback = null, $options = [])
  */
-class GroupTable extends Table
+class GroupsTable extends Table
 {
     /**
      * Initialize method
@@ -33,7 +33,7 @@ class GroupTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('group');
+        $this->setTable('groups');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
