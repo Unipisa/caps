@@ -23,11 +23,11 @@
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
 </div>
 
-<?php if($proposal['Proposal']['submitted'] && $proposal['Proposal']['approved']): ?>
+<?php if($proposal['submitted'] && $proposal['approved']): ?>
 <div class="success">
     Il tuo Piano di Studi è stato approvato.
 </div>
-<?php elseif($proposal['Proposal']['submitted']): ?>
+<?php elseif($proposal['submitted']): ?>
 <div class="notice">
     Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.
 </div>
@@ -44,13 +44,13 @@
         <th>Settore</th>
         <th>Crediti</th>
     </tr>
-<?php foreach ($proposal['ChosenExam'] as $chosen_exam): ?>
+<?php foreach ($proposal['chosen_exams'] as $chosen_exam): ?>
     <?php
         foreach($exams as $exam) {
-            if ($exam['Exam']['id'] == $chosen_exam['exam_id']) {
-                $code = $exam['Exam']['code'];
-                $name = $exam['Exam']['name'];
-                $sector = $exam['Exam']['sector'];
+            if ($exam['id'] == $chosen_exam['exam_id']) {
+                $code = $exam['code'];
+                $name = $exam['name'];
+                $sector = $exam['sector'];
             }
         }
     ?>
@@ -62,7 +62,7 @@
     </tr>
 <?php endforeach; ?>
 <?php unset($chosen_exam); ?>
-<?php foreach ($proposal['ChosenFreeChoiceExam'] as $exam): ?>
+<?php foreach ($proposal['chosen_free_choice_exams'] as $exam): ?>
     <tr>
         <td></td>
         <td><?php echo $exam['name']; ?></td>

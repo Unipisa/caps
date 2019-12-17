@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use Cake\ORM\TableRegistry;
+use Cake\Http\Exception\ForbiddenException;
 
 class ProposalsController extends AppController {
 
@@ -94,7 +95,7 @@ class ProposalsController extends AppController {
         }
 
         $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users' ])
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
             ->firstOrFail();
 
         if (!$proposal) {
@@ -164,7 +165,9 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $proposal = $this->Proposals->findById($id)->contain([ 'Users', 'Curricula', 'ChosenExams', 'ChosenFreeChoiceExams' ])->firstOrFail();
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users', 'Curricula', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+            ->firstOrFail();
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
