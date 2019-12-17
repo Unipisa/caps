@@ -14,7 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['Curriculum'][0]['name'],
-                    array('action' => 'review', $proposal['Proposal']['id'])
+                    array('action' => 'adminReview', $proposal['id'])
                 );
             ?>
         </td>
@@ -24,7 +24,7 @@
                     <?php
                         echo $this->Html->link(
                             'Approva ✓',
-                            array('action' => 'approve', $proposal['Proposal']['id']),
+                            array('action' => 'adminApprove', $proposal['id']),
                             array('class' => 'accept')
                         );
                     ?>
@@ -33,7 +33,7 @@
                     <?php 
                         echo $this->Html->link(
                             'Rifiuta ✗',
-                            array('action' => 'reject', $proposal['Proposal']['id']),
+                            array('action' => 'adminReject', $proposal['id']),
                             array('class' => 'reject')
                         );
                     ?>
@@ -54,12 +54,12 @@
     </tr>
 <?php foreach ($proposalsApproved as $proposal): ?>
     <tr>
-        <td><?php echo $proposal['User']['name']; ?></td>
+        <td><?php echo $proposal['user']['name']; ?></td>
         <td>
             <?php
                 echo $this->Html->link(
-                    $proposal['Curriculum'][0]['name'],
-                    array('action' => 'review', $proposal['Proposal']['id'])
+                    $proposal['curriculum'][0]['name'],
+                    array('action' => 'review', $proposal['id'])
                 );
             ?>
         </td>
@@ -69,7 +69,7 @@
                     <?php
                         echo $this->Html->link(
                             'Riapri ✎',
-                            array('action' => 'reject', $proposal['Proposal']['id'])
+                            array('action' => 'adminReject', $proposal['id'])
                         );
                     ?>
                 </li>
@@ -77,7 +77,7 @@
                     <?php
                         echo $this->Html->link(
                             'Archivia',
-                            array('action' => 'freeze', $proposal['Proposal']['id'])
+                            array('action' => 'adminFreeze', $proposal['id'])
                         );
                     ?>
                 </li>

@@ -24,7 +24,7 @@
                     <?php
                         echo $this->Html->link(
                             'Approva ✓',
-                            array('action' => 'approve', $proposal['id']),
+                            array('action' => 'adminApprove', $proposal['id']),
                             array('class' => 'accept')
                         );
                     ?>
@@ -33,7 +33,7 @@
                     <?php 
                         echo $this->Html->link(
                             'Rifiuta ✗',
-                            array('action' => 'reject', $proposal['id']),
+                            array('action' => 'adminReject', $proposal['id']),
                             array('class' => 'reject')
                         );
                     ?>
