@@ -9,14 +9,14 @@
     </tr>
 <?php foreach ($proposalsFrozen as $proposal): ?>
     <tr>
-        <td class="caps-admin-proposal-name"><?php echo $proposal['User']['name']; ?></td>
+        <td class="caps-admin-proposal-name"><?php echo $proposal['user']['name']; ?></td>
         <td class="caps-admin-proposal-pds">
             <?php
                 echo $this->Html->link(
-                    $proposal['Curriculum'][0]['name'],
+                    $proposal['curriculum'][0]['name'],
                     array(
                         'action' => 'admin_review',
-                        $proposal['Proposal']['id']
+                        $proposal['id']
                     )
                 );
             ?>
@@ -29,7 +29,7 @@
                             'Riapri ✎',
                             array(
                                 'action' => 'admin_thaw',
-                                $proposal['Proposal']['id']
+                                $proposal['id']
                             )
                         );
                     ?>

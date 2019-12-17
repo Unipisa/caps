@@ -3,12 +3,12 @@
         <img class="left" src="/caps/css/img/cherubino_black.png"/>
         <h2 class="department">Dipartimento di Matematica — Università di Pisa</h2>
         <h2 class="degree">Corso di Laurea
-            <?php echo (strpos($proposal['Curriculum'][0]['name'], 'Triennale') !== false) ? 'Triennale — Classe L-35' : 'Magistrale — Classe LM-40'; ?>
+            <?php echo (strpos($proposal['curriculum'][0]['name'], 'Triennale') !== false) ? 'Triennale — Classe L-35' : 'Magistrale — Classe LM-40'; ?>
         </h2>
         <h2 class="year">Anno Accademico 2014/15</h2>
     </div>
     <div class="data">
-        <h3 class="curriculum">Curriculum: <?php echo $proposal['Curriculum'][0]['name']; ?></h3>
+        <h3 class="curriculum">Curriculum: <?php echo $proposal['curriculum'][0]['name']; ?></h3>
         <h3 class="name">Nome e cognome: <?php echo $proposal['user']['name']; ?></h3>
         <h3 class="number">Matricola: <?php echo $proposal['user']['number']; ?></h3>
         <h3 class="email">Email: </h3>

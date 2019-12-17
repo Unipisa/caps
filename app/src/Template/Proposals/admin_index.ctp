@@ -9,7 +9,7 @@
     </tr>
 <?php foreach ($proposalsTodo as $proposal): ?>
     <tr>
-        <td><?php echo $proposal['User']['name']; ?></td>
+        <td><?php echo $proposal['user']['name']; ?></td>
         <td>
             <?php
                 echo $this->Html->link(

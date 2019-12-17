@@ -9,12 +9,12 @@
     </tr>
 <?php foreach ($proposalsTodo as $proposal): ?>
     <tr>
-        <td class="caps-admin-proposal-name"><?php echo $proposal['User']['name']; ?></td>
+        <td class="caps-admin-proposal-name"><?php echo $proposal['user']['name']; ?></td>
         <td class="caps-admin-proposal-pds">
             <?php
                 echo $this->Html->link(
-                    $proposal['Curriculum'][0]['name'],
-                    array('action' => 'admin_review', $proposal['Proposal']['id'])
+                    $proposal['curriculum'][0]['name'],
+                    array('action' => 'admin_review', $proposal['id'])
                 );
             ?>
         </td>
@@ -24,7 +24,7 @@
                     <?php
                         echo $this->Html->link(
                             'Approva ✓',
-                            array('action' => 'approve', $proposal['Proposal']['id']),
+                            array('action' => 'approve', $proposal['id']),
                             array('class' => 'accept')
                         );
                     ?>
@@ -33,7 +33,7 @@
                     <?php 
                         echo $this->Html->link(
                             'Rifiuta ✗',
-                            array('action' => 'reject', $proposal['Proposal']['id']),
+                            array('action' => 'reject', $proposal['id']),
                             array('class' => 'reject')
                         );
                     ?>

@@ -26,7 +26,7 @@ class ProposalsController extends AppController {
 
     private function done()
     {
-        return $this->Proposals->find()->contain('Users')
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
             ->limit(25)
             ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
@@ -34,7 +34,7 @@ class ProposalsController extends AppController {
 
     private function todo()
     {
-        return $this->Proposals->find()->contain('Users')
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([
                 'submitted' => true,
                 'approved' => false
@@ -45,7 +45,7 @@ class ProposalsController extends AppController {
 
     private function frozen()
     {
-        return $this->Proposals->find()->contain('Users')
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.frozen' => true ])
             ->limit(25)
             ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
@@ -119,12 +119,15 @@ class ProposalsController extends AppController {
 	    $user = $this->Auth->user();
 
         $username = $user['user'];
-        $owner = $this->User->find('first', array(
-            'conditions' => array('User.username' => $username)
-        ));
+
+        // Find the user in the database matching the one logged in
+        $users_table = TableRegistry::getTableLocator()->get('Users');
+        $owner = $users_table->find()->contain([ 'Proposals' ])
+            ->where([ 'Users.username' => $username ])
+            ->firstOrFail();
 
         if ($owner) {
-            $proposal = $owner['Proposal'];
+            $proposal = $owner['proposal'];
             $proposalId = $proposal['id'];
 
             $isProposalSubmitted = $proposal['submitted'];
@@ -151,7 +154,7 @@ class ProposalsController extends AppController {
         }
     }
 
-    public function admin_review ($id = null) {
+    public function adminReview ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -161,12 +164,13 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $proposal = $this->Proposal->findById($id);
+        $proposal = $this->Proposals->findById($id)->contain([ 'Users', 'Curricula', 'ChosenExams', 'ChosenFreeChoiceExams' ])->firstOrFail();
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $exams = $this->Exam->find('all', array(
+        $exams_table = TableRegistry::getTableLocator()->get('Exams');
+        $exams = $exams_table->find('all', array(
             'recursive' => -1
         ));
 
@@ -174,7 +178,7 @@ class ProposalsController extends AppController {
         $this->set('exams', $exams);
     }
 
-    public function admin_approve ($id = null) {
+    public function adminApprove ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -184,13 +188,13 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: id non valido.'));
         }
 
-        $proposal = $this->Proposal->read(null, $id);
+        $proposal = $this->Proposals->get($id);
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $proposal['Proposal']['approved'] = true;
-        $this->Proposal->save($proposal);
+        $proposal['approved'] = true;
+        $this->Proposals->save($proposal);
 
         return $this->redirect(
             array(
@@ -200,7 +204,7 @@ class ProposalsController extends AppController {
         );
     }
 
-    public function admin_reject ($id = null) {
+    public function adminReject ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -210,23 +214,28 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: id non valido.'));
         }
 
-        $proposal = $this->Proposal->read(null, $id);
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'ChosenExams', 'ChosenFreeChoiceExams' ])
+            ->firstOrFail();
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        foreach ($proposal['ChosenExam'] as $chosenExam):
-            $this->ChosenExam->delete($chosenExam['id']);
+        $chosen_exams_table = TableRegistry::getTableLocator()->get('ChosenExams');
+        $chosen_free_choice_exams_table = TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams');
+
+        foreach ($proposal['chosen_exams'] as $chosenExam):
+            $chosen_exams_table->delete($chosenExam);
         endforeach;
 
-        foreach ($proposal['ChosenFreeChoiceExam'] as $chosenFreeChoiceExam):
-            $this->ChosenFreeChoiceExam->delete($chosenFreeChoiceExam['id']);
+        foreach ($proposal['chosen_free_choice_exams'] as $chosenFreeChoiceExam):
+            $chosen_free_choice_exams_table->delete($chosenFreeChoiceExam);
         endforeach;
 
-        $proposal['Proposal']['submitted'] = false;
-        $proposal['Proposal']['approved'] = false;
-        $proposal['Proposal']['frozen'] = false;
-        $this->Proposal->save($proposal);
+        $proposal['submitted'] = false;
+        $proposal['approved'] = false;
+        $proposal['frozen'] = false;
+        $this->Proposals->save($proposal);
 
         return $this->redirect(
             array(
@@ -236,7 +245,7 @@ class ProposalsController extends AppController {
         );
     }
 
-    public function admin_freeze ($id = null) {
+    public function adminFreeze ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -246,13 +255,13 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: id non valido.'));
         }
 
-        $proposal = $this->Proposal->read(null, $id);
+        $proposal = $this->Proposals->get($id);
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $proposal['Proposal']['frozen'] = true;
-        $this->Proposal->save($proposal);
+        $proposal['frozen'] = true;
+        $this->Proposals->save($proposal);
 
         return $this->redirect(
             array(
@@ -262,7 +271,7 @@ class ProposalsController extends AppController {
         );
     }
 
-    public function admin_thaw ($id = null) {
+    public function adminThaw ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -272,13 +281,13 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: id non valido.'));
         }
 
-        $proposal = $this->Proposal->read(null, $id);
+        $proposal = $this->Proposals->get($id);
         if (!$proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $proposal['Proposal']['frozen'] = false;
-        $this->Proposal->save($proposal);
+        $proposal['frozen'] = false;
+        $this->Proposals->save($proposal);
 
         return $this->redirect(
             array(

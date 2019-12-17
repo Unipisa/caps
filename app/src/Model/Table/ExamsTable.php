@@ -33,6 +33,12 @@ class ExamsTable extends Table
         $this->setTable('exams');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
+        $this->belongsToMany('Groups', [
+            'foreignKey' => 'exam_id',
+            'targetForeignKey' => 'group_id',
+            'joinTable' => 'exams_groups'
+        ]);
     }
 
     /**

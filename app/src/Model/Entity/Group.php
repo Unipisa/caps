@@ -2,19 +2,17 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Authentication\IdentityInterface;
 
 /**
- * User Entity
+ * Group Entity
  *
- * @property string $id
- * @property string|null $username
+ * @property int $id
  * @property string|null $name
- * @property string|null $number
  *
- * @property \App\Model\Entity\Proposal[] $proposals
+ * @property \App\Model\Entity\ExamsGroup[] $exams_groups
+ * @property \App\Model\Entity\Exam[] $exams
  */
-class User extends Entity implements IdentityInterface
+class Group extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -26,19 +24,7 @@ class User extends Entity implements IdentityInterface
      * @var array
      */
     protected $_accessible = [
-        'username' => true,
         'name' => true,
-        'number' => true,
-        'proposal' => true
+        'exams' => true
     ];
-
-    public function getIdentifier()
-    {
-        return $this->username;
-    }
-
-    public function getOriginalData()
-    {
-        return $this;
-    }
 }

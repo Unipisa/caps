@@ -2,19 +2,18 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Authentication\IdentityInterface;
 
 /**
- * User Entity
+ * ChosenFreeChoiceExam Entity
  *
- * @property string $id
- * @property string|null $username
+ * @property int $id
  * @property string|null $name
- * @property string|null $number
+ * @property int|null $credits
+ * @property int|null $proposal_id
  *
- * @property \App\Model\Entity\Proposal[] $proposals
+ * @property \App\Model\Entity\Proposal $proposal
  */
-class User extends Entity implements IdentityInterface
+class ChosenFreeChoiceExam extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -26,19 +25,9 @@ class User extends Entity implements IdentityInterface
      * @var array
      */
     protected $_accessible = [
-        'username' => true,
         'name' => true,
-        'number' => true,
+        'credits' => true,
+        'proposal_id' => true,
         'proposal' => true
     ];
-
-    public function getIdentifier()
-    {
-        return $this->username;
-    }
-
-    public function getOriginalData()
-    {
-        return $this;
-    }
 }

@@ -32,6 +32,9 @@ class Proposal extends Entity
         'frozen' => true,
         'user_id' => true,
         'modified' => true,
-        'user' => true
+        'curriculum' => true,
+        'user' => true,
+        'chosen_exams' => true,
+        'chosen_free_choice_exams' => true
     ];
 }

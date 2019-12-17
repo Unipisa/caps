@@ -41,17 +41,17 @@ class UsersController extends AppController {
 
 		        // ... if they have a submitted plan, show that...
                 $username = $user['user'];
-                $owner = $this->Users->find()
+                $owner = $this->Users->find()->contain([ 'Proposals' ])
                     ->where([ 'username' => $username ])
                     ->first();
 
                 if ($owner) {
-                    $planId = $owner['Proposal']['id'];
+                    $planId = $owner['proposal']['id'];
                 } else {
                     $planId = false;
                 }
 
-                if ($planId && $owner['Proposal']['submitted']) {
+                if ($planId && $owner['proposal']['submitted']) {
                     return $this->redirect($this->Auth->redirectUrl(array('controller' => 'proposals', 'action' => 'view', $planId)));
                 }
 
@@ -64,6 +64,7 @@ class UsersController extends AppController {
 		        $newuser = $this->Users->newEntity();
 		        $newuser = $this->Users->patchEntity($newuser, [
 	                'name' => ucwords(strtolower($user['name'])),
+	                'username' => $user['user'],
 	                'number' => $user['number']
 		        ]);
 
@@ -76,7 +77,6 @@ class UsersController extends AppController {
                     // as we migrate to having more than 1 Proposal per user.
                     $p = $this->Users->Proposals->newEntity();
 
-                    // This does not look the canonical way of doing this ...
                     $p->id = $newuser->id;
                     $p->user = $newuser;
 
