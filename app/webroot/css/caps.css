@@ -363,6 +363,11 @@ table {
     text-align: center; 
 }
 
+ul.caps-pagination > li {
+   list-style-type: none;   
+   display: inline;
+}
+
 .caps-admin-curriculum-name {
     width: 70%;
 }

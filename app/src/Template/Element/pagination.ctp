@@ -1,4 +1,4 @@
-<div class="caps-pagination">
+<ul class="caps-pagination">
     <?php echo $this->Paginator->prev(
         '&laquo;',
         array('escape' => false),
@@ -18,4 +18,4 @@
             'escape' => false,
         )
     ); ?>
-</div>
+</ul>
