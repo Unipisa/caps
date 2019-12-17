@@ -107,9 +107,11 @@ class ProposalsController extends AppController {
             throw new ForbiddenException(__(''));
         }
 
-        $exams = $this->Exams->find('all', array(
+        $exams_table = TableRegistry::getTableLocator()->get('Exams');
+
+        $exams = $exams_table->find('all', [
             'recursive' => -1
-        ));
+        ]);
 
         $this->set('proposal', $proposal);
         $this->set('exams', $exams);
