@@ -1,20 +1,20 @@
 <?php echo $this->element('admin_navigation'); ?>
 
-<h2>Piani di Studio da valutare</h2>
-<table class="caps-todo">
+<h2>Piani di Studio approvati</h2>
+<table class="caps-done">
     <tr>
         <th>Nome</th>
         <th>Piano di Studio</th>
         <th>Azioni</th>
     </tr>
-<?php foreach ($proposalsTodo as $proposal): ?>
+<?php foreach ($proposalsApproved as $proposal): ?>
     <tr>
         <td class="caps-admin-proposal-name"><?php echo $proposal['User']['name']; ?></td>
         <td class="caps-admin-proposal-pds">
             <?php
                 echo $this->Html->link(
                     $proposal['Curriculum'][0]['name'],
-                    array('action' => 'admin_review', $proposal['Proposal']['id'])
+                    array('action' => 'review', $proposal['Proposal']['id'])
                 );
             ?>
         </td>
@@ -23,18 +23,28 @@
                 <li>
                     <?php
                         echo $this->Html->link(
-                            'Approva ✓',
-                            array('action' => 'approve', $proposal['Proposal']['id']),
-                            array('class' => 'accept')
+                            'Riapri&nbsp;✎',
+                            array(
+                                'action' => 'reject',
+                                $proposal['Proposal']['id']
+                            ),
+                            array(
+                                'escape' => false
+                            )
                         );
                     ?>
                 </li>
                 <li>
-                    <?php 
+                    <?php
                         echo $this->Html->link(
-                            'Rifiuta ✗',
-                            array('action' => 'reject', $proposal['Proposal']['id']),
-                            array('class' => 'reject')
+                            'Archivia&nbsp;❄',
+                            array(
+                                'action' => 'freeze',
+                                $proposal['Proposal']['id']
+                            ),
+                            array(
+                                'escape' => false
+                            )
                         );
                     ?>
                 </li>

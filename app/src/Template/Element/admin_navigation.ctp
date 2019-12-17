@@ -1,28 +1,28 @@
 <nav class="caps-admin-navigation">
     <ul>
-        <li <?php if ($selected == 'admin_todo') echo 'class="selected"'?>>
+        <li <?php if ($selected == 'todo') echo 'class="selected"'?>>
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;da&nbsp;valutare',
-                    array('action' => 'todo'),
+                    array('action' => 'adminTodo'),
                     array('escape' => false)
                 );
             ?>
         </li>
-        <li <?php if ($selected == 'admin_done') echo 'class="selected"'?>>
+        <li <?php if ($selected == 'done') echo 'class="selected"'?>>
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;approvati',
-                    array('action' => 'done'),
+                    array('action' => 'adminDone'),
                     array('escape' => false)
                 );
             ?>
         </li>
-        <li <?php if ($selected == 'admin_frozen') echo 'class="selected"'?>>
+        <li <?php if ($selected == 'frozen') echo 'class="selected"'?>>
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;archiviati',
-                    array('action' => 'frozen'),
+                    array('action' => 'adminFrozen'),
                     array('escape' => false)
                 );
             ?>

@@ -23,16 +23,13 @@ class ProposalsController extends AppController {
         'Proposal'
     );
 
-    public $done = array(
-        'conditions' => array(
-            'Proposal.approved' => true,
-            'Proposal.frozen' => false
-        ),
-        'limit' => 25,
-        'order' => array(
-            'User.surname' => 'asc'
-        )
-    );
+    private function done()
+    {
+        return $this->Proposals->find()->contain('Users')
+            ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
+            ->limit(25)
+            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+    }
 
     private function todo()
     {
@@ -45,27 +42,13 @@ class ProposalsController extends AppController {
             ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
-    // La vecchia maniera di recuperare i dati è stata sostituita da quella nuova
-    /* public $todo = array(
-        'conditions' => array(
-            'Proposal.submitted' => true,
-            'Proposal.approved' => false
-        ),
-        'limit' => 25,
-        'order' => array(
-            'User.surname' => 'asc'
-        )
-    ); */
-
-    public $frozen = array(
-        'conditions' => array(
-            'Proposal.frozen' => true
-        ),
-        'limit' => 25,
-        'order' => array(
-            'User.surname' => 'asc'
-        )
-    );
+    private function frozen()
+    {
+        return $this->Proposals->find()->contain('Users')
+            ->where([ 'Proposals.frozen' => true ])
+            ->limit(25)
+            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+    }
 
     public function beforeFilter ($event) {
         parent::beforeFilter($event);
@@ -78,37 +61,35 @@ class ProposalsController extends AppController {
             throw new ForbiddenException();
         }
 
-        // $this->Paginator->settings = $this->todo;
-        // $this->set('proposalsTodo', $this->Paginator->paginate('Proposal'));
         $this->set('proposalsTodo', $this->Paginator->paginate($this->todo()));
         $this->set('selected', 'todo');
     }
 
-    public function admin_done () {
-        $user = AuthComponent::user();
+    public function adminDone () {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        $this->Paginator->settings = $this->done;
-        $this->set('proposalsApproved', $this->Paginator->paginate('Proposal'));
+        $this->set('proposalsApproved', $this->Paginator->paginate($this->done()));
+        $this->set('selected', 'done');
     }
 
-    public function admin_frozen () {
-        $user = AuthComponent::user();
+    public function adminFrozen () {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        $this->Paginator->settings = $this->frozen;
-        $this->set('proposalsFrozen', $this->Paginator->paginate('Proposal'));
+        $this->set('proposalsFrozen', $this->Paginator->paginate($this->frozen()));
+        $this->set('selected', 'frozen');
     }
 
     public function view ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
 
         if (!$id) {
-            throw new NotFoundException('ancora questo non lo abbiamo');
+            throw new NotFoundException('');
         }
 
         $proposal = $this->Proposal->findById($id);
@@ -129,7 +110,7 @@ class ProposalsController extends AppController {
     }
 
     public function add () {
-	    $user = AuthComponent::user();
+	    $user = $this->Auth->user();
 
         $username = $user['user'];
         $owner = $this->User->find('first', array(
@@ -165,7 +146,7 @@ class ProposalsController extends AppController {
     }
 
     public function admin_review ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -188,7 +169,7 @@ class ProposalsController extends AppController {
     }
 
     public function admin_approve ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -214,7 +195,7 @@ class ProposalsController extends AppController {
     }
 
     public function admin_reject ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -250,7 +231,7 @@ class ProposalsController extends AppController {
     }
 
     public function admin_freeze ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -276,7 +257,7 @@ class ProposalsController extends AppController {
     }
 
     public function admin_thaw ($id = null) {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
