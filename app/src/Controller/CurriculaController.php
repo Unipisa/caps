@@ -31,14 +31,12 @@ class CurriculaController extends AppController {
     }
 
     public function adminIndex () {
-        $user = AuthComponent::user();
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        $curricula = $this->Curriculum->find('all', array(
-            'recursive' => -1
-        ));
+        $curricula = $this->Curricula->find('all');
         $this->set('curricula', $curricula);
     }
 
@@ -59,16 +57,17 @@ class CurriculaController extends AppController {
         $this->set('_serialize', 'curriculum');
     }
 
-    public function admin_add () {
-        $user = AuthComponent::user();
+    public function adminAdd () {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
         if ($this->request->is('post')) {
-            $this->Curriculum->create();
-            if ($this->Curriculum->save($this->request->data)) {
-                $this->Session->setFlash(__('Curriculum creato con successo.'));
+            $newcurriculum = $this->Curriculum->newEntity();
+            $newcurriculum = $this->Curriculum->patchEntity($newcurriculum, $this->request->data);
+            if ($this->Curricula->save($newcurriculum)) {
+                $this->Flash->sucess(__('Curriculum creato con successo.'));
                 return $this->redirect(
                     array(
                         'action' => 'admin_index'
@@ -76,12 +75,12 @@ class CurriculaController extends AppController {
                 );
             }
 
-            $this->Session->setFlash(__('Errore: curriculum non creato.'));
+            $this->Flash->error(__('Errore: curriculum non creato.'));
         }
     }
 
-    public function admin_edit ($id = null) {
-        $user = AuthComponent::user();
+    public function adminEdit ($id = null) {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -90,26 +89,28 @@ class CurriculaController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $curriculum = $this->Curriculum->findById($id);
+        $curriculum = $this->Curricula->findById($id)
+            ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams' ])
+            ->firstOrFail();
+
         if (!$curriculum) {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
 
         if ($this->request->is(array('post', 'put'))) {
-            if ($this->Curriculum->save($this->request->data)) {
-                $this->Session->setFlash(__('Curriculum aggiornato con successo.'));
+            $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->data);
+            if ($this->Curriculum->save($curriculum)) {
+                $this->Flash->success(__('Curriculum aggiornato con successo.'));
                 return $this->redirect(array('action' => 'admin_index'));
             }
-            $this->Session->setFlash(__('Errore: curriculum non aggiornato.'));
+            $this->Flash->error(__('Errore: curriculum non aggiornato.'));
         }
 
-        $exams = $this->Exam->find('all', array(
-            'recursive' => -1
-        ));
+        $exams_table = TableRegistry::getTableLocator()->get('Exams');
+        $groups_table = TableRegistry::getTableLocator()->get('Groups');
 
-        $groups = $this->Group->find('all', array(
-            'recursive' => -1
-        ));
+        $exams = $exams_table->find('all');
+        $groups = $groups_table->find('all');
 
         unset($curriculum['Proposal']);
         $this->set('curriculum', $curriculum);
@@ -117,24 +118,24 @@ class CurriculaController extends AppController {
         $this->set('groups', $groups);
         $this->set(
             'examsList',
-            $this->Exam->find(
+            $exams_table->find(
                 'list',
                 array(
                     'order' => array(
-                        'Exam.name' => 'ASC'
+                        'Exams.name' => 'ASC'
                     )
                 )
             )
         );
-        $this->set('groupsList', $this->Group->find('list'));
+        $this->set('groupsList', $groups_table->find('list'));
 
         if (!$this->request->data) {
             $this->request->data = $curriculum;
         }
     }
 
-    public function admin_delete ($id = null) {
-        $user = AuthComponent::user();
+    public function adminDelete ($id = null) {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -149,8 +150,8 @@ class CurriculaController extends AppController {
         }
 
         if ($this->request->is(array('post', 'put'))) {
-            if ($this->Curriculum->delete($id)) {
-                $this->Session->setFlash(__('Curriculum cancellato con successo.'));
+            if ($this->Curricula->delete($curriculum)) {
+                $this->Flash->success(__('Curriculum cancellato con successo.'));
                 return $this->redirect(
                     array(
                         'action' => 'admin_index'
@@ -159,7 +160,7 @@ class CurriculaController extends AppController {
             }
         }
 
-        $this->Session->setFlash(__('Error: curriculum non cancellato.'));
+        $this->Flash->error(__('Error: curriculum non cancellato.'));
         $this->redirect(
             array(
                 'action' => 'admin_index'
