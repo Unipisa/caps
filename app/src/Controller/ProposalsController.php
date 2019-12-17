@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use Cake\ORM\TableRegistry;
 
 class ProposalsController extends AppController {
 
@@ -92,16 +93,21 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        $proposal = $this->Proposal->findById($id);
+        $proposal = $this->Proposals->findById($id)->firstOrFail();
         if (!$proposal) {
             throw new NotFoundException('');
         }
 
-        if ($user['user'] != $proposal['User']['username']) {
+        $users_table = TableRegistry::getTableLocator()->get('Users');
+        $local_user = $users_table->find()
+            ->where([ 'name' => $user['name'] ])
+            ->firstOrFail();
+
+        if ($local_user->id != $proposal->user_id) {
             throw new ForbiddenException(__(''));
         }
 
-        $exams = $this->Exam->find('all', array(
+        $exams = $this->Exams->find('all', array(
             'recursive' => -1
         ));
 

@@ -63,17 +63,31 @@ class UsersController extends AppController {
 		        // ... otherwise create a new user and a new plan.
 		        $newuser = $this->Users->newEntity();
 		        $newuser = $this->Users->patchEntity($newuser, [
-		            'User' => [
-		                'name' => ucwords(strtolower($user['name'])),
-		                'number' => $user['number']
-		            ]
+	                'name' => ucwords(strtolower($user['name'])),
+	                'number' => $user['number']
 		        ]);
 
+		        $this->log( var_export($newuser, TRUE) );
+
                 if ($this->Users->save($newuser)) {
-                    // FIXME: Proposal creation logic does not work in its current form
-                    // $this->request->data['Proposal']['user_id'] = $this->User->id;
-                    // $this->Users->Proposal->save($this->request->data);
-                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'view' ]));
+                    $this->log('Added user ' . $user['name'] . ' to the database');
+
+                    // Create an empty proposal for this student -- this will be probably dropped
+                    // as we migrate to having more than 1 Proposal per user.
+                    $p = $this->Users->Proposals->newEntity();
+
+                    // This does not look the canonical way of doing this ...
+                    $p->id = $newuser->id;
+                    $p->user = $newuser;
+
+                    if (! $this->Users->Proposals->save($p)) {
+                        $this->log("Error saving user's proposal with ID = " . $p->id);
+                    }
+
+                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'view', $p->id ]));
+                }
+                else {
+                    $this->log('Failed to add user: ' . $user['name'] . ' to the database');
                 }
 
                 throw new NotFoundException();
