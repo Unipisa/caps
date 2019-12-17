@@ -366,6 +366,8 @@ table {
 ul.caps-pagination > li {
    list-style-type: none;   
    display: inline;
+   margin-right: 6px;
+   margin-left: 6px;
 }
 
 .caps-admin-curriculum-name {
