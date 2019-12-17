@@ -9,8 +9,8 @@
     </div>
     <div class="data">
         <h3 class="curriculum">Curriculum: <?php echo $proposal['Curriculum'][0]['name']; ?></h3>
-        <h3 class="name">Nome e cognome: <?php echo $proposal['User']['name']; ?></h3>
-        <h3 class="number">Matricola: <?php echo $proposal['User']['number']; ?></h3>
+        <h3 class="name">Nome e cognome: <?php echo $proposal['user']['name']; ?></h3>
+        <h3 class="number">Matricola: <?php echo $proposal['user']['number']; ?></h3>
         <h3 class="email">Email: </h3>
         <h3 class="telephone">Telefono: </h3>
     </div>
@@ -20,7 +20,7 @@
 </div>
 
 <div class="heading--web">
-    <h2>Piano di Studi di <?php echo $proposal['User']['name']; ?></h2>
+    <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
 </div>
 
 <?php if($proposal['Proposal']['submitted'] && $proposal['Proposal']['approved']): ?>

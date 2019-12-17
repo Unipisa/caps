@@ -93,17 +93,15 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        $proposal = $this->Proposals->findById($id)->firstOrFail();
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users' ])
+            ->firstOrFail();
+
         if (!$proposal) {
             throw new NotFoundException('');
         }
 
-        $users_table = TableRegistry::getTableLocator()->get('Users');
-        $local_user = $users_table->find()
-            ->where([ 'name' => $user['name'] ])
-            ->firstOrFail();
-
-        if ($local_user->id != $proposal->user_id) {
+        if ($proposal['user']->name != $user['name']) {
             throw new ForbiddenException(__(''));
         }
 
