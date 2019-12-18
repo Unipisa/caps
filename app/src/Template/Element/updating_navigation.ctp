@@ -48,8 +48,11 @@
         <li class="caps-admin-link">
             <?php
                 echo $this->Html->link(
-                    '↑&nbspAggiornamento',
-                    $this->request->referer(),
+                    '↑&nbspAggiornamento', [
+                    // $this->request->referer(),
+                        'controller' => $this->request->params['controller'],
+                        'action' => 'admin-index'
+                    ],
                     array(
                         'escape' => false
                     )

@@ -84,11 +84,12 @@
 </table>
 <?php
     echo $this->Form->create(
-        'CompulsoryExams',
-        array(
-            'controller' => 'compulsory_exams',
-            'action' => 'add',
-        )
+        'CompulsoryExams', [
+            'url' => [
+                'controller' => 'CompulsoryExams',
+                'action' => 'admin-add'
+            ]
+        ]
     );
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
@@ -179,11 +180,12 @@
 </table>
 <?php
     echo $this->Form->create(
-        'CompulsoryGroup',
-        array(
-            'controller' => 'compulsory_groups',
-            'action' => 'add'
-        )
+        'CompulsoryGroup', [
+            'url' => [
+                'controller' => 'CompulsoryGroups',
+                'action' => 'admin-add'
+            ]
+        ]
     );
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
@@ -263,11 +265,12 @@
 </table>
 <?php
     echo $this->Form->create(
-        'FreeChoiceExam',
-        array(
-            'controller' => 'free_choice_exams',
-            'action' => 'add'
-        )
+        'FreeChoiceExam',[
+            'url' => [
+                'controller' => 'FreeChoiceExams',
+                'action' => 'admin-add'
+            ]
+        ]
     );
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(

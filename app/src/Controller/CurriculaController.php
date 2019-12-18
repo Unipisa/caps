@@ -6,6 +6,7 @@ use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
+use App\Caps\Utils;
 
 class CurriculaController extends AppController {
 
@@ -78,15 +79,7 @@ class CurriculaController extends AppController {
                 );
             }
 
-            $error_msg = "";
-            $errs = $newcurriculum->errors();
-            foreach ($errs as $field) {
-                foreach ($field as $err) {
-                    $error_msg = $error_msg . $err . "\n";
-                }
-            }
-
-            $this->Flash->error(__('Errore: ') . $error_msg);
+            $this->Flash->error(Utils::error_to_string($newcurriculum->errors()));
         }
     }
 

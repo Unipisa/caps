@@ -1,29 +1,32 @@
 <?php
 
-App::uses('UnipiAuthenticate', 'Controller/Component/Auth');
+namespace App\Controller;
+
+use App\Auth\UnipiAuthenticate;
+use App\Controller\Event;
+use Cake\ORM\TableRegistry;
+use Cake\Http\Exception\ForbiddenException;
+use App\Caps\Utils;
 
 class CompulsoryExamsController extends AppController {
 
-    public $uses = array(
-        'CompulsoryExam',
-    );
-
-    public function beforeFilter () {
-        parent::beforeFilter();
+    public function beforeFilter ($event) {
+        parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function admin_add () {
-        $user = AuthComponent::user();
+    public function adminAdd () {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
         if ($this->request->is(array('post', 'put'))) {
-            $this->CompulsoryExam->create();
+            $newexam = $this->CompulsoryExams->newEntity();
+            $newexam = $this->CompulsoryExams->patchEntity($newexam, $this->request->data);
 
-            if ($this->CompulsoryExam->save($this->request->data)) {
-                $this->Session->setFlash(__('Esame aggiunto con successo.'));
+            if ($this->CompulsoryExams->save($newexam)) {
+                $this->Flash->success(__('Esame aggiunto con successo.'));
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -31,8 +34,8 @@ class CompulsoryExamsController extends AppController {
         }
     }
 
-    public function admin_delete ($id = null) {
-        $user = AuthComponent::user();
+    public function adminDelete ($id = null) {
+        $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
@@ -41,22 +44,22 @@ class CompulsoryExamsController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $compulsory_exam = $this->CompulsoryExam->findById($id);
+        $compulsory_exam = $this->CompulsoryExams->findById($id)->firstOrFail();
         if (!$compulsory_exam) {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
         if ($this->request->is(array('post', 'put'))) {
-            if ($this->CompulsoryExam->delete($id)) {
-                $this->Session->setFlash(__('Esame cancellato con successo.'));
+            if ($this->CompulsoryExams->delete($compulsory_exam)) {
+                $this->Flash->success(__('Esame cancellato con successo.'));
                 return $this->redirect(
                     $this->request->referer()
                 );
             }
         }
-    
-        $this->Session->setFlash(__('Error: esame non cancellato.'));
-        $this->redirect(
+
+        $this->Flash->error(Utils::error_to_string($compulsory_exam->error()));
+        return $this->redirect(
             $this->request->referer()
         );
     }
