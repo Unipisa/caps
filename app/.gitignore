@@ -9,6 +9,7 @@
 # Project specific files #
 ##########################
 /caps.sqlite
+/config/Migrations/schema-dump-default.lock
 
 # OS generated files #
 ######################

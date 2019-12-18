@@ -16,7 +16,9 @@ composer install
 cd app
 ln -s config/app.default.php config/app.php # Configurazione locale
 bin/cake migrations migrate # Crea o aggiorna il database
+vendor/bin/phpunit # run unit tests
 bin/cake server # run a development server
+
 ```
 
 Per aggiungere nuove migrazioni (un esempio):
