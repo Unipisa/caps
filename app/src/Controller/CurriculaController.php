@@ -115,7 +115,6 @@ class CurriculaController extends AppController {
         $exams = $exams_table->find('all');
         $groups = $groups_table->find('all');
 
-        unset($curriculum['Proposal']);
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
         $this->set('groups', $groups);
