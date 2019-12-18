@@ -100,7 +100,7 @@ class ExamsController extends AppController {
         if ($this->request->is(array('post', 'put'))) {
             $exam = $this->Exams->patchEntity($exam, $this->request->data);
 
-            if ($this->Exam->save($exam)) {
+            if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiornato con successo.'));
                 return $this->redirect(array('action' => 'index'));
             }

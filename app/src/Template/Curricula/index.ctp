@@ -7,11 +7,11 @@
     </tr>
     <?php foreach ($curricula as $curriculum): ?>
     <tr>
-        <td><?php echo $curriculum['Curriculum']['id']; ?></td>
+        <td><?php echo $curriculum['id']; ?></td>
         <td>
             <?php echo $this->Html->link(
-                $curriculum['Curriculum']['name'],
-                array('controller' => 'curricula', 'action' => 'view', $curriculum['Curriculum']['id'])); ?>
+                $curriculum['name'],
+                array('controller' => 'curricula', 'action' => 'view', $curriculum['id'])); ?>
         </td>
     </tr>
     <?php endforeach ?>
