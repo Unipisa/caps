@@ -3,13 +3,13 @@
 <h2>Modifica curriculum</h2>
 <?php
     echo $this->Form->create($curriculum);
-    echo $this->Form->input(
+    echo $this->Form->control(
         'id',
         array(
             'type' => 'hidden'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'name',
         array(
             'class' => 'caps-admin-curriculum-name',
@@ -17,13 +17,13 @@
             'label' => false
         )
     );
-    echo $this->Form->end(
+    echo $this->Form->submit('Aggiorna nome',
         array(
-            'label' => 'Aggiorna nome',
             'class' => 'caps-admin-curriculum-submit',
             'div' => false
         )
     );
+    echo $this->Form->end();
 ?>
 
 <hr class="caps-admin-curriculum"/>
@@ -82,7 +82,7 @@
             'action' => 'add'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'exam_id',
         array(
             'class' => 'caps-admin-curriculum-exam-name-choose',
@@ -91,14 +91,14 @@
             'options' => $examsList
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'curriculum_id',
         array(
             'default' => $curriculum['id'],
             'type' => 'hidden'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'year',
         array(
             'class' => 'caps-admin-curriculum-exam-year-choose',
@@ -107,7 +107,7 @@
             'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'position',
         array(
             // FIXME(jacquerie): Not properly setted.
@@ -115,11 +115,10 @@
             'type' => 'hidden'
         )
     );
-    echo $this->Form->submit(
+    echo $this->Form->submit('Aggiungi esame',
         array(
             'class' => 'caps-admin-curriculum-exam-submit',
-            'div' => false,
-            'label' => 'Aggiungi esame'
+            'div' => false
         )
     );
     echo $this->Form->end();
@@ -134,14 +133,14 @@
         <th>Anno</th>
         <th>Azioni</th>
     </tr>
-    <?php foreach ($curriculum['CompulsoryGroup'] as $compulsory_group) { ?>
+    <?php foreach ($curriculum['compulsory_groups'] as $compulsory_group) { ?>
         <tr>
             <td class="caps-admin-curriculum-exam-name">
                 <?php
                     // XXX(jacquerie): Terrible, terrible fix.
                     foreach($groups as $group) {
-                        if ($group['Group']['id'] == $compulsory_group['group_id']) {
-                            $name = $group['Group']['name'];
+                        if ($group['id'] == $compulsory_group['group_id']) {
+                            $name = $group['name'];
                         }
                     }
 
@@ -180,7 +179,7 @@
             'action' => 'add'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'group_id',
         array(
             'class' => 'caps-admin-curriculum-group-name-choose',
@@ -189,14 +188,14 @@
             'options' => $groupsList
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'curriculum_id',
         array(
             'default' => $curriculum['Curriculum']['id'],
             'type' => 'hidden'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'year',
         array(
             'class' => 'caps-admin-curriculum-group-year-choose',
@@ -205,7 +204,7 @@
             'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'position',
         array(
             // FIXME(jacquerie): Not properly setted.
@@ -213,13 +212,13 @@
             'type' => 'hidden'
         )
     );
-    echo $this->Form->end(
+    echo $this->Form->submit('Aggiungi gruppo',
         array(
             'class' => 'caps-admin-curriculum-group-submit',
-            'div' => false,
-            'label' => 'Aggiungi gruppo'
+            'div' => false
         )
     );
+    echo $this->Form->end();
 ?>
 
 <hr class="caps-admin-curriculum"/>
@@ -231,7 +230,7 @@
         <th>Anno</th>
         <th>Azioni</th>
     </tr>
-    <?php foreach ($curriculum['FreeChoiceExam'] as $free_choice_exam) { ?>
+    <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
         <tr>
             <td class="caps-admin-curriculum-exam-name">Esame a scelta libera</td>
             <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
@@ -267,7 +266,7 @@
         )
     );
     // XXX(jacquerie): Ignored by the receiving controller.
-    echo $this->Form->input(
+    echo $this->Form->control(
         'name',
         array(
             'class' => 'caps-admin-curriculum-exam-name-choose',
@@ -277,23 +276,23 @@
             'label' => false
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'curriculum_id',
         array(
-            'default' => $curriculum['Curriculum']['id'],
+            'default' => $curriculum['id'],
             'type' => 'hidden'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'year',
         array(
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'div' => false,
             'label' => false,
-            'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
+            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'position',
         array(
             // FIXME(jacquerie): Not properly setted.
@@ -301,11 +300,11 @@
             'type' => 'hidden'
         )
     );
-    echo $this->Form->end(
+    echo $this->Form->submit('Aggiungi esame',
         array(
             'class' => 'caps-admin-curriculum-exam-submit',
-            'div' => false,
-            'label' => 'Aggiungi esame'
+            'div' => false
         )
     );
+    echo $this->Form->end();
 ?>
