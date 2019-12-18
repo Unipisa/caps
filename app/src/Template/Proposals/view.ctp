@@ -5,7 +5,17 @@
         <h2 class="degree">Corso di Laurea
             <?php echo (strpos($proposal['curriculum'][0]['name'], 'Triennale') !== false) ? 'Triennale — Classe L-35' : 'Magistrale — Classe LM-40'; ?>
         </h2>
-        <h2 class="year">Anno Accademico 2014/15</h2>
+        <h2 class="year"><?php
+            /* At the moment we do not have the information on the academic
+             * year inside the database,so we guess based on the deadline. */
+            $year = $proposal['modified']->year;
+            $month = $proposal['modified']->year;
+
+            if ($month <= 8)
+              $year = $year - 1;
+
+            echo "Anno Accademico " . $year . "/" . ($year + 1);
+        ?></h2>
     </div>
     <div class="data">
         <h3 class="curriculum">Curriculum: <?php echo $proposal['curriculum'][0]['name']; ?></h3>

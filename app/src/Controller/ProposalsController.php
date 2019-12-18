@@ -6,6 +6,7 @@ use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
+use App\Caps\Utils;
 
 class ProposalsController extends AppController {
 
@@ -87,7 +88,7 @@ class ProposalsController extends AppController {
         }
 
         $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
             ->firstOrFail();
 
         if (!$proposal) {
@@ -122,7 +123,9 @@ class ProposalsController extends AppController {
             $proposal = $owner['proposal'];
             $proposalId = $proposal['id'];
 
-            $proposal = $this->Proposals->findById($proposalId)->contain([ 'Curricula', 'Users' ])->firstOrFail();
+            $proposal = $this->Proposals->findById($proposalId)
+            	->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+							->firstOrFail();
 
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
@@ -130,15 +133,36 @@ class ProposalsController extends AppController {
             }
 
             if ($this->request->is('post')) {
-                $this->request->data['Proposal'] = $proposal;
-                $this->request->data['Proposal']['approved'] = false;
-                $this->request->data['Proposal']['submitted'] = true;
-                $this->request->data['Proposal']['frozen'] = false;
-                unset($this->Proposal->ChosenExam->validate['proposal_id']);
-                unset($this->Proposal->ChosenFreeChoiceExam->validate['proposal_id']);
-                if ($this->Proposal->saveAssociated($this->request->data)) {
+								$data = $this->request->data['data'];
+
+								$this->log('REQUEST_DATA: ' . var_export($this->request->data, TRUE));
+
+								$cur_id = $this->request->data['Curriculum'][0]['curriculum_id'];
+
+								if (array_key_exists('ChosenExam', $data))
+								    $patch_data['chosen_exams'] = $data['ChosenExam'];
+							  if (array_key_exists('ChosenFreeChoiceExam', $data))
+								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
+
+								$this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
+
+							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
+
+								$proposal['approved'] = false;
+								$proposal['submitted'] = true;
+								$proposal['frozen'] = false;
+								$proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
+
+								$this->log('PROPOSAL: ' . var_export($proposal, TRUE));
+								// return;
+
+                if ($this->Proposals->save($proposal)) {
                     return $this->redirect(array('action' => 'view', $proposalId));
                 }
+								else {
+									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
+		                return $this->redirect(array('action' => 'view', $proposalId));
+								}
             }
 
             $this->set('curricula', $this->Proposals->Curricula->find('list'));

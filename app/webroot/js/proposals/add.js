@@ -165,8 +165,8 @@ $(document).ready(function () {
                 var exam;
                 // XXX(jacquerie): I apologize.
                 for (var j = 0; j < exams.length; j++) {
-                    if (exams[j]["Exam"]["id"] == examId) {
-                        exam = exams[j]["Exam"];
+                    if (exams[j]["id"] == examId) {
+                        exam = exams[j];
                     }
                 }
 
@@ -199,7 +199,7 @@ $(document).ready(function () {
             var i = compulsoryExams.length + compulsoryGroups.length + freeChoiceExams.length + lastExamAdded;
             var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
             for (var j = 0; j < exams.length; j++) {
-                var exam = exams[j]["Exam"];
+                var exam = exams[j];
                 selectHTML += "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"] + "</option>";
             }
             selectHTML += "</select>";
@@ -210,8 +210,8 @@ $(document).ready(function () {
                 var exam;
                 // XXX(jacquerie): I apologize.
                 for (var j = 0; j < exams.length; j++) {
-                    if (exams[j]["Exam"]["id"] == examId) {
-                        exam = exams[j]["Exam"];
+                    if (exams[j]["id"] == examId) {
+                        exam = exams[j];
                     }
                 }
 
