@@ -22,7 +22,6 @@
         'name',
         array(
             'class' => 'caps-admin-curriculum-name',
-            'div' => false,
             'label' => false
         )
     );
@@ -89,7 +88,6 @@
         array(
             'controller' => 'compulsory_exams',
             'action' => 'add',
-            'div' => false
         )
     );
     $this->Form->setTemplates($myTemplates);
@@ -207,7 +205,7 @@
     echo $this->Form->control(
         'curriculum_id',
         array(
-            'default' => $curriculum['Curriculum']['id'],
+            'default' => $curriculum['id'],
             'type' => 'hidden'
         )
     );
