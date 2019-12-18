@@ -5,7 +5,7 @@
     echo $this->Form->create(
         'Curriculum',
         array(
-            'action' => 'add'
+            'action' => 'adminAdd'
         )
     );
     echo $this->Form->input(
@@ -14,5 +14,6 @@
             'label' => 'Nome'
         )
     );
-    echo $this->Form->end('Salva curriculum');
+    echo $this->Form->submit('Salva curriculum');
+    echo $this->Form->end();
 ?>

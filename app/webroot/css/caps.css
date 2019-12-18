@@ -257,12 +257,12 @@ table {
     width: 24%;
     display: inline-block;
     text-align: center;
-} 
+}
 
 .caps-admin-navigation ul li a {
     padding: 3% 33%;
     font-size: 110%;
-    background: #dcdcdc;  
+    background: #dcdcdc;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#dcdcdc));
     background-image: -webkit-linear-gradient(top, #fefefe, #dcdcdc);
     background-image: -moz-linear-gradient(top, #fefefe, #dcdcdc);
@@ -344,7 +344,7 @@ table {
     -moz-border-radius: 4px;
     border-radius: 4px;
     text-decoration: none;
-}   
+}
 
 .caps-admin-add ul li a:hover {
     background: #5BA150;
@@ -360,11 +360,11 @@ table {
 
 .caps-pagination {
     font-size: 24px;
-    text-align: center; 
+    text-align: center;
 }
 
 ul.caps-pagination > li {
-   list-style-type: none;   
+   list-style-type: none;
    display: inline;
    margin-right: 6px;
    margin-left: 6px;
@@ -432,7 +432,7 @@ hr.caps-admin-curriculum {
 }
 
 .caps-admin-exams-name {
-    width: 60%; 
+    width: 60%;
 }
 
 .caps-admin-exams-id,
@@ -443,5 +443,5 @@ hr.caps-admin-curriculum {
 }
 
 .caps-admin-exams-actions {
-    width: 20%; 
+    width: 20%;
 }

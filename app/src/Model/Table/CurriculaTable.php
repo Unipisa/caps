@@ -37,7 +37,7 @@ class CurriculaTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsToMany('Proposals', [
-            'foreignKey' => 'curricula_id',
+            'foreignKey' => 'curriculum_id',
             'targetForeignKey' => 'proposal_id',
             'joinTable' => 'curricula_proposals'
         ]);
@@ -62,7 +62,18 @@ class CurriculaTable extends Table
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name');
+            ->allowEmptyString('name')
+            ->add('name', 'custom', [
+                'rule' => function ($value, $context) {
+                    if (preg_match('/^(Laurea Triennale|Laurea Magistrale)/', $value)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                'message' => 'Un curriculum deve cominciare per "Laurea Triennale" o "Laurea Magistrale".'
+            ]);
 
         return $validator;
     }

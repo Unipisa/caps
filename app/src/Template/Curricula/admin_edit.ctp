@@ -1,8 +1,17 @@
 <?php echo $this->element('updating_navigation'); ?>
 
+<?php
+  $myTemplates = [
+    'inputContainer' => '{{content}}',
+    'submitContainer' => '<span class="submit">{{content}}</span>',
+    'hiddenBlock' => '<span style="display:none;">{{content}}</span>'
+  ];
+?>
+
 <h2>Modifica curriculum</h2>
 <?php
     echo $this->Form->create($curriculum);
+    $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
         'id',
         array(
@@ -79,14 +88,23 @@
         'CompulsoryExams',
         array(
             'controller' => 'compulsory_exams',
-            'action' => 'add'
+            'action' => 'add',
+            'div' => false
+        )
+    );
+    $this->Form->setTemplates($myTemplates);
+    echo $this->Form->control(
+        'position',
+        array(
+            // FIXME(jacquerie): Not properly setted.
+            'default' => 0,
+            'type' => 'hidden'
         )
     );
     echo $this->Form->control(
         'exam_id',
         array(
             'class' => 'caps-admin-curriculum-exam-name-choose',
-            'div' => false,
             'label' => false,
             'options' => $examsList
         )
@@ -102,23 +120,13 @@
         'year',
         array(
             'class' => 'caps-admin-curriculum-exam-year-choose',
-            'div' => false,
             'label' => false,
             'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->control(
-        'position',
-        array(
-            // FIXME(jacquerie): Not properly setted.
-            'default' => 0,
-            'type' => 'hidden'
-        )
-    );
     echo $this->Form->submit('Aggiungi esame',
         array(
-            'class' => 'caps-admin-curriculum-exam-submit',
-            'div' => false
+            'class' => 'caps-admin-curriculum-exam-submit'
         )
     );
     echo $this->Form->end();
@@ -179,11 +187,19 @@
             'action' => 'add'
         )
     );
+    $this->Form->setTemplates($myTemplates);
+    echo $this->Form->control(
+        'position',
+        array(
+            // FIXME(jacquerie): Not properly setted.
+            'default' => 0,
+            'type' => 'hidden'
+        )
+    );
     echo $this->Form->control(
         'group_id',
         array(
             'class' => 'caps-admin-curriculum-group-name-choose',
-            'div' => false,
             'label' => false,
             'options' => $groupsList
         )
@@ -199,23 +215,13 @@
         'year',
         array(
             'class' => 'caps-admin-curriculum-group-year-choose',
-            'div' => false,
             'label' => false,
             'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->control(
-        'position',
-        array(
-            // FIXME(jacquerie): Not properly setted.
-            'default' => 0,
-            'type' => 'hidden'
-        )
-    );
     echo $this->Form->submit('Aggiungi gruppo',
         array(
-            'class' => 'caps-admin-curriculum-group-submit',
-            'div' => false
+            'class' => 'caps-admin-curriculum-group-submit'
         )
     );
     echo $this->Form->end();
@@ -265,6 +271,22 @@
             'action' => 'add'
         )
     );
+    $this->Form->setTemplates($myTemplates);
+    echo $this->Form->control(
+        'position',
+        array(
+            // FIXME(jacquerie): Not properly setted.
+            'default' => 0,
+            'type' => 'hidden',
+        )
+    );
+    echo $this->Form->control(
+        'curriculum_id',
+        array(
+            'default' => $curriculum['id'],
+            'type' => 'hidden',
+        )
+    );
     // XXX(jacquerie): Ignored by the receiving controller.
     echo $this->Form->control(
         'name',
@@ -272,38 +294,20 @@
             'class' => 'caps-admin-curriculum-exam-name-choose',
             'default' => 'Esame a scelta libera',
             'disabled' => true,
-            'div' => false,
             'label' => false
-        )
-    );
-    echo $this->Form->control(
-        'curriculum_id',
-        array(
-            'default' => $curriculum['id'],
-            'type' => 'hidden'
         )
     );
     echo $this->Form->control(
         'year',
         array(
             'class' => 'caps-admin-curriculum-exam-year-choose',
-            'div' => false,
             'label' => false,
             'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
         )
     );
-    echo $this->Form->control(
-        'position',
-        array(
-            // FIXME(jacquerie): Not properly setted.
-            'default' => 0,
-            'type' => 'hidden'
-        )
-    );
     echo $this->Form->submit('Aggiungi esame',
         array(
-            'class' => 'caps-admin-curriculum-exam-submit',
-            'div' => false
+            'class' => 'caps-admin-curriculum-exam-submit'
         )
     );
     echo $this->Form->end();

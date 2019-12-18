@@ -29,7 +29,7 @@
                         echo $this->Form->postLink(
                             __('Cancella'),
                             array(
-                                'action' => 'delete',
+                                'action' => 'admin_delete',
                                 $curriculum['id']
                             ),
                             array(

@@ -67,10 +67,10 @@ class CurriculaController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $newcurriculum = $this->Curriculum->newEntity();
-            $newcurriculum = $this->Curriculum->patchEntity($newcurriculum, $this->request->data);
+            $newcurriculum = $this->Curricula->newEntity();
+            $newcurriculum = $this->Curricula->patchEntity($newcurriculum, $this->request->data);
             if ($this->Curricula->save($newcurriculum)) {
-                $this->Flash->sucess(__('Curriculum creato con successo.'));
+                $this->Flash->success(__('Curriculum creato con successo.'));
                 return $this->redirect(
                     array(
                         'action' => 'admin_index'
@@ -78,7 +78,15 @@ class CurriculaController extends AppController {
                 );
             }
 
-            $this->Flash->error(__('Errore: curriculum non creato.'));
+            $error_msg = "";
+            $errs = $newcurriculum->errors();
+            foreach ($errs as $field) {
+                foreach ($field as $err) {
+                    $error_msg = $error_msg . $err . "\n";
+                }
+            }
+
+            $this->Flash->error(__('Errore: ') . $error_msg);
         }
     }
 
@@ -146,7 +154,8 @@ class CurriculaController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $curriculum = $this->Curriculum->findById($id);
+        $curriculum = $this->Curricula->findById($id)->firstOrFail();
+
         if (!$curriculum) {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
