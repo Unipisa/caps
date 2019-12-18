@@ -51,7 +51,7 @@ class CurriculaController extends AppController {
         $curriculum = $this->Curricula->findById($id)
             ->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams' ])
             ->firstOrFail();
-            
+
         if (!$curriculum) {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
@@ -102,7 +102,7 @@ class CurriculaController extends AppController {
 
         if ($this->request->is(array('post', 'put'))) {
             $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->data);
-            if ($this->Curriculum->save($curriculum)) {
+            if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success(__('Curriculum aggiornato con successo.'));
                 return $this->redirect(array('action' => 'admin_index'));
             }
