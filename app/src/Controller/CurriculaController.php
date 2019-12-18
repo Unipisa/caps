@@ -48,11 +48,14 @@ class CurriculaController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $curriculum = $this->Curricula->findById($id)->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams' ])->firstOrFail();
+        $curriculum = $this->Curricula->findById($id)
+            ->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams' ])
+            ->firstOrFail();
+            
         if (!$curriculum) {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
-        unset($curriculum['Proposal']);
+
         $this->set('curriculum', $curriculum);
         $this->set('_serialize', 'curriculum');
     }
