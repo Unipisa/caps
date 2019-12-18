@@ -304,13 +304,13 @@ return [
          */
         'test' => [
             'className' => Connection::class,
-            'driver' => Mysql::class,
+            'driver' => Sqlite::class,
             'persistent' => false,
             'host' => 'localhost',
             //'port' => 'non_standard_port_number',
             'username' => 'my_app',
             'password' => 'secret',
-            'database' => 'test_myapp',
+            'database' => 'test_caps.sqlite',
             //'encoding' => 'utf8mb4',
             'timezone' => 'UTC',
             'cacheMetadata' => true,
