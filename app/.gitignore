@@ -10,6 +10,7 @@
 ##########################
 /caps.sqlite
 /config/Migrations/schema-dump-default.lock
+unipi.ini
 
 # OS generated files #
 ######################

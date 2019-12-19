@@ -11,16 +11,21 @@ cd app
 composer install
 ```
 
-## Sviluppo
+## Configurazione
 ```
 cd app
 ln -s config/app.default.php config/app.php # Configurazione locale
-ln -s unipi.ini unipi.default.ini # In alternative, aggiungere degli utenti di prova a scelta, 
-                                  # oppure configurare LDAP in modo opportuno. 
+ln -s unipi.default.ini unipi.ini # In alternativa, aggiungere degli utenti di prova a scelta,
+                                  # oppure configurare LDAP in modo opportuno.
+```
+
+## Sviluppo
+```
+cd app
+LDAP in modo opportuno.
 bin/cake migrations migrate # Crea o aggiorna il database
 vendor/bin/phpunit # run unit tests
 bin/cake server # run a development server
-
 ```
 
 Per aggiungere nuove migrazioni (un esempio):
