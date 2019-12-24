@@ -39,7 +39,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
         }
         */
 
-        // Allow Carlo Petronio and Matteo Novaga to browse as a student.
+        // Allow admins to browse as a student.
         if (in_array($data['username'], $config['fakes']) && $data['password'] == $data['username']) {
             return array (
                 'ldap_dn' => '',
