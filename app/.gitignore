@@ -1,6 +1,5 @@
 # CakePHP specific files #
 ##########################
-/config/app.php
 /config/.env
 /logs/*
 /tmp/*
@@ -10,7 +9,6 @@
 ##########################
 /caps.sqlite
 /config/Migrations/schema-dump-default.lock
-unipi.ini
 
 # OS generated files #
 ######################

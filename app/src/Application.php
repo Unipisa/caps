@@ -34,6 +34,23 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
+    /**
+     * application version number
+     */
+    public function getVersion()
+    {
+        $MAJOR = 0;
+        $MINOR = 9;
+        $PATCH = 0;
+
+        $commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
+
+        $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
+        $commitDate->setTimezone(new \DateTimeZone('UTC'));
+
+        return sprintf('%s.%s.%s-dev.%s (%s)', $MAJOR, $MINOR, $PATCH, $commitHash, $commitDate->format('Y-m-d H:i:s'));
+    }
+
     public function getAuthenticationService(ServerRequestInterface $request, ResponseInterface $response)
     {
         $service = new AuthenticationService();

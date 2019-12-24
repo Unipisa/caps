@@ -49,7 +49,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
             <h1>
                 <?php
                     echo $this->Html->link(
-                        'Compilazione Assistita<br/>Piani di Studio<br/>Matematica',
+                        'Compilazione Assistita<br/>'
+												.'Piani di Studio<br/>'
+												.$Caps['cds'],
                         '/',
                         array(
                             'escape' => false
@@ -58,6 +60,11 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 ?>
             </h1>
         </div>
+	<?php if ($Caps['disclaimer']) {?>
+		<div class="disclaimer">
+		<?php echo ($Caps['disclaimer']) ?>
+		</div>
+	<?php } ?>
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
             <?php if (isset($owner)): ?>
@@ -76,7 +83,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                                 array(
                                       'class' => 'logout'
                                 )
-                            ); 
+                            );
                         ?>
                     </li>
                 </ul>
@@ -84,9 +91,11 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 			<?php echo $this->fetch('content'); ?>
 		</div>
         <div id="footer">
-            <p class="attribution">
+						<p class="attribution">
+								Caps version <?php echo $capsVersion ?>
+								--
                 Trash Can designed by <a href="http://thenounproject.com/rubensteeman">Ruben Steeman</a> from the <a href="http://www.thenounproject.com/">Noun Project</a>
-            </p>
+								--
             <?php
                 echo $this->Html->link(
                     $this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
@@ -94,11 +103,12 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     array('target' => '_blank', 'escape' => false)
                 );
             ?>
+					</p>
         </div>
 	</div>
-    <?php // $this->Js->writeBuffer(); 
+    <?php // $this->Js->writeBuffer();
     ?>
-    <?php // echo $this->element('sql_dump'); 
+    <?php // echo $this->element('sql_dump');
     ?>
 </body>
 </html>

@@ -16,7 +16,9 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Core\Configure;
 use App\Auth;
+use App\Application;
 
 /**
  * Application Controller
@@ -55,5 +57,8 @@ class AppController extends Controller
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
         //$this->loadComponent('Security');
+
+        $this->set('capsVersion', Application::getVersion());
+        $this->set('Caps', Configure::read('Caps'));
     }
 }
