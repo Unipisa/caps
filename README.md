@@ -7,20 +7,23 @@ Questo repository contiene CAPS, il portale utilizzato per sottomettere ed appro
 apt install composer
 apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql
 apt install sqlite3  # for development
+```
+
+## Configurazione
+```
 cd app
+ln -s app.default.php config/app.php # Configurazione locale
+ln -s unipi.default.ini unipi.ini # In alternativa, aggiungere degli utenti di prova a scelta,
+                                  # oppure configurare LDAP in modo opportuno.
 composer install
 ```
 
 ## Sviluppo
 ```
 cd app
-ln -s config/app.default.php config/app.php # Configurazione locale
-ln -s unipi.ini unipi.default.ini # In alternative, aggiungere degli utenti di prova a scelta, 
-                                  # oppure configurare LDAP in modo opportuno. 
 bin/cake migrations migrate # Crea o aggiorna il database
 vendor/bin/phpunit # run unit tests
 bin/cake server # run a development server
-
 ```
 
 Per aggiungere nuove migrazioni (un esempio):

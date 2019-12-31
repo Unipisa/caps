@@ -21,6 +21,14 @@ return [
     'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
+     * Configure CAPS application.
+     */
+    'Caps' => [
+        'cds' => 'Testing',
+        'disclaimer' => 'server di testing',
+    ],
+
+    /**
      * Configure basic information about the application.
      *
      * - namespace - The namespace to find app classes under.

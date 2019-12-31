@@ -36,6 +36,12 @@ table {
     background-position: 0 0, right bottom;
 }
 
+div .disclaimer {
+    background-color: yellow;
+    color: black;
+    padding: 1em;
+}
+
 #proposalForm h3 {
     float: left;
 }
