@@ -95,7 +95,8 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']->name != $user['name']) {
+        if ($proposal['user']->username != $user['user']) {
+					return;
             throw new ForbiddenException(__(''));
         }
 
