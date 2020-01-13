@@ -30,3 +30,22 @@ Per aggiungere nuove migrazioni (un esempio):
 ```
 bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
 ```
+
+## Inoltro dell'LDAP in locale
+
+Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''pagine.dm.unipi.it''')
+in locale, va inoltrata la porta tramite SSH:
+```
+ssh -L 1636:idm2.unipi.it:636 utente@pagine.dm.unipi.it
+```
+e poi va modificato il file '''unipi.ini''' per puntare all'LDAP locale, ad esempio:
+```
+; URI del server LDAP da interrogare
+ldap_server_uri = ldaps://127.0.0.1:1636/
+
+; Base DN dove cercare gli studenti
+students_base_dn = "dc=studenti,ou=people,dc=unipi,dc=it"
+
+; Base DN dove cercare i docenti
+admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
+```
