@@ -87,7 +87,7 @@ class UsersController extends AppController {
 
                 throw new NotFoundException();
             } else {
-                $this->Session->setFlash(__('Username o password non corretti.'));
+                $this->Flash->error(__('Username o password non corretti.'));
             }
         }
     }
@@ -112,14 +112,14 @@ class UsersController extends AppController {
 
                 throw new NotFoundException();
             } else {
-                $this->Session->setFlash(__('Username o password non corretti.'));
+                $this->Flash->error(__('Username o password non corretti.'));
             }
         }
     }
 
     /*
     public function login() {
-        $this->Session->setFlash(__('CAPS è attualmente in manutenzione.'));
+        $this->Flash->info(__('CAPS è attualmente in manutenzione.'));
     }
     */
 
