@@ -37,9 +37,10 @@ table {
 }
 
 div .disclaimer {
-    background-color: yellow;
+    background-color: #e0e080;
     color: black;
-    padding: 1em;
+    padding: .4em;
+		padding-left: 20px; /* Aligned with #content */
 }
 
 #proposalForm h3 {

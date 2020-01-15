@@ -25,7 +25,7 @@ return [
      */
     'Caps' => [
         'cds' => 'Testing',
-        'disclaimer' => 'server di testing',
+        'disclaimer' => 'Server di testing',
     ],
 
     /**
