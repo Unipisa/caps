@@ -96,7 +96,6 @@ class ProposalsController extends AppController {
         }
 
         if ($proposal['user']->username != $user['user']) {
-					return;
             throw new ForbiddenException(__(''));
         }
 
