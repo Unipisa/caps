@@ -25,7 +25,7 @@ return [
      */
     'Caps' => [
         'cds' => 'Testing',
-        'disclaimer' => 'Server di testing',
+        'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
     ],
 
     /**
