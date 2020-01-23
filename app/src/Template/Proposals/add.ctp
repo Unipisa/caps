@@ -11,6 +11,7 @@
     ));
 ?>
 <div id=proposalForm></div>
+<div id="proposalWarning"></div>
 <?php
 echo $this->Form->submit('Chiudi Piano di Studio');
 echo $this->Form->end();
