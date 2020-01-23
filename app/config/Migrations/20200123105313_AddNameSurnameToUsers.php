@@ -45,7 +45,7 @@ class AddNameSurnameToUsers extends AbstractMigration
                         $user->surname = $pieces[1];
                         break;
                     case 3:
-                        if ($pieces[1] == "De" || $pieces[1] == "Del") {
+                        if ($pieces[1] == "De" || $pieces[1] == "Del" || $pieces[1] == "Di") {
                             $user->givenname = $pieces[0];
                             $user->surname = $pieces[1] . " " . $pieces[2];
                         }
