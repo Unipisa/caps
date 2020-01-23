@@ -1,8 +1,6 @@
 <?php
-namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Authentication\IdentityInterface;
 
 /**
  * User Entity
@@ -14,7 +12,7 @@ use Authentication\IdentityInterface;
  *
  * @property \App\Model\Entity\Proposal[] $proposals
  */
-class User extends Entity implements IdentityInterface
+class User extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().

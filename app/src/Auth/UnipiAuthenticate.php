@@ -10,6 +10,20 @@ use Cake\Http\ServerRequest;
 
 class UnipiAuthenticate extends BaseAuthenticate {
 
+    private $auth_config  = [
+    	'fields' => [
+        	'username' => 'username',
+	        'password' => 'password'
+	    ],
+	    'userModel' => 'Users',
+	    'contain' => null,
+	    'passwordHasher' => 'Default'
+    ];
+
+    public function __construct() {
+        $this->setConfig($this->auth_config);
+    }
+
     public function getConfig($key = NULL, $default = NULL) {
         $config = parse_ini_file (APP . DS . ".." . DS . "unipi.ini");
         return $config;
@@ -17,7 +31,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
 
     public function authenticate(ServerRequest $request, Response $response) {
         $config = $this->getConfig();
-        $data = $request->data;
+        $data = $request->getData();
 
         // Allow admins to browse as a student.
         if (in_array($data['username'], $config['fakes']) && $data['password'] == $data['username']) {
