@@ -66,6 +66,9 @@ class AddNameSurnameToUsers extends AbstractMigration
 
                 echo "Updating " . $user->givenname . " / " . $user->surname . "\n";
 
+                // We need atomic false because the migration is already incapsulated inside
+                // a transaction, and if we let atomic->true (the default behavior), then
+                // this transaction will be closed after calling save(), connfusing Phinx. 
                 $tbl->save($user, ['atomic' => false]);
             }
         }
