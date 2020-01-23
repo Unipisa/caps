@@ -5,7 +5,7 @@ Questo repository contiene CAPS, il portale utilizzato per sottomettere ed appro
 ## Installazione
 ```
 apt install composer
-apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql
+apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip
 apt install sqlite3  # for development
 ```
 
