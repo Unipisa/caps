@@ -37,7 +37,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     /**
      * application version number
      */
-    public function getVersion()
+    public static function getVersion()
     {
         $MAJOR = 0;
         $MINOR = 9;
