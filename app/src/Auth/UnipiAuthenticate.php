@@ -91,6 +91,8 @@ class UnipiAuthenticate extends BaseAuthenticate {
             return array (
                 'ldap_dn' => $m['dn'],
                 'user' => $data['username'],
+				'givenname' => $m['givenname'][0],
+				'surname' => $m['sn'][0],
                 'name' => $m['cn'][0],
                 'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
                 'role' => $role,

@@ -27,7 +27,9 @@ class User extends Entity
         'username' => true,
         'name' => true,
         'number' => true,
-        'proposal' => true
+        'proposal' => true,
+        'givenname' => true,
+        'surname' => true
     ];
 
     public function getIdentifier()

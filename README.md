@@ -26,6 +26,14 @@ vendor/bin/phpunit # run unit tests
 bin/cake server # run a development server
 ```
 
+Per importare un dump vecchio del database è necessario prima migrare ad una versione
+compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
+```
+bin/cake migrations migrate -t 20191217155946
+sqlite3 caps.sqlite < dump.sqli
+bin/cake migrations migrate
+```
+
 Per aggiungere nuove migrazioni (un esempio):
 ```
 bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime

@@ -23,7 +23,7 @@ class ProposalsController extends AppController {
         return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     private function todo()
@@ -34,7 +34,7 @@ class ProposalsController extends AppController {
                 'approved' => false
             ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     private function frozen()
@@ -42,7 +42,7 @@ class ProposalsController extends AppController {
         return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.frozen' => true ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     public function beforeFilter ($event) {
