@@ -70,7 +70,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
             <?php if (isset($owner)): ?>
                 <ul class='status'>
                     <li>
-                        <?php echo $owner['User']['name']; ?>
+                        <?php echo $owner['name']; ?>
                     </li>
                     <li>
                         <?php

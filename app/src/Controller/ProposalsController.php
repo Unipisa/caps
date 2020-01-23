@@ -95,7 +95,10 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']->username != $user['user']) {
+				$this->log(var_export($proposal['user']['username'], TRUE));
+				$this->log(var_export($user['user'], TRUE));
+
+        if ($proposal['user']['username'] != $user['user']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -109,27 +112,41 @@ class ProposalsController extends AppController {
         $this->set('exams', $exams);
     }
 
-    public function add () {
+    public function add ($proposal_id = null) {
 	    $user = $this->Auth->user();
-
-        $username = $user['user'];
+      $username = $user['user'];
 
         // Find the user in the database matching the one logged in
         $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
             ->where([ 'Users.username' => $username ])
             ->firstOrFail();
 
+				if ($proposal_id != null) {
+					$proposal = $this->Proposals->find()->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+						->where([ 'id' => $proposal_id ])
+						->firstOrFail();
+
+					// Check if the user is the right owner
+					if ($proposal['username'] != $user['user']) {
+						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
+					}
+				}
+				else {
+					$proposal = $this->Proposals->newEntity();
+					$proposal->user = $owner;
+				}
+
         if ($owner) {
-            $proposal = $owner['proposal'];
-            $proposalId = $proposal['id'];
+            // $proposal = $owner['proposal'];
+            /* $proposalId = $proposal['id'];
 
             $proposal = $this->Proposals->findById($proposalId)
             	->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-							->firstOrFail();
+							->firstOrFail(); */
 
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
-                return $this->redirect(array('action' => 'view', $proposalId));
+                return $this->redirect(array('action' => 'view', $proposal['id']));
             }
 
             if ($this->request->is('post')) {
@@ -157,11 +174,11 @@ class ProposalsController extends AppController {
 								// return;
 
                 if ($this->Proposals->save($proposal)) {
-                    return $this->redirect(array('action' => 'view', $proposalId));
+                    return $this->redirect(array('action' => 'view', $proposal['id']));
                 }
 								else {
 									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
-		                return $this->redirect(array('action' => 'view', $proposalId));
+		                return $this->redirect(array('action' => 'view', $proposal['id']));
 								}
             }
 
