@@ -135,7 +135,7 @@ class ProposalsController extends AppController {
             if ($this->request->is('post')) {
 								$data = $this->request->getData()['data'];
 
-								$this->log('REQUEST_DATA: ' . var_export($this->request->getData(), TRUE));
+								// $this->log('REQUEST_DATA: ' . var_export($this->request->getData(), TRUE));
 
 								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
@@ -144,7 +144,7 @@ class ProposalsController extends AppController {
 							  if (array_key_exists('ChosenFreeChoiceExam', $data))
 								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-								$this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
+								// $this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
 
 							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
