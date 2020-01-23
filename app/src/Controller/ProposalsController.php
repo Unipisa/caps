@@ -133,11 +133,11 @@ class ProposalsController extends AppController {
             }
 
             if ($this->request->is('post')) {
-								$data = $this->request->data['data'];
+								$data = $this->request->getData()['data'];
 
-								$this->log('REQUEST_DATA: ' . var_export($this->request->data, TRUE));
+								$this->log('REQUEST_DATA: ' . var_export($this->request->getData(), TRUE));
 
-								$cur_id = $this->request->data['Curriculum'][0]['curriculum_id'];
+								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
 								if (array_key_exists('ChosenExam', $data))
 								    $patch_data['chosen_exams'] = $data['ChosenExam'];

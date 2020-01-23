@@ -69,7 +69,7 @@ class CurriculaController extends AppController {
 
         if ($this->request->is('post')) {
             $newcurriculum = $this->Curricula->newEntity();
-            $newcurriculum = $this->Curricula->patchEntity($newcurriculum, $this->request->data);
+            $newcurriculum = $this->Curricula->patchEntity($newcurriculum, $this->request->getData());
             if ($this->Curricula->save($newcurriculum)) {
                 $this->Flash->success(__('Curriculum creato con successo.'));
                 return $this->redirect(
@@ -102,7 +102,7 @@ class CurriculaController extends AppController {
         }
 
         if ($this->request->is(array('post', 'put'))) {
-            $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->data);
+            $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->getData());
             if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success(__('Curriculum aggiornato con successo.'));
                 return $this->redirect(array('action' => 'admin_index'));
@@ -132,8 +132,9 @@ class CurriculaController extends AppController {
         );
         $this->set('groupsList', $groups_table->find('list'));
 
-        if (!$this->request->data) {
-            $this->request->data = $curriculum;
+        if (! $this->request->getData('curriculum')) {
+            $this->set(compact('curriculum'));
+            // $this->request->data = $curriculum;
         }
     }
 

@@ -23,7 +23,7 @@ class CompulsoryExamsController extends AppController {
 
         if ($this->request->is(array('post', 'put'))) {
             $newexam = $this->CompulsoryExams->newEntity();
-            $newexam = $this->CompulsoryExams->patchEntity($newexam, $this->request->data);
+            $newexam = $this->CompulsoryExams->patchEntity($newexam, $this->request->getData());
 
             if ($this->CompulsoryExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
