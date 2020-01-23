@@ -9,7 +9,7 @@
             /* At the moment we do not have the information on the academic
              * year inside the database,so we guess based on the deadline. */
             $year = $proposal['modified']->year;
-            $month = $proposal['modified']->year;
+            $month = $proposal['modified']->month;
 
             if ($month <= 8)
               $year = $year - 1;
