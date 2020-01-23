@@ -97,7 +97,7 @@
                 'Rifiuta&nbsp;✗',
                 array(
                     'action' => 'admin_reject',
-                    $proposal['Proposal']['id']
+                    $proposal['id']
                 ),
                 array(
                     'class' => 'reject',
