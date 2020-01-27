@@ -45,7 +45,6 @@ class ExamsController extends AppController {
 
         $exams = $this->Paginator->paginate($this->exams());
         $this->set('exams', $exams);
-        $this->set('owner', $user);
     }
 
     /**
@@ -81,7 +80,6 @@ class ExamsController extends AppController {
         }
 
         $this->set('groups', $this->Exams->Groups->find('list'));
-        $this->set('owner', $user);
     }
 
     public function adminEdit($id = null) {
@@ -113,8 +111,6 @@ class ExamsController extends AppController {
             $this->set('exam', $exam);
             $this->set('groups', $this->Exams->Groups->find('list'));
         }
-
-        $this->set('owner', $user);
     }
 
     public function adminDelete ($id = null) {

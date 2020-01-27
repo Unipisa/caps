@@ -58,7 +58,6 @@ class ProposalsController extends AppController {
 
         $this->set('proposalsTodo', $this->Paginator->paginate($this->todo()));
         $this->set('selected', 'todo');
-        $this->set('owner', $user);
     }
 
     public function adminDone () {
@@ -69,7 +68,6 @@ class ProposalsController extends AppController {
 
         $this->set('proposalsApproved', $this->Paginator->paginate($this->done()));
         $this->set('selected', 'done');
-        $this->set('owner', $user);
     }
 
     public function adminFrozen () {
@@ -80,7 +78,6 @@ class ProposalsController extends AppController {
 
         $this->set('proposalsFrozen', $this->Paginator->paginate($this->frozen()));
         $this->set('selected', 'frozen');
-        $this->set('owner', $user);
     }
 
     public function view ($id = null) {
@@ -216,7 +213,6 @@ class ProposalsController extends AppController {
 
         $this->set('proposal', $proposal);
         $this->set('exams', $exams);
-        $this->set('owner', $user);
     }
 
     public function adminApprove ($id = null) {

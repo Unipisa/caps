@@ -51,7 +51,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     echo $this->Html->link(
                         'Compilazione Assistita<br/>'
 												.'Piani di Studio<br/>'
-												.$Caps['cds'],
+												. isset($Caps) ? $Caps['cds'] : "",
                         '/',
                         array(
                             'escape' => false
@@ -62,7 +62,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         </div>
 	<?php if ($Caps['disclaimer']) {?>
 		<div class="disclaimer">
-		<?php echo ($Caps['disclaimer']) ?>
+		<?php echo isset($Caps) : $Caps['disclaimer']; ?>
 		</div>
 	<?php } ?>
 		<div id="content">
@@ -92,13 +92,13 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 		</div>
         <div id="footer">
 						<p class="attribution">
-								Caps version <?php echo $capsVersion ?>
+								Caps version <?php if (isset($capsVersion)) { echo $capsVersion; } ?>
 								--
                 Trash Can designed by <a href="http://thenounproject.com/rubensteeman">Ruben Steeman</a> from the <a href="http://www.thenounproject.com/">Noun Project</a>
 								--
             <?php
                 echo $this->Html->link(
-                    $this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
+                    $this->Html->image('cake.power.gif', array('alt' => isset($cakeDescription) ? $cakeDescription : "", 'border' => '0')),
                     'http://www.cakephp.org/',
                     array('target' => '_blank', 'escape' => false)
                 );
