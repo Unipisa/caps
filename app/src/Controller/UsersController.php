@@ -89,7 +89,16 @@ class UsersController extends AppController {
 			}
 			else {
 				if ($this->Auth->user()) {
-					return $this->redirect([ 'action' => 'index' ]);
+					$user = $this->Auth->user();
+					$this->log(var_export($user));
+
+					if ($user['admin']) {
+						return $this->redirect([ 'controller' => 'proposals',
+                                     'action' => 'admin_todo' ]);
+					}
+					else {
+						return $this->redirect([ 'action' => 'index' ]);
+					}
 				}
 			}
     }
