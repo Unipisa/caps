@@ -30,7 +30,7 @@ Per importare un dump vecchio del database è necessario prima migrare ad una ve
 compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
 ```
 bin/cake migrations migrate -t 20191217155946
-sqlite3 caps.sqlite < dump.sqli
+sqlite3 caps.sqlite < dump.sql
 bin/cake migrations migrate
 ```
 
