@@ -32,6 +32,8 @@ class CompulsoryGroupsController extends AppController {
                 );
             }
         }
+
+        $this->set('owner', $user);
     }
 
     public function adminDelete ($id = null) {

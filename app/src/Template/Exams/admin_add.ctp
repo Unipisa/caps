@@ -5,39 +5,40 @@
     echo $this->Form->create(
         'Exam',
         array(
-            'action' => 'add'
+            'action' => 'admin_add'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'name',
         array(
             'label' => 'Nome'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'code',
         array(
             'label' => 'Codice'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'sector',
         array(
             'label' => 'Settore'
         )
     );
-    echo $this->Form->input(
+    echo $this->Form->control(
         'credits',
         array(
             'label' => 'Crediti',
             'type' => 'number'
         )
     );
-    echo $this->Form->input(
-        'Group',
+    echo $this->Form->control(
+        'groups._ids',
         array(
             'label' => 'Gruppi'
         )
     );
-    echo $this->Form->end('Salva esame');
+    echo $this->Form->submit('Salva esame');
+    echo $this->Form->end();
 ?>

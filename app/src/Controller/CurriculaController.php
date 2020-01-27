@@ -39,6 +39,7 @@ class CurriculaController extends AppController {
 
         $curricula = $this->Curricula->find('all');
         $this->set('curricula', $curricula);
+        $this->set('owner', $user);
     }
 
     /**
@@ -81,6 +82,8 @@ class CurriculaController extends AppController {
 
             $this->Flash->error(Utils::error_to_string($newcurriculum->errors()));
         }
+
+        $this->set('owner', $user);
     }
 
     public function adminEdit ($id = null) {
@@ -119,6 +122,7 @@ class CurriculaController extends AppController {
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
         $this->set('groups', $groups);
+        $this->set('owner', $user);
         $this->set(
             'examsList',
             $exams_table->find(
