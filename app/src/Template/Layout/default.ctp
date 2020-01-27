@@ -51,7 +51,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     echo $this->Html->link(
                         'Compilazione Assistita<br/>'
 												.'Piani di Studio<br/>'
-												. isset($Caps) ? $Caps['cds'] : "",
+												. $Caps['cds'],
                         '/',
                         array(
                             'escape' => false
@@ -62,7 +62,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         </div>
 	<?php if ($Caps['disclaimer']) {?>
 		<div class="disclaimer">
-		<?php echo isset($Caps) : $Caps['disclaimer']; ?>
+		<?php echo $Caps['disclaimer']; ?>
 		</div>
 	<?php } ?>
 		<div id="content">
