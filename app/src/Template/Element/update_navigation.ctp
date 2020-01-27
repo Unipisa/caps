@@ -1,8 +1,8 @@
 <nav class="caps-admin-navigation">
     <ul>
         <li <?php
-                if ($this->request->params['controller'] == 'curricula' &&
-                    $this->request->params['action'] == 'admin_index')
+                if ($this->request->getParam('controller') == 'curricula' &&
+                    $this->request->getParam('action') == 'admin_index')
                     echo 'class="selected"'
             ?>>
             <?php
@@ -16,8 +16,8 @@
             ?>
         </li>
         <li <?php
-                if ($this->request->params['controller'] == 'groups' &&
-                    $this->request->params['action'] == 'admin_index')
+                if ($this->request->getParam('controller') == 'groups' &&
+                    $this->request->getParam('action') == 'admin_index')
                     echo 'class="selected"'
             ?>>
             <?php
@@ -31,8 +31,8 @@
             ?>
         </li>
         <li <?php
-                if ($this->request->params['controller'] == 'exams' &&
-                    $this->request->params['action'] == 'admin_index')
+                if ($this->request->getParam('controller') == 'exams' &&
+                    $this->request->getParam('action') == 'admin_index')
                     echo 'class="selected"'
             ?>>
             <?php
