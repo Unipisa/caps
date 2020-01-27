@@ -14,17 +14,15 @@ class CreateExamsGroups extends AbstractMigration
     {
         $table = $this->table('exams_groups');
         $table->addColumn('exam_id', 'integer', [
-            'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
         $table->addColumn('group_id', 'integer', [
-            'default' => null,
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addForeignKey('exam_id', 'exams', 'id');
-        $table->addForeignKey('group_id', 'group', 'id');
         $table->create();
+        $table->addForeignKey('exam_id',  'exams', 'id', [ 'delete' => 'CASCADE' ]);
+        $table->addForeignKey('group_id', 'group', 'id', [ 'delete' => 'CASCADE' ]);
     }
 }

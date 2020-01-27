@@ -33,8 +33,8 @@ class CreateCompulsoryExams extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
+        $table->create();
         $table->addForeignKey('exam_id', 'exam', 'id');
         $table->addForeignKey('curriculum_id', 'curricula', 'id');
-        $table->create();
     }
 }

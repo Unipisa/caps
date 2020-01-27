@@ -26,7 +26,7 @@ class CreateUsers extends AbstractMigration
         $table->addColumn('number', 'string', [
             'default' => null,
             'limit' => 255,
-            'null' => false,
+            'null' => true,
         ]);
         $table->create();
     }

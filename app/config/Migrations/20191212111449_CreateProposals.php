@@ -15,15 +15,15 @@ class CreateProposals extends AbstractMigration
         $table = $this->table('proposals');
         $table->addColumn('approved', 'boolean', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('submitted', 'boolean', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('frozen', 'boolean', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('user_id', 'integer', [
             'default' => null,
@@ -32,7 +32,7 @@ class CreateProposals extends AbstractMigration
         ]);
         $table->addColumn('modified', 'datetime', [
             'default' => null,
-            'null' => false,
+            'null' => null,
         ]);
         $table->addForeignKey('user_id', 'users', 'id');
         $table->create();
