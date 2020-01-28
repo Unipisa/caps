@@ -37,9 +37,10 @@ table {
 }
 
 div .disclaimer {
-    background-color: yellow;
+    background-color: #e0e080;
     color: black;
-    padding: 1em;
+    padding: .4em;
+		padding-left: 20px; /* Aligned with #content */
 }
 
 #proposalForm h3 {
@@ -114,6 +115,17 @@ div .disclaimer {
 
 .creditsError {
     color: rgb(238, 51, 34);
+}
+
+.creditsWarning {
+	  color: rgb(255, 204, 0);
+}
+
+#proposalWarning {
+	padding: 10px;
+	background-color: rgb(255, 235, 153);
+	font-size: 1.2em;
+	display: none;
 }
 
 .planActions {

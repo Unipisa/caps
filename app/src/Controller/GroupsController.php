@@ -38,6 +38,7 @@ class GroupsController extends AppController {
 
         $groups = $this->Groups->find('all');
         $this->set('groups', $groups);
+        $this->set('owner', $user);
     }
 
     public function view ($id = null) {
@@ -82,6 +83,8 @@ class GroupsController extends AppController {
                 )
             )
         );
+
+        $this->set('owner', $user);
     }
 
     public function adminEdit($id = null) {

@@ -104,7 +104,7 @@ class ExamsController extends AppController {
                 $this->Flash->success(__('Esame aggiornato con successo.'));
                 return $this->redirect(array('action' => 'index'));
             }
-            $this->Session->setFlash(__('Errore: esame non aggiornato.'));
+            $this->Flash->error(__('Errore: esame non aggiornato.'));
         }
 
         if (! $this->request->data) {

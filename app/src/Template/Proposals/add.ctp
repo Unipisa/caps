@@ -3,7 +3,6 @@
 <h2>Nuovo piano di studio</h2>
 
 <?php echo $this->Form->create('Proposal'); ?>
-<?php echo $this->Form->input('id', [ 'hidden' => 'true' ]); ?>
 <?php echo $this->Form->control('Curriculum.0.curriculum_id',
     array(
         'empty' => array('text" disabled="disabled" selected="selected' => 'Scegli un curriculum'),
@@ -12,6 +11,7 @@
     ));
 ?>
 <div id=proposalForm></div>
+<div id="proposalWarning"></div>
 <?php
 echo $this->Form->submit('Chiudi Piano di Studio');
 echo $this->Form->end();

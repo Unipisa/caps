@@ -8,6 +8,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use App\Controller\Event;
 use App\Model\Entity\User;
+use Cake\ORM\TableRegistry;
 
 class UsersController extends AppController {
 
@@ -15,81 +16,91 @@ class UsersController extends AppController {
         parent::beforeFilter($event);
     }
 
+		public function index() {
+			$this->Auth->deny();
+
+			$user = $this->Auth->user();
+
+			$owner = $this->Users->find()
+					->where([ 'username' => $user['user'] ])
+					->first();
+
+		  $proposals_table = TableRegistry::getTableLocator()->get('Proposals');
+			$proposals = $proposals_table->find()->contain([ 'Users', 'Curricula' ])
+				->where([ 'username' => $user['user'] ])
+				->order('Proposals.modified', 'desc');
+
+			$this->set('user', $owner);
+			$this->set('owner', $owner);
+			$this->set('proposals', $proposals);
+		}
+
     public function login() {
         if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
+          $user = $this->Auth->identify();
+					$this->log('ok' . var_export($user, TRUE));
+          if (! $user) {
+						$this->Flash->error('Username o password non corretti');
+					}
+					else {
+            $this->Auth->setUser($user);
+
+						// Try to find the user in the database
+						$owner = $this->Users->find()
+							->where([ 'username' => $user['user'] ])
+							->first();
+
+						$this->log(var_export($owner, TRUE));
+
+						if (! $owner) {
+							// ... otherwise create a new user
+			        $newuser = $this->Users->newEntity();
+			        $newuser = $this->Users->patchEntity($newuser, [
+		                'name' => ucwords(strtolower($user['name'])),
+		                'username' => $user['user'],
+		                'number' => $user['number'],
+										'surname' => $user['surname'],
+										'givenname' => $user['givenname']
+			        ]);
+
+	            if ($this->Users->save($newuser)) {
+	              $this->log('Added user ' . $user['name'] . ' to the database');
+							}
+
+							$owner = $newuser;
+						}
 
 	        	// If the user is an admin, show the administration panel...
-                if ($user['admin']) {
-                    return $this->redirect(
-                        $this->Auth->redirectUrl(
-                            array(
-                                'admin' => true,
-                                'controller' => 'proposals',
-                                'action' => 'admin_todo'
-                            )
+            if ($user['admin']) {
+              return $this->redirect(
+                    $this->Auth->redirectUrl(
+                        array(
+                            'admin' => true,
+                            'controller' => 'proposals',
+                            'action' => 'admin_todo'
                         )
-                    );
-                }
-
-		        // ... if they have a submitted plan, show that...
-                $username = $user['user'];
-                $owner = $this->Users->find()->contain([ 'Proposals' ])
-                    ->where([ 'username' => $username ])
-                    ->first();
-
-                if ($owner) {
-                    $planId = $owner['proposal']['id'];
-                } else {
-                    $planId = false;
-                }
-
-                if ($planId && $owner['proposal']['submitted']) {
-                    return $this->redirect($this->Auth->redirectUrl(array('controller' => 'proposals', 'action' => 'view', $planId)));
-                }
-
-                // ... if they still have to submit a plan, show a new form...
-                if ($planId) {
-                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'add' ]));
-                }
-
-		        // ... otherwise create a new user and a new plan.
-		        $newuser = $this->Users->newEntity();
-		        $newuser = $this->Users->patchEntity($newuser, [
-	                'name' => ucwords(strtolower($user['name'])),
-	                'username' => $user['user'],
-	                'number' => $user['number']
-		        ]);
-
-		        $this->log( var_export($newuser, TRUE) );
-
-                if ($this->Users->save($newuser)) {
-                    $this->log('Added user ' . $user['name'] . ' to the database');
-
-                    // Create an empty proposal for this student -- this will be probably dropped
-                    // as we migrate to having more than 1 Proposal per user.
-                    $p = $this->Users->Proposals->newEntity();
-
-                    $p->id = $newuser->id;
-                    $p->user = $newuser;
-
-                    if (! $this->Users->Proposals->save($p)) {
-                        $this->log("Error saving user's proposal with ID = " . $p->id);
-                    }
-
-                    return $this->redirect($this->Auth->redirectUrl([ 'controller' => 'proposals', 'action' => 'add' ]));
-                }
-                else {
-                    $this->log('Failed to add user: ' . $user['name'] . ' to the database');
-                }
-
-                throw new NotFoundException();
-            } else {
-                $this->Session->setFlash(__('Username o password non corretti.'));
+                    )
+                );
             }
-        }
+						else {
+							return $this->redirect($this->Auth->redirectUrl([ 'action' => 'index' ]));
+						}
+			   }
+			}
+			else {
+				if ($this->Auth->user()) {
+					$user = $this->Auth->user();
+					$this->log(var_export($user));
+
+					if ($user['admin']) {
+						return $this->redirect([ 'controller' => 'proposals',
+                                     'action' => 'admin_todo' ]);
+					}
+					else {
+						return $this->redirect([ 'action' => 'index' ]);
+					}
+				}
+			}
     }
 
     public function admin_login() {
@@ -112,14 +123,14 @@ class UsersController extends AppController {
 
                 throw new NotFoundException();
             } else {
-                $this->Session->setFlash(__('Username o password non corretti.'));
+                $this->Flash->error(__('Username o password non corretti.'));
             }
         }
     }
 
     /*
     public function login() {
-        $this->Session->setFlash(__('CAPS è attualmente in manutenzione.'));
+        $this->Flash->info(__('CAPS è attualmente in manutenzione.'));
     }
     */
 

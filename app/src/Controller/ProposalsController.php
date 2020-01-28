@@ -23,7 +23,7 @@ class ProposalsController extends AppController {
         return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     private function todo()
@@ -34,7 +34,7 @@ class ProposalsController extends AppController {
                 'approved' => false
             ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     private function frozen()
@@ -42,7 +42,7 @@ class ProposalsController extends AppController {
         return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
             ->where([ 'Proposals.frozen' => true ])
             ->limit(25)
-            ->order('Users.name', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
     }
 
     public function beforeFilter ($event) {
@@ -95,7 +95,10 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']->name != $user['name']) {
+				$this->log(var_export($proposal['user']['username'], TRUE));
+				$this->log(var_export($user['user'], TRUE));
+
+        if ($proposal['user']['username'] != $user['user']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -109,42 +112,56 @@ class ProposalsController extends AppController {
         $this->set('exams', $exams);
     }
 
-    public function add () {
+    public function add ($proposal_id = null) {
 	    $user = $this->Auth->user();
-
-        $username = $user['user'];
+      $username = $user['user'];
 
         // Find the user in the database matching the one logged in
         $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
             ->where([ 'Users.username' => $username ])
             ->firstOrFail();
 
+				if ($proposal_id != null) {
+					$proposal = $this->Proposals->find()->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+						->where([ 'id' => $proposal_id ])
+						->firstOrFail();
+
+					// Check if the user is the right owner
+					if ($proposal['username'] != $user['user']) {
+						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
+					}
+				}
+				else {
+					$proposal = $this->Proposals->newEntity();
+					$proposal->user = $owner;
+				}
+
         if ($owner) {
-            $proposal = $owner['proposal'];
-            $proposalId = $proposal['id'];
+            // $proposal = $owner['proposal'];
+            /* $proposalId = $proposal['id'];
 
             $proposal = $this->Proposals->findById($proposalId)
             	->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-							->firstOrFail();
+							->firstOrFail(); */
 
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
-                return $this->redirect(array('action' => 'view', $proposalId));
+                return $this->redirect(array('action' => 'view', $proposal['id']));
             }
 
             if ($this->request->is('post')) {
-								$data = $this->request->data['data'];
+								$data = $this->request->getData()['data'];
 
-								$this->log('REQUEST_DATA: ' . var_export($this->request->data, TRUE));
+								// $this->log('REQUEST_DATA: ' . var_export($this->request->getData(), TRUE));
 
-								$cur_id = $this->request->data['Curriculum'][0]['curriculum_id'];
+								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
 								if (array_key_exists('ChosenExam', $data))
 								    $patch_data['chosen_exams'] = $data['ChosenExam'];
 							  if (array_key_exists('ChosenFreeChoiceExam', $data))
 								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-								$this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
+								// $this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
 
 							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
@@ -157,11 +174,11 @@ class ProposalsController extends AppController {
 								// return;
 
                 if ($this->Proposals->save($proposal)) {
-                    return $this->redirect(array('action' => 'view', $proposalId));
+                    return $this->redirect(array('action' => 'view', $proposal['id']));
                 }
 								else {
 									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
-		                return $this->redirect(array('action' => 'view', $proposalId));
+		                return $this->redirect(array('action' => 'view', $proposal['id']));
 								}
             }
 

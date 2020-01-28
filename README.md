@@ -5,7 +5,7 @@ Questo repository contiene CAPS, il portale utilizzato per sottomettere ed appro
 ## Installazione
 ```
 apt install composer
-apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql
+apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap
 apt install sqlite3  # for development
 ```
 
@@ -26,7 +26,34 @@ vendor/bin/phpunit # run unit tests
 bin/cake server # run a development server
 ```
 
+Per importare un dump vecchio del database è necessario prima migrare ad una versione
+compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
+```
+bin/cake migrations migrate -t 20191217155946
+sqlite3 caps.sqlite < dump.sql
+bin/cake migrations migrate
+```
+
 Per aggiungere nuove migrazioni (un esempio):
 ```
 bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
+```
+
+## Inoltro dell'LDAP in locale
+
+Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''pagine.dm.unipi.it''')
+in locale, va inoltrata la porta tramite SSH:
+```
+ssh -L 1636:idm2.unipi.it:636 utente@pagine.dm.unipi.it
+```
+e poi va modificato il file '''unipi.ini''' per puntare all'LDAP locale, ad esempio:
+```
+; URI del server LDAP da interrogare
+ldap_server_uri = ldaps://127.0.0.1:1636/
+
+; Base DN dove cercare gli studenti
+students_base_dn = "dc=studenti,ou=people,dc=unipi,dc=it"
+
+; Base DN dove cercare i docenti
+admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
 ```

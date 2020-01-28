@@ -60,5 +60,6 @@ class AppController extends Controller
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('Caps', Configure::read('Caps'));
+        $this->set('owner', $this->Auth->user());
     }
 }

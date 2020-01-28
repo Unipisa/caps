@@ -10,6 +10,20 @@ use Cake\Http\ServerRequest;
 
 class UnipiAuthenticate extends BaseAuthenticate {
 
+    private $auth_config  = [
+    	'fields' => [
+        	'username' => 'username',
+	        'password' => 'password'
+	    ],
+	    'userModel' => 'Users',
+	    'contain' => null,
+	    'passwordHasher' => 'Default'
+    ];
+
+    public function __construct() {
+        $this->setConfig($this->auth_config);
+    }
+
     public function getConfig($key = NULL, $default = NULL) {
         $config = parse_ini_file (APP . DS . ".." . DS . "unipi.ini");
         return $config;
@@ -17,27 +31,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
 
     public function authenticate(ServerRequest $request, Response $response) {
         $config = $this->getConfig();
-        $data = $request->data;
-
-        /*
-        if ($user['username'] == 'admin') {
-            return array (
-                'ldap_dn' => '',
-                'user' => $user['username'],
-                'name' => 'Carlo Petronio',
-                'role' => 'professor',
-                'admin' => in_array($user['username'], $config['admins'])
-            );
-        } else {
-            return array (
-                'ldap_dn' => '',
-                'user' => $user['username'],
-                'name' => 'Jacopo Notarstefano',
-                'role' => 'student',
-                'admin' => in_array($user['username'], $config['admins'])
-            );
-        }
-        */
+        $data = $request->getData();
 
         // Allow admins to browse as a student.
         if (in_array($data['username'], $config['fakes']) && $data['password'] == $data['username']) {
@@ -47,7 +41,9 @@ class UnipiAuthenticate extends BaseAuthenticate {
                 'name' => 'Utente Dimostrativo',
                 'role' => 'student',
                 'number' => '000000',
-                'admin' => in_array($data['username'], $config['admins'])
+                'admin' => in_array($data['username'], $config['admins']),
+								'surname' => '',
+								'givenname' => ''
             );
         }
 
@@ -60,11 +56,26 @@ class UnipiAuthenticate extends BaseAuthenticate {
         ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 
         if ($ds) {
-            // Bind to the server using our superadmin powers
-            $r = ldap_bind($ds, $config['bind_dn'], $config['bind_pw']);
+            // Try first to authenticate as a professor
+            $role = 'professor';
+            $base_dn = $config['admins_base_dn'];
+            $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
 
-            if (!$r) {
-                return false;
+            $r = @ldap_bind($ds, $bind_dn, $data['password']);
+
+            if (! $r) {
+                $ds = ldap_connect($config['ldap_server_uri']);
+                ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+                // As a fallback, try to authenticate as a student
+                $base_dn = $config['students_base_dn'];
+                $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
+                $r = @ldap_bind($ds, $bind_dn, $data['password']);
+
+                $role = 'student';
+
+                if (! $r)
+                    return false;
             }
 
             // Search for the user in the tree
@@ -75,78 +86,21 @@ class UnipiAuthenticate extends BaseAuthenticate {
             }
 
             $matches = ldap_get_entries ($ds, $results);
-
-            // Check if the password matches
             $m = $matches[0];
-            $hash = $m['userpassword'][0];
-
-            if (! $this->check_password($data['password'], $hash)) {
-                return false;
-            }
-
-            // Determine the role
-            if (preg_match('/,dc=dm,ou=people,dc=unipi,dc=it/', $m['dn'])) {
-                $role = 'professor';
-            }
-            else {
-                $role = 'student';
-            }
 
             // If we got till here then the user can be logged in. Just make sure that we build up
             // an array of its properties so we can use them after now.
             return array (
                 'ldap_dn' => $m['dn'],
                 'user' => $data['username'],
+				'givenname' => $m['givenname'][0],
+				'surname' => $m['sn'][0],
                 'name' => $m['cn'][0],
-                'number' => $m['unipistudentematricola'][0],
+                'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
                 'role' => $role,
                 'admin' => in_array($data['username'], $config['admins'])
             );
         }
-
-        return false;
-    }
-
-    /**
-     * @brief Check the given password agains its (hopefully) hash.
-     */
-    private function check_password($password, $hash)
-    {
-        // No password, fail
-        if ($hash == '') {
-            return false;
-        }
-
-        // Plaintex password
-        if ($hash{0} != '{') {
-            if ($password == $hash)
-                return true;
-                return false;
-        }
-
-        if (substr($hash,0,7) == '{crypt}') {
-            if (crypt($password, substr($hash,7)) == substr($hash,7))
-                return true;
-            return false;
-        }
-        elseif (substr($hash,0,5) == '{MD5}') {
-            $encrypted_password = '{MD5}' . base64_encode(md5( $password,TRUE));
-        } elseif (substr($hash,0,6) == '{SHA1}') {
-            $encrypted_password = '{SHA}' . base64_encode(sha1( $password, TRUE ));
-        } elseif (substr($hash,0,5) == '{SHA}') {
-            $encrypted_password = '{SHA}' . base64_encode(sha1( $password, TRUE ));
-        } elseif (substr($hash,0,6) == '{SSHA}') {
-            $salt = substr(base64_decode(substr($hash,6)),20);
-            $encrypted_password = '{SSHA}' . base64_encode(sha1( $password.$salt, TRUE ). $salt);
-        }
-        else
-        {
-            // Unsupported hash :(
-            return false;
-        }
-
-        if ($hash == $encrypted_password)
-            return true;
 
         return false;
     }

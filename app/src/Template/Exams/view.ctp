@@ -9,10 +9,10 @@
         <th>Crediti</th>
     </tr>
     <tr>
-        <td><?php echo $exam['Exam']['id']; ?></td>
-        <td><?php echo $exam['Exam']['name']; ?></td>
-        <td><?php echo $exam['Exam']['code']; ?></td>
-        <td><?php echo $exam['Exam']['sector']; ?></td>
-        <td><?php echo $exam['Exam']['credits']; ?></td>
+        <td><?php echo $exam['id']; ?></td>
+        <td><?php echo $exam['name']; ?></td>
+        <td><?php echo $exam['code']; ?></td>
+        <td><?php echo $exam['sector']; ?></td>
+        <td><?php echo $exam['credits']; ?></td>
     </tr>
 </table>

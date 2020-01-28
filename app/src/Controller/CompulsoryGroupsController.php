@@ -23,7 +23,7 @@ class CompulsoryGroupsController extends AppController {
 
         if ($this->request->is(array('post', 'put'))) {
             $newgroup = $this->CompulsoryGroups->newEntity();
-            $newgroup = $this->CompulsoryGroups->patchEntity($newgroup, $this->request->data);
+            $newgroup = $this->CompulsoryGroups->patchEntity($newgroup, $this->request->getData());
 
             if ($this->CompulsoryGroups->save($newgroup)) {
                 $this->Flash->success(__('Gruppo aggiunto con successo.'));

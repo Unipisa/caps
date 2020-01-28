@@ -276,10 +276,24 @@ $(document).ready(function () {
             });
         });
 
-        if (result < 60 || result > 60) {
+        // Clean classes, so only one in creditsError or creditsWarning
+        // is set at any time.
+        $(this).removeClass("creditsError");
+        $(this).removeClass("creditsWarning");
+
+        $("#proposalWarning").hide();
+
+        if (result < 60) {
             $(this).addClass("creditsError");
-        } else {
-            $(this).removeClass("creditsError");
+        } else if (result > 60) {
+            $(this).addClass("creditsWarning");
+
+            $("#proposalWarning").html(
+                "<strong>Attenzione</strong>: il numero di crediti per anno è "
+                + "superiore a 60. È comunque possibile chiudere il piano "
+                + "di studi, ma si consiglia di ricontrollarlo attentamente "
+                + "prima di procedere.");
+            $("#proposalWarning").show();
         }
 
         $(this).html(result);

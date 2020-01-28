@@ -18,14 +18,14 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
+    'debug' => false, // filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure CAPS application.
      */
     'Caps' => [
         'cds' => 'Testing',
-        'disclaimer' => 'server di testing',
+        'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
     ],
 
     /**

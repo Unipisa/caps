@@ -36,7 +36,7 @@ class UsersTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasOne('Proposals', [
+        $this->hasMany('Proposals', [
             'foreignKey' => 'user_id'
         ]);
     }
