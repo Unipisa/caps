@@ -8,6 +8,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use App\Controller\Event;
 use App\Model\Entity\User;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 
 class UsersController extends AppController {
@@ -38,7 +39,6 @@ class UsersController extends AppController {
     public function login() {
         if ($this->request->is('post')) {
           $user = $this->Auth->identify();
-					$this->log('ok' . var_export($user, TRUE));
           if (! $user) {
 						$this->Flash->error('Username o password non corretti');
 					}
@@ -49,8 +49,6 @@ class UsersController extends AppController {
 						$owner = $this->Users->find()
 							->where([ 'username' => $user['user'] ])
 							->first();
-
-						$this->log(var_export($owner, TRUE));
 
 						if (! $owner) {
 							// ... otherwise create a new user
@@ -64,7 +62,11 @@ class UsersController extends AppController {
 			        ]);
 
 	            if ($this->Users->save($newuser)) {
-	              $this->log('Added user ' . $user['name'] . ' to the database');
+	              Log::write('debug', 'Added user ' . $user['name'] . ' to the database');
+							}
+							else {
+								Log::write('error',
+									'Error adding user ' . $user['name'] . ' to the database');
 							}
 
 							$owner = $newuser;
@@ -75,7 +77,6 @@ class UsersController extends AppController {
               return $this->redirect(
                     $this->Auth->redirectUrl(
                         array(
-                            'admin' => true,
                             'controller' => 'proposals',
                             'action' => 'admin_todo'
                         )
@@ -90,7 +91,6 @@ class UsersController extends AppController {
 			else {
 				if ($this->Auth->user()) {
 					$user = $this->Auth->user();
-					$this->log(var_export($user));
 
 					if ($user['admin']) {
 						return $this->redirect([ 'controller' => 'proposals',

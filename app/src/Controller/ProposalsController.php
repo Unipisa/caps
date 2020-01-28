@@ -95,9 +95,6 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-				$this->log(var_export($proposal['user']['username'], TRUE));
-				$this->log(var_export($user['user'], TRUE));
-
         if ($proposal['user']['username'] != $user['user']) {
             throw new ForbiddenException(__(''));
         }
@@ -152,8 +149,6 @@ class ProposalsController extends AppController {
             if ($this->request->is('post')) {
 								$data = $this->request->getData()['data'];
 
-								// $this->log('REQUEST_DATA: ' . var_export($this->request->getData(), TRUE));
-
 								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
 								if (array_key_exists('ChosenExam', $data))
@@ -161,17 +156,12 @@ class ProposalsController extends AppController {
 							  if (array_key_exists('ChosenFreeChoiceExam', $data))
 								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-								// $this->log('PATCH_DATA: ' . var_export($patch_data, TRUE));
-
 							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
 								$proposal['approved'] = false;
 								$proposal['submitted'] = true;
 								$proposal['frozen'] = false;
 								$proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
-
-								$this->log('PROPOSAL: ' . var_export($proposal, TRUE));
-								// return;
 
                 if ($this->Proposals->save($proposal)) {
                     return $this->redirect(array('action' => 'view', $proposal['id']));
