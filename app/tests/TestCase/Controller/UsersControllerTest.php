@@ -52,4 +52,33 @@ class UsersControllerTest extends IntegrationTestCase
         $this->assertResponseContains('Effettua il login');
         $this->assertResponseContains('<html>');
     }
+
+    /**
+     * testUsersPage method
+     *
+     * @return void
+     */
+    public function testUsersPage()
+    {
+        // test that page requires authentication
+        $this->get('/users');
+        $this->assertResponseCode(302);
+        $this->assertRedirectContains('?redirect=%2Fusers');
+
+        /* ancora non funziona!
+        // Set session data
+        $this->session([
+            'Auth' => [
+                'User' => [
+                    'id' => 1,
+                    'username' => 'testing',
+                    // other keys.
+                ]
+            ]
+        ]);
+        $this->get('/users');
+        $this->assertResponseOk();
+        */
+
+    }
 }
