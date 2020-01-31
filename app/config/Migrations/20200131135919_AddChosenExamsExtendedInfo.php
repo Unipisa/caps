@@ -19,12 +19,17 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
             'default' => null,
             'limit' => 11
         ]);
-
+        $table->addColumn('compulsory_exam_id', 'integer', [
+            'null' => true,
+            'default' => null,
+            'limit' => 11
+        ]);
         $table->addColumn('chosen_year', 'integer', [
             'null' => false,
             'limit' => 11
         ]);
         $table->addForeignKey('compulsory_group_id', 'compulsory_group', 'id');
+        $table->addForeignKey('compulsory_exam_id', 'compulsory_exam', 'id');
         $table->update();
 
         $table = $this->table('chosen_free_choice_exams');
@@ -47,7 +52,9 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
         $chosen_exams_tbl = TableRegistry::get('ChosenExams');
         $chosen_free_choice_exams_tbl = TableRegistry::get('ChosenFreeChoiceExams');
 
-        $proposals = $tbl->find()->contain([ 'ChosenExams', 'ChosenFreeChoiceExams', 'ChosenExams.Exams' ]);
+        $proposals = $tbl->find()
+            ->contain([ 'ChosenExams', 'ChosenFreeChoiceExams',
+                        'ChosenExams.Exams' ]);
 
         foreach ($proposals as $proposal) {
             $credits = 0;
