@@ -47,6 +47,41 @@
     Se desideri modificarlo manda una mail alla Segreteria Studenti.
 </div>
 
+<?php for ($year = 1; $year <= 3; $year++): ?>
+
+<?php
+  $this_year_exams = array_filter($proposal['chosen_exams'],
+    function ($e) use ($year) {
+        return $e['chosen_year'] == $year;
+    });
+
+  $this_year_free_choice_exams = array_filter($proposal['chosen_free_choice_exams'],
+    function ($e) use ($year) {
+        return $e['chosen_year'] == $year;
+    });
+
+    if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
+
+    <?php
+        echo "<h3>";
+        switch ($year) {
+            case 1:
+                echo "Primo anno";
+                break;
+            case 2:
+                echo "Secondo anno";
+                break;
+            case 3:
+                echo "Terzo anno";
+                break;
+            default:
+                echo "Anno " . $year;
+                break;
+        }
+        echo "</h3>";
+        $year_credits = 0;
+?>
+
 <table>
     <tr>
         <th>Codice</th>
@@ -54,15 +89,13 @@
         <th>Settore</th>
         <th>Crediti</th>
     </tr>
-<?php foreach ($proposal['chosen_exams'] as $chosen_exam): ?>
+<?php foreach ($this_year_exams as $chosen_exam): ?>
     <?php
-        foreach($exams as $exam) {
-            if ($exam['id'] == $chosen_exam['exam_id']) {
-                $code = $exam['code'];
-                $name = $exam['name'];
-                $sector = $exam['sector'];
-            }
-        }
+        $exam = $chosen_exam['exam'];
+        $code = $exam['code'];
+        $name = $exam['name'];
+        $sector = $exam['sector'];
+        $year_credits = $year_credits + $chosen_exam['credits'];
     ?>
     <tr>
         <td><?php echo $code ?></td>
@@ -72,16 +105,25 @@
     </tr>
 <?php endforeach; ?>
 <?php unset($chosen_exam); ?>
-<?php foreach ($proposal['chosen_free_choice_exams'] as $exam): ?>
+<?php foreach ($this_year_free_choice_exams as $exam): ?>
     <tr>
         <td></td>
         <td><?php echo $exam['name']; ?></td>
         <td></td>
         <td><?php echo $exam['credits']; ?></td>
+        <?php $year_credits = $year_credits + $exam['credits']; ?>
     </tr>
 <?php endforeach; ?>
 <?php unset($exam); ?>
+<tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><strong><?php echo $year_credits; ?></strong></td>
+</tr>
 </table>
+<?php endif; ?>
+<?php endfor; ?>
 
 <div class="bureaucracy">
     <div class="left">

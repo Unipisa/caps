@@ -47,6 +47,13 @@ div .disclaimer {
 	display: none;
 }
 
+.credit-count {
+	  flush: right;
+		font-size: 1.2em;
+		padding-top: 0;
+		padding-bottom: 45px;
+}
+
 #proposalForm h3 {
     float: left;
 }

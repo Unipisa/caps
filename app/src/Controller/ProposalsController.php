@@ -89,25 +89,18 @@ class ProposalsController extends AppController {
         }
 
         $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams' ])
             ->firstOrFail();
 
         if (!$proposal) {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']['username'] != $user['user']) {
+        if ($proposal['user']['username'] != $user['user'] && !$user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
-        $exams_table = TableRegistry::getTableLocator()->get('Exams');
-
-        $exams = $exams_table->find('all', [
-            'recursive' => -1
-        ]);
-
         $this->set('proposal', $proposal);
-        $this->set('exams', $exams);
 				$this->set('_serialize', [ 'proposal' ]);
     }
 
