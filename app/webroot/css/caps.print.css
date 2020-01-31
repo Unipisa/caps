@@ -7,6 +7,14 @@
     display: none;
 }
 
+ul.status {
+    display: none;
+}
+
+.disclaimer {
+    display: none;
+}
+
 .bureaucracy {
     display: block;
 }
@@ -45,7 +53,13 @@
 }
 
 .bureaucracy h3 {
+    margin-top: 0;
     font-size: 110%;
+}
+
+h3 {
+    margin-top: 25px;
+    margin-bottom: 5px;
 }
 
 .bureaucracy .heading {
@@ -54,4 +68,12 @@
 
 .bureaucracy .data {
     margin-bottom: 12px;
+}
+
+table {
+    page-break-inside: avoid;
+}
+
+div {
+    page-break-inside: avoid;
 }

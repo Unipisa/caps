@@ -1,6 +1,6 @@
 <div class="bureaucracy">
     <div class="heading">
-        <img class="left" src="/caps/css/img/cherubino_black.png"/>
+        <img class="left" src="/css/img/cherubino_black.png"/>
         <h2 class="department">Dipartimento di Matematica — Università di Pisa</h2>
         <h2 class="degree">Corso di Laurea
             <?php echo (strpos($proposal['curriculum'][0]['name'], 'Triennale') !== false) ? 'Triennale — Classe L-35' : 'Magistrale — Classe LM-40'; ?>
@@ -61,7 +61,7 @@
     });
 
     if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
-
+    <div>
     <?php
         echo "<h3>";
         switch ($year) {
@@ -122,6 +122,7 @@
     <td><strong><?php echo $year_credits; ?></strong></td>
 </tr>
 </table>
+</div>
 <?php endif; ?>
 <?php endfor; ?>
 
