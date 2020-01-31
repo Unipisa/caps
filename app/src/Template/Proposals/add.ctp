@@ -1,9 +1,17 @@
+<?php if ($proposal != null) {
+    ?>
+      <script type="text/javascript">
+        var proposal = <?php echo json_encode($proposal); ?>
+      </script>
+    <?php
+}?>
 <script src="../../js/proposals/add.js" type="text/javascript"></script>
 
 <h2>Nuovo piano di studio</h2>
-
-<?php echo $this->Form->create('Proposal'); ?>
-<?php echo $this->Form->control('Curriculum.0.curriculum_id',
+<div id="completeForm">
+<?php
+echo $this->Form->create('Proposal');
+echo $this->Form->control('Curriculum.0.curriculum_id',
     array(
         'empty' => array('text" disabled="disabled" selected="selected' => 'Scegli un curriculum'),
         'label' => '',
@@ -16,3 +24,4 @@
 echo $this->Form->submit('Chiudi Piano di Studio');
 echo $this->Form->end();
 ?>
+</div>

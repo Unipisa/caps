@@ -1,40 +1,36 @@
-$(document).ready(function () {
-    var exams = undefined;
-    var groups = undefined;
+var exams = undefined;
+var groups = undefined;
 
-    var curriculumURL = "../curricula/view/";
-    var examsURL = "../exams.json";
-    var groupsURL = "../groups.json";
+var curriculumURL = "/curricula/view/";
+var examsURL = "/exams.json";
+var groupsURL = "/groups.json";
 
-    var compulsoryExams = undefined;
-    var compulsoryGroups = undefined;
-    var freeChoiceExams = undefined;
+var compulsoryExams = undefined;
+var compulsoryGroups = undefined;
+var freeChoiceExams = undefined;
 
-    var lastExamAdded = 0;
-    var lastFreeChoiceExamAdded = 0;
+var lastExamAdded = 0;
+var lastFreeChoiceExamAdded = 0;
 
+var load_data_promise = new Promise(function(resolve, reject) {
     $.ajax({
         url: examsURL,
-        success: function (response) { exams = response["exams"]; }
-    });
-
-    $.ajax({
-        url: groupsURL,
-        success: function (response) { groups = response["groups"]; }
-    });
-
-    $("input[type=submit]").hide();
-    $("#proposalForm").bind("keyup keypress", function (e) {
-        var code = e.keyCode || e.which;
-        if (code === 13) {
-            e.preventDefault();
-            return false;
+        success: function (response) {
+            exams = response["exams"];
+            $.ajax({
+                url: groupsURL,
+                success: function (response) {
+                    groups = response["groups"];
+                    resolve();
+                }
+            });
         }
     });
+});
 
-    $("#curriculum-0-curriculum-id").change(function () {
+function on_curriculum_selected() {
         var curriculum = $("#curriculum-0-curriculum-id option:selected").text();
-        var curriculumId = $(this).val();
+        var curriculumId = $("#curriculum-0-curriculum-id").val();
         if (curriculumId === "")
             return;
 
@@ -44,6 +40,8 @@ $(document).ready(function () {
         } else {
             baseHTML = "<hr><h3>Primo anno: <span></span>/60</h3><nav></nav><hr><ul></ul><hr><h3>Secondo anno: <span></span>/60</h3><nav></nav><hr><ul></ul>";
         }
+
+        $("#proposalForm").hide();
 
         $.ajax({
             url: curriculumURL + curriculumId + ".json",
@@ -61,9 +59,11 @@ $(document).ready(function () {
                 addCounters();
                 addDeleteButtons();
                 addKonamiCode();
+
+                $("#proposalForm").slideDown();
             }
         });
-    });
+    }
 
     var addCompulsoryExams = function () {
         for (var i = 0; i < compulsoryExams.length; i++) {
@@ -329,4 +329,40 @@ $(document).ready(function () {
             }
         });
     };
+
+function load_proposal(proposal) {
+    console.log("Loading proposal with ID = " + proposal["id"]);
+
+    // Set the correct Curriculum
+    $("#curriculum-0-curriculum-id").val(proposal["curriculum"][0]["id"]);
+    $("#completeForm").show();
+    on_curriculum_selected();
+}
+
+$(document).ready(function () {
+
+
+    $("input[type=submit]").hide();
+    $("#proposalForm").bind("keyup keypress", function (e) {
+        var code = e.keyCode || e.which;
+        if (code === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $("#curriculum-0-curriculum-id").change(on_curriculum_selected);
+
+    // Only show the form to select the plan if there is not ID, otherwise it
+    // will be loaded in the background and shown afterwards.
+    load_data_promise.then(function () {
+        if (proposal["id"] !== undefined) {
+            load_proposal(proposal);
+        }
+        else {
+            $("#completeForm").show();
+        }
+    }, function (err) {
+        console.log("Error loading data");
+    });
 });

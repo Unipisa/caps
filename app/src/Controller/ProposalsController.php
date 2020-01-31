@@ -7,6 +7,7 @@ use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
+use Cake\Log\Log;
 
 class ProposalsController extends AppController {
 
@@ -107,6 +108,7 @@ class ProposalsController extends AppController {
 
         $this->set('proposal', $proposal);
         $this->set('exams', $exams);
+				$this->set('_serialize', [ 'proposal' ]);
     }
 
     public function add ($proposal_id = null) {
@@ -120,11 +122,11 @@ class ProposalsController extends AppController {
 
 				if ($proposal_id != null) {
 					$proposal = $this->Proposals->find()->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-						->where([ 'id' => $proposal_id ])
+						->where([ 'Proposals.id' => $proposal_id ])
 						->firstOrFail();
 
 					// Check if the user is the right owner
-					if ($proposal['username'] != $user['user']) {
+					if ($proposal['user']['username'] != $user['user']) {
 						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
 					}
 				}
@@ -134,13 +136,6 @@ class ProposalsController extends AppController {
 				}
 
         if ($owner) {
-            // $proposal = $owner['proposal'];
-            /* $proposalId = $proposal['id'];
-
-            $proposal = $this->Proposals->findById($proposalId)
-            	->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-							->firstOrFail(); */
-
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
                 return $this->redirect(array('action' => 'view', $proposal['id']));
@@ -173,6 +168,7 @@ class ProposalsController extends AppController {
             }
 
             $this->set('curricula', $this->Proposals->Curricula->find('list'));
+            $this->set('proposal', $proposal);
             $this->set('owner', $owner);
         } else {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));

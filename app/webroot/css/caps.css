@@ -43,6 +43,10 @@ div .disclaimer {
 		padding-left: 20px; /* Aligned with #content */
 }
 
+#completeForm {
+	display: none;
+}
+
 #proposalForm h3 {
     float: left;
 }
