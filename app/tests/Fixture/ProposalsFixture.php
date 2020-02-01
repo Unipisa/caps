@@ -35,14 +35,6 @@ class ProposalsFixture extends TestFixture
     public function init()
     {
         $this->records = [
-            [
-                'id' => 1,
-                'approved' => 1,
-                'submitted' => 1,
-                'frozen' => 1,
-                'user_id' => 1,
-                'modified' => '2019-12-12 13:07:08'
-            ],
         ];
         parent::init();
     }

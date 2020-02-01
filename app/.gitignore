@@ -8,6 +8,8 @@
 # Project specific files #
 ##########################
 /caps.sqlite
+/test_caps.sqlite
+/config/app.php
 /config/Migrations/schema-dump-default.lock
 
 # OS generated files #
