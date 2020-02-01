@@ -27,7 +27,8 @@ git checkout develop
 bin/cake migrations migrate # Crea o aggiorna il database
 vendor/bin/phpunit # run unit tests
 vendor/bin/phpunit --filter testLoginPage # run a single test
-bin/cake server # run a development server
+tail -f logs/*.log # display error messages 
+bin/cake server & # run a development server
 ```
 
 Per importare un dump vecchio del database è necessario prima migrare ad una versione
