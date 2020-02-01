@@ -52,7 +52,6 @@ class AppController extends Controller
         $this->loadComponent('Auth', [
           'authenticate' => [
             'Unipi' => Configure::read('UnipiAuthenticate') ] ]);
-        $this->Auth->config('pippo', 'pluto');
         // $this->loadComponent('Authentication.Authentication');
 
         /*
