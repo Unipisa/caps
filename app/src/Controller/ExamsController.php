@@ -64,21 +64,22 @@ class ExamsController extends AppController {
 
     public function adminAdd () {
         $user = $this->Auth->user();
+        $exam = $this->Exams->newEntity();;
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
         if ($this->request->is('post')) {
-            $newexam = $this->Exams->newEntity();
-            $newexam = $this->Exams->patchEntity($newexam, $this->request->data);
+            $exam = $this->Exams->patchEntity($exam, $this->request->data);
 
-            if ($this->Exams->save($newexam)) {
+            if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
                 return $this->redirect(array('action' => 'admin-add'));
             }
             $this->Flash->error(__('Errore: esame non aggiunto.'));
         }
 
+        $this->set('exam', $exam);
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
