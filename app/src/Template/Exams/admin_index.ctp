@@ -17,10 +17,8 @@
             <?php
                 echo $this->Html->link(
                     $exam['name'],
-                    array(
-                        'action' => 'admin_edit',
-                        $exam['id']
-                    )
+                    ['action' => 'admin_edit',
+                        $exam['id']]
                 );
             ?>
         </td>
@@ -33,13 +31,9 @@
                     <?php
                         echo $this->Form->postLink(
                             __('Cancella'),
-                            array(
-                                'action' => 'admin_delete',
-                                $exam['id']
-                            ),
-                            array(
-                                'class' => 'reject'
-                            ),
+                            ['action' => 'admin_delete',
+                                $exam['id']],
+                            ['class' => 'reject'],
                             __('Sei sicuro di voler cancellare l\'esame "%s"?', $exam['name'])
                         );
                     ?>
@@ -58,10 +52,8 @@
             <?php
                 echo $this->Html->link(
                     'Aggiungi esame',
-                    array(
-                        'controller' => 'exams',
-                        'action' => 'admin_add'
-                    )
+                    ['controller' => 'exams',
+                        'action' => 'admin_add']
                 );
             ?>
         </li>

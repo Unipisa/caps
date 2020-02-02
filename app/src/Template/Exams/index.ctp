@@ -15,7 +15,7 @@
             <?php
                 echo $this->Html->link(
                     $exam['name'],
-                    array('action' => 'view', $exam['id'])
+                    ['action' => 'view', $exam['id']]
                 );
             ?>
         </td>

@@ -74,7 +74,7 @@ class ExamsController extends AppController {
 
             if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
-                return $this->redirect(array('action' => 'admin-add'));
+                return $this->redirect(['action' => 'admin-add']);
             }
             $this->Flash->error(__('Errore: esame non aggiunto.'));
         }
@@ -98,12 +98,12 @@ class ExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $exam = $this->Exams->patchEntity($exam, $this->request->data);
 
             if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiornato con successo.'));
-                return $this->redirect(array('action' => 'index'));
+                return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('Errore: esame non aggiornato.'));
         }
@@ -129,23 +129,15 @@ class ExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->Exams->delete($exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
-                return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
-                );
+                return $this->redirect(['action' => 'admin_index']);
             }
         }
 
         $this->Flash->error(__('Error: esame non cancellato.'));
-        $this->redirect(
-            array(
-                'action' => 'admin_index'
-            )
-        );
+        $this->redirect(['action' => 'admin_index']);
     }
 
 }

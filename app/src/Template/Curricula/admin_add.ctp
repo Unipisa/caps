@@ -4,15 +4,11 @@
 <?php
     echo $this->Form->create(
         'Curriculum',
-        array(
-            'action' => 'adminAdd'
-        )
+        ['action' => 'adminAdd']
     );
     echo $this->Form->input(
         'name',
-        array(
-            'label' => 'Nome'
-        )
+        ['label' => 'Nome']
     );
     echo $this->Form->submit('Salva curriculum');
     echo $this->Form->end();

@@ -5,41 +5,23 @@
     echo $this->Form->create($exam);
     echo $this->Form->control(
         'id',
-        array(
-            'type' => 'hidden'
-        )
-    );
+        ['type' => 'hidden']);
     echo $this->Form->control(
         'code',
-        array(
-            'label' => 'Codice'
-        )
-    );
+        ['label' => 'Codice']);
     echo $this->Form->control(
         'name',
-        array(
-            'label' => 'Nome'
-        )
-    );
+        ['label' => 'Nome']);
     echo $this->Form->control(
         'sector',
-        array(
-            'label' => 'Settore'
-        )
-    );
+        ['label' => 'Settore']);
     echo $this->Form->control(
         'credits',
-        array(
-            'label' => 'Crediti'
-        )
-    );
+        ['label' => 'Crediti']);
     echo $this->Form->control(
         'groups._ids',
-        array(
-            'label' => 'Gruppi',
-            'size' => 20
-        )
-    );
+        ['label' => 'Gruppi',
+            'size' => 20]);
     echo $this->Form->submit('Aggiorna esame');
     echo $this->Form->end();
 ?>

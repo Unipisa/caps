@@ -14,7 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    array('action' => 'admin_review', $proposal['id'])
+                    ['action' => 'admin_review', $proposal['id']]
                 );
             ?>
         </td>
@@ -24,17 +24,17 @@
                     <?php
                         echo $this->Html->link(
                             'Approva ✓',
-                            array('action' => 'adminApprove', $proposal['id']),
-                            array('class' => 'accept')
+                            ['action' => 'adminApprove', $proposal['id']],
+                            ['class' => 'accept']
                         );
                     ?>
                 </li>
                 <li>
-                    <?php 
+                    <?php
                         echo $this->Html->link(
                             'Rifiuta ✗',
-                            array('action' => 'adminReject', $proposal['id']),
-                            array('class' => 'reject')
+                            ['action' => 'adminReject', $proposal['id']],
+                            ['class' => 'reject']
                         );
                     ?>
                 </li>

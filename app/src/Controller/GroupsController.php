@@ -27,7 +27,7 @@ class GroupsController extends AppController {
         $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
 
         $this->set('groups', $groups);
-        $this->set('_serialize', array('groups'));
+        $this->set('_serialize', ['groups']);
     }
 
     public function adminIndex () {
@@ -65,7 +65,7 @@ class GroupsController extends AppController {
             $newgroup = $this->Groups->patchEntity($newgroup, $this->request->data);
             if ($this->Groups->save($newgroup)) {
                 $this->Flash->success(__('Gruppo creato con successo.'));
-                return $this->redirect(array('action' => 'adminIndex'));
+                return $this->redirect(['action' => 'adminIndex']);
             }
             $this->Flash(__('Errore: gruppo non creato.'));
         }
@@ -76,14 +76,9 @@ class GroupsController extends AppController {
             'exams',
             $exams_table->find(
                 'list',
-                array(
-                    'order' => array(
-                        'Exams.name' => 'ASC'
-                    )
-                )
+                ['order' => ['Exams.name' => 'ASC']]
             )
         );
-
         $this->set('owner', $user);
     }
 
@@ -102,14 +97,12 @@ class GroupsController extends AppController {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $group = $this->Groups->patchEntity($group, $this->request->data);
             if ($this->Groups->save($group)) {
                 $this->Flash->success(__('Gruppo aggiornato con successo.'));
                 return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
+                    ['action' => 'admin_index']
                 );
             }
 
@@ -125,11 +118,7 @@ class GroupsController extends AppController {
                 'exams',
                  $exams_table->find(
                     'list',
-                    array(
-                        'order' => array(
-                            'Exams.name' => 'ASC'
-                        )
-                    )
+                    ['order' => ['Exams.name' => 'ASC']]
                 )
             );
         }
@@ -150,22 +139,18 @@ class GroupsController extends AppController {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->Groups->delete($group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
                 return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
+                    ['action' => 'admin_index']
                 );
             }
         }
 
         $this->Flash->error(__('Error: gruppo non cancellato.'));
         $this->redirect(
-            array(
-                'action' => 'admin_index'
-            )
+            ['action' => 'admin_index']
         );
     }
 

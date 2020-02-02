@@ -6,9 +6,7 @@
     echo $this->Form->create($group);
     echo $this->Form->input(
         'name',
-        array(
-            'label' => 'Nome'
-        )
+        ['label' => 'Nome']
     );
     echo $this->Form->control('exams._ids', [ 'size' => 20 ]);
     echo $this->Form->submit('Modifica gruppo');

@@ -4,8 +4,8 @@
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;da&nbsp;valutare',
-                    array('action' => 'adminTodo'),
-                    array('escape' => false)
+                    ['action' => 'adminTodo'],
+                    ['escape' => false]
                 );
             ?>
         </li>
@@ -13,8 +13,8 @@
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;approvati',
-                    array('action' => 'adminDone'),
-                    array('escape' => false)
+                    ['action' => 'adminDone'],
+                    ['escape' => false]
                 );
             ?>
         </li>
@@ -22,8 +22,8 @@
             <?php
                 echo $this->Html->link(
                     'PdS&nbsp;archiviati',
-                    array('action' => 'adminFrozen'),
-                    array('escape' => false)
+                    ['action' => 'adminFrozen'],
+                    ['escape' => false]
                 );
             ?>
         </li>
@@ -31,11 +31,9 @@
             <?php
                 echo $this->Html->link(
                     'Aggiornamento&nbsp;→',
-                    array(
-                        'controller' => 'curricula',
-                        'action' => 'admin_index'
-                    ),
-                    array('escape' => false)
+                    ['controller' => 'curricula',
+                        'action' => 'admin_index'],
+                    ['escape' => false]
                 );
             ?>
         </li>

@@ -8,10 +8,8 @@
             <?php
                 echo $this->Html->link(
                     'Curricula',
-                    array(
-                        'controller' => 'curricula',
-                        'action' => 'admin_index'
-                    )
+                    ['controller' => 'curricula',
+                        'action' => 'admin_index']
                 );
             ?>
         </li>
@@ -23,10 +21,8 @@
             <?php
                 echo $this->Html->link(
                     'Gruppi',
-                    array(
-                        'controller' => 'groups',
-                        'action' => 'admin_index'
-                    )
+                    ['controller' => 'groups',
+                        'action' => 'admin_index']
                 );
             ?>
         </li>
@@ -38,10 +34,8 @@
             <?php
                 echo $this->Html->link(
                     'Esami',
-                    array(
-                        'controller' => 'exams',
-                        'action' => 'admin_index'
-                    )
+                    ['controller' => 'exams',
+                        'action' => 'admin_index']
                 );
             ?>
         </li>
@@ -53,9 +47,7 @@
                         'controller' => $this->request->params['controller'],
                         'action' => 'admin-index'
                     ],
-                    array(
-                        'escape' => false
-                    )
+                    ['escape' => false]
                 );
             ?>
         </li>

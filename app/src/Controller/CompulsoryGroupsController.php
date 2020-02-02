@@ -21,7 +21,7 @@ class CompulsoryGroupsController extends AppController {
             throw new ForbiddenException();
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $newgroup = $this->CompulsoryGroups->newEntity();
             $newgroup = $this->CompulsoryGroups->patchEntity($newgroup, $this->request->getData());
 
@@ -49,7 +49,7 @@ class CompulsoryGroupsController extends AppController {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->CompulsoryGroups->delete($compulsory_group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
                 return $this->redirect(
