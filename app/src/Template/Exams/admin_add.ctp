@@ -3,7 +3,7 @@
 <h2>Aggiungi esame</h2>
 <?php
     echo $this->Form->create(
-        'Exam',
+        $exam,
         array(
             'action' => 'admin_add'
         )

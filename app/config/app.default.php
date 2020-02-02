@@ -40,11 +40,11 @@ return [
 
       // LISTA DEGLI AMMINISTRATORI
 
-      'admins' => ["user1", "user2"],
+      'admins' => ["my-admin-user"],
 
       // LISTA DEGLI UTENTI "FAKE": la password è lo username
 
-      'fakes' => ["my-fake-user", "other-fake-user"]
+      'fakes' => ["my-fake-user", "my-admin-user"]
     ],
 
     /**
