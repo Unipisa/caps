@@ -38,13 +38,31 @@ return [
       // Password del DN sopra
       'bind_pw' => 'mysecretpassword',
 
-      // LISTA DEGLI AMMINISTRATORI
+      // LISTA DEGLI UTENTI AMMINISTRATORE
+      'admins' => [],
 
-      'admins' => ["my-admin-user"],
-
-      // LISTA DEGLI UTENTI "FAKE": la password è lo username
-
-      'fakes' => ["my-fake-user", "my-admin-user"]
+      // LISTA DEGLI UTENTI "FAKE"
+      'fakes' => [
+        [
+            'user' => 'my-fake-user',
+            'password' => 'my-fake-user',
+            'ldap_dn' => '',
+            'name' => 'Utente Finto',
+            'role' => 'student',
+            'number' => '000000',
+            'admin' => false,
+            'surname' => 'Finto',
+            'givenname' => 'Utente'
+        ],
+        [
+          'user' => 'my-admin-user',
+          'password' => 'my-admin-user',
+          'name' => 'Amministratore',
+          'admin' => true,
+          'surname' => 'Tore',
+          'givenname' => 'Amministra'
+        ]
+      ]
     ],
 
     /**
