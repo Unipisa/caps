@@ -2,16 +2,7 @@
 
 <h2>Aggiungi esame</h2>
 <?php
-<<<<<<< HEAD
     echo $this->Form->create($exam);
-=======
-    echo $this->Form->create(
-        $exam,
-        array(
-            'action' => 'admin_add'
-        )
-    );
->>>>>>> 7f326f8ec968cb20f7b3c3e142fcab040562ef59
     echo $this->Form->control(
         'name', ['label' => 'Nome']);
     echo $this->Form->control(
