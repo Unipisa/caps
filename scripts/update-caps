@@ -19,9 +19,15 @@ git pull > /dev/null
 
 new_HEAD=$(git rev-parse HEAD)
 
+echo "HEAD: ${current_HEAD} -> ${new_HEAD}"
+
 if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+  echo "> Migrazione database"
+
   # Perform DB migrations, if needed
   bin/cake migrations migrate
+
+  echo "> Pulizia cache"
 
   # Clear cache -- this helps in case new models are
   # introduced, or if new fields are added
