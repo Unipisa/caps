@@ -39,6 +39,9 @@ class ChosenFreeChoiceExamsTable extends Table
         $this->belongsTo('Proposals', [
             'foreignKey' => 'proposal_id'
         ]);
+        $this->belongsTo('freeChoiceExams', [
+            'foreignKey' => 'free_choice_exam_id'
+        ]);
     }
 
     /**

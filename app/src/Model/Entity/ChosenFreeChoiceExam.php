@@ -28,6 +28,9 @@ class ChosenFreeChoiceExam extends Entity
         'name' => true,
         'credits' => true,
         'proposal_id' => true,
-        'proposal' => true
+        'proposal' => true,
+        'chosen_year' => 1,
+        'free_choice_exam_id' => true,
+        'free_choice_exam' => true
     ];
 }

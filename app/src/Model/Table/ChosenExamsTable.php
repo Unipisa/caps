@@ -43,6 +43,12 @@ class ChosenExamsTable extends Table
         $this->belongsTo('Proposals', [
             'foreignKey' => 'proposal_id'
         ]);
+        $this->belongsTo('compulsoryGroup', [
+            'foreignKey' => 'compulsory_group_id'
+        ]);
+        $this->belongsTo('compulsoryExam', [
+            'foreignKey' => 'compulsory_exam_id'
+        ]);
     }
 
     /**

@@ -32,9 +32,9 @@ class ChosenExam extends Entity
         'exam' => true,
         'chosen_year' => true,
         'compulsory_group_id' => true,
-        'free_choice_exam_id' => true,
+        'compulsory_exam_id' => true,
         'compulsory_group' => true,
-        'free_choice_exam' => true,
+        'compulsory_exam' => true,
         'proposal' => true
     ];
 }
