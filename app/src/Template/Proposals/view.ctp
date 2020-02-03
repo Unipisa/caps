@@ -88,6 +88,7 @@
         <th>Nome</th>
         <th>Settore</th>
         <th>Crediti</th>
+        <th>Gruppo</th>
     </tr>
 <?php foreach ($this_year_exams as $chosen_exam): ?>
     <?php
@@ -102,6 +103,22 @@
         <td><?php echo $name ?></td>
         <td><?php echo $sector ?></td>
         <td><?php echo $chosen_exam['credits']; ?></td>
+        <td><?php
+            $cg = $chosen_exam['compulsory_group'];
+            $ce = $chosen_exam['compulsory_exam'];
+            $cf = $chosen_exam['free_choice_exam'];
+
+            if ($cg != null) {
+                echo $cg['group']['name'];
+            }
+            else if ($ce != null) {
+                echo "Obbligatorio";
+            }
+            else if ($cf != null) {
+                echo "A scelta libera";
+            }
+          ?>
+        </td>
     </tr>
 <?php endforeach; ?>
 <?php unset($chosen_exam); ?>

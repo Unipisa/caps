@@ -89,7 +89,9 @@ class ProposalsController extends AppController {
         }
 
         $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams' ])
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
+						'ChosenExams.CompulsoryExams', 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams', 
+						'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups' ])
             ->firstOrFail();
 
         if (!$proposal) {
@@ -114,7 +116,8 @@ class ProposalsController extends AppController {
             ->firstOrFail();
 
 				if ($proposal_id != null) {
-					$proposal = $this->Proposals->find()->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+					$proposal = $this->Proposals->find()->contain([
+            	'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
 						->where([ 'Proposals.id' => $proposal_id ])
 						->firstOrFail();
 

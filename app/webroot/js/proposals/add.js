@@ -188,7 +188,7 @@ function on_curriculum_selected() {
                 updateCounters();
             });
 
-            // Add an hidden field with the ID of this compulsoryExam
+            // Add an hidden field with the ID of this free choice exam
             var free_choice_exam_id = "<input type=hidden name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][free_choice_exam_id] value=" + freeChoiceExam["id"] + ">";
 
             // Store the year for this exam as well
@@ -278,7 +278,7 @@ function on_curriculum_selected() {
                     thisExamID + "][chosen_year] value=" + year + ">";
 
                 inputHTML = inputHTML + year_input;
-                
+
                 $(nav).next("hr").next("ul").append("<li>" + inputHTML + creditsHTML + deleteHTML + "</li>");
             });
 
