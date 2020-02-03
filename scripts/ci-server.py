@@ -11,7 +11,7 @@
 # gunicorn ci-server:app -b 0.0.0.0:8081
 
 import os
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
