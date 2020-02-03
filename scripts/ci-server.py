@@ -18,7 +18,7 @@ app = Flask(__name__)
 @app.route('/')
 def update_caps():
     # Run the update command, and leave it running
-    os.system("flock /tmp/caps.lock -c 'update-caps' &")
+    os.system("flock /tmp/caps.lock -c 'update-caps' >> update-caps.log &")
 
     return "Update triggered"
 

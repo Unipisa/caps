@@ -10,6 +10,9 @@ CAPSDIRECTORY="/var/www/caps"
 
 cd ${CAPSDIRECTORY}/app
 
+now=$(date)
+echo "${now}: Update triggered by webhook"
+
 current_HEAD=$(git rev-parse HEAD)
 
 git pull > /dev/null
