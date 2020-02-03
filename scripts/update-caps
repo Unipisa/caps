@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Script used to update CAPS installed as git cloned repository
+# in CAPSDIRECTORY. Run this script as a user which has permission
+# to do a git pull.
+
+set -e
+
+CAPSDIRECTORY="/var/www/caps"
+
+cd ${CAPSDIRECTORY}/app
+
+current_HEAD=$(git rev-parse HEAD)
+
+git pull > /dev/null
+
+new_HEAD=$(git rev-parse HEAD)
+
+if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+  # Perform DB migrations, if needed
+  bin/cake migrations migrate
+
+  # Clear cache -- this helps in case new models are
+  # introduced, or if new fields are added
+  bin/cake cache clear_all
+fi
