@@ -12,12 +12,14 @@ var freeChoiceExams = undefined;
 var lastExamAdded = 0;
 var lastFreeChoiceExamAdded = 0;
 
-var load_data_promise = $.get(examsURL, function (response) {
-    exams = response["exams"];
+var load_data_promise = Promise.all([
+    $.get(examsURL, (response) => {
+        exams = response["exams"];
+    }),
     $.get(groupsURL, function (response) {
         groups = response["groups"];
-    });
-});
+    })
+]);
 
 function on_curriculum_selected() {
         var curriculum = $("#curriculum-0-curriculum-id option:selected").text();
@@ -264,7 +266,7 @@ function on_curriculum_selected() {
             var inputHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] type=text placeholder='Un esame a scelta libera' class=exam></input>";
             var creditsHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 class=credits></input>";
             var deleteHTML = "<a href=# class=delete></a>";
-            
+
             // This ID is used in the closure to set up the correct year.
             let thisExamID = lastFreeChoiceExamAdded;
 
@@ -276,8 +278,7 @@ function on_curriculum_selected() {
                     thisExamID + "][chosen_year] value=" + year + ">";
 
                 inputHTML = inputHTML + year_input;
-
-                console.log(nav);
+                
                 $(nav).next("hr").next("ul").append("<li>" + inputHTML + creditsHTML + deleteHTML + "</li>");
             });
 
