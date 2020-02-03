@@ -8,9 +8,11 @@ use Cake\Auth\BaseAuthenticate;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 
+use Cake\Log\Log;
+
 class UnipiAuthenticate extends BaseAuthenticate {
 
-    private $auth_config  = [
+    protected $_defaultConfig  = [
     	'fields' => [
         	'username' => 'username',
 	        'password' => 'password'
@@ -20,17 +22,17 @@ class UnipiAuthenticate extends BaseAuthenticate {
 	    'passwordHasher' => 'Default'
     ];
 
-    public function __construct() {
-        $this->setConfig($this->auth_config);
-    }
-
-    public function getConfig($key = NULL, $default = NULL) {
-        $config = parse_ini_file (APP . DS . ".." . DS . "unipi.ini");
-        return $config;
+    public function __construct($registry, $config = NULL) {
+      parent::__construct($registry, $config);
+      $ini_filename = APP . DS . ".." . DS . "unipi.ini";
+      if (file_exists($ini_filename)) {
+        $this->setConfig(parse_ini_file ($ini_filename));
+      }
     }
 
     public function authenticate(ServerRequest $request, Response $response) {
         $config = $this->getConfig();
+        // Log::write('debug', "******". print_r($config, true));
         $data = $request->getData();
 
         // Allow admins to browse as a student.

@@ -14,7 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['Curriculum'][0]['name'],
-                    array('action' => 'adminReview', $proposal['id'])
+                    ['action' => 'adminReview', $proposal['id']]
                 );
             ?>
         </td>
@@ -24,17 +24,17 @@
                     <?php
                         echo $this->Html->link(
                             'Approva ✓',
-                            array('action' => 'adminApprove', $proposal['id']),
-                            array('class' => 'accept')
+                            ['action' => 'adminApprove', $proposal['id']],
+                            ['class' => 'accept']
                         );
                     ?>
                 </li>
                 <li>
-                    <?php 
+                    <?php
                         echo $this->Html->link(
                             'Rifiuta ✗',
-                            array('action' => 'adminReject', $proposal['id']),
-                            array('class' => 'reject')
+                            ['action' => 'adminReject', $proposal['id']],
+                            ['class' => 'reject']
                         );
                     ?>
                 </li>
@@ -59,7 +59,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    array('action' => 'review', $proposal['id'])
+                    ['action' => 'review', $proposal['id']]
                 );
             ?>
         </td>
@@ -69,7 +69,7 @@
                     <?php
                         echo $this->Html->link(
                             'Riapri ✎',
-                            array('action' => 'adminReject', $proposal['id'])
+                            ['action' => 'adminReject', $proposal['id']]
                         );
                     ?>
                 </li>
@@ -77,7 +77,7 @@
                     <?php
                         echo $this->Html->link(
                             'Archivia',
-                            array('action' => 'adminFreeze', $proposal['id'])
+                            ['action' => 'adminFreeze', $proposal['id']]
                         );
                     ?>
                 </li>
@@ -90,15 +90,15 @@
 <div class="caps-pagination">
     <?php echo $this->Paginator->prev(
         '«',
-        array(),
+        [],
         null,
-        array('class' => 'caps-pagination-disabled')
+        ['class' => 'caps-pagination-disabled']
     ); ?>
     <?php echo $this->Paginator->numbers(); ?>
     <?php echo $this->Paginator->next(
         '&raquo;',
-        array('escape' => false),
+        ['escape' => false],
         null,
-        array('class' => 'caps-pagination-disabled')
+        ['class' => 'caps-pagination-disabled']
     ); ?>
 </div>

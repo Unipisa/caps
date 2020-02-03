@@ -10,7 +10,7 @@
         <td><?php echo $group['id']; ?></td>
         <td>
             <?php echo $this->Html->link($group['name'],
-                array('controller' => 'groups', 'action' => 'view', $group['id'])); ?>
+                ['controller' => 'groups', 'action' => 'view', $group['id']]); ?>
         </td>
     </tr>
     <?php endforeach ?>

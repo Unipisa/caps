@@ -33,13 +33,6 @@ class ExamsFixture extends TestFixture
     public function init()
     {
         $this->records = [
-            [
-                'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet',
-                'code' => 'Lor',
-                'sector' => 'Lore',
-                'credits' => 1
-            ],
         ];
         parent::init();
     }

@@ -35,13 +35,6 @@ class CompulsoryExamsFixture extends TestFixture
     public function init()
     {
         $this->records = [
-            [
-                'id' => 1,
-                'year' => 1,
-                'position' => 1,
-                'exam_id' => 1,
-                'curriculum_id' => 1
-            ],
         ];
         parent::init();
     }

@@ -11,7 +11,7 @@
         <td>
             <?php echo $this->Html->link(
                 $curriculum['name'],
-                array('controller' => 'curricula', 'action' => 'view', $curriculum['id'])); ?>
+                ['controller' => 'curricula', 'action' => 'view', $curriculum['id']]); ?>
         </td>
     </tr>
     <?php endforeach ?>

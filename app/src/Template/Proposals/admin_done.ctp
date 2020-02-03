@@ -14,7 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    array('action' => 'adminReview', $proposal['id'])
+                    ['action' => 'adminReview', $proposal['id']]
                 );
             ?>
         </td>
@@ -24,13 +24,9 @@
                     <?php
                         echo $this->Html->link(
                             'Riapri&nbsp;✎',
-                            array(
-                                'action' => 'adminReject',
-                                $proposal['id']
-                            ),
-                            array(
-                                'escape' => false
-                            )
+                            ['action' => 'adminReject',
+                                $proposal['id']],
+                            ['escape' => false]
                         );
                     ?>
                 </li>
@@ -38,13 +34,9 @@
                     <?php
                         echo $this->Html->link(
                             'Archivia&nbsp;❄',
-                            array(
-                                'action' => 'adminFreeze',
-                                $proposal['id']
-                            ),
-                            array(
-                                'escape' => false
-                            )
+                            ['action' => 'adminFreeze',
+                                $proposal['id']],
+                            ['escape' => false]
                         );
                     ?>
                 </li>

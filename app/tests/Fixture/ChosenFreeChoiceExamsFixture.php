@@ -33,12 +33,6 @@ class ChosenFreeChoiceExamsFixture extends TestFixture
     public function init()
     {
         $this->records = [
-            [
-                'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet',
-                'credits' => 1,
-                'proposal_id' => 1
-            ],
         ];
         parent::init();
     }

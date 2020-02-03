@@ -48,14 +48,10 @@
         <?php
             echo $this->Html->link(
               'Riapri&nbsp;✎',
-              array(
-                  'action' => 'admin_thaw',
-                  $proposal['id']
-              ),
-              array(
-                  'class' => 'accept',
-                  'escape' => false
-              )
+              ['action' => 'admin_thaw',
+                  $proposal['id']],
+              ['class' => 'accept',
+                  'escape' => false]
             );
         ?>
     </li>
@@ -64,14 +60,10 @@
         <?php
             echo $this->Html->link(
                 'Archivia&nbsp;❄',
-                array(
-                    'action' => 'admin_freeze',
-                    $proposal['id']
-                ),
-                array(
-                    'class' => 'reject',
-                    'escape' => false
-                )
+                ['action' => 'admin_freeze',
+                    $proposal['id']],
+                ['class' => 'reject',
+                    'escape' => false]
             );
         ?>
     </li>
@@ -80,14 +72,10 @@
         <?php
             echo $this->Html->link(
                 'Accetta&nbsp;✓',
-                array(
-                    'action' => 'admin_approve',
-                    $proposal['id']
-                ),
-                array(
-                    'class' => 'accept',
-                    'escape' => false
-                )
+                ['action' => 'admin_approve',
+                    $proposal['id']],
+                ['class' => 'accept',
+                    'escape' => false]
             );
         ?>
     </li>
@@ -95,14 +83,10 @@
         <?php
             echo $this->Html->link(
                 'Rifiuta&nbsp;✗',
-                array(
-                    'action' => 'admin_reject',
-                    $proposal['id']
-                ),
-                array(
-                    'class' => 'reject',
-                    'escape' => false
-                )
+                ['action' => 'admin_reject',
+                    $proposal['id']],
+                ['class' => 'reject',
+                    'escape' => false]
             );
         ?>
     </li>
@@ -112,10 +96,8 @@
             echo $this->Html->link(
                 'Indietro&nbsp;↩',
                 $this->request->referer(),
-                array(
-                    'class' => 'back',
-                    'escape' => false
-                )
+                ['class' => 'back',
+                    'escape' => false]
             );
         ?>
     </li>

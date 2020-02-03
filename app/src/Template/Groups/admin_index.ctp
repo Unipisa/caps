@@ -14,11 +14,9 @@
             <?php
                 echo $this->Html->link(
                     $group['name'],
-                    array(
-                        'controller' => 'groups',
+                    ['controller' => 'groups',
                         'action' => 'adminEdit',
-                        $group['id']
-                    )
+                        $group['id']]
                 );
             ?>
         </td>
@@ -28,13 +26,9 @@
                     <?php
                         echo $this->Form->postLink(
                             __('Cancella'),
-                            array(
-                                'action' => 'adminDelete',
-                                $group['id']
-                            ),
-                            array(
-                                'class' => 'reject'
-                            ),
+                            ['action' => 'adminDelete',
+                                $group['id']],
+                            ['class' => 'reject'],
                             __('Sei sicuro di voler cancellare il gruppo "%s"?', $group['name'])
                         );
                     ?>
@@ -52,10 +46,8 @@
             <?php
                 echo $this->Html->link(
                     'Aggiungi gruppo',
-                    array(
-                        'controller' => 'groups',
-                        'action' => 'admin_add'
-                    )
+                    ['controller' => 'groups',
+                        'action' => 'admin_add']
                 );
             ?>
         </li>

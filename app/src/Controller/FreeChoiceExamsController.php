@@ -21,7 +21,7 @@ class FreeChoiceExamsController extends AppController {
             throw new ForbiddenException();
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $newexam = $this->FreeChoiceExams->newEntity();
             $newexam = $this->FreeChoiceExams->patchEntity($newexam, $this->request->data);
 
@@ -49,7 +49,7 @@ class FreeChoiceExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->FreeChoiceExams->delete($free_choice_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
                 return $this->redirect(

@@ -28,6 +28,25 @@ return [
         'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
     ],
 
+    'UnipiAuthenticate' => [
+      // URI del server LDAP da interrogare
+      'ldap_server_uri' => 'ldaps://my-ldap.example.com',
+
+      // DN con cui autenticarsi sul server LDAP
+      'bind_dn' => 'cn=admin,dc=example,dc=com',
+
+      // Password del DN sopra
+      'bind_pw' => 'mysecretpassword',
+
+      // LISTA DEGLI AMMINISTRATORI
+
+      'admins' => ["my-admin-user"],
+
+      // LISTA DEGLI UTENTI "FAKE": la password è lo username
+
+      'fakes' => ["my-fake-user", "my-admin-user"]
+    ],
+
     /**
      * Configure basic information about the application.
      *

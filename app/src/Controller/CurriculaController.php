@@ -28,7 +28,7 @@ class CurriculaController extends AppController {
     public function index () {
         $curricula = $this->Curricula->find('all');
         $this->set('curricula', $curricula);
-        $this->set('_serialize', array('curricula'));
+        $this->set('_serialize', ['curricula']);
     }
 
     public function adminIndex () {
@@ -74,9 +74,7 @@ class CurriculaController extends AppController {
             if ($this->Curricula->save($newcurriculum)) {
                 $this->Flash->success(__('Curriculum creato con successo.'));
                 return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
+                    ['action' => 'admin_index']
                 );
             }
 
@@ -104,11 +102,11 @@ class CurriculaController extends AppController {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->getData());
             if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success(__('Curriculum aggiornato con successo.'));
-                return $this->redirect(array('action' => 'admin_index'));
+                return $this->redirect(['action' => 'admin_index']);
             }
             $this->Flash->error(__('Errore: curriculum non aggiornato.'));
         }
@@ -127,11 +125,7 @@ class CurriculaController extends AppController {
             'examsList',
             $exams_table->find(
                 'list',
-                array(
-                    'order' => array(
-                        'Exams.name' => 'ASC'
-                    )
-                )
+                ['order' => ['Exams.name' => 'ASC']]
             )
         );
         $this->set('groupsList', $groups_table->find('list'));
@@ -158,22 +152,18 @@ class CurriculaController extends AppController {
             throw new NotFoundException(__('Errore: curriculum non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->Curricula->delete($curriculum)) {
                 $this->Flash->success(__('Curriculum cancellato con successo.'));
                 return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
+                    ['action' => 'admin_index']
                 );
             }
         }
 
         $this->Flash->error(__('Error: curriculum non cancellato.'));
         $this->redirect(
-            array(
-                'action' => 'admin_index'
-            )
+            ['action' => 'admin_index']
         );
     }
 
