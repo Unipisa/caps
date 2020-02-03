@@ -64,21 +64,22 @@ class ExamsController extends AppController {
 
     public function adminAdd () {
         $user = $this->Auth->user();
+        $exam = $this->Exams->newEntity();;
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
         if ($this->request->is('post')) {
-            $newexam = $this->Exams->newEntity();
-            $newexam = $this->Exams->patchEntity($newexam, $this->request->data);
+            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
 
-            if ($this->Exams->save($newexam)) {
+            if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
-                return $this->redirect(array('action' => 'admin-add'));
+                return $this->redirect(['action' => 'admin-add']);
             }
             $this->Flash->error(__('Errore: esame non aggiunto.'));
         }
 
+        $this->set('exam', $exam);
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
@@ -97,20 +98,18 @@ class ExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
-            $exam = $this->Exams->patchEntity($exam, $this->request->data);
+        if ($this->request->is(['post', 'put'])) {
+            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
 
             if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiornato con successo.'));
-                return $this->redirect(array('action' => 'index'));
+                return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('Errore: esame non aggiornato.'));
         }
 
-        if (! $this->request->data) {
-            $this->set('exam', $exam);
-            $this->set('groups', $this->Exams->Groups->find('list'));
-        }
+        $this->set('exam', $exam);
+        $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
     public function adminDelete ($id = null) {
@@ -128,23 +127,15 @@ class ExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->Exams->delete($exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
-                return $this->redirect(
-                    array(
-                        'action' => 'admin_index'
-                    )
-                );
+                return $this->redirect(['action' => 'admin_index']);
             }
         }
 
         $this->Flash->error(__('Error: esame non cancellato.'));
-        $this->redirect(
-            array(
-                'action' => 'admin_index'
-            )
-        );
+        $this->redirect(['action' => 'admin_index']);
     }
 
 }

@@ -21,12 +21,27 @@ use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\TestSuite\IntegrationTestCase;
 use Cake\View\Exception\MissingTemplateException;
+use Cake\ORM\TableRegistry;
 
 /**
  * UsersControllerTest class
  */
 class UsersControllerTest extends IntegrationTestCase
 {
+    public $fixtures = ['app.Users', 'app.Proposals', 'app.Curricula', 'app.CurriculaProposals'];
+
+    public function setUp()
+    {
+      parent::setUp();
+      $this->Users = TableRegistry::getTableLocator()->get('Users');
+    }
+
+    public function testFixture()
+    {
+      $user = $this->Users->get(1);
+      $this->assertEquals("Mario Rossi", $user->name);
+    }
+
     /**
      * testMultipleGet method
      *
@@ -62,23 +77,26 @@ class UsersControllerTest extends IntegrationTestCase
     {
         // test that page requires authentication
         $this->get('/users');
-        $this->assertResponseCode(302);
+        $this->assertRedirect();
         $this->assertRedirectContains('?redirect=%2Fusers');
 
-        /* ancora non funziona!
         // Set session data
         $this->session([
             'Auth' => [
                 'User' => [
                     'id' => 1,
-                    'username' => 'testing',
-                    // other keys.
+                    'user' => 'mario.rossi', // see UsersFixture.php
+                    'ldap_dn' => '',
+                    'name' => 'MARIO ROSSI',
+                    'role' => 'student',
+                    'number' => '123456',
+                    'admin' => false,
+                    'surname' => '',
+                    'givenname' => ''
                 ]
             ]
         ]);
         $this->get('/users');
         $this->assertResponseOk();
-        */
-
     }
 }

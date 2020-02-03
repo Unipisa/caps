@@ -13,7 +13,7 @@
         <td><?php echo $exam['id']; ?></td>
         <td>
             <?php echo $this->Html->link($exam['name'],
-                array('controller' => 'exams', 'action' => 'edit', $exam['id'])); ?>
+                ['controller' => 'exams', 'action' => 'edit', $exam['id']]); ?>
         </td>
         <td><?php echo $exam['code']; ?></td>
         <td><?php echo $exam['sector']; ?></td>

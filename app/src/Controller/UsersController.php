@@ -76,10 +76,8 @@ class UsersController extends AppController {
             if ($user['admin']) {
               return $this->redirect(
                     $this->Auth->redirectUrl(
-                        array(
-                            'controller' => 'proposals',
-                            'action' => 'admin_todo'
-                        )
+                        ['controller' => 'proposals',
+                            'action' => 'admin_todo']
                     )
                 );
             }
@@ -112,11 +110,9 @@ class UsersController extends AppController {
                 if ($user['admin']) {
                     return $this->redirect(
                         $this->Auth->redirectUrl(
-                            array(
-                                'admin' => true,
+                            ['admin' => true,
                                 'controller' => 'proposals',
-                                'action' => 'admin_todo'
-                            )
+                                'action' => 'admin_todo']
                         )
                     );
                 }

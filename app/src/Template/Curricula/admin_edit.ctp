@@ -14,22 +14,16 @@
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
         'id',
-        array(
-            'type' => 'hidden'
-        )
+        ['type' => 'hidden']
     );
     echo $this->Form->control(
         'name',
-        array(
-            'class' => 'caps-admin-curriculum-name',
-            'label' => false
-        )
+        ['class' => 'caps-admin-curriculum-name',
+            'label' => false]
     );
     echo $this->Form->submit('Aggiorna nome',
-        array(
-            'class' => 'caps-admin-curriculum-submit',
-            'div' => false
-        )
+        ['class' => 'caps-admin-curriculum-submit',
+            'div' => false]
     );
     echo $this->Form->end();
 ?>
@@ -64,14 +58,10 @@
                     <?php
                         echo $this->Form->postLink(
                             __('Cancella'),
-                            array(
-                                'controller' => 'compulsory_exams',
+                            ['controller' => 'compulsory_exams',
                                 'action' => 'admin_delete',
-                                $compulsory_exam['id']
-                            ),
-                            array(
-                                'class' => 'reject'
-                            ),
+                                $compulsory_exam['id']],
+                            ['class' => 'reject'],
                             __('Sei sicuro di voler cancellare l\'esame "%s"?', $name)
                         )
                     ?>
@@ -94,39 +84,31 @@
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
         'position',
-        array(
-            // FIXME(jacquerie): Not properly setted.
-            'default' => 0,
-            'type' => 'hidden'
-        )
+        // FIXME(jacquerie): Not properly setted.
+        ['default' => 0,
+         'type' => 'hidden']
     );
     echo $this->Form->control(
         'exam_id',
-        array(
-            'class' => 'caps-admin-curriculum-exam-name-choose',
+        ['class' => 'caps-admin-curriculum-exam-name-choose',
             'label' => false,
-            'options' => $examsList
-        )
+            'options' => $examsList]
     );
     echo $this->Form->control(
         'curriculum_id',
-        array(
-            'default' => $curriculum['id'],
-            'type' => 'hidden'
-        )
+        ['default' => $curriculum['id'],
+            'type' => 'hidden']
     );
     echo $this->Form->control(
         'year',
-        array(
+        [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
-        )
+            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+        ]
     );
     echo $this->Form->submit('Aggiungi esame',
-        array(
-            'class' => 'caps-admin-curriculum-exam-submit'
-        )
+        ['class' => 'caps-admin-curriculum-exam-submit']
     );
     echo $this->Form->end();
 ?>
@@ -161,14 +143,10 @@
                         <?php
                             echo $this->Form->postLink(
                                 __('Cancella'),
-                                array(
-                                    'controller' => 'compulsory_groups',
+                                ['controller' => 'compulsory_groups',
                                     'action' => 'admin_delete',
-                                    $compulsory_group['id']
-                                ),
-                                array(
-                                    'class' => 'reject'
-                                ),
+                                    $compulsory_group['id']],
+                                ['class' => 'reject'],
                                 __('Sei sicuro di voler cancellare l\'esame a scelta nel gruppo "%s"?', $name)
                             )
                         ?>
@@ -190,39 +168,33 @@
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
         'position',
-        array(
+        [
             // FIXME(jacquerie): Not properly setted.
             'default' => 0,
             'type' => 'hidden'
-        )
+        ]
     );
     echo $this->Form->control(
         'group_id',
-        array(
-            'class' => 'caps-admin-curriculum-group-name-choose',
+        ['class' => 'caps-admin-curriculum-group-name-choose',
             'label' => false,
-            'options' => $groupsList
-        )
+            'options' => $groupsList]
     );
     echo $this->Form->control(
         'curriculum_id',
-        array(
-            'default' => $curriculum['id'],
-            'type' => 'hidden'
-        )
+        ['default' => $curriculum['id'],
+            'type' => 'hidden']
     );
     echo $this->Form->control(
         'year',
-        array(
+        [
             'class' => 'caps-admin-curriculum-group-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
-        )
+            'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+        ]
     );
     echo $this->Form->submit('Aggiungi gruppo',
-        array(
-            'class' => 'caps-admin-curriculum-group-submit'
-        )
+        ['class' => 'caps-admin-curriculum-group-submit']
     );
     echo $this->Form->end();
 ?>
@@ -246,14 +218,10 @@
                         <?php
                             echo $this->Form->postLink(
                                 __('Cancella'),
-                                array(
-                                    'controller' => 'free_choice_exams',
+                                ['controller' => 'free_choice_exams',
                                     'action' => 'admin_delete',
-                                    $free_choice_exam['id']
-                                ),
-                                array(
-                                    'class' => 'reject'
-                                ),
+                                    $free_choice_exam['id']],
+                                ['class' => 'reject'],
                                 __('Sei sicuro di voler cancellare questo esame a scelta libera?')
                             )
                         ?>
@@ -275,41 +243,35 @@
     $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
         'position',
-        array(
+        [
             // FIXME(jacquerie): Not properly setted.
             'default' => 0,
             'type' => 'hidden',
-        )
+        ]
     );
     echo $this->Form->control(
         'curriculum_id',
-        array(
-            'default' => $curriculum['id'],
-            'type' => 'hidden',
-        )
+        ['default' => $curriculum['id'],
+            'type' => 'hidden',]
     );
     // XXX(jacquerie): Ignored by the receiving controller.
     echo $this->Form->control(
         'name',
-        array(
-            'class' => 'caps-admin-curriculum-exam-name-choose',
+        ['class' => 'caps-admin-curriculum-exam-name-choose',
             'default' => 'Esame a scelta libera',
             'disabled' => true,
-            'label' => false
-        )
+            'label' => false]
     );
     echo $this->Form->control(
         'year',
-        array(
+        [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? array(1 => 1, 2 => 2, 3 => 3) : array(1 => 1, 2 => 2))
-        )
+            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+        ]
     );
     echo $this->Form->submit('Aggiungi esame',
-        array(
-            'class' => 'caps-admin-curriculum-exam-submit'
-        )
+        ['class' => 'caps-admin-curriculum-exam-submit']
     );
     echo $this->Form->end();
 ?>

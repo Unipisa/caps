@@ -21,7 +21,7 @@ class CompulsoryExamsController extends AppController {
             throw new ForbiddenException();
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             $newexam = $this->CompulsoryExams->newEntity();
             $newexam = $this->CompulsoryExams->patchEntity($newexam, $this->request->getData());
 
@@ -49,7 +49,7 @@ class CompulsoryExamsController extends AppController {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(array('post', 'put'))) {
+        if ($this->request->is(['post', 'put'])) {
             if ($this->CompulsoryExams->delete($compulsory_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
                 return $this->redirect(

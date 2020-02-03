@@ -12,11 +12,9 @@
 <?php
 echo $this->Form->create('Proposal');
 echo $this->Form->control('Curriculum.0.curriculum_id',
-    array(
-        'empty' => array('text" disabled="disabled" selected="selected' => 'Scegli un curriculum'),
+    ['empty' => ['text" disabled="disabled" selected="selected' => 'Scegli un curriculum'],
         'label' => '',
-        'options' => $curricula
-    ));
+        'options' => $curricula]);
 ?>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>

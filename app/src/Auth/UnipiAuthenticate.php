@@ -8,9 +8,11 @@ use Cake\Auth\BaseAuthenticate;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 
+use Cake\Log\Log;
+
 class UnipiAuthenticate extends BaseAuthenticate {
 
-    private $auth_config  = [
+    protected $_defaultConfig  = [
     	'fields' => [
         	'username' => 'username',
 	        'password' => 'password'
@@ -20,31 +22,52 @@ class UnipiAuthenticate extends BaseAuthenticate {
 	    'passwordHasher' => 'Default'
     ];
 
-    public function __construct() {
-        $this->setConfig($this->auth_config);
-    }
-
-    public function getConfig($key = NULL, $default = NULL) {
-        $config = parse_ini_file (APP . DS . ".." . DS . "unipi.ini");
-        return $config;
+    public function __construct($registry, $config = NULL) {
+      parent::__construct($registry, $config);
+      $ini_filename = APP . DS . ".." . DS . "unipi.ini";
+      if (file_exists($ini_filename)) {
+        $this->setConfig(parse_ini_file ($ini_filename));
+      }
     }
 
     public function authenticate(ServerRequest $request, Response $response) {
         $config = $this->getConfig();
+        // Log::write('debug', "******". print_r($config, true));
         $data = $request->getData();
 
+        $admin_usernames = [];
+        if (array_key_exists('admins', $config)) {
+          $admin_usernames = $config['admins'];
+        }
         // Allow admins to browse as a student.
-        if (in_array($data['username'], $config['fakes']) && $data['password'] == $data['username']) {
-            return array (
-                'ldap_dn' => '',
-                'user' => $data['username'],
-                'name' => 'Utente Dimostrativo',
-                'role' => 'student',
-                'number' => '000000',
-                'admin' => in_array($data['username'], $config['admins']),
-								'surname' => '',
-								'givenname' => ''
-            );
+        $user = [
+            'ldap_dn' => '',
+            'user' => $data['username'],
+            'name' => 'Utente Dimostrativo',
+            'role' => 'student',
+            'number' => '000000',
+            'admin' => in_array($data['username'], $admin_usernames),
+            'surname' => '',
+            'givenname' => ''
+        ];
+        foreach($config['fakes'] as $fake) {
+            if (is_array($fake)) {
+                // configuration contains user info
+                if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
+                    foreach($user as $key => $val) {
+                        if (array_key_exists($key, $fake)) {
+                          $user[$key] = $fake[$key];
+                        }
+                    }
+                    return $user;
+                }
+            } else {
+                // configuration only contains username
+                if ($data['username'] == $fake && $data['password'] == $fake) {
+                  $user['user'] = $fake;
+                  return $user;
+                }
+            }
         }
 
         // Terrible hack because the SSL certificate on the Unipi side is not

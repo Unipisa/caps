@@ -49,7 +49,9 @@ class AppController extends Controller
         ]);
         $this->loadComponent('Flash');
 
-        $this->loadComponent('Auth', [ 'authenticate' => [ 'Unipi' ] ]);
+        $this->loadComponent('Auth', [
+          'authenticate' => [
+            'Unipi' => Configure::read('UnipiAuthenticate') ] ]);
         // $this->loadComponent('Authentication.Authentication');
 
         /*

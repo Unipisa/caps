@@ -4,22 +4,16 @@
 <?php
     echo $this->Form->create(
         'Group',
-        array(
-            'action' => 'adminAdd'
-        )
+        ['action' => 'adminAdd']
     );
     echo $this->Form->input(
         'name',
-        array(
-            'label' => 'Nome'
-        )
+        ['label' => 'Nome']
     );
     echo $this->Form->control(
         'exams._ids',
-        array(
-            'label' => 'Esami',
-            'size' => 20
-        )
+        ['label' => 'Esami',
+            'size' => 20]
     );
     echo $this->Form->submit('Salva gruppo');
     echo $this->Form->end();

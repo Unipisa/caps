@@ -36,10 +36,6 @@ class CurriculaFixture extends TestFixture
     public function init()
     {
         $this->records = [
-            [
-                'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet'
-            ],
         ];
         parent::init();
     }

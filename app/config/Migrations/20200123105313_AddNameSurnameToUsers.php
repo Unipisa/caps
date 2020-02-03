@@ -45,7 +45,13 @@ class AddNameSurnameToUsers extends AbstractMigration
                         $user->surname = $pieces[1];
                         break;
                     case 3:
-                        if ($pieces[1] == "De" || $pieces[1] == "Del" || $pieces[1] == "Di") {
+                        if ($pieces[1] == "De" || $pieces[1] == "Del"
+                            || $pieces[1] == "Di" || $pieces[1] == "La"
+                            || $pieces[1] == "Lo" || $pieces[1] == "Dal"
+                            || $pieces[1] == "Villanis" || $pieces[1] == "Minutillo"
+                            || $pieces[1] == "Walton" || $pieces[1] == "Leo"
+                            || $pieces[2] == "GiuffrÈ"
+                          ) {
                             $user->givenname = $pieces[0];
                             $user->surname = $pieces[1] . " " . $pieces[2];
                         }
@@ -55,12 +61,22 @@ class AddNameSurnameToUsers extends AbstractMigration
                         }
                         break;
                     case 4:
-                        $user->givenname = $pieces[0] . " " . $pieces[1];
-                        $user->surname = $pieces[2] . " " . $pieces[3];
+                        if ($pieces[2] == "Giorgio" || $pieces[2] == "Huaccha") {
+                          $user->givenname = $pieces[0] . " " . $pieces[1] . " " . $pieces[2];
+                          $user->surname = $pieces[3];
+                        } else {
+                          $user->givenname = $pieces[0] . " " . $pieces[1];
+                          $user->surname = $pieces[2] . " " . $pieces[3];
+                        }
                         break;
                     default:
-                        $user->givenname = $pieces[0] . " " . $pieces[1];
-                        $user->surname = join(" ", array_slice($pieces, 2));
+                        if ($pieces[2] == 'Abd') {
+                          $user->givenname = $pieces[0] . " " . $pieces[1] . " " . $pieces[2];
+                          $user->surname = join(" ", array_slice($pieces, 3));
+                        } else {
+                          $user->givenname = $pieces[0] . " " . $pieces[1];
+                          $user->surname = join(" ", array_slice($pieces, 2));
+                        }
                         break;
                 }
 
@@ -68,7 +84,7 @@ class AddNameSurnameToUsers extends AbstractMigration
 
                 // We need atomic false because the migration is already incapsulated inside
                 // a transaction, and if we let atomic->true (the default behavior), then
-                // this transaction will be closed after calling save(), connfusing Phinx. 
+                // this transaction will be closed after calling save(), connfusing Phinx.
                 $tbl->save($user, ['atomic' => false]);
             }
         }

@@ -14,10 +14,8 @@
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    array(
-                        'action' => 'admin_review',
-                        $proposal['id']
-                    )
+                    ['action' => 'admin_review',
+                        $proposal['id']]
                 );
             ?>
         </td>
@@ -27,10 +25,8 @@
                     <?php
                         echo $this->Html->link(
                             'Riapri ✎',
-                            array(
-                                'action' => 'admin_thaw',
-                                $proposal['id']
-                            )
+                            ['action' => 'admin_thaw',
+                                $proposal['id']]
                         );
                     ?>
                 </li>

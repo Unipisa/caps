@@ -14,11 +14,9 @@
             <?php
                 echo $this->Html->link(
                     $curriculum['name'],
-                    array(
-                        'controller' => 'curricula',
+                    ['controller' => 'curricula',
                         'action' => 'admin_edit',
-                        $curriculum['id']
-                    )
+                        $curriculum['id']]
                 );
             ?>
         </td>
@@ -28,13 +26,9 @@
                     <?php
                         echo $this->Form->postLink(
                             __('Cancella'),
-                            array(
-                                'action' => 'admin_delete',
-                                $curriculum['id']
-                            ),
-                            array(
-                                'class' => 'reject'
-                            ),
+                            ['action' => 'admin_delete',
+                                $curriculum['id']],
+                            ['class' => 'reject'],
                             __('Sei sicuro di voler cancellare il curriculum "%s"?', $curriculum['name'])
                         );
                     ?>
@@ -52,10 +46,8 @@
             <?php
                 echo $this->Html->link(
                     'Aggiungi curriculum',
-                    array(
-                        'controller' => 'curricula',
-                        'action' => 'admin_add'
-                    )
+                    ['controller' => 'curricula',
+                        'action' => 'admin_add']
                 );
             ?>
         </li>

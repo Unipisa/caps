@@ -12,19 +12,10 @@ var freeChoiceExams = undefined;
 var lastExamAdded = 0;
 var lastFreeChoiceExamAdded = 0;
 
-var load_data_promise = new Promise(function(resolve, reject) {
-    $.ajax({
-        url: examsURL,
-        success: function (response) {
-            exams = response["exams"];
-            $.ajax({
-                url: groupsURL,
-                success: function (response) {
-                    groups = response["groups"];
-                    resolve();
-                }
-            });
-        }
+var load_data_promise = $.get(examsURL, function (response) {
+    exams = response["exams"];
+    $.get(groupsURL, function (response) {
+        groups = response["groups"];
     });
 });
 
@@ -43,9 +34,8 @@ function on_curriculum_selected() {
 
         $("#proposalForm").hide();
 
-        $.ajax({
-            url: curriculumURL + curriculumId + ".json",
-            success: function (response) {
+        $.get(curriculumURL + curriculumId + ".json",
+            function (response) {
                 compulsoryExams = response["compulsory_exams"];
                 compulsoryGroups = response["compulsory_groups"];
                 freeChoiceExams = response["free_choice_exams"];
@@ -61,8 +51,7 @@ function on_curriculum_selected() {
                 addKonamiCode();
 
                 $("#proposalForm").slideDown();
-            }
-        });
+            });
     }
 
     var addCompulsoryExams = function () {

@@ -131,7 +131,7 @@ class ProposalsController extends AppController {
         if ($owner) {
             $isProposalSubmitted = $proposal['submitted'];
             if ($isProposalSubmitted) {
-                return $this->redirect(array('action' => 'view', $proposal['id']));
+                return $this->redirect(['action' => 'view', $proposal['id']]);
             }
 
             if ($this->request->is('post')) {
@@ -152,11 +152,11 @@ class ProposalsController extends AppController {
 								$proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
 
                 if ($this->Proposals->save($proposal)) {
-                    return $this->redirect(array('action' => 'view', $proposal['id']));
+                    return $this->redirect(['action' => 'view', $proposal['id']]);
                 }
 								else {
 									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
-		                return $this->redirect(array('action' => 'view', $proposal['id']));
+		                return $this->redirect(['action' => 'view', $proposal['id']]);
 								}
             }
 
@@ -186,9 +186,7 @@ class ProposalsController extends AppController {
         }
 
         $exams_table = TableRegistry::getTableLocator()->get('Exams');
-        $exams = $exams_table->find('all', array(
-            'recursive' => -1
-        ));
+        $exams = $exams_table->find('all', ['recursive' => -1]);
 
         $this->set('proposal', $proposal);
         $this->set('exams', $exams);
@@ -213,10 +211,8 @@ class ProposalsController extends AppController {
         $this->Proposals->save($proposal);
 
         return $this->redirect(
-            array(
-                'controller' => 'proposals',
-                'action' => 'admin_todo'
-            )
+            ['controller' => 'proposals',
+                'action' => 'admin_todo']
         );
     }
 
@@ -254,10 +250,8 @@ class ProposalsController extends AppController {
         $this->Proposals->save($proposal);
 
         return $this->redirect(
-            array(
-                'controller' => 'proposals',
-                'action' => 'admin_todo'
-            )
+            ['controller' => 'proposals',
+                'action' => 'admin_todo']
         );
     }
 
@@ -280,10 +274,8 @@ class ProposalsController extends AppController {
         $this->Proposals->save($proposal);
 
         return $this->redirect(
-            array(
-                'controller' => 'proposals',
-                'action' => 'admin_todo'
-            )
+            ['controller' => 'proposals',
+                'action' => 'admin_todo']
         );
     }
 
@@ -306,10 +298,8 @@ class ProposalsController extends AppController {
         $this->Proposals->save($proposal);
 
         return $this->redirect(
-            array(
-                'controller' => 'proposals',
-                'action' => 'admin_frozen'
-            )
+            ['controller' => 'proposals',
+                'action' => 'admin_frozen']
         );
     }
 

@@ -4,10 +4,8 @@
             <?php
                 echo $this->Html->link(
                     'Aggiungi ' . $this->params['controller'],
-                    array(
-                        'controller' => $this->params['controller'],
-                        'action' => 'admin_add'
-                    )
+                    ['controller' => $this->params['controller'],
+                        'action' => 'admin_add']
                 );
             ?>
         </li>
