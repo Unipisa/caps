@@ -2,8 +2,7 @@
     <div class="heading">
         <img class="left" src="/css/img/cherubino_black.png"/>
         <h2 class="department">Dipartimento di Matematica — Università di Pisa</h2>
-        <h2 class="degree">Corso di Laurea
-            <?php echo (strpos($proposal['curriculum'][0]['name'], 'Triennale') !== false) ? 'Triennale — Classe L-35' : 'Magistrale — Classe LM-40'; ?>
+        <h2 class="degree"><?php echo $proposal['curriculum'][0]['degree']['name']; ?>
         </h2>
         <h2 class="year"><?php
             /* At the moment we do not have the information on the academic
@@ -31,7 +30,7 @@
 
 <div class="heading--web">
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
-    <h3>Curriculum: <?php echo $proposal['curriculum'][0]['name']; ?></h3>
+    <h3>Curriculum: <?php echo $proposal['curriculum'][0]->toString(); ?></h3>
 </div>
 
 <?php if($proposal['submitted'] && $proposal['approved']): ?>

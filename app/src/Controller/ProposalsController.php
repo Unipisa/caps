@@ -21,7 +21,7 @@ class ProposalsController extends AppController {
 
     private function done()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
             ->limit(25)
             ->order([ 'Users.surname' => 'asc' ]);
@@ -29,7 +29,7 @@ class ProposalsController extends AppController {
 
     private function todo()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([
                 'submitted' => true,
                 'approved' => false
@@ -40,7 +40,7 @@ class ProposalsController extends AppController {
 
     private function frozen()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([ 'Proposals.frozen' => true ])
             ->limit(25)
             ->order([ 'Users.surname' => 'asc' ]);
@@ -91,7 +91,7 @@ class ProposalsController extends AppController {
         $proposal = $this->Proposals->findById($id)
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
 						'ChosenExams.CompulsoryExams', 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-						'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups' ])
+						'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees' ])
             ->firstOrFail();
 
         if (!$proposal) {
@@ -163,7 +163,13 @@ class ProposalsController extends AppController {
 								}
             }
 
-            $this->set('curricula', $this->Proposals->Curricula->find('list'));
+            $this->set('curricula', $this->Proposals->Curricula
+                    ->find()
+                    ->contain([ 'Degrees' ])->find('list', [
+                    'valueField' => function($c) {
+                        return $c->toString();
+                    }
+                ]));
             $this->set('proposal', $proposal);
             $this->set('owner', $owner);
         } else {
