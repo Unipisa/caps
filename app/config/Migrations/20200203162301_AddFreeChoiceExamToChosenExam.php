@@ -18,7 +18,8 @@ class AddFreeChoiceExamToChosenExam extends AbstractMigration
             'limit' => 11,
             'null' => true,
         ]);
-        $table->addForeignKey('free_choice_exam_id', 'free_choice_exams', 'id');
         $table->update();
+        $table->addForeignKey('free_choice_exam_id', 'free_choice_exams', 'id');
+
     }
 }
