@@ -1,11 +1,14 @@
 <?php if ($proposal != null) {
     ?>
       <script type="text/javascript">
-        var proposal = <?php echo json_encode($proposal); ?>
+        var proposal = <?php echo json_encode($proposal); ?>;
+	var curriculumURL = "<?php echo $this->Url->build('/'); ?>curricula/view/";
+	var examsURL = "<?php echo $this->Url->build('/'); ?>exams.json";
+	var groupsURL = "<?php echo $this->Url->build('/'); ?>groups.json";
       </script>
     <?php
 }?>
-<script src="../../js/proposals/add.js" type="text/javascript"></script>
+<script src="<?php echo $this->Url->build('/'); ?>js/proposals/add.js" type="text/javascript"></script>
 
 <h2>Nuovo piano di studio</h2>
 <div id="completeForm">

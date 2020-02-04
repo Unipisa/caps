@@ -6,24 +6,23 @@
 
 set -e
 
-CAPSDIRECTORY="/var/www/caps"
+for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
+  echo "Aggiornamento di ${CAPSDIRECTORY}"
+  cd ${CAPSDIRECTORY}
 
-cd ${CAPSDIRECTORY}/app
+  current_HEAD=$(git rev-parse HEAD)
+  git pull > /dev/null
+  new_HEAD=$(git rev-parse HEAD)
 
-current_HEAD=$(git rev-parse HEAD)
+  if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+    # Install all the software required
+    composer install -n
 
-git pull > /dev/null
+    # Perform DB migrations, if needed
+    bin/cake migrations migrate
 
-new_HEAD=$(git rev-parse HEAD)
-
-if [ "${new_HEAD}" != "${current_HEAD}" ]; then
-  # Install all the software required
-  composer install -n
-
-  # Perform DB migrations, if needed
-  bin/cake migrations migrate
-
-  # Clear cache -- this helps in case new models are
-  # introduced, or if new fields are added
-  bin/cake cache clear_all
-fi
+    # Clear cache -- this helps in case new models are
+    # introduced, or if new fields are added
+    bin/cake cache clear_all
+  fi
+done
