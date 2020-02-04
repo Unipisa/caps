@@ -45,6 +45,8 @@ class CurriculaTable extends Table
         $this->hasMany('FreeChoiceExams');
         $this->hasMany('CompulsoryExams');
         $this->hasMany('CompulsoryGroups');
+
+        $this->belongsTo('Degrees');
     }
 
     /**
