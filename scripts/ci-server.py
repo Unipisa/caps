@@ -15,7 +15,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods = [ 'GET', 'POST' ])
 def update_caps():
     # Run the update command, and leave it running
 
@@ -23,5 +23,5 @@ def update_caps():
         os.path.dirname(__file__),
         "update-caps"
     )
-    os.system("flock /tmp/caps.lock -c '%s' & >> update-caps.log" % update_caps_bin)
+    os.system("flock /tmp/caps.lock -c '%s' >> update-caps.log &" % update_caps_bin)
     return "Update triggered"
