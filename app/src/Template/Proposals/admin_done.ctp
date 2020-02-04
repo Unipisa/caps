@@ -14,7 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    ['action' => 'adminReview', $proposal['id']]
+                    ['action' => 'view', $proposal['id']]
                 );
             ?>
         </td>
