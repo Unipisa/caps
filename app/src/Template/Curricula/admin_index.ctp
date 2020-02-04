@@ -13,7 +13,7 @@
         <td class="caps-admin-curricula-name">
             <?php
                 echo $this->Html->link(
-                    $curriculum['name'],
+                    $curriculum->toString(),
                     ['controller' => 'curricula',
                         'action' => 'admin_edit',
                         $curriculum['id']]

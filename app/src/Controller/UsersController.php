@@ -42,7 +42,7 @@ class UsersController extends AppController {
 			  throw new  ForbiddenException('Cannot access another user profile');
 
 			$proposals = $this->Users->Proposals->find()
-				->contain([	'Users', 'Curricula' ])
+				->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
 				->where([ 'Users.id' => $user_entry['id'] ])
 				->order([ 'Proposals.modified' => 'DESC' ]);
 

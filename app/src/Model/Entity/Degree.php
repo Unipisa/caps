@@ -4,14 +4,14 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Curricula Entity
+ * Degree Entity
  *
  * @property int $id
  * @property string|null $name
  *
- * @property \App\Model\Entity\Proposal[] $proposals
+ * @property \App\Model\Entity\Curriculum[] $curricula
  */
-class Curriculum extends Entity
+class Degree extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -24,17 +24,6 @@ class Curriculum extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'proposals' => true,
-        'degree' => true
+        'curricula' => true
     ];
-
-    public function tostring() {
-        return $this['degree']['name'] .
-            " — Curriculum " .
-            $this['name'] .
-            " — Anno Accademico " .
-            $this['academic_year'] .
-            "/" .
-            ($this['academic_year'] + 1);
-    }
 }
