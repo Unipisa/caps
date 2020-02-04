@@ -1,10 +1,6 @@
 var exams = undefined;
 var groups = undefined;
 
-var curriculumURL = "/curricula/view/";
-var examsURL = "/exams.json";
-var groupsURL = "/groups.json";
-
 var compulsoryExams = undefined;
 var compulsoryGroups = undefined;
 var freeChoiceExams = undefined;

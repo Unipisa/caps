@@ -28,9 +28,9 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
             'null' => false,
             'limit' => 11
         ]);
+        $table->update();
         $table->addForeignKey('compulsory_group_id', 'compulsory_group', 'id');
         $table->addForeignKey('compulsory_exam_id', 'compulsory_exam', 'id');
-        $table->update();
 
         $table = $this->table('chosen_free_choice_exams');
         $table->addColumn('free_choice_exam_id', 'integer', [
@@ -42,8 +42,8 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
             'null' => false,
             'limit' => 11
         ]);
-        $table->addForeignKey('free_choice_exam_id', 'free_choice_exam', 'id');
         $table->update();
+        $table->addForeignKey('free_choice_exam_id', 'free_choice_exam', 'id');
 
         // Update the entries by setting the year guessing that
         // the exams are given in the right order, and with 60
