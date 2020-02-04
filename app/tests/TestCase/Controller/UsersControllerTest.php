@@ -97,6 +97,6 @@ class UsersControllerTest extends IntegrationTestCase
             ]
         ]);
         $this->get('/users');
-        $this->assertResponseOk();
+        $this->assertRedirect();
     }
 }
