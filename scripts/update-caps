@@ -17,6 +17,9 @@ git pull > /dev/null
 new_HEAD=$(git rev-parse HEAD)
 
 if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+  # Install all the software required
+  composer install
+
   # Perform DB migrations, if needed
   bin/cake migrations migrate
 
