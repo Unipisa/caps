@@ -108,7 +108,7 @@ class ProposalsController extends AppController {
 
     public function add ($proposal_id = null) {
 	    $user = $this->Auth->user();
-      $username = $user['user'];
+        $username = $user['user'];
 
         // Find the user in the database matching the one logged in
         $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
