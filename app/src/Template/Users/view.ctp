@@ -31,7 +31,10 @@
 
     ?>
       <tr>
-       <td><?php echo $proposal['curriculum'][0]['name'] ?></td>
+       <td><?php echo $proposal['curriculum'][0]['degree']['name']; ?> —
+            Curriculum <?php echo $proposal['curriculum'][0]['name']; ?> —
+            Anno Accademico <?php echo $proposal['curriculum'][0]['academic_year']; ?>/<?php echo $proposal['curriculum'][0]['academic_year'] + 1; ?>
+       </td>
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>
