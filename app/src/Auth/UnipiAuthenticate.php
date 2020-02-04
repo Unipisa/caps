@@ -23,10 +23,10 @@ class UnipiAuthenticate extends BaseAuthenticate {
     ];
 
     public function __construct($registry, $config = NULL) {
-      parent::__construct($registry, $config);
-      $ini_filename = APP . DS . ".." . DS . "unipi.ini";
-      if (file_exists($ini_filename)) {
-        $this->setConfig(parse_ini_file ($ini_filename));
+        parent::__construct($registry, $config);
+        $ini_filename = APP . DS . ".." . DS . "unipi.ini";
+        if (file_exists($ini_filename)) {
+            $this->setConfig(parse_ini_file ($ini_filename));
       }
     }
 

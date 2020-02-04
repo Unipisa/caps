@@ -7,7 +7,7 @@
 set -e
 
 for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
-  echo "Aggiornamento di ${CAPSDIRECTORY}"
+  echo "$(date): Aggiornamento di ${CAPSDIRECTORY}"
   cd ${CAPSDIRECTORY}
 
   current_HEAD=$(git rev-parse HEAD)
@@ -15,6 +15,8 @@ for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
   new_HEAD=$(git rev-parse HEAD)
 
   if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+    echo "HEAD: ${current_HEAD} -> ${new_HEAD}"
+
     # Install all the software required
     composer install -n
 
@@ -26,3 +28,4 @@ for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
     bin/cake cache clear_all
   fi
 done
+
