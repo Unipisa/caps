@@ -9,7 +9,13 @@
     </tr>
 <?php foreach ($proposalsTodo as $proposal): ?>
     <tr>
-        <td><?php echo $proposal['user']['name']; ?></td>
+        <td>
+            <?php echo $this->Html->link($proposal['user']['name'], [
+                    'controller' => 'users',
+                    'action' => 'view',
+                    $proposal['user']['id']
+                ]);
+            ?></td>
         <td>
             <?php
                 echo $this->Html->link(
