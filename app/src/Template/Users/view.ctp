@@ -31,7 +31,8 @@
 
     ?>
       <tr>
-       <td><?php echo $proposal['curriculum'][0]['name'] ?></td>
+       <td><?php echo $proposal['curriculum'][0]->toString(); ?>
+       </td>
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>

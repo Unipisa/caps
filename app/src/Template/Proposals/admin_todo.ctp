@@ -19,7 +19,7 @@
         <td class="caps-admin-proposal-pds">
             <?php
                 echo $this->Html->link(
-                    $proposal['curriculum'][0]['name'],
+                    $proposal['curriculum'][0]->toString(),
                     ['action' => 'view', $proposal['id']]
                 );
             ?>
