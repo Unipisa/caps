@@ -11,20 +11,16 @@
 <h2>Modifica curriculum</h2>
 <?php
     echo $this->Form->create($curriculum);
-    $this->Form->setTemplates($myTemplates);
     echo $this->Form->control(
-        'id',
-        ['type' => 'hidden']
+        'degree_id'
     );
     echo $this->Form->control(
-        'name',
-        ['class' => 'caps-admin-curriculum-name',
-            'label' => false]
+        'name'
     );
-    echo $this->Form->submit('Aggiorna nome',
-        ['class' => 'caps-admin-curriculum-submit',
-            'div' => false]
+    echo $this->Form->control(
+        'academic_year'
     );
+    echo $this->Form->submit('Aggiorna');
     echo $this->Form->end();
 ?>
 

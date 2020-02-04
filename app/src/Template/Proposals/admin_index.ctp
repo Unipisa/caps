@@ -19,7 +19,7 @@
         <td>
             <?php
                 echo $this->Html->link(
-                    $proposal['Curriculum'][0]['name'],
+                    $proposal['curriculum'][0]->toString(),
                     ['action' => 'view', $proposal['id']]
                 );
             ?>

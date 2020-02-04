@@ -16,6 +16,7 @@ class CreateDegree extends AbstractMigration
         $table->addColumn('name', 'text', [
             'default' => null,
             'null' => false,
+            'limit' => 255
         ]);
         $table->create();
 
