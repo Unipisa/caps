@@ -31,6 +31,7 @@
 
 <div class="heading--web">
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
+    <h3>Curriculum: <?php echo $proposal['curriculum'][0]['name']; ?></h3>
 </div>
 
 <?php if($proposal['submitted'] && $proposal['approved']): ?>
