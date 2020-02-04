@@ -18,7 +18,7 @@ new_HEAD=$(git rev-parse HEAD)
 
 if [ "${new_HEAD}" != "${current_HEAD}" ]; then
   # Install all the software required
-  composer install
+  composer install -n
 
   # Perform DB migrations, if needed
   bin/cake migrations migrate
