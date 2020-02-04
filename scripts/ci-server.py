@@ -3,7 +3,7 @@
 
 #
 # CI server that automatically updates the code when
-# it is pushed to the Github repository. 
+# it is pushed to the Github repository.
 #
 
 # Run this application with:
@@ -23,8 +23,5 @@ def update_caps():
         os.path.dirname(__file__),
         "update-caps"
     )
-    os.system("flock /tmp/caps.lock -c '%s' &" % update_caps_bin)
-
+    os.system("flock /tmp/caps.lock -c '%s' & >> update-caps.log" % update_caps_bin)
     return "Update triggered"
-
-    
