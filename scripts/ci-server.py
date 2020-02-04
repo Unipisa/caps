@@ -19,7 +19,10 @@ app = Flask(__name__)
 def update_caps():
     data = request.get_json()
 
-    # Run the update command, and leave it running
-    os.system("flock /tmp/caps.lock -c 'update-caps' >> update-caps.log &")
+    update_caps_bin = os.path.join(
+        os.path.dirname(__file__),
+        "update-caps"
+    )
+    os.system("flock /tmp/caps.lock -c '%s' & >> update-caps.log" % update_caps_bin)
 
     return "Update triggered", 200
