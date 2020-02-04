@@ -67,8 +67,17 @@ class CreateDegree extends AbstractMigration
                 $dash = "-";
             }
 
-            // Split the name
-            $pieces = explode($dash, $name);
+            // Split the name (we cannot use explode because of encoding issues with the
+            // dash symbol above in MySQL, apparently). 
+            $pieces = [];
+            $jj = 0;
+            for ($j = 0; $j < strlen($name); $j++) {
+                if (!ctype_space($name[$j]) && !ctype_alnum($name[$j]) && $name[$j] != '/') {
+                    $pieces[] = substr($name, $jj, $j-$jj);
+                    $jj = $j+1;
+                }
+            }
+            $pieces[] = substr($name, $jj);
 
             $curriculum['name'] = trim(str_replace("curriculum", "", $pieces[1]));
 
