@@ -9,12 +9,18 @@
     </tr>
 <?php foreach ($proposalsFrozen as $proposal): ?>
     <tr>
-        <td class="caps-admin-proposal-name"><?php echo $proposal['user']['name']; ?></td>
+        <td class="caps-admin-proposal-name">
+            <?php echo $this->Html->link($proposal['user']['name'], [
+                    'controller' => 'users',
+                    'action' => 'view',
+                    $proposal['user']['id']
+                ]);
+            ?></td>
         <td class="caps-admin-proposal-pds">
             <?php
                 echo $this->Html->link(
                     $proposal['curriculum'][0]['name'],
-                    ['action' => 'admin_review',
+                    ['action' => 'view',
                         $proposal['id']]
                 );
             ?>

@@ -31,6 +31,7 @@
 
 <div class="heading--web">
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
+    <h3>Curriculum: <?php echo $proposal['curriculum'][0]['name']; ?></h3>
 </div>
 
 <?php if($proposal['submitted'] && $proposal['approved']): ?>
@@ -160,3 +161,69 @@
         <div class="signature">Firma dello studente</div>
     </div>
 </div>
+
+
+<?php if ($owner['admin']): ?>
+    <!-- Toolbar per l'amministratore //-->
+    <ul class=planActions>
+        <!-- FIXME: simplify this logic -->
+        <?php if ($proposal['submitted'] && $proposal['approved'] && $proposal['frozen']): ?>
+        <li>
+            <?php
+                echo $this->Html->link(
+                  'Riapri&nbsp;✎',
+                  ['action' => 'admin_thaw',
+                      $proposal['id']],
+                  ['class' => 'accept',
+                      'escape' => false]
+                );
+            ?>
+        </li>
+        <?php elseif ($proposal['submitted'] && $proposal['approved'] && !$proposal['frozen']): ?>
+        <li>
+            <?php
+                echo $this->Html->link(
+                    'Archivia&nbsp;❄',
+                    ['action' => 'admin_freeze',
+                        $proposal['id']],
+                    ['class' => 'reject',
+                        'escape' => false]
+                );
+            ?>
+        </li>
+        <?php else: ?>
+        <li>
+            <?php
+                echo $this->Html->link(
+                    'Accetta&nbsp;✓',
+                    ['action' => 'admin_approve',
+                        $proposal['id']],
+                    ['class' => 'accept',
+                        'escape' => false]
+                );
+            ?>
+        </li>
+        <li>
+            <?php
+                echo $this->Html->link(
+                    'Rifiuta&nbsp;✗',
+                    ['action' => 'admin_reject',
+                        $proposal['id']],
+                    ['class' => 'reject',
+                        'escape' => false]
+                );
+            ?>
+        </li>
+        <?php endif ?>
+        <li>
+            <?php
+                echo $this->Html->link(
+                    'Indietro&nbsp;↩',
+                    $this->request->referer(),
+                    ['class' => 'back',
+                        'escape' => false]
+                );
+            ?>
+        </li>
+    </ul>
+<?php endif; ?>

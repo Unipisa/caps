@@ -90,7 +90,7 @@ class ProposalsController extends AppController {
 
         $proposal = $this->Proposals->findById($id)
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
-						'ChosenExams.CompulsoryExams', 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams', 
+						'ChosenExams.CompulsoryExams', 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
 						'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups' ])
             ->firstOrFail();
 
@@ -169,30 +169,6 @@ class ProposalsController extends AppController {
         } else {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
-    }
-
-    public function adminReview ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'Curricula', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-            ->firstOrFail();
-        if (!$proposal) {
-            throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
-        }
-
-        $exams_table = TableRegistry::getTableLocator()->get('Exams');
-        $exams = $exams_table->find('all', ['recursive' => -1]);
-
-        $this->set('proposal', $proposal);
-        $this->set('exams', $exams);
     }
 
     public function adminApprove ($id = null) {
