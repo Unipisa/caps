@@ -54,6 +54,10 @@ div .disclaimer {
 		padding-bottom: 45px;
 }
 
+#curriculum-select select {
+    margin: 1% 0;
+}
+
 #proposalForm h3 {
     float: left;
 }

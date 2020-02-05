@@ -42,9 +42,9 @@ class CurriculaTable extends Table
             'joinTable' => 'curricula_proposals'
         ]);
 
-        $this->hasMany('FreeChoiceExams');
-        $this->hasMany('CompulsoryExams');
-        $this->hasMany('CompulsoryGroups');
+        $this->hasMany('FreeChoiceExams')->setProperty('free_choice_exams');
+        $this->hasMany('CompulsoryExams')->setProperty('compulsory_exams');
+        $this->hasMany('CompulsoryGroups')->setProperty('compulsory_groups');
 
         $this->belongsTo('Degrees');
     }

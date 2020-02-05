@@ -1,5 +1,7 @@
 var exams = undefined;
 var groups = undefined;
+var curricula = undefined;
+var cv_per_year = undefined;
 
 var compulsoryExams = undefined;
 var compulsoryGroups = undefined;
@@ -14,6 +16,9 @@ var load_data_promise = Promise.all([
     }),
     $.get(groupsURL, function (response) {
         groups = response["groups"];
+    }),
+    $.get(curriculaURL, function (response) {
+        curricula = response['curricula'];
     })
 ]);
 
@@ -23,8 +28,12 @@ function on_curriculum_selected() {
         if (curriculumId === "")
             return;
 
+        var year = $('#academicYearSelect').val();
+        var cv = cv_per_year[year][curriculumId];
+        var degree = cv['degree']['name'];
+
         var baseHTML = undefined;
-        if (curriculum.split(" ")[1] == "Triennale") {
+        if (degree.toLowerCase().includes('triennale')) {
             baseHTML = "<hr><h3>Primo anno: <span></span>/60</h3><nav id=\"nav-year-1\"></nav><hr><ul></ul><hr><h3>Secondo anno: <span></span>/60</h3><nav id=\"nav-year-2\"></nav><hr><ul></ul><hr><h3>Terzo anno: <span></span>/60</h3><nav id=\"nav-year-3\"></nav><hr><ul></ul>";
         } else {
             baseHTML = "<hr><h3>Primo anno: <span></span>/60</h3><nav id=\"nav-year-1\"></nav><hr><ul></ul><hr><h3>Secondo anno: <span></span>/60</h3><nav id=\"nav-year-2\"></nav><hr><ul></ul>";
@@ -32,7 +41,7 @@ function on_curriculum_selected() {
 
         $("#proposalForm").hide();
 
-        $.get(curriculumURL + curriculumId + ".json",
+        $.get(curriculumURL + cv['id'] + ".json",
             function (response) {
                 compulsoryExams = response["compulsory_exams"];
                 compulsoryGroups = response["compulsory_groups"];
@@ -373,19 +382,69 @@ function load_proposal(proposal) {
     on_curriculum_selected();
 }
 
+function addAcademicYearInput() {
+    console.log("Adding selection of academic year");
+
+    // Groups CV by academic_years
+    cv_per_year = [];
+
+    for (j = 0; j < curricula.length; j++) {
+        let year = curricula[j].academic_year;
+        if (year in cv_per_year) {
+            cv_per_year[year].push(curricula[j]);
+        }
+        else {
+            cv_per_year[year] = [ curricula[j] ];
+        }
+    }
+
+    // Add the options
+    years = cv_per_year.keys();
+    var options_html = "<option value=text>Scegliere l'anno di immatricolazione</option>";
+    cv_per_year.forEach(function (cv, year) {
+        var opt = "<option value=" + year + ">" + year + "/" + (year + 1) + "</option>";
+        options_html = options_html + opt;
+    });
+
+    var year_selection_html = $(
+        "<label>Anno Accademico</label>" +
+        "<select name=academic_year id='academicYearSelect'>" + options_html + "</select>"
+    );
+    $('#curriculum-select').append(year_selection_html);
+    $("#academicYearSelect").change(on_academic_year_selected);
+}
+
+function on_academic_year_selected() {
+    var year = $('#academicYearSelect').val();
+
+    // Clear any previous form that might have been loaded
+    $('#curriculum-0-curriculum-id').remove();
+    $('#curriculum-0-curriculum-id-label').remove();
+    $('#proposalForm').hide();
+
+    // Create the form for the curriculum choice
+    var options = "<option value=text>Selezionare il curriculum</option>";
+    cv_per_year[year].forEach(function (cv, j) {
+        options = options +
+            "<option value=" + j + ">" +
+            cv['degree']['name'] + " — Curriculum " + cv['name'] + "</option>";
+    });
+
+    var curriculum_select_html =
+        "<label id='curriculum-0-curriculum-id-label'>Curriculum</label>" +
+        "<select name=Curriculum[0][curriculum_id] id=curriculum-0-curriculum-id>" +
+        options +
+        "</select>";
+
+    $('#curriculum-select').append(curriculum_select_html);
+    $('#curriculum-0-curriculum-id').change(on_curriculum_selected);
+}
+
 $(document).ready(function () {
 
 
     $("input[type=submit]").hide();
-    $("#proposalForm").bind("keyup keypress", function (e) {
-        var code = e.keyCode || e.which;
-        if (code === 13) {
-            e.preventDefault();
-            return false;
-        }
-    });
 
-    $("#curriculum-0-curriculum-id").change(on_curriculum_selected);
 
     // Only show the form to select the plan if there is not ID, otherwise it
     // will be loaded in the background and shown afterwards.
@@ -394,6 +453,7 @@ $(document).ready(function () {
             load_proposal(proposal);
         }
         else {
+            addAcademicYearInput();
             $("#completeForm").show();
         }
     }, function (err) {

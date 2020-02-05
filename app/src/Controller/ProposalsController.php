@@ -138,29 +138,28 @@ class ProposalsController extends AppController {
             }
 
             if ($this->request->is('post')) {
-								$data = $this->request->getData()['data'];
+                $data = $this->request->getData()['data'];
+                $cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
-								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
+                if (array_key_exists('ChosenExam', $data))
+                    $patch_data['chosen_exams'] = $data['ChosenExam'];
+                if (array_key_exists('ChosenFreeChoiceExam', $data))
+                    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-								if (array_key_exists('ChosenExam', $data))
-								    $patch_data['chosen_exams'] = $data['ChosenExam'];
-							  if (array_key_exists('ChosenFreeChoiceExam', $data))
-								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
+                $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
-							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
-
-								$proposal['approved'] = false;
-								$proposal['submitted'] = true;
-								$proposal['frozen'] = false;
-								$proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
+                $proposal['approved'] = false;
+                $proposal['submitted'] = true;
+                $proposal['frozen'] = false;
+                $proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
 
                 if ($this->Proposals->save($proposal)) {
                     return $this->redirect(['action' => 'view', $proposal['id']]);
                 }
-								else {
-									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
-		                return $this->redirect(['action' => 'view', $proposal['id']]);
-								}
+                else {
+                    $this->Flash->error(Utils::error_to_string($proposal->errors()));
+                    return $this->redirect(['action' => 'view', $proposal['id']]);
+                }
             }
 
             $this->set('curricula', $this->Proposals->Curricula
