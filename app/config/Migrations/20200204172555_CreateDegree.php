@@ -49,7 +49,7 @@ class CreateDegree extends AbstractMigration
 
         // We need to migrate the old data to the new format
         $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('curricula');
-        foreach ($tbl->find('all') as $curriculum) {
+        foreach ($tbl->find('all')->contain(['CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams']) as $curriculum) {
             $name = $curriculum['name'];
 
             // Detect the name of the degree
@@ -68,7 +68,7 @@ class CreateDegree extends AbstractMigration
             }
 
             // Split the name (we cannot use explode because of encoding issues with the
-            // dash symbol above in MySQL, apparently). 
+            // dash symbol above in MySQL, apparently).
             $pieces = [];
             $jj = 0;
             for ($j = 0; $j < strlen($name); $j++) {
@@ -78,6 +78,10 @@ class CreateDegree extends AbstractMigration
                 }
             }
             $pieces[] = substr($name, $jj);
+
+            $pieces = array_values(array_filter($pieces, function ($c) {
+                return strlen(trim($c)) > 0;
+            }));
 
             $curriculum['name'] = trim(str_replace("curriculum", "", $pieces[1]));
 
@@ -97,7 +101,7 @@ class CreateDegree extends AbstractMigration
                 $ll = $ll[count($ll) - 1];
                 $start_year = intval(trim($ll));
 
-                // intval() is year to make sure the value is parsed as an integer.
+                // intval() is here to make sure the value is parsed as an integer.
                 $end_year = intval(trim($pp[2])) - 1;
 
                 // echo "$start_year / $end_year \n";
@@ -111,6 +115,27 @@ class CreateDegree extends AbstractMigration
                     $c->name = $curriculum['name'];
                     $c->academic_year = $i;
                     $c->degree_id = $curriculum['degree_id'];
+
+                    $c->compulsory_exams = $curriculum['compulsory_exams'];
+                    $c->compulsory_groups = $curriculum['compulsory_groups'];
+                    $c->free_choice_exams = $curriculum['free_choice_exams'];
+
+                    foreach ($c->compulsory_exams as $k => &$ce) {
+                        unset($ce['id']);
+                        $ce->isNew(true);
+                    }
+
+                    foreach ($c->compulsory_groups as $k => &$ce) {
+                        unset($ce['id']);
+                        $ce->isNew(true);
+                    }
+
+                    foreach ($c->free_choice_exams as $k => &$ce) {
+                        unset($ce['id']);
+                        $ce->isNew(true);
+                    }
+
+                    // var_dump($c);
 
                     $tbl->save($c, [ 'atomic' => false ]);
                 }

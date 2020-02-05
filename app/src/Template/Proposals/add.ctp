@@ -11,6 +11,9 @@
 				var groupsURL = "<?php echo $this->Url->build(
 					[ 'controller' => 'groups', 'action' => 'index', '_ext' => 'json']);
 					?>";
+                var curriculaURL = "<?php echo $this->Url->build(
+                    [ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json']);
+                ?>";
       </script>
     <?php
 }?>
@@ -20,11 +23,14 @@
 <div id="completeForm">
 <?php
 echo $this->Form->create('Proposal');
-echo $this->Form->control('Curriculum.0.curriculum_id',
+?>
+<div id="curriculum-select"></div>
+<?php
+/* echo $this->Form->control('Curriculum.0.curriculum_id',
     ['empty' => ['text" disabled="disabled" selected="selected' => 'Scegli un curriculum'],
         'label' => '',
         'options' => $curricula
-    ]);
+    ]); */
 ?>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
