@@ -399,7 +399,7 @@ function addAcademicYearInput() {
     }
 
     // Add the options, sort the years descending
-    var options_html = "<option value=text>Scegliere l'anno di immatricolazione</option>";
+    var options_html = "<option value=text>Anno di immatricolazione</option>";
     var cv_keys = Array.from(cv_per_year.keys()).sort((a,b) => b - a);
     cv_keys.forEach(function (year, idx) {
         var opt = "<option value=" + year + ">" + year + "/" + (year + 1) + "</option>";
@@ -407,7 +407,6 @@ function addAcademicYearInput() {
     });
 
     var year_selection_html = $(
-        "<label>Anno Accademico</label>" +
         "<select name=academic_year id='academicYearSelect'>" + options_html + "</select>"
     );
     $('#curriculum-select').append(year_selection_html);
@@ -431,7 +430,6 @@ function on_academic_year_selected() {
     });
 
     var curriculum_select_html =
-        "<label id='curriculum-0-curriculum-id-label'>Curriculum</label>" +
         "<select name=Curriculum[0][curriculum_id] id=curriculum-0-curriculum-id>" +
         options +
         "</select>";

@@ -56,6 +56,11 @@ div .disclaimer {
 
 #curriculum-select select {
     margin: 1% 0;
+    width: auto;
+}
+
+select#academicYearSelect {
+    margin-right: 15px;
 }
 
 #proposalForm h3 {
