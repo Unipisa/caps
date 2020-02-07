@@ -163,12 +163,14 @@ class ProposalsController extends AppController {
             }
 
             $this->set('curricula', $this->Proposals->Curricula
-                    ->find()
-                    ->contain([ 'Degrees' ])->find('list', [
+                ->find()
+                ->contain([ 'Degrees' ])
+                ->find('list', [
                     'valueField' => function($c) {
                         return $c->toString();
                     }
-                ]));
+                ])
+            );
             $this->set('proposal', $proposal);
             $this->set('owner', $owner);
         } else {

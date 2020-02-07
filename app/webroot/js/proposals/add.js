@@ -28,8 +28,8 @@ function on_curriculum_selected() {
         if (curriculumId === "")
             return;
 
-        var year = $('#academicYearSelect').val();
-        var cv = cv_per_year[year][curriculumId];
+        var year = parseInt($('#academicYearSelect').val());
+        var cv = cv_per_year.get(year)[curriculumId];
         var degree = cv['degree']['name'];
 
         var baseHTML = undefined;
@@ -374,7 +374,7 @@ function on_curriculum_selected() {
     };
 
 function load_proposal(proposal) {
-    console.log("Loading proposal with ID = " + proposal["id"]);
+    console.log("CAPS :: Loading proposal with ID = " + proposal["id"]);
 
     // Set the correct Curriculum
     $("#curriculum-0-curriculum-id").val(proposal["curriculum"][0]["id"]);
@@ -383,25 +383,25 @@ function load_proposal(proposal) {
 }
 
 function addAcademicYearInput() {
-    console.log("Adding selection of academic year");
+    console.log("CAPS :: Adding selection of academic year");
 
     // Groups CV by academic_years
-    cv_per_year = [];
+    cv_per_year = new Map;
 
     for (j = 0; j < curricula.length; j++) {
         let year = curricula[j].academic_year;
-        if (year in cv_per_year) {
-            cv_per_year[year].push(curricula[j]);
+        if (cv_per_year.has(year)) {
+            cv_per_year.get(year).push(curricula[j]);
         }
         else {
-            cv_per_year[year] = [ curricula[j] ];
+            cv_per_year.set(year, [ curricula[j] ]);
         }
     }
 
-    // Add the options
-    years = cv_per_year.keys();
+    // Add the options, sort the years descending
     var options_html = "<option value=text>Scegliere l'anno di immatricolazione</option>";
-    cv_per_year.forEach(function (cv, year) {
+    var cv_keys = Array.from(cv_per_year.keys()).sort();
+    cv_keys.forEach(function (year, idx) {
         var opt = "<option value=" + year + ">" + year + "/" + (year + 1) + "</option>";
         options_html = options_html + opt;
     });
@@ -415,7 +415,7 @@ function addAcademicYearInput() {
 }
 
 function on_academic_year_selected() {
-    var year = $('#academicYearSelect').val();
+    var year = parseInt($('#academicYearSelect').val());
 
     // Clear any previous form that might have been loaded
     $('#curriculum-0-curriculum-id').remove();
@@ -424,7 +424,7 @@ function on_academic_year_selected() {
 
     // Create the form for the curriculum choice
     var options = "<option value=text>Selezionare il curriculum</option>";
-    cv_per_year[year].forEach(function (cv, j) {
+    cv_per_year.get(year).forEach(function (cv, j) {
         options = options +
             "<option value=" + j + ">" +
             cv['degree']['name'] + " — Curriculum " + cv['name'] + "</option>";
