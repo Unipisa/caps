@@ -23,10 +23,14 @@ class CurriculaFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'integer', 'length' => null, 'unsigned' => false, 'null' => false, 'default' => null, 'autoIncrement' => true, 'precision' => null, 'comment' => null],
         'name' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'precision' => null, 'comment' => null, 'fixed' => null, 'collate' => null],
+				'academic_year' => ['type' => 'integer', 'null' => false, 'limit' => 11],
+				'degree_id' => ['type' => 'integer', 'limit' => 11, 'null' => false],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
-        ],
+						'degree_id_fk' => ['type' => 'foreign', 'columns' => ['degree_id'], 'references' => ['degrees', 'id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
+        ]
     ];
+
     // @codingStandardsIgnoreEnd
     /**
      * Init method
