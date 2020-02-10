@@ -3,7 +3,7 @@
 
 #
 # CI server that automatically updates the code when
-# it is pushed to the Github repository. 
+# it is pushed to the Github repository.
 #
 
 # Run this application with:
@@ -18,6 +18,7 @@ app = Flask(__name__)
 @app.route('/', methods = [ 'GET', 'POST' ])
 def update_caps():
     data = request.get_json()
+    # Run the update command, and leave it running
 
     update_caps_bin = os.path.join(
         os.path.dirname(__file__),

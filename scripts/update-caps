@@ -6,30 +6,25 @@
 
 set -e
 
-CAPSDIRECTORY="/var/www/caps"
+for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
+  echo "$(date): Aggiornamento di ${CAPSDIRECTORY}"
+  cd ${CAPSDIRECTORY}
 
-cd ${CAPSDIRECTORY}/app
+  current_HEAD=$(git rev-parse HEAD)
+  git pull > /dev/null
+  new_HEAD=$(git rev-parse HEAD)
 
-now=$(date)
-echo "${now}: Update triggered by webhook"
+  if [ "${new_HEAD}" != "${current_HEAD}" ]; then
+    echo "HEAD: ${current_HEAD} -> ${new_HEAD}"
 
-current_HEAD=$(git rev-parse HEAD)
+    # Install all the software required
+    composer install -n
 
-git pull > /dev/null
+    # Perform DB migrations, if needed
+    bin/cake migrations migrate
 
-new_HEAD=$(git rev-parse HEAD)
-
-echo "HEAD: ${current_HEAD} -> ${new_HEAD}"
-
-if [ "${new_HEAD}" != "${current_HEAD}" ]; then
-  echo "> Migrazione database"
-
-  # Perform DB migrations, if needed
-  bin/cake migrations migrate
-
-  echo "> Pulizia cache"
-
-  # Clear cache -- this helps in case new models are
-  # introduced, or if new fields are added
-  bin/cake cache clear_all
-fi
+    # Clear cache -- this helps in case new models are
+    # introduced, or if new fields are added
+    bin/cake cache clear_all
+  fi
+done

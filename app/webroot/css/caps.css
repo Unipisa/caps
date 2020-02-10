@@ -47,6 +47,22 @@ div .disclaimer {
 	display: none;
 }
 
+.credit-count {
+	  flush: right;
+		font-size: 1.2em;
+		padding-top: 0;
+		padding-bottom: 45px;
+}
+
+#curriculum-select select {
+    margin: 1% 0;
+    width: auto;
+}
+
+select#academicYearSelect {
+    margin-right: 15px;
+}
+
 #proposalForm h3 {
     float: left;
 }
@@ -276,13 +292,13 @@ div .disclaimer {
 }
 
 .caps-admin-navigation ul li {
-    width: 24%;
+    width: 19%;
     display: inline-block;
     text-align: center;
 }
 
 .caps-admin-navigation ul li a {
-    padding: 3% 33%;
+    padding: 3% 25%;
     font-size: 110%;
     background: #dcdcdc;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#dcdcdc));

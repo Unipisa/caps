@@ -70,7 +70,7 @@ class ExamsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $exam = $this->Exams->patchEntity($exam, $this->request->data);
+            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
 
             if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
@@ -99,7 +99,7 @@ class ExamsController extends AppController {
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $exam = $this->Exams->patchEntity($exam, $this->request->data);
+            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
 
             if ($this->Exams->save($exam)) {
                 $this->Flash->success(__('Esame aggiornato con successo.'));
@@ -108,10 +108,8 @@ class ExamsController extends AppController {
             $this->Flash->error(__('Errore: esame non aggiornato.'));
         }
 
-        if (! $this->request->data) {
-            $this->set('exam', $exam);
-            $this->set('groups', $this->Exams->Groups->find('list'));
-        }
+        $this->set('exam', $exam);
+        $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
     public function adminDelete ($id = null) {

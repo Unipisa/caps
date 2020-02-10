@@ -26,7 +26,8 @@ class CurriculaController extends AppController {
      * @brief Get all curricula in JSON format. URL: caps/curricula.json
      */
     public function index () {
-        $curricula = $this->Curricula->find('all');
+        $curricula = $this->Curricula->find('all')
+            ->contain([ 'Degrees' ]);
         $this->set('curricula', $curricula);
         $this->set('_serialize', ['curricula']);
     }
@@ -37,7 +38,8 @@ class CurriculaController extends AppController {
             throw new ForbiddenException();
         }
 
-        $curricula = $this->Curricula->find('all');
+        $curricula = $this->Curricula->find('all')
+            ->contain([ 'Degrees' ]);
         $this->set('curricula', $curricula);
         $this->set('owner', $user);
     }
@@ -51,7 +53,7 @@ class CurriculaController extends AppController {
         }
 
         $curriculum = $this->Curricula->findById($id)
-            ->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams' ])
+            ->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams', 'Degrees' ])
             ->firstOrFail();
 
         if (!$curriculum) {
@@ -81,7 +83,7 @@ class CurriculaController extends AppController {
             $this->Flash->error(Utils::error_to_string($newcurriculum->errors()));
         }
 
-        $this->set('owner', $user);
+        $this->set('degrees', $this->Curricula->Degrees->find('list'));
     }
 
     public function adminEdit ($id = null) {
@@ -95,7 +97,7 @@ class CurriculaController extends AppController {
         }
 
         $curriculum = $this->Curricula->findById($id)
-            ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams' ])
+            ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams', 'Degrees' ])
             ->firstOrFail();
 
         if (!$curriculum) {
@@ -119,8 +121,8 @@ class CurriculaController extends AppController {
 
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
+        $this->set('degrees', $this->Curricula->Degrees->find('list'));
         $this->set('groups', $groups);
-        $this->set('owner', $user);
         $this->set(
             'examsList',
             $exams_table->find(

@@ -21,29 +21,29 @@ class ProposalsController extends AppController {
 
     private function done()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
             ->limit(25)
-            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order([ 'Users.surname' => 'asc' ]);
     }
 
     private function todo()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([
                 'submitted' => true,
                 'approved' => false
             ])
             ->limit(25)
-            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order([ 'Users.surname' => 'asc' ]);
     }
 
     private function frozen()
     {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula' ])
+        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
             ->where([ 'Proposals.frozen' => true ])
             ->limit(25)
-            ->order('Users.surname', 'asc'); // FIXME: Originally, the data was ordered by surname
+            ->order([ 'Users.surname' => 'asc' ]);
     }
 
     public function beforeFilter ($event) {
@@ -89,31 +89,26 @@ class ProposalsController extends AppController {
         }
 
         $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
+						'ChosenExams.CompulsoryExams', 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
+						'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees' ])
             ->firstOrFail();
 
         if (!$proposal) {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']['username'] != $user['user']) {
+        if ($proposal['user']['username'] != $user['user'] && !$user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
-        $exams_table = TableRegistry::getTableLocator()->get('Exams');
-
-        $exams = $exams_table->find('all', [
-            'recursive' => -1
-        ]);
-
         $this->set('proposal', $proposal);
-        $this->set('exams', $exams);
 				$this->set('_serialize', [ 'proposal' ]);
     }
 
     public function add ($proposal_id = null) {
 	    $user = $this->Auth->user();
-      $username = $user['user'];
+        $username = $user['user'];
 
         // Find the user in the database matching the one logged in
         $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
@@ -121,7 +116,8 @@ class ProposalsController extends AppController {
             ->firstOrFail();
 
 				if ($proposal_id != null) {
-					$proposal = $this->Proposals->find()->contain([ 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+					$proposal = $this->Proposals->find()->contain([
+            	'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
 						->where([ 'Proposals.id' => $proposal_id ])
 						->firstOrFail();
 
@@ -142,61 +138,44 @@ class ProposalsController extends AppController {
             }
 
             if ($this->request->is('post')) {
-								$data = $this->request->getData()['data'];
+                $data = $this->request->getData()['data'];
+                $cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
 
-								$cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
+                if (array_key_exists('ChosenExam', $data))
+                    $patch_data['chosen_exams'] = $data['ChosenExam'];
+                if (array_key_exists('ChosenFreeChoiceExam', $data))
+                    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-								if (array_key_exists('ChosenExam', $data))
-								    $patch_data['chosen_exams'] = $data['ChosenExam'];
-							  if (array_key_exists('ChosenFreeChoiceExam', $data))
-								    $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
+                $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
-							  $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
-
-								$proposal['approved'] = false;
-								$proposal['submitted'] = true;
-								$proposal['frozen'] = false;
-								$proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
+                $proposal['approved'] = false;
+                $proposal['submitted'] = true;
+                $proposal['frozen'] = false;
+                $proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
 
                 if ($this->Proposals->save($proposal)) {
                     return $this->redirect(['action' => 'view', $proposal['id']]);
                 }
-								else {
-									  $this->Flash->error(Utils::error_to_string($proposal->errors()));
-		                return $this->redirect(['action' => 'view', $proposal['id']]);
-								}
+                else {
+                    $this->Flash->error(Utils::error_to_string($proposal->errors()));
+                    return $this->redirect(['action' => 'view', $proposal['id']]);
+                }
             }
 
-            $this->set('curricula', $this->Proposals->Curricula->find('list'));
+            $this->set('curricula', $this->Proposals->Curricula
+                ->find()
+                ->contain([ 'Degrees' ])
+                ->find('list', [
+                    'valueField' => function($c) {
+                        return $c->toString();
+                    }
+                ])
+            );
             $this->set('proposal', $proposal);
             $this->set('owner', $owner);
         } else {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
-    }
-
-    public function adminReview ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'Curricula', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-            ->firstOrFail();
-        if (!$proposal) {
-            throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
-        }
-
-        $exams_table = TableRegistry::getTableLocator()->get('Exams');
-        $exams = $exams_table->find('all', ['recursive' => -1]);
-
-        $this->set('proposal', $proposal);
-        $this->set('exams', $exams);
     }
 
     public function adminApprove ($id = null) {
