@@ -1,6 +1,19 @@
 <nav class="caps-admin-navigation">
     <ul>
         <li <?php
+        if ($this->request->getParam('controller') == 'degrees' &&
+            $this->request->getParam('action') == 'admin_index')
+            echo 'class="selected"'
+        ?>>
+        <?php
+        echo $this->Html->link(
+            'C. di Laurea',
+            ['controller' => 'degrees',
+                'action' => 'admin_index']
+        );
+        ?>
+        </li>
+        <li <?php
                 if ($this->request->getParam('controller') == 'curricula' &&
                     $this->request->getParam('action') == 'admin_index')
                     echo 'class="selected"'
