@@ -29,7 +29,16 @@ function on_curriculum_selected() {
             return;
 
         var year = parseInt($('#academicYearSelect').val());
-        var cv = cv_per_year.get(year)[curriculumId];
+
+        let cvs = cv_per_year.get(year);
+        var cv = undefined;
+        for (j = 0; j < cvs.length; j++) {
+            if (cvs[j]['id'] == curriculumId) {
+                cv = cvs[j];
+                break;
+            }
+        }
+
         var degree = cv['degree']['name'];
 
         var baseHTML = undefined;
@@ -425,7 +434,7 @@ function on_academic_year_selected() {
     var options = "<option value=text>Selezionare il curriculum</option>";
     cv_per_year.get(year).forEach(function (cv, j) {
         options = options +
-            "<option value=" + j + ">" +
+            "<option value=" + cv['id'] + ">" +
             cv['degree']['name'] + " — Curriculum " + cv['name'] + "</option>";
     });
 
