@@ -77,7 +77,7 @@ class UsersControllerTest extends IntegrationTestCase
     {
         // test that page requires authentication
         $this->get('/users');
-        $this->assertResponseCode(302);
+        $this->assertRedirect();
         $this->assertRedirectContains('?redirect=%2Fusers');
 
         // Set session data
@@ -97,6 +97,6 @@ class UsersControllerTest extends IntegrationTestCase
             ]
         ]);
         $this->get('/users');
-        $this->assertResponseOk();
+        $this->assertRedirect();
     }
 }

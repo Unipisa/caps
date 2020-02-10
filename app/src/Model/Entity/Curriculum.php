@@ -24,6 +24,22 @@ class Curriculum extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'proposals' => true
+        'proposals' => true,
+        'degree' => true,
+        'compulsory_exams' => true,
+        'compulsory_groups' => true,
+        'free_choice_exams' => true,
+        'academic_year' => true,
+        'degree_id' => true
     ];
+
+    public function tostring() {
+        return $this['degree']['name'] .
+            " — Curriculum " .
+            $this['name'] .
+            " — Anno Accademico " .
+            $this['academic_year'] .
+            "/" .
+            ($this['academic_year'] + 1);
+    }
 }

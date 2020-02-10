@@ -18,20 +18,35 @@ class UsersController extends AppController {
     }
 
 		public function index() {
+			return $this->redirect([ 'action' => 'view' ]);
+		}
+
+		public function view($id = null) {
 			$this->Auth->deny();
 
 			$user = $this->Auth->user();
-
 			$owner = $this->Users->find()
-					->where([ 'username' => $user['user'] ])
-					->first();
-
-		  $proposals_table = TableRegistry::getTableLocator()->get('Proposals');
-			$proposals = $proposals_table->find()->contain([ 'Users', 'Curricula' ])
 				->where([ 'username' => $user['user'] ])
-				->order('Proposals.modified', 'desc');
+				->first();
 
-			$this->set('user', $owner);
+			if ($id == null || $id == $owner['id']) {
+				$user_entry = $owner;
+			}
+			else {
+				$user_entry = $this->Users->find()
+					->where([ 'id' => $id ])
+					->first();
+			}
+
+			if ($id != null && !$user['admin'])
+			  throw new  ForbiddenException('Cannot access another user profile');
+
+			$proposals = $this->Users->Proposals->find()
+				->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
+				->where([ 'Users.id' => $user_entry['id'] ])
+				->order([ 'Proposals.modified' => 'DESC' ]);
+
+			$this->set('user', $user_entry);
 			$this->set('owner', $owner);
 			$this->set('proposals', $proposals);
 		}

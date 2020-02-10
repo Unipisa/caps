@@ -42,9 +42,11 @@ class CurriculaTable extends Table
             'joinTable' => 'curricula_proposals'
         ]);
 
-        $this->hasMany('FreeChoiceExams');
-        $this->hasMany('CompulsoryExams');
-        $this->hasMany('CompulsoryGroups');
+        $this->hasMany('FreeChoiceExams')->setProperty('free_choice_exams');
+        $this->hasMany('CompulsoryExams')->setProperty('compulsory_exams');
+        $this->hasMany('CompulsoryGroups')->setProperty('compulsory_groups');
+
+        $this->belongsTo('Degrees');
     }
 
     /**
@@ -62,18 +64,7 @@ class CurriculaTable extends Table
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name')
-            ->add('name', 'custom', [
-                'rule' => function ($value, $context) {
-                    if (preg_match('/^(Laurea Triennale|Laurea Magistrale)/', $value)) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                },
-                'message' => 'Un curriculum deve cominciare per "Laurea Triennale" o "Laurea Magistrale".'
-            ]);
+            ->allowEmptyString('name', false);
 
         return $validator;
     }

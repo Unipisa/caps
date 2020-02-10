@@ -4,16 +4,14 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * ChosenFreeChoiceExam Entity
+ * Degree Entity
  *
  * @property int $id
  * @property string|null $name
- * @property int|null $credits
- * @property int|null $proposal_id
  *
- * @property \App\Model\Entity\Proposal $proposal
+ * @property \App\Model\Entity\Curriculum[] $curricula
  */
-class ChosenFreeChoiceExam extends Entity
+class Degree extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -26,11 +24,6 @@ class ChosenFreeChoiceExam extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'credits' => true,
-        'proposal_id' => true,
-        'proposal' => true,
-        'chosen_year' => 1,
-        'free_choice_exam_id' => true,
-        'free_choice_exam' => true
+        'curricula' => true
     ];
 }

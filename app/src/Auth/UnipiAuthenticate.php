@@ -23,10 +23,10 @@ class UnipiAuthenticate extends BaseAuthenticate {
     ];
 
     public function __construct($registry, $config = NULL) {
-      parent::__construct($registry, $config);
-      $ini_filename = APP . DS . ".." . DS . "unipi.ini";
-      if (file_exists($ini_filename)) {
-        $this->setConfig(parse_ini_file ($ini_filename));
+        parent::__construct($registry, $config);
+        $ini_filename = APP . DS . ".." . DS . "unipi.ini";
+        if (file_exists($ini_filename)) {
+            $this->setConfig(parse_ini_file ($ini_filename));
       }
     }
 
@@ -35,18 +35,39 @@ class UnipiAuthenticate extends BaseAuthenticate {
         // Log::write('debug', "******". print_r($config, true));
         $data = $request->getData();
 
+        $admin_usernames = [];
+        if (array_key_exists('admins', $config)) {
+          $admin_usernames = $config['admins'];
+        }
         // Allow admins to browse as a student.
-        if (in_array($data['username'], $config['fakes']) && $data['password'] == $data['username']) {
-            return array (
-                'ldap_dn' => '',
-                'user' => $data['username'],
-                'name' => 'Utente Dimostrativo',
-                'role' => 'student',
-                'number' => '000000',
-                'admin' => in_array($data['username'], $config['admins']),
-								'surname' => '',
-								'givenname' => ''
-            );
+        $user = [
+            'ldap_dn' => '',
+            'user' => $data['username'],
+            'name' => 'Utente Dimostrativo',
+            'role' => 'student',
+            'number' => '000000',
+            'admin' => in_array($data['username'], $admin_usernames),
+            'surname' => '',
+            'givenname' => ''
+        ];
+        foreach($config['fakes'] as $fake) {
+            if (is_array($fake)) {
+                // configuration contains user info
+                if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
+                    foreach($user as $key => $val) {
+                        if (array_key_exists($key, $fake)) {
+                          $user[$key] = $fake[$key];
+                        }
+                    }
+                    return $user;
+                }
+            } else {
+                // configuration only contains username
+                if ($data['username'] == $fake && $data['password'] == $fake) {
+                  $user['user'] = $fake;
+                  return $user;
+                }
+            }
         }
 
         // Terrible hack because the SSL certificate on the Unipi side is not

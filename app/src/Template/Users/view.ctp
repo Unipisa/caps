@@ -1,4 +1,4 @@
-<h2>Piani di studio</h2>
+<h2>Piani di studio di <?php echo $user['name']; ?></h2>
 
 <table class='caps-todo'>
   <tr>
@@ -31,7 +31,8 @@
 
     ?>
       <tr>
-       <td><?php echo $proposal['curriculum'][0]['name'] ?></td>
+       <td><?php echo $proposal['curriculum'][0]->toString(); ?>
+       </td>
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>
@@ -62,14 +63,18 @@
 }
 ?>
 
-<div class="caps-admin-add">
-  <ul>
-    <li>
-      <?php echo $this->Html->link('Nuovo piano di studi', [
-          'controller' => 'proposals',
-          'action' => 'add'
-      ]);
-      ?>
-    </li>
-  </ul>
-</div>
+<?php if ($owner['id'] == $user['id']): ?>
+  <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
+       e non se qualcuno sta visualizzando il profile come amministratore. //-->
+  <div class="caps-admin-add">
+    <ul>
+      <li>
+        <?php echo $this->Html->link('Nuovo piano di studi', [
+            'controller' => 'proposals',
+            'action' => 'add'
+        ]);
+        ?>
+      </li>
+    </ul>
+  </div>
+<?php endif; ?>
