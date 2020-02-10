@@ -7,7 +7,7 @@
         ?>>
             <?php
             echo $this->Html->link(
-                'Corsi di Laurea',
+                'C. di Laurea',
                 ['controller' => 'degrees',
                     'action' => 'admin_index']
             );
