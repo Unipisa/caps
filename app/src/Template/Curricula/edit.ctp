@@ -47,7 +47,6 @@
                         $name = $exam['name'];
                     }
                 }
-
                 echo $name;
             ?>
         </td>
