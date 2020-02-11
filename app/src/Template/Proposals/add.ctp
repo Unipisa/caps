@@ -19,7 +19,12 @@
 }?>
 <?php echo $this->Html->script('proposals/add.js'); ?>
 
-<h2>Nuovo piano di studio</h2>
+<h2>Nuovo piano di studio
+    <span id="loadingIcon">
+        <?php echo $this->Html->image('loading32s.gif') ?>
+    </span>
+</h2>
+
 <div id="completeForm">
 <?php
 echo $this->Form->create('Proposal');

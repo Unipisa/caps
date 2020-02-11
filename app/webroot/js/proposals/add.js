@@ -10,6 +10,8 @@ var freeChoiceExams = undefined;
 var lastExamAdded = 0;
 var lastFreeChoiceExamAdded = 0;
 
+var loadingCount = 0;
+
 var load_data_promise = Promise.all([
     $.get(examsURL, (response) => {
         exams = response["exams"];
@@ -50,7 +52,9 @@ function on_curriculum_selected() {
 
         $("#proposalForm").hide();
 
-        $.get(curriculumURL + cv['id'] + ".json",
+        start_loading();
+
+        $.get(curriculumURL + cv['id'] + ".json").then(
             function (response) {
                 compulsoryExams = response["compulsory_exams"];
                 compulsoryGroups = response["compulsory_groups"];
@@ -67,6 +71,10 @@ function on_curriculum_selected() {
                 addKonamiCode();
 
                 $("#proposalForm").slideDown();
+
+                stop_loading();
+            }).catch(() => {
+                stop_loading();
             });
     }
 
@@ -382,6 +390,17 @@ function on_curriculum_selected() {
         });
     };
 
+function start_loading() {
+    loadingCount++;
+    $('#loadingIcon').show();
+}
+
+function stop_loading() {
+    if (--loadingCount == 0) {
+        $('#loadingIcon').hide();
+    }
+}
+
 function load_proposal(proposal) {
     console.log("CAPS :: Loading proposal with ID = " + proposal["id"]);
 
@@ -448,22 +467,24 @@ function on_academic_year_selected() {
 }
 
 $(document).ready(function () {
-
-
     $("input[type=submit]").hide();
 
+    start_loading();
 
     // Only show the form to select the plan if there is not ID, otherwise it
     // will be loaded in the background and shown afterwards.
     load_data_promise.then(function () {
         if (proposal["id"] !== undefined) {
             load_proposal(proposal);
+            stop_loading();
         }
         else {
             addAcademicYearInput();
             $("#completeForm").show();
+            stop_loading();
         }
     }, function (err) {
         console.log("Error loading data");
+        stop_loading();
     });
 });
