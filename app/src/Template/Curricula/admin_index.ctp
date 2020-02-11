@@ -15,7 +15,7 @@
                 echo $this->Html->link(
                     $curriculum->toString(),
                     ['controller' => 'curricula',
-                        'action' => 'admin_edit',
+                        'action' => 'edit',
                         $curriculum['id']]
                 );
             ?>
@@ -47,7 +47,7 @@
                 echo $this->Html->link(
                     'Aggiungi curriculum',
                     ['controller' => 'curricula',
-                        'action' => 'admin_add']
+                        'action' => 'add']
                 );
             ?>
         </li>

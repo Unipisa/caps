@@ -64,53 +64,41 @@ class CurriculaController extends AppController {
         $this->set('_serialize', 'curriculum');
     }
 
-    public function adminAdd () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if ($this->request->is('post')) {
-            $newcurriculum = $this->Curricula->newEntity();
-            $newcurriculum = $this->Curricula->patchEntity($newcurriculum, $this->request->getData());
-            if ($this->Curricula->save($newcurriculum)) {
-                $this->Flash->success(__('Curriculum creato con successo.'));
-                return $this->redirect(
-                    ['action' => 'admin_index']
-                );
-            }
-
-            $this->Flash->error(Utils::error_to_string($newcurriculum->errors()));
-        }
-
-        $this->set('degrees', $this->Curricula->Degrees->find('list'));
+    public function add () {
+        $this->edit();
     }
 
-    public function adminEdit ($id = null) {
+    public function edit ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $curriculum = $this->Curricula->findById($id)
-            ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams', 'Degrees' ])
-            ->firstOrFail();
-
-        if (!$curriculum) {
-            throw new NotFoundException(__('Errore: curriculum non esistente.'));
+        if ($id) {
+            $curriculum = $this->Curricula->findById($id)
+                ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams', 'Degrees' ])
+                ->firstOrFail();
+            if (!$curriculum) {
+              throw new NotFoundException(__('Errore: curriculum non esistente.'));
+            }
+            $success_message = __('Curriculum aggiornato con successo.');
+        } else {
+            $curriculum = $this->Curricula->newEntity();
+            $success_message = __('Curriculum creato con successo.');
+            $curriculum['compulsory_exams'] = [];
+            $curriculum['compulsory_groups'] = [];
+            $curriculum['free_choice_exams'] = [];
+            $curriculum['degrees'] = [];
         }
 
         if ($this->request->is(['post', 'put'])) {
             $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->getData());
             if ($this->Curricula->save($curriculum)) {
-                $this->Flash->success(__('Curriculum aggiornato con successo.'));
+                $this->Flash->success($success_message);
                 return $this->redirect(['action' => 'admin_index']);
             }
             $this->Flash->error(__('Errore: curriculum non aggiornato.'));
+            $this->Flash->error(Utils::error_to_string($curriculum->errors()));
         }
 
         $exams_table = TableRegistry::getTableLocator()->get('Exams');
