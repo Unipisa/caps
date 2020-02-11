@@ -15,7 +15,7 @@
                 echo $this->Html->link(
                     $group['name'],
                     ['controller' => 'groups',
-                        'action' => 'adminEdit',
+                        'action' => 'edit',
                         $group['id']]
                 );
             ?>
@@ -47,7 +47,7 @@
                 echo $this->Html->link(
                     'Aggiungi gruppo',
                     ['controller' => 'groups',
-                        'action' => 'admin_add']
+                        'action' => 'edit']
                 );
             ?>
         </li>
