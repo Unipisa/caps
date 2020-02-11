@@ -63,6 +63,11 @@ select#academicYearSelect {
     margin-right: 15px;
 }
 
+#loadingIcon {
+    margin-left: 15px;
+    display: none;
+}
+
 #proposalForm h3 {
     float: left;
 }
