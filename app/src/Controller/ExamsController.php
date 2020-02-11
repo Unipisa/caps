@@ -68,30 +68,28 @@ class ExamsController extends AppController {
             throw new ForbiddenException();
         }
 
-        if ($id) {
+        if ($id) { // edit
             $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
             if (!$exam) {
                 throw new NotFoundException(__('Errore: esame non esistente.'));
             }
-        } else {
-            $exam = $this->Exams->newEntity();;
+            $success_message = __('Esame aggiornato con successo.');
+            $failure_message = __('Errore: esame non aggiornato.');
+            $then = 'adminIndex';
+        } else { // new
+            $exam = $this->Exams->newEntity();
+            $success_message = __('Esame aggiunto con successo.');
+            $failure_message = __('Errore: esame non aggiunto.');
+            $then = 'edit'; // questionabile: forse meglio 'adminIndex'
         }
 
         if ($this->request->is(['post', 'put'])) {
             $exam = $this->Exams->patchEntity($exam, $this->request->getData());
-            if ($exam->isNew()) {
-                if ($this->Exams->save($exam)) {
-                    $this->Flash->success(__('Esame aggiunto con successo.'));
-                    return $this->redirect(['action' => 'edit']);
-                }
-                $this->Flash->error(__('Errore: esame non aggiunto.'));
-            } else {
-                if ($this->Exams->save($exam)) {
-                    $this->Flash->success(__('Esame aggiornato con successo.'));
-                    return $this->redirect(['action' => 'adminIndex']);
-                }
-                $this->Flash->error(__('Errore: esame non aggiornato.'));
+            if ($this->Exams->save($exam)) {
+                $this->Flash->success($success_message);
+                return $this->redirect(['action' => $then]);
             }
+            $this->Flash->error($failure_message);
         }
 
         $this->set('exam', $exam);
