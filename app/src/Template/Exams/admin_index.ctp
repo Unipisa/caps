@@ -17,7 +17,7 @@
             <?php
                 echo $this->Html->link(
                     $exam['name'],
-                    ['action' => 'admin_edit',
+                    ['action' => 'edit',
                         $exam['id']]
                 );
             ?>
@@ -53,7 +53,7 @@
                 echo $this->Html->link(
                     'Aggiungi esame',
                     ['controller' => 'exams',
-                        'action' => 'admin_add']
+                        'action' => 'edit']
                 );
             ?>
         </li>

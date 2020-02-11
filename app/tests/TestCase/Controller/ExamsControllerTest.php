@@ -75,12 +75,12 @@ class ExamsControllerTest extends IntegrationTestCase
         // load page to add new axam
         $this->enableCsrfToken();
         $this->enableSecurityToken();
-        $this->get('/exams/admin-add');
+        $this->get('/exams/edit');
         $this->assertResponseOk();
 
         // add new exam
         $exam_count = $this->Exams->find()->count();
-        $this->post('/exams/admin-add',[
+        $this->post('/exams/edit',[
           'name' => 'Analisi Matematica',
           'code' => '1111',
           'sector' => 'AAA',
@@ -92,7 +92,7 @@ class ExamsControllerTest extends IntegrationTestCase
 
         // edit exam
         $exam_id = $this->Exams->find()->first()['id'];
-        $this->get("/exams/admin-edit/$exam_id");
+        $this->get("/exams/edit/$exam_id");
         $this->assertResponseOk();
 
         // $this->disableErrorHandlerMiddleware();        // test that page requires authentication
