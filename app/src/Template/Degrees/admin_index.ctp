@@ -15,7 +15,7 @@
                 echo $this->Html->link(
                     $degree['name'],
                     ['controller' => 'degrees',
-                        'action' => 'admin_edit',
+                        'action' => 'edit',
                         $degree['id']]
                 );
                 ?>
@@ -46,7 +46,7 @@
             <?php
             echo $this->Html->link(
                 'Aggiungi corso di laurea',
-                [ 'action' => 'admin_add']
+                [ 'action' => 'edit']
             );
             ?>
         </li>
