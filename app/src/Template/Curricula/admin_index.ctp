@@ -28,8 +28,10 @@
                             __('Cancella'),
                             ['action' => 'admin_delete',
                                 $curriculum['id']],
-                            ['class' => 'reject'],
-                            __('Sei sicuro di voler cancellare il curriculum "%s"?', $curriculum['name'])
+                            [
+                              'class' => 'reject',
+                              'confirm' => __('Sei sicuro di voler cancellare il curriculum "{0}"?', $curriculum['name'])
+                            ]
                         );
                     ?>
                 </li>
