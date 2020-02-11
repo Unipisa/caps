@@ -61,8 +61,10 @@
                             ['controller' => 'compulsory_exams',
                                 'action' => 'admin_delete',
                                 $compulsory_exam['id']],
-                            ['class' => 'reject'],
-                            __('Sei sicuro di voler cancellare l\'esame "%s"?', $name)
+                            [
+                              'class' => 'reject',
+                              'confirm' => __('Sei sicuro di voler cancellare l\'esame "{0}"?', $name)
+                            ]
                         )
                     ?>
                 </li>
@@ -146,8 +148,10 @@
                                 ['controller' => 'compulsory_groups',
                                     'action' => 'admin_delete',
                                     $compulsory_group['id']],
-                                ['class' => 'reject'],
-                                __('Sei sicuro di voler cancellare l\'esame a scelta nel gruppo "%s"?', $name)
+                                [
+                                  'class' => 'reject',
+                                  'confirm' => __('Sei sicuro di voler cancellare l\'esame a scelta nel gruppo "{0}"?', $name)
+                                ]
                             )
                         ?>
                     </li>
@@ -221,8 +225,10 @@
                                 ['controller' => 'free_choice_exams',
                                     'action' => 'admin_delete',
                                     $free_choice_exam['id']],
-                                ['class' => 'reject'],
-                                __('Sei sicuro di voler cancellare questo esame a scelta libera?')
+                                [
+                                  'class' => 'reject',
+                                  'confirm' => __('Sei sicuro di voler cancellare questo esame a scelta libera?')
+                                ]
                             )
                         ?>
                     </li>

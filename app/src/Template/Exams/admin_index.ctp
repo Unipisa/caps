@@ -31,10 +31,11 @@
                     <?php
                         echo $this->Form->postLink(
                             __('Cancella'),
-                            ['action' => 'admin_delete',
-                                $exam['id']],
-                            ['class' => 'reject'],
-                            __('Sei sicuro di voler cancellare l\'esame "%s"?', $exam['name'])
+                            ['action' => 'admin_delete', $exam['id']],
+                            [
+                              'class' => 'reject',
+                              'confirm' => __('Sei sicuro di voler cancellare l\'esame "{0}"?', $exam['name'])
+                            ]
                         );
                     ?>
                 </li>

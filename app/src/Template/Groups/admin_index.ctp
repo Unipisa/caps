@@ -28,8 +28,10 @@
                             __('Cancella'),
                             ['action' => 'adminDelete',
                                 $group['id']],
-                            ['class' => 'reject'],
-                            __('Sei sicuro di voler cancellare il gruppo "%s"?', $group['name'])
+                            [
+                              'class' => 'reject',
+                              'confirm' => __('Sei sicuro di voler cancellare il gruppo "{0}"?', $group['name'])
+                            ]
                         );
                     ?>
                 </li>
