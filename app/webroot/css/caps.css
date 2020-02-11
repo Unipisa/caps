@@ -464,8 +464,19 @@ hr.caps-admin-curriculum {
     width: 5%;
 }
 
-.caps-admin-groups-name,
+.caps-admin-curricula-year {
+    width: 10%;
+}
+
+.caps-admin-curricula-degree {
+    width: 20%;
+}
+
 .caps-admin-curricula-name {
+    width: 45%;
+}
+
+.caps-admin-groups-name {
     width: 75%;
 }
 
