@@ -62,50 +62,36 @@ class ExamsController extends AppController {
         $this->set('exam', $exam);
     }
 
-    public function adminAdd () {
-        $user = $this->Auth->user();
-        $exam = $this->Exams->newEntity();;
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if ($this->request->is('post')) {
-            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
-
-            if ($this->Exams->save($exam)) {
-                $this->Flash->success(__('Esame aggiunto con successo.'));
-                return $this->redirect(['action' => 'admin-add']);
-            }
-            $this->Flash->error(__('Errore: esame non aggiunto.'));
-        }
-
-        $this->set('exam', $exam);
-        $this->set('groups', $this->Exams->Groups->find('list'));
-    }
-
-    public function adminEdit($id = null) {
+    public function edit($id = null) {
         $user =  $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
-        if (!$exam) {
-            throw new NotFoundException(__('Errore: esame non esistente.'));
+        if ($id) {
+            $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
+            if (!$exam) {
+                throw new NotFoundException(__('Errore: esame non esistente.'));
+            }
+        } else {
+            $exam = $this->Exams->newEntity();;
         }
 
         if ($this->request->is(['post', 'put'])) {
             $exam = $this->Exams->patchEntity($exam, $this->request->getData());
-
-            if ($this->Exams->save($exam)) {
-                $this->Flash->success(__('Esame aggiornato con successo.'));
-                return $this->redirect(['action' => 'index']);
+            if ($exam->isNew()) {
+                if ($this->Exams->save($exam)) {
+                    $this->Flash->success(__('Esame aggiunto con successo.'));
+                    return $this->redirect(['action' => 'edit']);
+                }
+                $this->Flash->error(__('Errore: esame non aggiunto.'));
+            } else {
+                if ($this->Exams->save($exam)) {
+                    $this->Flash->success(__('Esame aggiornato con successo.'));
+                    return $this->redirect(['action' => 'adminIndex']);
+                }
+                $this->Flash->error(__('Errore: esame non aggiornato.'));
             }
-            $this->Flash->error(__('Errore: esame non aggiornato.'));
         }
 
         $this->set('exam', $exam);
