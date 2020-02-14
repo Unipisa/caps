@@ -55,7 +55,11 @@ class DegreesTable extends Table
 
         $validator
             ->scalar('name')
-            ->allowEmptyString('name');
+            ->notEmptyString('name');
+
+        $validator
+            ->scalar('years')
+            ->notEmptyString('years');
 
         return $validator;
     }

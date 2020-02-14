@@ -6,7 +6,7 @@
                     '↑&nbspAnnulla', [
                     // $this->request->referer(),
                         'controller' => $this->request->getParam('controller'),
-                        'action' => $this->request->getParam('controller') == 'curricula' ? 'admin-index' : 'index'
+                        'action' => $this->request->getParam('controller') == 'curricula' ? 'index' : 'admin-index'
                     ],
                     ['escape' => false]
                 );

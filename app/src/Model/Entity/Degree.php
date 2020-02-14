@@ -24,6 +24,7 @@ class Degree extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'curricula' => true
+        'curricula' => true,
+        'years' => true
     ];
 }
