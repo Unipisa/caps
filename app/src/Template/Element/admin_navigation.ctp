@@ -33,7 +33,7 @@
                 echo $this->Html->link(
                     'Aggiornamento&nbsp;→',
                     ['controller' => 'curricula',
-                        'action' => 'admin_index'],
+                        'action' => 'index'],
                     ['escape' => false]
                 );
             ?>
