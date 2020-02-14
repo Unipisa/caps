@@ -24,10 +24,11 @@
     echo $this->Form->control(
         'academic_year'
     );
-    echo $this->Form->submit('Aggiorna');
+    echo $this->Form->submit($curriculum->isNew() ? 'Crea' : 'Aggiorna');
     echo $this->Form->end();
 ?>
 
+<?php if (! $curriculum->isNew()): ?>
 <hr class="caps-admin-curriculum"/>
 
 <h3>Esami obbligatori</h3>
@@ -280,3 +281,5 @@
     );
     echo $this->Form->end();
 ?>
+
+<?php endif; ?>
