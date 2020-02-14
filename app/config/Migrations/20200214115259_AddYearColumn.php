@@ -14,7 +14,8 @@ class AddYearColumn extends AbstractMigration
     {
         $table = $this->table('degrees');
         $table->addColumn('years', 'integer', [
-            'null' => 'false'
+            'null' => 'false',
+            'limit' => 11
         ]);
         $table->update();
 
