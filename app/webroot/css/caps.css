@@ -117,6 +117,14 @@ select#academicYearSelect {
     width: 7.5%;
 }
 
+#proposalForm div.credits-number {
+    display: inline;
+    vertical-align: 45%;
+    font-size: 130%;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
 #proposalForm ul li a.delete {
     display: inline-block;
     width: 30px;

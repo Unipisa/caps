@@ -36,7 +36,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         echo $this->Html->css('caps');
         echo $this->Html->css('caps.print', array('media' => 'print'));
 
-        echo $this->Html->script('jquery-1.10.2.min');
+        echo $this->Html->script('jquery-3.4.1.min');
         // echo $this->Html->script('chosen.jquery.min');
         /* if (is_file(WWW_ROOT . 'js' . DS . $this->request->params['controller'] . DS . $this->request->params['action'] . '.js')) {
             echo $this->Html->script($this->request->params['controller'] . '/' . $this->request->params['action']);
