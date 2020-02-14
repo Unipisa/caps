@@ -41,7 +41,6 @@ function on_curriculum_selected() {
             }
         }
 
-
         var degree = cv['degree'];
         var year_title = {
             1: 'Primo anno',
@@ -77,7 +76,8 @@ function on_curriculum_selected() {
                 $("#proposalForm").slideDown();
 
                 stop_loading();
-            }).catch(() => {
+            }).catch((err) => {
+                console.log(err);
                 stop_loading();
             });
     }
@@ -98,15 +98,8 @@ function on_curriculum_selected() {
 
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
             var examHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option value=" + examId + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"]  + "</option></select>";
-            var creditsHTML = "<select name=data[ChosenExam][" + i + "][credits] class=credits>";
-            if (exam["sector"] === "PROFIN") {
-                creditsHTML += "<option value=" + exam["credits"] + ">" + exam["credits"] + "</option>";
-            } else {
-                for (var j = exam["credits"]; j > 0; j--) {
-                    creditsHTML += "<option value=" + j + ">" + j + "</option>";
-                }
-            }
-            creditsHTML += "</select>";
+            var creditsHTML = "<input class=credits name=data[ChosenExam][" +
+                i + "][credits] value=" + exam['credits'] + ' readonly>';
 
             // Add an hidden field with the ID of this compulsoryExam
             var compulsory_exam_id = "<input type=hidden name=data[ChosenExam][" + i + "][compulsory_exam_id] value=" + compulsoryExam["id"] + ">";
@@ -161,11 +154,9 @@ function on_curriculum_selected() {
                 }
 
                 var credits = exam["credits"];
-                var creditsHTML = "<select name=data[ChosenExam][" + (e.data.i + compulsoryExams.length)  + "][credits] class=credits>";
-                for (var j = credits; j > 0; j--) {
-                    creditsHTML += "<option value=" + j + ">" + j + "</option>";
-                }
-                creditsHTML += "</select>";
+                var creditsHTML = "<input class=credits name=data[ChosenExam][" +
+                        (e.data.i + compulsoryExams.length)  +
+                    "][credits] readonly value=" + credits + ">";
 
                 $(this).next("select").remove();
                 $(this).after(creditsHTML);
@@ -199,15 +190,9 @@ function on_curriculum_selected() {
                     }
                 }
 
-                var creditsHTML = "<select name=data[ChosenExam][" + (e.data.i + compulsoryGroups.length + compulsoryExams.length) + "][credits] class=credits>";
-                if (exam["sector"] === "PROFIN") {
-                        creditsHTML += "<option value=" + exam["credits"] + ">" + exam["credits"] + "</option>";
-                } else {
-                    for (var j = exam["credits"]; j > 0; j--) {
-                        creditsHTML += "<option value=" + j + ">" + j + "</option>";
-                    }
-                }
-                creditsHTML += "</select>";
+                var creditsHTML = "<input readonly name=data[ChosenExam][" +
+                    (e.data.i + compulsoryGroups.length + compulsoryExams.length) +
+                    "][credits] class=credits value=" + exam['credits'] + ">";
 
                 $(this).next("select").remove();
                 $(this).after(creditsHTML);
@@ -250,15 +235,7 @@ function on_curriculum_selected() {
                     }
                 }
 
-                var creditsHTML = "<select name=data[ChosenExam][" + e.data.i + "][credits] class=credits>";
-                if (exam["sector"] === "PROFIN") {
-                        creditsHTML += "<option value=" + exam["credits"] + ">" + exam["credits"] + "</option>";
-                } else {
-                    for (var j = exam["credits"]; j > 0; j--) {
-                        creditsHTML += "<option value=" + j + ">" + j + "</option>";
-                    }
-                }
-                creditsHTML += "</select>";
+                var creditsHTML = "<input name=data[ChosenExam][" + e.data.i + "][credits] class=credits readonly value=" + exam['credits'] + ">";
 
                 $(this).next("select").remove();
                 $(this).after(creditsHTML);
