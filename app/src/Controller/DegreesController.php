@@ -17,7 +17,7 @@ class DegreesController extends AppController
      *
      * @return \Cake\Http\Response|null
      */
-    public function adminIndex()
+    public function index()
     {
         $degrees = $this->paginate($this->Degrees);
         $this->set(compact('degrees'));
@@ -59,7 +59,7 @@ class DegreesController extends AppController
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
             if ($this->Degrees->save($degree)) {
                 $this->Flash->success(__('Il corso di laurea è stato salvato'));
-                return $this->redirect(['action' => 'adminIndex']);
+                return $this->redirect(['action' => 'index']);
             }
             else {
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
@@ -86,6 +86,6 @@ class DegreesController extends AppController
             $this->Flash->error(__('Non è stato possibile cancellare il corso di laurea.'));
         }
 
-        return $this->redirect(['action' => 'adminIndex']);
+        return $this->redirect(['action' => 'index']);
     }
 }

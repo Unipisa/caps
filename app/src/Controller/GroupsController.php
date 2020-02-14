@@ -24,21 +24,11 @@ class GroupsController extends AppController {
     }
 
     public function index () {
-        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
-
-        $this->set('groups', $groups);
-        $this->set('_serialize', ['groups']);
-    }
-
-    public function adminIndex () {
         $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $groups = $this->Groups->find('all');
+        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
         $this->set('groups', $groups);
         $this->set('owner', $user);
+        $this->set('_serialize', ['groups']);
     }
 
     public function view ($id = null) {
@@ -77,7 +67,7 @@ class GroupsController extends AppController {
             $group = $this->Groups->patchEntity($group, $this->request->getData());
             if ($this->Groups->save($group)) {
                 $this->Flash->success($success_message);
-                return $this->redirect(['action' => 'admin_index']);
+                return $this->redirect(['action' => 'index']);
             }
             $this->Flash($failure_message);
         }
@@ -113,14 +103,14 @@ class GroupsController extends AppController {
             if ($this->Groups->delete($group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
                 return $this->redirect(
-                    ['action' => 'admin_index']
+                    ['action' => 'index']
                 );
             }
         }
 
         $this->Flash->error(__('Error: gruppo non cancellato.'));
         $this->redirect(
-            ['action' => 'admin_index']
+            ['action' => 'index']
         );
     }
 
