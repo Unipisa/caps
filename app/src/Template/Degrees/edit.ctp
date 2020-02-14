@@ -10,6 +10,9 @@ echo $this->Form->create($degree);
 echo $this->Form->control(
     'name'
 );
+echo $this->Form->control(
+    'years'
+);
 if ($degree->isNew()):
   echo $this->Form->submit('Salva corso di laurea');
 else:

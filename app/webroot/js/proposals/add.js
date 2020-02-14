@@ -41,13 +41,17 @@ function on_curriculum_selected() {
             }
         }
 
-        var degree = cv['degree']['name'];
 
-        var baseHTML = undefined;
-        if (degree.toLowerCase().includes('triennale')) {
-            baseHTML = "<hr><h3>Primo anno: <span></span>/60</h3><nav id=\"nav-year-1\"></nav><hr><ul></ul><hr><h3>Secondo anno: <span></span>/60</h3><nav id=\"nav-year-2\"></nav><hr><ul></ul><hr><h3>Terzo anno: <span></span>/60</h3><nav id=\"nav-year-3\"></nav><hr><ul></ul>";
-        } else {
-            baseHTML = "<hr><h3>Primo anno: <span></span>/60</h3><nav id=\"nav-year-1\"></nav><hr><ul></ul><hr><h3>Secondo anno: <span></span>/60</h3><nav id=\"nav-year-2\"></nav><hr><ul></ul>";
+        var degree = cv['degree'];
+        var year_title = {
+            1: 'Primo anno',
+            2: 'Secondo anno',
+            3: 'Terzo anno'
+        };
+        var baseHTML = "<hr>";
+        for (i = 1; i <= degree['years']; i++) {
+            baseHTML = baseHTML + "<h3>" + year_title[i] +
+                " <span></span>/60</h3><nav id=\"nav-year-" + i + "\"></nav><hr><ul></ul>";
         }
 
         $("#proposalForm").hide();
