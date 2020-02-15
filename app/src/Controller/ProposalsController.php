@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use Cake\Log\Log;
+use App\Form\ProposalsFilterForm;
 
 class ProposalsController extends AppController {
 
@@ -49,6 +50,39 @@ class ProposalsController extends AppController {
     public function beforeFilter ($event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
+    }
+
+    public function index()
+    {
+      $proposals = $this->Proposals->find()
+        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
+        ->order([ 'Users.surname' => 'asc' ]);
+      $filterForm = new ProposalsFilterForm();
+      $filterData = $this->request->getQuery();
+      $filterForm->setData($filterData);
+      if (in_array('status',$filterData) && $filterForm->validate($filterData)) {
+        if ($filterData['status'] == 'pending') {
+          $proposals = $proposals->where([
+              'Proposals.submitted' => true,
+              'Proposals.approved' => false
+          ]);
+        } else if ($filterData['status'] == 'approved') {
+          $proposals = $proposals->where([
+            'Proposals.approved' => true,
+            'Proposals.frozen' => false ]);
+        } else if ($filterData['status'] == 'archived') {
+          $proposals = $proposals->where([
+            'Proposals.frozen' => true ]);
+        }
+        if (!empty($filterData['surname'])) {
+          $proposals = $proposals->where([
+            'Users.surname LIKE' => '%'.$filterData['surname'].'%'
+          ]);
+        }
+      }
+      $this->set('filterForm', $filterForm);
+      $this->set('proposals', $this->Paginator->paginate($proposals));
+      $this->set('selected', 'index');
     }
 
     public function adminTodo () {
