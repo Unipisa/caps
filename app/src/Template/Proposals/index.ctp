@@ -32,10 +32,15 @@ echo $this->Form->end();
             ?></td>
         <td class="caps-admin-proposal-pds">
             <?php
-                echo $this->Html->link(
-                    $proposal['curriculum'][0]->toString(),
-                    ['action' => 'view', $proposal['id']]
-                );
+                if (count($proposal['curriculum'])>0) {
+                  echo $this->Html->link(
+                      $proposal['curriculum'][0]->toString(),
+                      ['action' => 'view', $proposal['id']]
+                  );
+                } else {
+                  echo $this->Html->link("curriculum non trovato",
+                  ['action' => 'view', $proposal['id']]);
+                }
             ?>
         </td>
         <td class="caps-admin-proposal-actions">
