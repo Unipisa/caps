@@ -5,28 +5,40 @@
     <tr>
         <th>Id</th>
         <th>Nome</th>
+        <th>Anni</th>
         <th>Azioni</th>
     </tr>
     <?php foreach ($degrees as $degree): ?>
         <tr>
-            <td class="caps-admin-curricula-id"><?php echo $degree['id']; ?></td>
-            <td class="caps-admin-curricula-name">
-                <?php
-                echo $this->Html->link(
-                    $degree['name'],
-                    ['controller' => 'degrees',
-                        'action' => 'edit',
-                        $degree['id']]
-                );
-                ?>
+            <td class="caps-admin-degrees-id">
+              <?php echo $degree['id']; ?>
             </td>
-            <td class="caps-admin-curricula-actions">
+            <td class="caps-admin-degrees-name">
+              <?php
+                  echo $this->Html->link(
+                      $degree['name'],
+                      [   'controller' => 'degrees',
+                          'action' => 'view',
+                          $degree['id']]
+                  );
+              ?>
+            </td>
+            <td class="caps-admin-degrees-years">
+                <?php echo ($degree['years']) ?>
+            </td>
+            <td class="caps-admin-degrees-action">
                 <ul class="actions">
                     <li>
                         <?php
-                        echo $this->Form->postLink(
+                        echo $this->Html->link(
+                            __('Modifica'),
+                            [
+                                'action' => 'edit',
+                                $degree['id']],
+                            ['class' => 'accept']
+                        ) ." ".$this->Form->postLink(
                             __('Cancella'),
-                            ['action' => 'admin_delete',
+                            ['action' => 'delete',
                                 $degree['id']],
                             [
                               'class' => 'reject',

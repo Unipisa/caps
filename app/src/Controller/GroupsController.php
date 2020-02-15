@@ -84,7 +84,7 @@ class GroupsController extends AppController {
         );
     }
 
-    public function adminDelete ($id = null) {
+    public function delete ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();

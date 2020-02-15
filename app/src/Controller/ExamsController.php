@@ -83,7 +83,7 @@ class ExamsController extends AppController {
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
-    public function adminDelete ($id = null) {
+    public function delete ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();

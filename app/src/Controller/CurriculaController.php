@@ -30,7 +30,7 @@ class CurriculaController extends AppController {
     }
 
     /**
-     * @brief Get a single curriculum in JSON format. URL: caps/curricula/view/id.json
+     * @brief Get a single curriculum
      */
     public function view ($id = null) {
         if (!$id) {
@@ -38,7 +38,9 @@ class CurriculaController extends AppController {
         }
 
         $curriculum = $this->Curricula->findById($id)
-            ->contain([ 'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams', 'Degrees' ])
+            ->contain([
+              'FreeChoiceExams', 'CompulsoryGroups' => ['Groups'],
+              'CompulsoryExams' => ['Exams'], 'Degrees' ])
             ->firstOrFail();
 
         if (!$curriculum) {
@@ -109,7 +111,7 @@ class CurriculaController extends AppController {
         }
     }
 
-    public function adminDelete ($id = null) {
+    public function delete ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();

@@ -137,6 +137,7 @@
     <td></td>
     <td></td>
     <td><strong><?php echo $year_credits; ?></strong></td>
+    <td></td>
 </tr>
 </table>
 </div>
