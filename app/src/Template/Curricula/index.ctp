@@ -18,8 +18,8 @@
             <?php
                 echo $this->Html->link(
                     $curriculum['name'],
-                    ['controller' => 'curricula',
-                        'action' => 'edit',
+                    [   'controller' => 'curricula',
+                        'action' => 'view',
                         $curriculum['id']]
                 );
             ?>
@@ -36,7 +36,7 @@
                             ['class' => 'accept']
                         )." ".$this->Form->postLink(
                             __('Cancella'),
-                            ['action' => 'admin_delete',
+                            ['action' => 'delete',
                                 $curriculum['id']],
                             [
                               'class' => 'reject',

@@ -1,3 +1,5 @@
+<?php echo $this->element('updating_navigation'); ?>
+
 <h2><?php echo $group['name']; ?></h2>
 
 <table>

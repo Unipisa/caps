@@ -14,8 +14,7 @@
             <?php
                 echo $this->Html->link(
                     $group['name'],
-                    ['controller' => 'groups',
-                        'action' => 'edit',
+                    [   'action' => 'view',
                         $group['id']]
                 );
             ?>
@@ -24,9 +23,15 @@
             <ul class="actions">
                 <li>
                     <?php
-                        echo $this->Form->postLink(
+                        echo $this->Html->link(
+                            __('Modifica'),
+                            [
+                                'action' => 'edit',
+                                $group['id']],
+                            ['class' => 'accept']
+                        ) ." ". $this->Form->postLink(
                             __('Cancella'),
-                            ['action' => 'adminDelete',
+                            ['action' => 'delete',
                                 $group['id']],
                             [
                               'class' => 'reject',

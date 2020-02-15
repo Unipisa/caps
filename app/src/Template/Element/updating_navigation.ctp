@@ -3,7 +3,7 @@
         <li class="caps-admin-link">
             <?php
                 echo $this->Html->link(
-                    '↑&nbspAnnulla', [
+                    '↑&nbspIndietro', [
                     // $this->request->referer(),
                         'controller' => $this->request->getParam('controller'),
                         'action' => 'index'

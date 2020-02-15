@@ -17,6 +17,11 @@ table {
     margin-bottom: 3%;
 }
 
+.view th {
+  width: 5em;
+  text-align: right;
+}
+
 .attribution {
     float: left;
 }
@@ -489,6 +494,7 @@ hr.caps-admin-curriculum {
 }
 
 .caps-admin-groups-actions,
+.caps-admin-degrees-action,
 .caps-admin-curricula-actions {
     width: 20%;
 }

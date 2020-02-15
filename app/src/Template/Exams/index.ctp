@@ -17,7 +17,7 @@
             <?php
                 echo $this->Html->link(
                     $exam['name'],
-                    ['action' => 'edit',
+                    ['action' => 'view',
                         $exam['id']]
                 );
             ?>
@@ -29,9 +29,16 @@
             <ul class="actions">
                 <li>
                     <?php
-                        echo $this->Form->postLink(
+                        echo $this->Html->link(
+                            __('Modifica'),
+                            [
+                                'action' => 'edit',
+                                $exam['id']],
+                            ['class' => 'accept']
+                        ) ." ".
+                        $this->Form->postLink(
                             __('Cancella'),
-                            ['action' => 'admin_delete', $exam['id']],
+                            ['action' => 'delete', $exam['id']],
                             [
                               'class' => 'reject',
                               'confirm' => __('Sei sicuro di voler cancellare l\'esame "{0}"?', $exam['name'])
