@@ -94,8 +94,6 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 						<p class="attribution">
 								Caps version <?php if (isset($capsVersion)) { echo $capsVersion; } ?>
 								--
-                Trash Can designed by <a href="http://thenounproject.com/rubensteeman">Ruben Steeman</a> from the <a href="http://www.thenounproject.com/">Noun Project</a>
-								--
             <?php
                 echo $this->Html->link(
                     $this->Html->image('cake.power.gif', array('alt' => isset($cakeDescription) ? $cakeDescription : "", 'border' => '0')),
