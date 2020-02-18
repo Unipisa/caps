@@ -86,11 +86,8 @@ select#academicYearSelect {
 .proposalsFilterForm .input {
     clear: none;
     width: auto;
-    display: inline;
-}
-
-.proposalsFilterForm label {
-    display: inline;
+    display: inline-block;
+    padding: 0 1em 0 0;
 }
 
 #proposalForm h3 {
@@ -488,8 +485,12 @@ hr.caps-admin-curriculum {
     width: 20%;
 }
 
+.caps-admin-proposal-degree {
+    width: 25%;
+}
+
 .caps-admin-proposal-pds {
-    width: 60%;
+    width: 25%;
 }
 
 .caps-admin-groups-id,

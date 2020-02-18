@@ -1,27 +1,40 @@
 <?php echo $this->element('admin_navigation'); ?>
 
+<div id="proposalFilterFormDiv">
 <?php
 echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'proposalsFilterForm']);
 echo $this->Form->control('status',
   ['type' => 'select',
    'options' => [
+     'all' => __('tutti'),
      'pending' => __('da valutare'),
      'approved' => __('approvati'),
      'archived' => __('congelati')
-   ]
+   ],
+   'onchange' => 'this.form.submit()'
  ]);
-echo $this->Form->control('surname');
+echo $this->Form->control('surname',
+  ['label' => __('Cognome')]);
 echo $this->Form->end();
 ?>
+</div>
 
 <h2>Piani di Studio</h2>
 <table class="caps-todo">
     <tr>
         <th>Nome</th>
+        <th>Anno</th>
+        <th>Laurea</th>
         <th>Piano di Studio</th>
         <th>Azioni</th>
     </tr>
 <?php foreach ($proposals as $proposal): ?>
+<?php if (count($proposal['curriculum'])>0) {
+  $curriculum = $proposal['curriculum'][0];
+} else {
+  $curriculum = [];
+}
+?>
     <tr>
         <td class="caps-admin-proposal-name">
             <?php echo $this->Html->link($proposal['user']['name'], [
@@ -30,17 +43,28 @@ echo $this->Form->end();
                     $proposal['user']['id']
                 ]);
             ?></td>
+        <td class="caps-admin-proposal-year">
+            <?php
+                echo $this->Html->link(
+                    $curriculum['academic_year'],
+                    ['action' => 'view', $proposal['id']]
+                );
+            ?>
+        </td>
+        <td class="caps-admin-proposal-degree">
+            <?php
+                echo $this->Html->link(
+                    $curriculum['degree']['name'],
+                    ['action' => 'view', $proposal['id']]
+                );
+            ?>
+        </td>
         <td class="caps-admin-proposal-pds">
             <?php
-                if (count($proposal['curriculum'])>0) {
-                  echo $this->Html->link(
-                      $proposal['curriculum'][0]->toString(),
-                      ['action' => 'view', $proposal['id']]
-                  );
-                } else {
-                  echo $this->Html->link("curriculum non trovato",
-                  ['action' => 'view', $proposal['id']]);
-                }
+                echo $this->Html->link(
+                    $curriculum['name'],
+                    ['action' => 'view', $proposal['id']]
+                );
             ?>
         </td>
         <td class="caps-admin-proposal-actions">

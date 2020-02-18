@@ -11,7 +11,7 @@ class ProposalsFilterForm extends Form
     {
         return $schema
 				  ->addField('status', ['type' => 'select', 'options' => ['pippo', 'pluto', 'topolino']])
-					->addField('surname', ['type' => 'string']);
+					->addField('surname', ['type' => 'string', 'label' => __('Cognome')]);
     }
 
     public function validationDefault(Validator $validator)
