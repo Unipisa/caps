@@ -37,7 +37,7 @@ echo $this->Form->end();
     $curriculum = [
       'academic_year' => '???',
       'degree' => ['name' => '???'],
-      'name' = '???' 
+      'name' => '???' 
     ];
   }
 ?>
