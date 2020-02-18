@@ -1,4 +1,21 @@
-<?php echo $this->element('admin_navigation'); ?>
+<nav class="caps-admin-navigation">
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li class="caps-update-link">
+          <?php
+              echo $this->Html->link(
+                  'Aggiornamento&nbsp;→',
+                  ['controller' => 'curricula',
+                      'action' => 'index'],
+                  ['escape' => false]
+              );
+          ?>
+      </li>
+    </ul>
+</nav>
 
 <div id="proposalFilterFormDiv">
 <?php
@@ -37,7 +54,7 @@ echo $this->Form->end();
     $curriculum = [
       'academic_year' => '???',
       'degree' => ['name' => '???'],
-      'name' => '???' 
+      'name' => '???'
     ];
   }
 ?>
