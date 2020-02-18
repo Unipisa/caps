@@ -21,7 +21,9 @@
 <?php
 echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'proposalsFilterForm']);
 echo $this->Form->control('status',
-  ['type' => 'select',
+  [
+   'label' => __('stato'),
+   'type' => 'select',
    'options' => [
      'all' => __('tutti'),
      'pending' => __('da valutare'),
@@ -31,7 +33,20 @@ echo $this->Form->control('status',
    'onchange' => 'this.form.submit()'
  ]);
 echo $this->Form->control('surname',
-  ['label' => __('Cognome')]);
+  [
+    'label' => __('cognome'),
+    'onchange' => 'this.form.submit()'
+  ]);
+echo $this->Form->control('academic_year',
+  [
+    'label' => __('anno'),
+    'onchange' => 'this.form.submit()'
+  ]);
+echo $this->Form->control('degree',
+  [
+    'label' => __('laurea'),
+    'onchange' => 'this.form.submit()'
+  ]);
 echo $this->Form->end();
 ?>
 </div>
