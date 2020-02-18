@@ -30,13 +30,6 @@
 echo $this->Form->create('Proposal');
 ?>
 <div id="curriculum-select"></div>
-<?php
-/* echo $this->Form->control('Curriculum.0.curriculum_id',
-    ['empty' => ['text" disabled="disabled" selected="selected' => 'Scegli un curriculum'],
-        'label' => '',
-        'options' => $curricula
-    ]); */
-?>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
 <?php
