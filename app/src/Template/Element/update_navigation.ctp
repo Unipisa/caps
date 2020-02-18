@@ -57,7 +57,7 @@
                 echo $this->Html->link(
                     '←&nbsp;Amministrazione',
                     ['controller' => 'proposals',
-                        'action' => 'admin_todo'],
+                        'action' => 'index'],
                     ['escape' => false]
                 );
             ?>

@@ -20,33 +20,6 @@ class ProposalsController extends AppController {
         $this->loadComponent('Paginator');
     }
 
-    private function done()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
-    private function todo()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([
-                'submitted' => true,
-                'approved' => false
-            ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
-    private function frozen()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Proposals.frozen' => true ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
     public function beforeFilter ($event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -59,60 +32,35 @@ class ProposalsController extends AppController {
         ->order([ 'Users.surname' => 'asc' ]);
       $filterForm = new ProposalsFilterForm();
       $filterData = $this->request->getQuery();
+      if (!key_exists('status', $filterData) || !$filterForm->validate($filterData)) {
+        // no filter form provided or data not valid: set defaults:
+        $filterData = [
+          'status' => 'pending',
+          'surname' => ''
+        ];
+      }
       $filterForm->setData($filterData);
-      if (key_exists('status', $filterData) && $filterForm->validate($filterData)) {
-        if ($filterData['status'] == 'pending') {
-          $proposals = $proposals->where([
-              'Proposals.submitted' => true,
-              'Proposals.approved' => false
-          ]);
-        } else if ($filterData['status'] == 'approved') {
-          $proposals = $proposals->where([
-            'Proposals.approved' => true,
-            'Proposals.frozen' => false ]);
-        } else if ($filterData['status'] == 'archived') {
-          $proposals = $proposals->where([
-            'Proposals.frozen' => true ]);
-        }
-        if (!empty($filterData['surname'])) {
-          $proposals = $proposals->where([
-            'Users.surname LIKE' => '%'.$filterData['surname'].'%'
-          ]);
-        }
+      if ($filterData['status'] == 'pending') {
+        $proposals = $proposals->where([
+            'Proposals.submitted' => true,
+            'Proposals.approved' => false
+        ]);
+      } else if ($filterData['status'] == 'approved') {
+        $proposals = $proposals->where([
+          'Proposals.approved' => true,
+          'Proposals.frozen' => false ]);
+      } else if ($filterData['status'] == 'archived') {
+        $proposals = $proposals->where([
+          'Proposals.frozen' => true ]);
+      }
+      if (!empty($filterData['surname'])) {
+        $proposals = $proposals->where([
+          'Users.surname LIKE' => '%'.$filterData['surname'].'%'
+        ]);
       }
       $this->set('filterForm', $filterForm);
       $this->set('proposals', $this->Paginator->paginate($proposals));
       $this->set('selected', 'index');
-    }
-
-    public function adminTodo () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $this->set('proposalsTodo', $this->Paginator->paginate($this->todo()));
-        $this->set('selected', 'todo');
-    }
-
-    public function adminDone () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $this->set('proposalsApproved', $this->Paginator->paginate($this->done()));
-        $this->set('selected', 'done');
-    }
-
-    public function adminFrozen () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $this->set('proposalsFrozen', $this->Paginator->paginate($this->frozen()));
-        $this->set('selected', 'frozen');
     }
 
     public function view ($id = null) {
@@ -232,7 +180,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 
@@ -271,7 +219,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 
@@ -295,7 +243,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 
