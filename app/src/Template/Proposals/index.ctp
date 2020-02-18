@@ -1,3 +1,4 @@
+<?php if ($owner['admin']): ?>
 <nav class="caps-admin-navigation">
     <ul>
       <li></li>
@@ -50,6 +51,7 @@ echo $this->Form->control('degree',
 echo $this->Form->end();
 ?>
 </div>
+<?php endif; ?>
 
 <h2>Piani di Studio</h2>
 <table class="caps-todo">
@@ -62,16 +64,7 @@ echo $this->Form->end();
     </tr>
 <?php foreach ($proposals as $proposal): ?>
 <?php
-  if (count($proposal['curriculum'])>0) {
-    $curriculum = $proposal['curriculum'][0];
-  } else {
-    // WORKAROUND finche' il database contiene inconsistenze
-    $curriculum = [
-      'academic_year' => '???',
-      'degree' => ['name' => '???'],
-      'name' => '???'
-    ];
-  }
+    $curriculum = $proposal['curriculum'];
 ?>
     <tr>
         <td class="caps-admin-proposal-name">
@@ -107,6 +100,7 @@ echo $this->Form->end();
         </td>
         <td class="caps-admin-proposal-actions">
             <ul class="actions">
+            <?php if ($owner['admin']): ?>
               <?php if ($proposal['submitted'] && !$proposal['approved']):?>
                 <li>
                     <?php
@@ -127,6 +121,7 @@ echo $this->Form->end();
                     ?>
                 </li>
               <?php endif; ?>
+            <?php endif; ?>
             </ul>
         </td>
     </tr>

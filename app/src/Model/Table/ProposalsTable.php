@@ -44,11 +44,9 @@ class ProposalsTable extends Table
             'foreignKey' => 'user_id'
         ]);
 
-        $this->belongsToMany('Curricula', [
-            'foreignKey' => 'proposal_id',
-            'targetForeignKey' => 'curriculum_id',
-            'joinTable' => 'curricula_proposals'
-        ])->setProperty('curriculum');
+        $this->belongsTo('Curricula', [
+            'foreignKey' => 'curriculum_id'
+        ]);
 
         $this->hasMany('ChosenExams')->setProperty('chosen_exams');
         $this->hasMany('ChosenFreeChoiceExams')->setProperty('chosen_free_choice_exams');

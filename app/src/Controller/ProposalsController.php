@@ -27,9 +27,20 @@ class ProposalsController extends AppController {
 
     public function index()
     {
-      $proposals = $this->Proposals->find()
+      $user = $this->Auth->user();
+
+      $proposals = $this->Proposals->find();
+      $proposals = $proposals
         ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
         ->order([ 'Users.surname' => 'asc' ]);
+
+      if ($user['admin']) {
+          // admin può vedere tutti i proposal
+      } else {
+          // posso vedere solo i miei proposal
+          $proposals = $proposals->where(['Users.username' => $user['user']]);
+      }
+
       $filterForm = new ProposalsFilterForm();
       $filterData = $this->request->getQuery();
       if (!key_exists('status', $filterData) || !$filterForm->validate($filterData)) {
@@ -104,7 +115,7 @@ class ProposalsController extends AppController {
 
             if ($this->request->is('post')) {
                 $data = $this->request->getData()['data'];
-                $cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
+                $cur_id = $this->request->getData()['curriculum_id'];
 
                 if (array_key_exists('ChosenExam', $data))
                     $patch_data['chosen_exams'] = $data['ChosenExam'];
@@ -116,7 +127,7 @@ class ProposalsController extends AppController {
                 $proposal['approved'] = false;
                 $proposal['submitted'] = true;
                 $proposal['frozen'] = false;
-                $proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
+                $proposal['curriculum_id'] = $cur_id;
 
                 if ($this->Proposals->save($proposal)) {
                     return $this->redirect(['action' => 'view', $proposal['id']]);

@@ -52,7 +52,7 @@ class ProposalsFilterForm extends Form
       if (!empty($this->getData('degree'))) {
         // Error: Error: SQLSTATE[HY000]: General error: 1 no such column: Degree.name
         $proposals = $proposals->where([
-          'Degree.name LIKE' => '%'.$this->getData('degree').'%'
+          'Degrees.name LIKE' => '%'.$this->getData('degree').'%'
         ]);
       }
       return $proposals;
