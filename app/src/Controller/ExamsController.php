@@ -29,9 +29,11 @@ class ExamsController extends AppController {
 
     public function index () {
         $user = $this->Auth->user();
-        $exams = $this->Paginator->paginate($this->exams());
+        $exams = $this->exams();
+        $this->set('all_exams', $exams);
+        $this->set('_serialize', [ 'all_exams' ]);
+        $exams = $this->Paginator->paginate($exams);
         $this->set('exams', $exams);
-        $this->set('_serialize', [ 'exams' ]);
     }
 
     /**
