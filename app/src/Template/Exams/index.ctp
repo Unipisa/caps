@@ -10,7 +10,7 @@
         <th>Crediti</th>
         <th>Azioni</th>
     </tr>
-<?php foreach ($exams as $exam): ?>
+<?php foreach ($paginated_exams as $exam): ?>
     <tr>
         <td class="caps-admin-exams-id"><?php echo $exam['id']; ?></td>
         <td class="caps-admin-exams-name">
