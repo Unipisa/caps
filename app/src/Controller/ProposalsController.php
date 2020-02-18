@@ -60,7 +60,7 @@ class ProposalsController extends AppController {
       $filterForm = new ProposalsFilterForm();
       $filterData = $this->request->getQuery();
       $filterForm->setData($filterData);
-      if (in_array('status',$filterData) && $filterForm->validate($filterData)) {
+      if (key_exists('status', $filterData) && $filterForm->validate($filterData)) {
         if ($filterData['status'] == 'pending') {
           $proposals = $proposals->where([
               'Proposals.submitted' => true,

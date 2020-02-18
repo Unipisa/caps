@@ -1,7 +1,7 @@
 <?php echo $this->element('admin_navigation'); ?>
 
 <?php
-echo $this->Form->create($filterForm, ['type' => 'GET']);
+echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'proposalsFilterForm']);
 echo $this->Form->control('status',
   ['type' => 'select',
    'options' => [

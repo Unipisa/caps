@@ -73,6 +73,26 @@ select#academicYearSelect {
     display: none;
 }
 
+.proposalsFilterForm select {
+    width: auto;
+    padding: 2px;
+}
+
+.proposalsFilterForm input {
+    width: auto;
+    padding: 2px;
+}
+
+.proposalsFilterForm .input {
+    clear: none;
+    width: auto;
+    display: inline;
+}
+
+.proposalsFilterForm label {
+    display: inline;
+}
+
 #proposalForm h3 {
     float: left;
 }
