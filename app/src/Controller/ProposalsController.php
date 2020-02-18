@@ -41,7 +41,7 @@ class ProposalsController extends AppController {
           $proposals = $proposals->where(['Users.username' => $user['user']]);
       }
 
-      $filterForm = new ProposalsFilterForm();
+      $filterForm = new ProposalsFilterForm($proposals);
       $filterData = $this->request->getQuery();
       if (!key_exists('status', $filterData) || !$filterForm->validate($filterData)) {
         // no filter form provided or data not valid: set defaults:
@@ -50,8 +50,7 @@ class ProposalsController extends AppController {
           'surname' => ''
         ];
       }
-      $filterForm->setData($filterData);
-      $proposals = $filterForm->filterProposals($proposals);
+      $proposals = $filterForm->execute($filterData);
       $this->set('filterForm', $filterForm);
       $this->set('proposals', $this->Paginator->paginate($proposals));
       $this->set('selected', 'index');

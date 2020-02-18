@@ -48,6 +48,11 @@ echo $this->Form->control('degree',
     'label' => __('laurea'),
     'onchange' => 'this.form.submit()'
   ]);
+echo $this->Form->control('curriculum',
+  [
+    'label' => __('piano'),
+    'onchange' => 'this.form.submit()'
+  ]);
 echo $this->Form->end();
 ?>
 </div>
