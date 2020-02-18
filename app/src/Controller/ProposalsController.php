@@ -40,24 +40,7 @@ class ProposalsController extends AppController {
         ];
       }
       $filterForm->setData($filterData);
-      if ($filterData['status'] == 'pending') {
-        $proposals = $proposals->where([
-            'Proposals.submitted' => true,
-            'Proposals.approved' => false
-        ]);
-      } else if ($filterData['status'] == 'approved') {
-        $proposals = $proposals->where([
-          'Proposals.approved' => true,
-          'Proposals.frozen' => false ]);
-      } else if ($filterData['status'] == 'archived') {
-        $proposals = $proposals->where([
-          'Proposals.frozen' => true ]);
-      }
-      if (!empty($filterData['surname'])) {
-        $proposals = $proposals->where([
-          'Users.surname LIKE' => '%'.$filterData['surname'].'%'
-        ]);
-      }
+      $proposals = $filterForm->filterProposals($proposals);
       $this->set('filterForm', $filterForm);
       $this->set('proposals', $this->Paginator->paginate($proposals));
       $this->set('selected', 'index');

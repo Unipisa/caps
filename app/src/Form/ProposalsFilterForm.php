@@ -21,5 +21,27 @@ class ProposalsFilterForm extends Form
 
         return $validator;
     }
+
+    public function filterProposals($proposals) {
+      if ($this->getData('status') == 'pending') {
+        $proposals = $proposals->where([
+            'Proposals.submitted' => true,
+            'Proposals.approved' => false
+        ]);
+      } else if ($this->getData('status') == 'approved') {
+        $proposals = $proposals->where([
+          'Proposals.approved' => true,
+          'Proposals.frozen' => false ]);
+      } else if ($this->getData('status') == 'archived') {
+        $proposals = $proposals->where([
+          'Proposals.frozen' => true ]);
+      }
+      if (!empty($this->getData('surname'))) {
+        $proposals = $proposals->where([
+          'Users.surname LIKE' => '%'.$this->getData('surname').'%'
+        ]);
+      }
+      return $proposals;
+    }
 }
 ?>
