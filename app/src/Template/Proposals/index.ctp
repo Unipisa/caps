@@ -29,11 +29,17 @@ echo $this->Form->end();
         <th>Azioni</th>
     </tr>
 <?php foreach ($proposals as $proposal): ?>
-<?php if (count($proposal['curriculum'])>0) {
-  $curriculum = $proposal['curriculum'][0];
-} else {
-  $curriculum = [];
-}
+<?php
+  if (count($proposal['curriculum'])>0) {
+    $curriculum = $proposal['curriculum'][0];
+  } else {
+    // WORKAROUND finche' il database contiene inconsistenze
+    $curriculum = [
+      'academic_year' => '???',
+      'degree' => ['name' => '???'],
+      'name' = '???' 
+    ];
+  }
 ?>
     <tr>
         <td class="caps-admin-proposal-name">
