@@ -46,6 +46,27 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <body>
 	<div id="container">
         <div id="header">
+					<?php if (isset($owner)): ?>
+							<ul class='status'>
+									<li>
+											<?php echo $owner['name']; ?>
+									</li>
+									<li>
+											<?php
+													echo $this->Html->link(
+															'Logout',
+															array(
+																		'controller' => 'users',
+																		'action' => 'logout'
+															),
+															array(
+																		'class' => 'logout'
+															)
+													);
+											?>
+									</li>
+							</ul>
+					<?php endif; ?>
             <h1>
                 <?php
                     echo $this->Html->link(
@@ -67,27 +88,6 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 	<?php } ?>
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
-            <?php if (isset($owner)): ?>
-                <ul class='status'>
-                    <li>
-                        <?php echo $owner['name']; ?>
-                    </li>
-                    <li>
-                        <?php
-                            echo $this->Html->link(
-                                'Logout',
-                                array(
-                                      'controller' => 'users',
-                                      'action' => 'logout'
-                                ),
-                                array(
-                                      'class' => 'logout'
-                                )
-                            );
-                        ?>
-                    </li>
-                </ul>
-            <?php endif; ?>
 			<?php echo $this->fetch('content'); ?>
 		</div>
         <div id="footer">

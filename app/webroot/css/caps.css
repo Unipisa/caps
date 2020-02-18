@@ -278,7 +278,7 @@ select#academicYearSelect {
 
 .status {
     list-style-type: none;
-    margin-right: 5%;
+    margin-right: 0%;
     padding-right: 8px;
     margin-top: 16px;
     text-align: right;
@@ -286,7 +286,7 @@ select#academicYearSelect {
 
 .status li {
     display: inline-block;
-    font-size: 24px;
+    font-size: 20px;
     margin-left: 1%;
 }
 
