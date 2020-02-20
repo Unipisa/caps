@@ -59,7 +59,7 @@
                         echo $this->Form->postLink(
                             __('Cancella'),
                             ['controller' => 'compulsory_exams',
-                                'action' => 'admin_delete',
+                                'action' => 'delete',
                                 $compulsory_exam['id']],
                             [
                               'class' => 'reject',
@@ -146,7 +146,7 @@
                             echo $this->Form->postLink(
                                 __('Cancella'),
                                 ['controller' => 'compulsory_groups',
-                                    'action' => 'admin_delete',
+                                    'action' => 'delete',
                                     $compulsory_group['id']],
                                 [
                                   'class' => 'reject',
@@ -223,7 +223,7 @@
                             echo $this->Form->postLink(
                                 __('Cancella'),
                                 ['controller' => 'free_choice_exams',
-                                    'action' => 'admin_delete',
+                                    'action' => 'delete',
                                     $free_choice_exam['id']],
                                 [
                                   'class' => 'reject',
