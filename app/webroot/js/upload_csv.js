@@ -143,6 +143,34 @@ function readSingleFile(evt) {
 }
 
 function csvSubmit() {
+    var payload = csv_data.map(function(row){
+        var obj = {};
+        for (var i=0;i<csv_upload_fields.length;i++){
+            obj[csv_upload_fields[i]] = row[csv_column_map[i]];
+        }
+        return obj;
+    })
+
+    var form = document.createElement('form');
+    form.style.visibility = 'hidden';
+    form.method = 'POST';
+    form.action = '';
+
+    var input = document.createElement('input');
+    input.name = '_csrfToken';
+    input.value = csrf_token;
+    form.appendChild(input);
+
+    input = document.createElement('input');
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function csvSubmit_form_variant() {
     var form = document.createElement('form');
     form.style.visibility = 'hidden';
     form.method = 'POST';
@@ -163,7 +191,6 @@ function csvSubmit() {
     }
     document.body.appendChild(form);
     form.submit();
-
 }
 
 $("document").ready(function(){
