@@ -29,6 +29,15 @@ class ExamsController extends AppController {
 
     public function index () {
         $user = $this->Auth->user();
+
+        if ($this->request->is("post")) {
+            // csv bulk upload
+            if (!$user['admin']) {
+                throw new ForbiddenException();
+            }
+            debug($this->request->getData());            
+        }
+
         $this->set('exams', $this->exams());
         $this->set('_serialize', [ 'exams' ]);
         $this->set('paginated_exams', $this->Paginator->paginate($this->exams()->limit(4)));
