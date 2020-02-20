@@ -35,7 +35,18 @@ class ExamsController extends AppController {
             if (!$user['admin']) {
                 throw new ForbiddenException();
             }
-            debug($this->request->getData());            
+            $good_count = 0;
+            $bad_count = 0;
+            $payload = json_decode($this->request->getData()['payload'], True);
+            $exams = $this->Exams->newEntities($payload);
+            $result = $this->Exams->saveMany($exams);
+            debug($result);
+            if ($result) {
+                // ok! redirect?
+            } else {
+                // where is the error message?
+                // redirect?
+            }
         }
 
         $this->set('exams', $this->exams());
