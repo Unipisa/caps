@@ -1,18 +1,22 @@
-<h2><?php echo $exam['Exam']['name']; ?></h2>
+<?php echo $this->element('updating_navigation'); ?>
 
-<table>
+<h2><?php echo $exam['name']; ?></h2>
+
+<table class="view">
     <tr>
-        <th>Id</th>
         <th>Nome</th>
-        <th>Codice</th>
-        <th>Settore</th>
-        <th>Crediti</th>
+        <td><?php echo $exam['name']; ?></td>
     </tr>
     <tr>
-        <td><?php echo $exam['id']; ?></td>
-        <td><?php echo $exam['name']; ?></td>
+        <th>Codice</th>
         <td><?php echo $exam['code']; ?></td>
+      </tr>
+      <tr>
+        <th>Settore</th>
         <td><?php echo $exam['sector']; ?></td>
+      </tr>
+      <tr>
+        <th>Crediti</th>
         <td><?php echo $exam['credits']; ?></td>
     </tr>
 </table>

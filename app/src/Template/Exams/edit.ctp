@@ -1,6 +1,5 @@
 <?php echo $this->element('updating_navigation'); ?>
 
-
 <?php if ($exam->isNew()): ?>
 	<h2>Aggiungi esame</h2>
 <?php else: ?>

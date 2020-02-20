@@ -55,6 +55,17 @@ return [
             'givenname' => 'Utente'
         ],
         [
+            'user' => 'other-fake-user',
+            'password' => 'other-fake-user',
+            'ldap_dn' => '',
+            'name' => 'Altro Utente',
+            'role' => 'student',
+            'number' => '000111',
+            'admin' => false,
+            'surname' => 'Altro',
+            'givenname' => 'Utente'
+        ],
+        [
           'user' => 'my-admin-user',
           'password' => 'my-admin-user',
           'name' => 'Amministratore',

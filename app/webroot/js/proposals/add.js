@@ -25,8 +25,8 @@ var load_data_promise = Promise.all([
 ]);
 
 function on_curriculum_selected() {
-        var curriculum = $("#curriculum-0-curriculum-id option:selected").text();
-        var curriculumId = $("#curriculum-0-curriculum-id").val();
+        var curriculum = $("#curriculum-id option:selected").text();
+        var curriculumId = $("#curriculum-id").val();
         if (curriculumId === "")
             return;
 
@@ -386,7 +386,7 @@ function load_proposal(proposal) {
     console.log("CAPS :: Loading proposal with ID = " + proposal["id"]);
 
     // Set the correct Curriculum
-    $("#curriculum-0-curriculum-id").val(proposal["curriculum"][0]["id"]);
+    $("#curriculum-id").val(proposal["curriculum_id"]);
     $("#completeForm").show();
     on_curriculum_selected();
 }
@@ -426,8 +426,8 @@ function on_academic_year_selected() {
     var year = parseInt($('#academicYearSelect').val());
 
     // Clear any previous form that might have been loaded
-    $('#curriculum-0-curriculum-id').remove();
-    $('#curriculum-0-curriculum-id-label').remove();
+    $('#curriculum-id').remove();
+    $('#curriculum-id-label').remove();
     $('#proposalForm').hide();
 
     // Create the form for the curriculum choice
@@ -439,12 +439,12 @@ function on_academic_year_selected() {
     });
 
     var curriculum_select_html =
-        "<select name=Curriculum[0][curriculum_id] id=curriculum-0-curriculum-id>" +
+        "<select name=curriculum_id id=curriculum-id>" +
         options +
         "</select>";
 
     $('#curriculum-select').append(curriculum_select_html);
-    $('#curriculum-0-curriculum-id').change(on_curriculum_selected);
+    $('#curriculum-id').change(on_curriculum_selected);
 }
 
 $(document).ready(function () {

@@ -30,9 +30,9 @@ class ExamsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('?redirect=%2Fexams');
 
         // test that page requires authentication
-        $this->get('/exams/admin-index');
+        $this->get('/exams/index');
         $this->assertRedirect();
-        $this->assertRedirectContains('?redirect=%2Fexams%2Fadmin-index');
+        $this->assertRedirectContains('?redirect=%2Fexams%2Findex');
 
         // test that students are not allowed to access
         $this->session([
@@ -50,7 +50,7 @@ class ExamsControllerTest extends IntegrationTestCase
                 ]
             ]
         ]);
-        $this->get('/exams/admin-index');
+        $this->post('/exams/index');
         $this->assertResponseError(); // ma dovrebbe essere ResponseFailure?
 
         // test that admin can access
@@ -69,7 +69,7 @@ class ExamsControllerTest extends IntegrationTestCase
                 ]
             ]
         ]);
-        $this->get('/exams/admin-index');
+        $this->get('/exams/index');
         $this->assertResponseOk();
 
         // load page to add new axam
