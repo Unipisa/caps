@@ -40,8 +40,9 @@ class ExamsController extends AppController {
             $payload = json_decode($this->request->getData()['payload'], True);
             $exams = $this->Exams->newEntities($payload);
             $result = $this->Exams->saveMany($exams);
-            debug($result);
             if ($result) {
+                $this->Flash->success('Inseriti ' . count($result) . ' esami.');
+                return $this->redirect([ 'action' => 'index']);
                 // ok! redirect?
             } else {
                 // where is the error message?

@@ -2,7 +2,7 @@
 <?php echo $this->element('update_navigation'); ?>
 <script>
 // per upload_csv
-csv_upload_fields = ['nome','codice','settore','crediti'];
+csv_upload_fields = ['name','code','sector','credits'];
 csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
 </script>
 
