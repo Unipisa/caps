@@ -13,9 +13,7 @@ class RemoveInvalidProposals extends AbstractMigration
     public function up()
     {
       // Migrate the current data
-      // in sqlite you should fake this migration:
-      // bin/cake migrations mark_migrated -o -t 20200218092832
-      $this->execute('delete proposals from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null;');
+      $this->execute('delete from proposals where id in (select proposals.id from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null);');
     }
 
     public function down()

@@ -15,25 +15,11 @@ class PopulateCurriculumId extends AbstractMigration
     {
         // populate the new foreign_key with
         // the old many-to-many relation
-        $tbl = TableRegistry::get('Proposals');
-        $proposals = $tbl->find()
-            ->contain([ 'Curricula' ]);
-        foreach ($proposals as $proposal) {
-            $proposal->curriculum_id = $proposal['curriculum'][0]['id'];
-            $tbl->save($proposal, [ 'atomic' => false ]);
-        }
+        $this->execute('update proposals set curriculum_id=(select curriculum_id from curricula_proposals where curricula_proposals.proposal_id=proposals.id)');
     }
 
     public function down()
     {
-      $tbl = TableRegistry::get('Proposals');
-      $proposals = $tbl->find()
-          ->contain([ 'Curricula' ]);
-      foreach ($proposals as $proposal) {
-          $proposal['curriculum'] = [ $proposal['curriculum_id'] ];
-          // ERRORE:
-          //
-          $tbl->save($proposal, [ 'atomic' => false ]);
-      }
+        $this->execute('update proposals set curriculum_id=null');
     }
 }
