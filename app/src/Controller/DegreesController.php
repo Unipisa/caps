@@ -17,7 +17,7 @@ class DegreesController extends AppController
      *
      * @return \Cake\Http\Response|null
      */
-    public function adminIndex()
+    public function index()
     {
         $degrees = $this->paginate($this->Degrees);
         $this->set(compact('degrees'));
@@ -40,41 +40,26 @@ class DegreesController extends AppController
     }
 
     /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function adminAdd()
-    {
-        $degree = $this->Degrees->newEntity();
-        if ($this->request->is('post')) {
-            $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
-            if ($this->Degrees->save($degree)) {
-                $this->Flash->success(__('The degree has been saved.'));
-
-                return $this->redirect(['action' => 'adminIndex']);
-            }
-            $this->Flash->error(__('The degree could not be saved. Please, try again.'));
-        }
-        $this->set(compact('degree'));
-    }
-
-    /**
      * Edit method
      *
      * @param string|null $id Degree id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function adminEdit($id = null)
+    public function edit($id = null)
     {
-        $degree = $this->Degrees->get($id, [
-            'contain' => []
-        ]);
+        if ($id) {
+          $degree = $this->Degrees->get($id, [
+              'contain' => []
+          ]);
+        } else {
+          $degree = $this->Degrees->newEntity();
+        }
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
             if ($this->Degrees->save($degree)) {
                 $this->Flash->success(__('Il corso di laurea è stato salvato'));
+                return $this->redirect(['action' => 'index']);
             }
             else {
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
@@ -90,7 +75,7 @@ class DegreesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function adminDelete($id = null)
+    public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $degree = $this->Degrees->get($id);
@@ -101,6 +86,6 @@ class DegreesController extends AppController
             $this->Flash->error(__('Non è stato possibile cancellare il corso di laurea.'));
         }
 
-        return $this->redirect(['action' => 'adminIndex']);
+        return $this->redirect(['action' => 'index']);
     }
 }

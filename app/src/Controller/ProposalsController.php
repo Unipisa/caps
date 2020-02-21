@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use Cake\Log\Log;
+use App\Form\ProposalsFilterForm;
 
 class ProposalsController extends AppController {
 
@@ -19,66 +20,40 @@ class ProposalsController extends AppController {
         $this->loadComponent('Paginator');
     }
 
-    private function done()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Proposals.approved' => true, 'Proposals.frozen' => false ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
-    private function todo()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([
-                'submitted' => true,
-                'approved' => false
-            ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
-    private function frozen()
-    {
-        return $this->Proposals->find()->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Proposals.frozen' => true ])
-            ->limit(25)
-            ->order([ 'Users.surname' => 'asc' ]);
-    }
-
     public function beforeFilter ($event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function adminTodo () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
+    public function index()
+    {
+      $user = $this->Auth->user();
 
-        $this->set('proposalsTodo', $this->Paginator->paginate($this->todo()));
-        $this->set('selected', 'todo');
-    }
+      $proposals = $this->Proposals->find();
+      $proposals = $proposals
+        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
+        ->order([ 'Users.surname' => 'asc' ]);
 
-    public function adminDone () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
+      if ($user['admin']) {
+          // admin può vedere tutti i proposal
+      } else {
+          // posso vedere solo i miei proposal
+          $proposals = $proposals->where(['Users.username' => $user['user']]);
+      }
 
-        $this->set('proposalsApproved', $this->Paginator->paginate($this->done()));
-        $this->set('selected', 'done');
-    }
-
-    public function adminFrozen () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $this->set('proposalsFrozen', $this->Paginator->paginate($this->frozen()));
-        $this->set('selected', 'frozen');
+      $filterForm = new ProposalsFilterForm($proposals);
+      $filterData = $this->request->getQuery();
+      if (!key_exists('status', $filterData) || !$filterForm->validate($filterData)) {
+        // no filter form provided or data not valid: set defaults:
+        $filterData = [
+          'status' => 'pending',
+          'surname' => ''
+        ];
+      }
+      $proposals = $filterForm->execute($filterData);
+      $this->set('filterForm', $filterForm);
+      $this->set('proposals', $this->Paginator->paginate($proposals));
+      $this->set('selected', 'index');
     }
 
     public function view ($id = null) {
@@ -139,7 +114,7 @@ class ProposalsController extends AppController {
 
             if ($this->request->is('post')) {
                 $data = $this->request->getData()['data'];
-                $cur_id = $this->request->getData()['Curriculum'][0]['curriculum_id'];
+                $cur_id = $this->request->getData()['curriculum_id'];
 
                 if (array_key_exists('ChosenExam', $data))
                     $patch_data['chosen_exams'] = $data['ChosenExam'];
@@ -151,7 +126,7 @@ class ProposalsController extends AppController {
                 $proposal['approved'] = false;
                 $proposal['submitted'] = true;
                 $proposal['frozen'] = false;
-                $proposal['curriculum'] = [ $this->Proposals->Curricula->get($cur_id) ];
+                $proposal['curriculum_id'] = $cur_id;
 
                 if ($this->Proposals->save($proposal)) {
                     return $this->redirect(['action' => 'view', $proposal['id']]);
@@ -198,7 +173,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 
@@ -237,7 +212,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 
@@ -261,7 +236,7 @@ class ProposalsController extends AppController {
 
         return $this->redirect(
             ['controller' => 'proposals',
-                'action' => 'admin_todo']
+                'action' => 'index']
         );
     }
 

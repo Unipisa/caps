@@ -19,7 +19,6 @@ class ExamsController extends AppController {
     private function exams()
     {
         return $this->Exams->find()
-            ->limit(25)
             ->order([ 'Exams.name' => 'asc' ]);
     }
 
@@ -28,23 +27,32 @@ class ExamsController extends AppController {
         $this->Auth->deny();
     }
 
-    /**
-     * @brief Get all exams in JSON format. URL: caps/exams.json
-     */
     public function index () {
-        $exams = $this->Exams->find('all');
-        $this->set('exams', $exams);
-        $this->set('_serialize', [ 'exams' ]);
-    }
-
-    public function adminIndex () {
         $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
+
+        if ($this->request->is("post")) {
+            // csv bulk upload
+            if (!$user['admin']) {
+                throw new ForbiddenException();
+            }
+            $good_count = 0;
+            $bad_count = 0;
+            $payload = json_decode($this->request->getData()['payload'], True);
+            $exams = $this->Exams->newEntities($payload);
+            $result = $this->Exams->saveMany($exams);
+            if ($result) {
+                $this->Flash->success('Inseriti ' . count($result) . ' esami.');
+                return $this->redirect([ 'action' => 'index']);
+                // ok! redirect?
+            } else {
+                // where is the error message?
+                // redirect?
+            }
         }
 
-        $exams = $this->Paginator->paginate($this->exams());
-        $this->set('exams', $exams);
+        $this->set('exams', $this->exams());
+        $this->set('_serialize', [ 'exams' ]);
+        $this->set('paginated_exams', $this->Paginator->paginate($this->exams()->limit(4)));
     }
 
     /**
@@ -62,57 +70,41 @@ class ExamsController extends AppController {
         $this->set('exam', $exam);
     }
 
-    public function adminAdd () {
-        $user = $this->Auth->user();
-        $exam = $this->Exams->newEntity();;
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if ($this->request->is('post')) {
-            $exam = $this->Exams->patchEntity($exam, $this->request->getData());
-
-            if ($this->Exams->save($exam)) {
-                $this->Flash->success(__('Esame aggiunto con successo.'));
-                return $this->redirect(['action' => 'admin-add']);
-            }
-            $this->Flash->error(__('Errore: esame non aggiunto.'));
-        }
-
-        $this->set('exam', $exam);
-        $this->set('groups', $this->Exams->Groups->find('list'));
-    }
-
-    public function adminEdit($id = null) {
+    public function edit($id = null) {
         $user =  $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
-        if (!$exam) {
-            throw new NotFoundException(__('Errore: esame non esistente.'));
+        if ($id) { // edit
+            $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
+            if (!$exam) {
+                throw new NotFoundException(__('Errore: esame non esistente.'));
+            }
+            $success_message = __('Esame aggiornato con successo.');
+            $failure_message = __('Errore: esame non aggiornato.');
+            $then = 'index';
+        } else { // new
+            $exam = $this->Exams->newEntity();
+            $success_message = __('Esame aggiunto con successo.');
+            $failure_message = __('Errore: esame non aggiunto.');
+            $then = 'edit'; // questionabile: forse meglio 'index'
         }
 
         if ($this->request->is(['post', 'put'])) {
             $exam = $this->Exams->patchEntity($exam, $this->request->getData());
-
             if ($this->Exams->save($exam)) {
-                $this->Flash->success(__('Esame aggiornato con successo.'));
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success($success_message);
+                return $this->redirect(['action' => $then]);
             }
-            $this->Flash->error(__('Errore: esame non aggiornato.'));
+            $this->Flash->error($failure_message);
         }
 
         $this->set('exam', $exam);
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
-    public function adminDelete ($id = null) {
+    public function delete ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -130,12 +122,12 @@ class ExamsController extends AppController {
         if ($this->request->is(['post', 'put'])) {
             if ($this->Exams->delete($exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
-                return $this->redirect(['action' => 'admin_index']);
+                return $this->redirect(['action' => 'index']);
             }
         }
 
         $this->Flash->error(__('Error: esame non cancellato.'));
-        $this->redirect(['action' => 'admin_index']);
+        $this->redirect(['action' => 'index']);
     }
 
 }
