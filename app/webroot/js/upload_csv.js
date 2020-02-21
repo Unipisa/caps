@@ -50,7 +50,12 @@ function csv_to_array() {
     csv_data = []
     csv_headers = [];
     for (var i=0; i<lines.length; i++) {
+        if ($.trim(lines[i]) === "") {
+            continue;
+        }
+
         var row = lines[i].split(csv_column_separator)
+
         if (i == 0 && csv_has_headers) {
             csv_headers = row;
         } else {
