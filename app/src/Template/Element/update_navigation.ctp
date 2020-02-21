@@ -2,53 +2,53 @@
     <ul>
         <li <?php
         if ($this->request->getParam('controller') == 'degrees' &&
-            $this->request->getParam('action') == 'admin_index')
+            $this->request->getParam('action') == 'index')
             echo 'class="selected"'
         ?>>
             <?php
             echo $this->Html->link(
-                'Corsi di Laurea',
+                'C. di Laurea',
                 ['controller' => 'degrees',
-                    'action' => 'admin_index']
+                    'action' => 'index']
             );
             ?>
         </li>
         <li <?php
                 if ($this->request->getParam('controller') == 'curricula' &&
-                    $this->request->getParam('action') == 'admin_index')
+                    $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
             <?php
                 echo $this->Html->link(
                     'Curricula',
                     ['controller' => 'curricula',
-                        'action' => 'admin_index']
+                        'action' => 'index']
                 );
             ?>
         </li>
         <li <?php
                 if ($this->request->getParam('controller') == 'groups' &&
-                    $this->request->getParam('action') == 'admin_index')
+                    $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
             <?php
                 echo $this->Html->link(
                     'Gruppi',
                     ['controller' => 'groups',
-                        'action' => 'admin_index']
+                        'action' => 'index']
                 );
             ?>
         </li>
         <li <?php
                 if ($this->request->getParam('controller') == 'exams' &&
-                    $this->request->getParam('action') == 'admin_index')
+                    $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
             <?php
                 echo $this->Html->link(
                     'Esami',
                     ['controller' => 'exams',
-                        'action' => 'admin_index']
+                        'action' => 'index']
                 );
             ?>
         </li>
@@ -57,7 +57,7 @@
                 echo $this->Html->link(
                     '←&nbsp;Amministrazione',
                     ['controller' => 'proposals',
-                        'action' => 'admin_todo'],
+                        'action' => 'index'],
                     ['escape' => false]
                 );
             ?>

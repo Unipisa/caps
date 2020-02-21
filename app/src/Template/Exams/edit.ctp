@@ -1,6 +1,11 @@
 <?php echo $this->element('updating_navigation'); ?>
 
-<h2>Modifica esame</h2>
+<?php if ($exam->isNew()): ?>
+	<h2>Aggiungi esame</h2>
+<?php else: ?>
+	<h2>Modifica esame</h2>
+<?php endif; ?>
+
 <?php
     echo $this->Form->create($exam);
     echo $this->Form->control(
@@ -17,11 +22,16 @@
         ['label' => 'Settore']);
     echo $this->Form->control(
         'credits',
-        ['label' => 'Crediti']);
+        ['label' => 'Crediti',
+				 'type' => 'number']);
     echo $this->Form->control(
         'groups._ids',
         ['label' => 'Gruppi',
             'size' => 20]);
-    echo $this->Form->submit('Aggiorna esame');
+		if ($exam->isNew()):
+			echo $this->Form->submit('Salva esame');
+		else:
+    	echo $this->Form->submit('Aggiorna esame');
+		endif;
     echo $this->Form->end();
 ?>

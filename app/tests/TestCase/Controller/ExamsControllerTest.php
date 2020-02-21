@@ -30,9 +30,9 @@ class ExamsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('?redirect=%2Fexams');
 
         // test that page requires authentication
-        $this->get('/exams/admin-index');
+        $this->get('/exams/index');
         $this->assertRedirect();
-        $this->assertRedirectContains('?redirect=%2Fexams%2Fadmin-index');
+        $this->assertRedirectContains('?redirect=%2Fexams%2Findex');
 
         // test that students are not allowed to access
         $this->session([
@@ -50,7 +50,7 @@ class ExamsControllerTest extends IntegrationTestCase
                 ]
             ]
         ]);
-        $this->get('/exams/admin-index');
+        $this->post('/exams/index');
         $this->assertResponseError(); // ma dovrebbe essere ResponseFailure?
 
         // test that admin can access
@@ -69,18 +69,18 @@ class ExamsControllerTest extends IntegrationTestCase
                 ]
             ]
         ]);
-        $this->get('/exams/admin-index');
+        $this->get('/exams/index');
         $this->assertResponseOk();
 
         // load page to add new axam
         $this->enableCsrfToken();
         $this->enableSecurityToken();
-        $this->get('/exams/admin-add');
+        $this->get('/exams/edit');
         $this->assertResponseOk();
 
         // add new exam
         $exam_count = $this->Exams->find()->count();
-        $this->post('/exams/admin-add',[
+        $this->post('/exams/edit',[
           'name' => 'Analisi Matematica',
           'code' => '1111',
           'sector' => 'AAA',
@@ -92,7 +92,7 @@ class ExamsControllerTest extends IntegrationTestCase
 
         // edit exam
         $exam_id = $this->Exams->find()->first()['id'];
-        $this->get("/exams/admin-edit/$exam_id");
+        $this->get("/exams/edit/$exam_id");
         $this->assertResponseOk();
 
         // $this->disableErrorHandlerMiddleware();        // test that page requires authentication

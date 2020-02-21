@@ -36,7 +36,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         echo $this->Html->css('caps');
         echo $this->Html->css('caps.print', array('media' => 'print'));
 
-        echo $this->Html->script('jquery-1.10.2.min');
+        echo $this->Html->script('jquery-3.4.1.min');
         // echo $this->Html->script('chosen.jquery.min');
         /* if (is_file(WWW_ROOT . 'js' . DS . $this->request->params['controller'] . DS . $this->request->params['action'] . '.js')) {
             echo $this->Html->script($this->request->params['controller'] . '/' . $this->request->params['action']);
@@ -46,6 +46,27 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <body>
 	<div id="container">
         <div id="header">
+					<?php if (isset($owner)): ?>
+							<ul class='status'>
+									<li>
+											<?php echo $owner['name']; ?>
+									</li>
+									<li>
+											<?php
+													echo $this->Html->link(
+															'Logout',
+															array(
+																		'controller' => 'users',
+																		'action' => 'logout'
+															),
+															array(
+																		'class' => 'logout'
+															)
+													);
+											?>
+									</li>
+							</ul>
+					<?php endif; ?>
             <h1>
                 <?php
                     echo $this->Html->link(
@@ -67,34 +88,11 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 	<?php } ?>
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
-            <?php if (isset($owner)): ?>
-                <ul class='status'>
-                    <li>
-                        <?php echo $owner['name']; ?>
-                    </li>
-                    <li>
-                        <?php
-                            echo $this->Html->link(
-                                'Logout',
-                                array(
-                                      'controller' => 'users',
-                                      'action' => 'logout'
-                                ),
-                                array(
-                                      'class' => 'logout'
-                                )
-                            );
-                        ?>
-                    </li>
-                </ul>
-            <?php endif; ?>
 			<?php echo $this->fetch('content'); ?>
 		</div>
         <div id="footer">
 						<p class="attribution">
 								Caps version <?php if (isset($capsVersion)) { echo $capsVersion; } ?>
-								--
-                Trash Can designed by <a href="http://thenounproject.com/rubensteeman">Ruben Steeman</a> from the <a href="http://www.thenounproject.com/">Noun Project</a>
 								--
             <?php
                 echo $this->Html->link(

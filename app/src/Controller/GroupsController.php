@@ -24,21 +24,11 @@ class GroupsController extends AppController {
     }
 
     public function index () {
-        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
-
-        $this->set('groups', $groups);
-        $this->set('_serialize', ['groups']);
-    }
-
-    public function adminIndex () {
         $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        $groups = $this->Groups->find('all');
+        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
         $this->set('groups', $groups);
         $this->set('owner', $user);
+        $this->set('_serialize', ['groups']);
     }
 
     public function view ($id = null) {
@@ -54,77 +44,47 @@ class GroupsController extends AppController {
         $this->set('_serialize', 'group');
     }
 
-    public function adminAdd () {
+    public function edit($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
 
-        if ($this->request->is('post')) {
-            $newgroup = $this->Groups->newEntity();
-            $newgroup = $this->Groups->patchEntity($newgroup, $this->request->data);
-            if ($this->Groups->save($newgroup)) {
-                $this->Flash->success(__('Gruppo creato con successo.'));
-                return $this->redirect(['action' => 'adminIndex']);
+        if ($id) {
+            $group = $this->Groups->findById($id)->contain([ 'Exams' ])->firstOrFail();
+            if (!$group) {
+                throw new NotFoundException(__('Errore: gruppo non esistente.'));
             }
-            $this->Flash(__('Errore: gruppo non creato.'));
+            $success_message = __('Gruppo aggiornato con successo.');
+            $failure_message = __('Errore: gruppo non aggiornato.');
+        } else {
+            $group = $this->Groups->newEntity();
+            $success_message = __('Gruppo creato con successo.');
+            $failure_message = __('Errore: gruppo non creato.');
+        }
+
+        if ($this->request->is(['post', 'put'])) {
+            $group = $this->Groups->patchEntity($group, $this->request->getData());
+            if ($this->Groups->save($group)) {
+                $this->Flash->success($success_message);
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash($failure_message);
         }
 
         $exams_table = TableRegistry::getTableLocator()->get('Exams');
 
+        $this->set('group', $group);
         $this->set(
             'exams',
-            $exams_table->find(
+             $exams_table->find(
                 'list',
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
-        $this->set('owner', $user);
     }
 
-    public function adminEdit($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
-        }
-
-        $group= $this->Groups->findById($id)->contain([ 'Exams' ])->firstOrFail();
-        if (!$group) {
-            throw new NotFoundException(__('Errore: gruppo non esistente.'));
-        }
-
-        if ($this->request->is(['post', 'put'])) {
-            $group = $this->Groups->patchEntity($group, $this->request->data);
-            if ($this->Groups->save($group)) {
-                $this->Flash->success(__('Gruppo aggiornato con successo.'));
-                return $this->redirect(
-                    ['action' => 'admin_index']
-                );
-            }
-
-            $this->Flash->error(__('Errore: gruppo non aggiornato.'));
-        }
-
-        $exams_table = TableRegistry::getTableLocator()->get('Exams');
-
-        if (!$this->request->data) {
-            $this->request->data = $group;
-            $this->set('group', $group);
-            $this->set(
-                'exams',
-                 $exams_table->find(
-                    'list',
-                    ['order' => ['Exams.name' => 'ASC']]
-                )
-            );
-        }
-    }
-
-    public function adminDelete ($id = null) {
+    public function delete ($id = null) {
         $user = $this->Auth->user();
         if (!$user['admin']) {
             throw new ForbiddenException();
@@ -143,14 +103,14 @@ class GroupsController extends AppController {
             if ($this->Groups->delete($group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
                 return $this->redirect(
-                    ['action' => 'admin_index']
+                    ['action' => 'index']
                 );
             }
         }
 
         $this->Flash->error(__('Error: gruppo non cancellato.'));
         $this->redirect(
-            ['action' => 'admin_index']
+            ['action' => 'index']
         );
     }
 

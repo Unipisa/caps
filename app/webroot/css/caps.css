@@ -17,6 +17,11 @@ table {
     margin-bottom: 3%;
 }
 
+.view th {
+  width: 5em;
+  text-align: right;
+}
+
 .attribution {
     float: left;
 }
@@ -61,6 +66,28 @@ div .disclaimer {
 
 select#academicYearSelect {
     margin-right: 15px;
+}
+
+#loadingIcon {
+    margin-left: 15px;
+    display: none;
+}
+
+.proposalsFilterForm select {
+    width: auto;
+    padding: 2px;
+}
+
+.proposalsFilterForm input {
+    width: auto;
+    padding: 2px;
+}
+
+.proposalsFilterForm .input {
+    clear: none;
+    width: auto;
+    display: inline-block;
+    padding: 0 1em 0 0;
 }
 
 #proposalForm h3 {
@@ -110,6 +137,14 @@ select#academicYearSelect {
 #proposalForm ul li input.credits {
     margin-right: 5%;
     width: 7.5%;
+}
+
+#proposalForm div.credits-number {
+    display: inline;
+    vertical-align: 45%;
+    font-size: 130%;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 #proposalForm ul li a.delete {
@@ -243,7 +278,7 @@ select#academicYearSelect {
 
 .status {
     list-style-type: none;
-    margin-right: 5%;
+    margin-right: 0%;
     padding-right: 8px;
     margin-top: 16px;
     text-align: right;
@@ -251,7 +286,7 @@ select#academicYearSelect {
 
 .status li {
     display: inline-block;
-    font-size: 24px;
+    font-size: 20px;
     margin-left: 1%;
 }
 
@@ -450,8 +485,12 @@ hr.caps-admin-curriculum {
     width: 20%;
 }
 
+.caps-admin-proposal-degree {
+    width: 25%;
+}
+
 .caps-admin-proposal-pds {
-    width: 60%;
+    width: 25%;
 }
 
 .caps-admin-groups-id,
@@ -459,12 +498,24 @@ hr.caps-admin-curriculum {
     width: 5%;
 }
 
-.caps-admin-groups-name,
+.caps-admin-curricula-year {
+    width: 10%;
+}
+
+.caps-admin-curricula-degree {
+    width: 20%;
+}
+
 .caps-admin-curricula-name {
+    width: 45%;
+}
+
+.caps-admin-groups-name {
     width: 75%;
 }
 
 .caps-admin-groups-actions,
+.caps-admin-degrees-action,
 .caps-admin-curricula-actions {
     width: 20%;
 }

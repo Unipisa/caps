@@ -19,19 +19,17 @@
 }?>
 <?php echo $this->Html->script('proposals/add.js'); ?>
 
-<h2>Nuovo piano di studio</h2>
+<h2>Nuovo piano di studio
+    <span id="loadingIcon">
+        <?php echo $this->Html->image('loading32s.gif') ?>
+    </span>
+</h2>
+
 <div id="completeForm">
 <?php
 echo $this->Form->create('Proposal');
 ?>
 <div id="curriculum-select"></div>
-<?php
-/* echo $this->Form->control('Curriculum.0.curriculum_id',
-    ['empty' => ['text" disabled="disabled" selected="selected' => 'Scegli un curriculum'],
-        'label' => '',
-        'options' => $curricula
-    ]); */
-?>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
 <?php
