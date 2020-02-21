@@ -13,7 +13,14 @@ class RemoveInvalidProposals extends AbstractMigration
     public function up()
     {
       // Migrate the current data
-      $this->execute('delete from proposals where id in (select proposals.id from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null);');
+        $db = $this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
+        echo "Database: " . $db;
+        if ($db == 'mysql') {
+            $this->execute('delete proposals from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null;');
+        }
+        else {
+            $this->execute('delete from proposals where id in (select proposals.id from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null);');
+        }
     }
 
     public function down()
