@@ -121,7 +121,7 @@ echo $this->Form->end();
         <td class="caps-admin-proposal-actions">
             <ul class="actions">
             <?php if ($owner['admin']): ?>
-              <?php if ($proposal['status'] === 'submitted'):?>
+              <?php if ($proposal['state'] === 'submitted'):?>
                 <li>
                     <?php
                         echo $this->Html->link(
