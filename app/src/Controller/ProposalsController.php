@@ -43,10 +43,10 @@ class ProposalsController extends AppController {
 
       $filterForm = new ProposalsFilterForm($proposals);
       $filterData = $this->request->getQuery();
-      if (!key_exists('status', $filterData) || !$filterForm->validate($filterData)) {
+      if (!key_exists('state', $filterData) || !$filterForm->validate($filterData)) {
         // no filter form provided or data not valid: set defaults:
         $filterData = [
-          'status' => 'pending',
+          'state' => 'submitted',
           'surname' => ''
         ];
       }
@@ -107,8 +107,7 @@ class ProposalsController extends AppController {
 				}
 
         if ($owner) {
-            $isProposalSubmitted = $proposal['submitted'];
-            if ($isProposalSubmitted) {
+            if ($proposal['state'] === 'submitted') {
                 return $this->redirect(['action' => 'view', $proposal['id']]);
             }
 
@@ -123,9 +122,7 @@ class ProposalsController extends AppController {
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
-                $proposal['approved'] = false;
-                $proposal['submitted'] = true;
-                $proposal['frozen'] = false;
+                $proposal['state'] = 'submitted';
                 $proposal['curriculum_id'] = $cur_id;
 
                 if ($this->Proposals->save($proposal)) {
@@ -168,7 +165,7 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $proposal['approved'] = true;
+        $proposal['state'] = approved;
         $this->Proposals->save($proposal);
 
         return $this->redirect(
@@ -194,20 +191,7 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $chosen_exams_table = TableRegistry::getTableLocator()->get('ChosenExams');
-        $chosen_free_choice_exams_table = TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams');
-
-        foreach ($proposal['chosen_exams'] as $chosenExam):
-            $chosen_exams_table->delete($chosenExam);
-        endforeach;
-
-        foreach ($proposal['chosen_free_choice_exams'] as $chosenFreeChoiceExam):
-            $chosen_free_choice_exams_table->delete($chosenFreeChoiceExam);
-        endforeach;
-
-        $proposal['submitted'] = false;
-        $proposal['approved'] = false;
-        $proposal['frozen'] = false;
+        $proposal['state'] = 'rejected';
         $this->Proposals->save($proposal);
 
         return $this->redirect(
@@ -215,55 +199,6 @@ class ProposalsController extends AppController {
                 'action' => 'index']
         );
     }
-
-    public function adminFreeze ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if (!$id) {
-            throw new NotFoundException(__('Errore: id non valido.'));
-        }
-
-        $proposal = $this->Proposals->get($id);
-        if (!$proposal) {
-            throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
-        }
-
-        $proposal['frozen'] = true;
-        $this->Proposals->save($proposal);
-
-        return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'index']
-        );
-    }
-
-    public function adminThaw ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
-            throw new ForbiddenException();
-        }
-
-        if (!$id) {
-            throw new NotFoundException(__('Errore: id non valido.'));
-        }
-
-        $proposal = $this->Proposals->get($id);
-        if (!$proposal) {
-            throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
-        }
-
-        $proposal['frozen'] = false;
-        $this->Proposals->save($proposal);
-
-        return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'admin_frozen']
-        );
-    }
-
 }
 
 ?>

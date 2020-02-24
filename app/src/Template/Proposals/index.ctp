@@ -21,15 +21,16 @@
 <div id="proposalFilterFormDiv">
 <?php
 echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'proposalsFilterForm']);
-echo $this->Form->control('status',
+echo $this->Form->control('state',
   [
    'label' => __('stato'),
    'type' => 'select',
    'options' => [
      'all' => __('tutti'),
-     'pending' => __('da valutare'),
+     'draft' => __('bozze'),
+     'submitted' => __('da valutare'),
      'approved' => __('approvati'),
-     'archived' => __('congelati')
+     'rejected' => __('rifiutati')
    ],
    'onchange' => 'this.form.submit()'
  ]);
@@ -61,6 +62,7 @@ echo $this->Form->end();
 <h2>Piani di Studio</h2>
 <table class="caps-todo">
     <tr>
+        <th>Stato</th>
         <th>Nome</th>
         <th>Anno</th>
         <th>Laurea</th>
@@ -72,6 +74,19 @@ echo $this->Form->end();
     $curriculum = $proposal['curriculum'];
 ?>
     <tr>
+        <td class="caps-admin-proposal-state">
+            <?php echo $this->Html->link(
+                [
+                    'draft' => __('bozza'),
+                    'submitted' => __('da valutare'),
+                    'approved' => __('approvato'),
+                    'rejected' => __('rifiutato')
+                ][$proposal['state']], [
+                    'controller' => 'users',
+                    'action' => 'view',
+                    $proposal['user']['id']
+                ]);
+            ?></td>
         <td class="caps-admin-proposal-name">
             <?php echo $this->Html->link($proposal['user']['name'], [
                     'controller' => 'users',
@@ -106,7 +121,7 @@ echo $this->Form->end();
         <td class="caps-admin-proposal-actions">
             <ul class="actions">
             <?php if ($owner['admin']): ?>
-              <?php if ($proposal['submitted'] && !$proposal['approved']):?>
+              <?php if ($proposal['status'] === 'submitted'):?>
                 <li>
                     <?php
                         echo $this->Html->link(
