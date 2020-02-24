@@ -65,16 +65,7 @@ class ProposalsTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->boolean('approved')
-            ->allowEmptyString('approved');
-
-        $validator
-            ->boolean('submitted')
-            ->allowEmptyString('submitted');
-
-        $validator
-            ->boolean('frozen')
-            ->allowEmptyString('frozen');
+            -inList(['draft', 'submitted', 'approved', 'rejected']);
 
         return $validator;
     }

@@ -33,11 +33,11 @@
     <h3>Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
 </div>
 
-<?php if($proposal['submitted'] && $proposal['approved']): ?>
+<?php if($proposal['state'] === 'approved'): ?>
 <div class="success">
     Il tuo Piano di Studi è stato approvato.
 </div>
-<?php elseif($proposal['submitted']): ?>
+<?php elseif($proposal['state'] === 'submitted'): ?>
 <div class="notice">
     Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.
 </div>
@@ -167,31 +167,7 @@
     <!-- Toolbar per l'amministratore //-->
     <ul class=planActions>
         <!-- FIXME: simplify this logic -->
-        <?php if ($proposal['submitted'] && $proposal['approved'] && $proposal['frozen']): ?>
-        <li>
-            <?php
-                echo $this->Html->link(
-                  'Riapri&nbsp;✎',
-                  ['action' => 'admin_thaw',
-                      $proposal['id']],
-                  ['class' => 'accept',
-                      'escape' => false]
-                );
-            ?>
-        </li>
-        <?php elseif ($proposal['submitted'] && $proposal['approved'] && !$proposal['frozen']): ?>
-        <li>
-            <?php
-                echo $this->Html->link(
-                    'Archivia&nbsp;❄',
-                    ['action' => 'admin_freeze',
-                        $proposal['id']],
-                    ['class' => 'reject',
-                        'escape' => false]
-                );
-            ?>
-        </li>
-        <?php else: ?>
+        <?php if ($proposal['state'] === 'submitted'): ?>
         <li>
             <?php
                 echo $this->Html->link(
