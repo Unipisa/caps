@@ -16,19 +16,20 @@
     $num_proposals++;
 
     // Compute the status
-    if ($proposal['approved']) {
-      $status = 'Approvato ✓';
-    }
-    else if ($proposal['frozen']) {
-      $status = 'Archiviato';
-    }
-    else if ($proposal['submitted']) {
-      $status = 'Inviato';
-    }
-    else {
-      $status = 'Aperto';
-    }
-
+      switch ($proposal['state']) {
+          case 'draft':
+              $status = 'Bozza';
+              break;
+          case 'submitted':
+              $status = 'Sottomesso';
+              break;
+          case 'approved':
+              $status = "Approvato ✓";
+              break;
+          case 'rejected':
+              $status = 'Rigettato';
+              break;
+      }
     ?>
       <tr>
        <td><?php echo $proposal['curriculum']['name']; ?>
@@ -36,19 +37,23 @@
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>
-         <?php
-           if (!$proposal['submitted'] && !$proposal['frozen'] && !$proposal['approved']) {
-             echo $this->Html->link('Modifica', [
-               'controller' => 'proposals',
-               'action' => 'add',
-               $proposal['id'] ]);
-           }
-           else {
-             echo $this->Html->link('Visualizza', [
-               'controller' => 'proposals',
-               'action' => 'view',
-               $proposal['id'] ]);
-           }
+           <?php
+           switch ($proposal['state']) {
+               case "draft":
+                   echo $this->Html->link('Modifica', [
+                       'controller' => 'proposals',
+                       'action' => 'add',
+                       $proposal['id'] ]);
+                   break;
+               case "submitted":
+               case "approved":
+               case "rejected":
+                   echo $this->Html->link('Visualizza', [
+                       'controller' => 'proposals',
+                       'action' => 'view',
+                       $proposal['id'] ]);
+         }
+
          ?>
        </td>
       </tr>

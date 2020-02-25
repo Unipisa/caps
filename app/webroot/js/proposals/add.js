@@ -386,6 +386,9 @@ function load_proposal(proposal) {
     console.log("CAPS :: Loading proposal with ID = " + proposal["id"]);
 
     // Set the correct Curriculum
+    addAcademicYearInput();
+    $('#academicYearSelect').val(proposal['curriculum']['academic_year']);
+    on_academic_year_selected();
     $("#curriculum-id").val(proposal["curriculum_id"]);
     $("#completeForm").show();
     on_curriculum_selected();
