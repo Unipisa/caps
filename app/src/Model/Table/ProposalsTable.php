@@ -65,7 +65,7 @@ class ProposalsTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            -inList(['draft', 'submitted', 'approved', 'rejected']);
+            ->inList('state', ['draft', 'submitted', 'approved', 'rejected']);
 
         return $validator;
     }
