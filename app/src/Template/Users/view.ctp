@@ -54,6 +54,23 @@
                        $proposal['id'] ]);
          }
 
+         echo " — ";
+
+         if ($proposal['state'] != 'draft') {
+             echo $this->Html->link('Crea una copia', [
+                'controller' => 'proposals',
+                 'action' => 'duplicate',
+                 $proposal['id']
+             ]);
+         }
+         else {
+             echo $this->Html->link('Elimina', [
+                 'controller' => 'proposals',
+                 'action' => 'delete',
+                 $proposal['id']
+             ]);
+         }
+
          ?>
        </td>
       </tr>

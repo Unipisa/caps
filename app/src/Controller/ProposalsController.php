@@ -82,6 +82,40 @@ class ProposalsController extends AppController {
 				$this->set('_serialize', [ 'proposal' ]);
     }
 
+    public function delete($id) {
+        $user = $this->Auth->user();
+
+        if (! $id) {
+            throw new NotFoundException();
+        }
+
+        // Fetch the proposal from the database
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
+            ->firstOrFail();
+
+        // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
+        // of the given proposal.
+        if ($proposal['user']['username'] != $user['user'] && ! $user['admin']) {
+            throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
+        }
+
+        if ($proposal['state'] != 'draft') {
+            throw new ForbiddenException('Impossibile eliminare un piano non in stato \'bozza\'');
+        }
+
+        if ($this->Proposals->delete($proposal)) {
+            $this->Flash->success('Piano eliminato');
+        }
+        else {
+            $this->log('Errore nella cancellazione del piano con ID = ' . $proposal['id']);
+            $this->log(var_export($proposal->errors(), TRUE));
+            $this->Flash->error('Impossibile eliminare il piano');
+        }
+
+        return $this->redirect([ 'controller' => 'proposals', 'action' => 'index' ]);
+    }
+
     public function duplicate($id) {
         $user = $this->Auth->user();
 
