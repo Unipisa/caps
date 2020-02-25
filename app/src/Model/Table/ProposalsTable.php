@@ -48,8 +48,13 @@ class ProposalsTable extends Table
             'foreignKey' => 'curriculum_id'
         ]);
 
-        $this->hasMany('ChosenExams')->setProperty('chosen_exams');
-        $this->hasMany('ChosenFreeChoiceExams')->setProperty('chosen_free_choice_exams');
+        $this->hasMany('ChosenExams', [
+            'dependent' => true
+        ])->setProperty('chosen_exams');
+
+        $this->hasMany('ChosenFreeChoiceExams', [
+            'dependent' => true
+        ])->setProperty('chosen_free_choice_exams');
     }
 
     /**
