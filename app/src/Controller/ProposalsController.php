@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
@@ -79,6 +80,54 @@ class ProposalsController extends AppController {
 
         $this->set('proposal', $proposal);
 				$this->set('_serialize', [ 'proposal' ]);
+    }
+
+    public function duplicate($id) {
+        $user = $this->Auth->user();
+
+        if (! $id) {
+            throw new NotFoundException();
+        }
+
+        // Fetch the proposal from the database
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
+            ->firstOrFail();
+
+        // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
+        // of the given proposal.
+        if ($proposal['user']['username'] != $user['user'] && ! $user['admin']) {
+            throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
+        }
+
+        // Create a copy of the proposal, and set the corresponding data
+        $newp = $this->Proposals->newEntity($proposal->toArray());
+
+        // Set the user to NULL so that it won't be saved
+        $newp->user = null;
+
+        // The new plan should be in the draft state
+        $newp->state = 'draft';
+
+        // For each of the selected exams we need to clear the ID, so that saving this object will create new entities
+        // for the selections, making this proposal effectively independent of the original one.
+        foreach ($newp['chosen_exams'] as $key => &$chosen_exam) {
+            $chosen_exam['id'] = null;
+        }
+
+        foreach ($newp['chosen_free_choice_exams'] as $key => &$free_choice_exam) {
+            $free_choice_exam['id'] = null;
+        }
+
+        // Save the proposal and redirect the user to the new plan
+        if ($this->Proposals->save($newp)) {
+            return $this->redirect([ 'action' => 'add', $newp['id'] ]);
+        }
+        else {
+            $this->Flash->error('Errore nel salvataggio del piano');
+            $this->log(var_export($newp->errors(), TRUE));
+            return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
+        }
     }
 
     public function add ($proposal_id = null) {
