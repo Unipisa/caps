@@ -1,17 +1,17 @@
 <?php echo $this->element('update_navigation'); ?>
 
 <h2>Curricula</h2>
+<?php echo $this->Form->create(); ?>
 <table>
     <tr>
-        <th>Id</th>
+        <th></th>
         <th>Anno</th>
         <th>Laurea</th>
         <th>Nome</th>
-        <th>Azioni</th>
     </tr>
     <?php foreach ($curricula as $curriculum): ?>
     <tr>
-        <td class="caps-admin-curricula-id"><?php echo $curriculum['id']; ?></td>
+        <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
         <td class="caps-admin-curricula-year"><?php echo $curriculum['academic_year']; ?></td>
         <td class="caps-admin-curricula-degree"><?php echo $curriculum['degree']['name']; ?></td>
         <td class="caps-admin-curricula-name">
@@ -24,29 +24,6 @@
                 );
             ?>
         </td>
-        <td class="caps-admin-curricula-actions">
-            <ul class="actions">
-                <li>
-                    <?php
-                        echo $this->Html->link(
-                            __('Modifica'),
-                            ['controller' => 'curricula',
-                                'action' => 'edit',
-                                $curriculum['id']],
-                            ['class' => 'accept']
-                        )." ".$this->Form->postLink(
-                            __('Cancella'),
-                            ['action' => 'delete',
-                                $curriculum['id']],
-                            [
-                              'class' => 'reject',
-                              'confirm' => __('Sei sicuro di voler cancellare il curriculum "{0}"?', $curriculum['name'])
-                            ]
-                        );
-                    ?>
-                </li>
-            </ul>
-        </td>
     </tr>
     <?php endforeach ?>
     <?php unset($curriculum); ?>
@@ -57,11 +34,24 @@
         <li>
             <?php
                 echo $this->Html->link(
-                    'Aggiungi curriculum',
+                    __('Aggiungi nuovo curriculum'),
                     ['controller' => 'curricula',
                         'action' => 'edit']
                 );
             ?>
         </li>
+        <li>
+            <div class="submit" style="display:inline">
+                <input type="submit" name="clone" style="width:70%" value="Duplica i curricula selezionati"/>
+            </div>
+            <div class="input text" style="display:inline">
+                <label for="anno" style="display:inline">Anno</label>
+                <input type="text" name="year" style="width:15%;padding:0.5%" id="anno"/>
+            </div>
+        </li>
+        <li>
+            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i curricula selezionati?')" value="Elimina i curricula selezionati"/></div>
+        </li>
     </ul>
 </div>
+<?php echo $this->Form->end(); ?>
