@@ -68,6 +68,8 @@
                  'controller' => 'proposals',
                  'action' => 'delete',
                  $proposal['id']
+             ], [
+                 'confirm' => __('Sei sicuro di voler cancellare il piano?')
              ]);
          }
 
