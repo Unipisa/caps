@@ -113,7 +113,7 @@ class ProposalsController extends AppController {
             $this->Flash->error('Impossibile eliminare il piano');
         }
 
-        return $this->redirect([ 'controller' => 'proposals', 'action' => 'index' ]);
+        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
     }
 
     public function duplicate($id) {
