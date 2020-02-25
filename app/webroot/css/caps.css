@@ -1,5 +1,15 @@
+form div {
+    padding: 0;
+}
+
+form .submit input[type=submit] {
+    padding: 1% 0;
+    font-weight: bold;
+}
+
 ul, li {
     margin: 0;
+    padding: 0 0 0.5em 0;
 }
 
 select {
