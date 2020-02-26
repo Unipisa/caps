@@ -83,17 +83,17 @@ select#academicYearSelect {
     display: none;
 }
 
-.proposalsFilterForm select {
+.filterForm select {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm input {
+.filterForm input {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm .input {
+.filterForm .input {
     clear: none;
     width: auto;
     display: inline-block;

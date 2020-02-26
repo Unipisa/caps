@@ -1,6 +1,29 @@
 <?php echo $this->element('update_navigation'); ?>
 
 <h2>Curricula</h2>
+
+<div id="curriculaFilterFormDiv">
+<?php
+echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
+echo $this->Form->control('name',
+  [
+    'label' => __('nome'),
+    'onchange' => 'this.form.submit()'
+  ]);
+echo $this->Form->control('academic_year',
+  [
+    'label' => __('anno'),
+    'onchange' => 'this.form.submit()'
+  ]);
+echo $this->Form->control('degree',
+  [
+    'label' => __('laurea'),
+    'onchange' => 'this.form.submit()'
+  ]);
+echo $this->Form->end();
+?>
+</div>
+
 <?php echo $this->Form->create(); ?>
 <table>
     <tr>

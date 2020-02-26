@@ -7,6 +7,7 @@ use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
+use App\Form\CurriculaFilterForm;
 
 class CurriculaController extends AppController {
 
@@ -25,8 +26,23 @@ class CurriculaController extends AppController {
     public function index () {
         $curricula = $this->Curricula->find('all')
             ->contain([ 'Degrees']);
+        $filterForm = new CurriculaFilterForm($curricula);
+        $filterData = $this->request->getQuery();
+        if (!key_exists('academic_year', $filterData) || !$filterForm->validate($filterData)) {
+          // no filter form provided or data not valid: set defaults:
+          $filterData = [
+            'name' => '',
+            'academic_year' => '',
+            'degree' => ''
+          ];
+        }
+        $curricula = $filterForm->execute($filterData);
+        $this->set('filterForm', $filterForm);
+
         $this->set('curricula', $curricula);
         $this->set('_serialize', [ 'curricula' ]);
+        $this->set('paginated_curricula', $this->Paginator->paginate($curricula->cleanCopy()));
+
 
         if ($this->request->is(['post', 'put'])) {
             // azioni sulla selezione
