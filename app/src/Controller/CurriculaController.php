@@ -7,6 +7,7 @@ use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
+use App\Form\CurriculaFilterForm;
 
 class CurriculaController extends AppController {
 
@@ -24,9 +25,66 @@ class CurriculaController extends AppController {
 
     public function index () {
         $curricula = $this->Curricula->find('all')
-            ->contain([ 'Degrees' ]);
+            ->contain([ 'Degrees']);
+        $filterForm = new CurriculaFilterForm($curricula);
+        $filterData = $this->request->getQuery();
+        if (!key_exists('academic_year', $filterData) || !$filterForm->validate($filterData)) {
+          // no filter form provided or data not valid: set defaults:
+          $filterData = [
+            'name' => '',
+            'academic_year' => '',
+            'degree' => ''
+          ];
+        }
+        $curricula = $filterForm->execute($filterData);
+        $this->set('filterForm', $filterForm);
+
         $this->set('curricula', $curricula);
         $this->set('_serialize', [ 'curricula' ]);
+        $this->set('paginated_curricula', $this->Paginator->paginate($curricula->cleanCopy()));
+
+
+        if ($this->request->is(['post', 'put'])) {
+            // azioni sulla selezione
+            // clone / delete
+            $user = $this->Auth->user();
+            if (!$user['admin']) {
+                throw new ForbiddenException();
+            }
+            $selected = $this->request->getData('selection');
+            if (!$selected) {
+                $this->Flash->error(__('nessun curriculum selezionato'));
+                return $this->redirect(['action' => 'index']);
+            }
+            if ($this->request->getData('clone')) {
+                debug($selected);
+                $this->Flash->error('duplica: non ancora implementato');
+            } else if ($this->request->getData('delete')) {
+                $delete_count = 0;
+                foreach($selected as $curriculum_id) {
+                    $curriculum = $this->Curricula->findById($curriculum_id)->firstOrFail();
+                    $proposal_count = TableRegistry::getTableLocator()->get('Proposals')->find('all')
+                        ->where(['curriculum_id' => $curriculum_id])
+                        ->count();
+                    if ($proposal_count == 0) {
+                        if ($this->Curricula->delete($curriculum)) {
+                            $delete_count ++;
+                        }
+                    } else {
+                        $this->Flash->error(__('Il curriculum {name} {year} non può essere rimosso perché ci sono {count} piani di studio collegati',
+                        ['name' => $curriculum['name'], 'year' => $curriculum['year'], 'count' => $proposal_count]));
+                    }
+                }
+                if ($delete_count > 1) {
+                    $this->Flash->success(__('{delete_count} curricula cancellati con successo', ['delete_count' => $delete_count]));
+                } else if ($delete_count == 1) {
+                    $this->Flash->success(__('un curriculum cancellato con successo'));
+                } else {
+                    $this->Flash->success(__('nessun curriculum cancellato'));
+                }
+                return $this->redirect(['action' => 'index']);
+            }
+        }
     }
 
     /**

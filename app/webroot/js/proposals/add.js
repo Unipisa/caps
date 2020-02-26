@@ -145,32 +145,43 @@ function on_curriculum_selected() {
             $(selector).append("<li><select name=data[ChosenExam][" + (i + compulsoryExams.length) + "][exam_id] class=exam>" + groupHTML + examsHTML + compulsory_group_id + year_input + "</li></select>");
 
             // If this is a draft proposal, then we need to find the selection for this group, if any.
-            for (var j = 0; j < proposal['chosen_exams'].length; j++) {
-                if (proposal['chosen_exams'][j]['compulsory_group_id'] == compulsoryGroup['id']) {
-                    $('select[name="data[ChosenExam][' +  (i + compulsoryExams.length) + '][exam_id]"]').val(proposal['chosen_exams'][j]['exam_id']);
+            if (proposal['chosen_exams'] !== undefined) {
+                for (var j = 0; j < proposal['chosen_exams'].length; j++) {
+                    if (proposal['chosen_exams'][j]['compulsory_group_id'] == compulsoryGroup['id']) {
+                        getCompulsoryGroupSelect(i).val(proposal['chosen_exams'][j]['exam_id']);
+                        onCompulsoryGroupSelected(i);
+                    }
                 }
             }
 
-            $(selector + " li select:last").change({ i: i }, function (e) {
-                var examId = $(this).val();
-                var exam;
-                // XXX(jacquerie): I apologize.
-                for (var j = 0; j < exams.length; j++) {
-                    if (exams[j]["id"] == examId) {
-                        exam = exams[j];
-                    }
-                }
-
-                var credits = exam["credits"];
-                var creditsHTML = "<input class=credits name=data[ChosenExam][" +
-                        (e.data.i + compulsoryExams.length)  +
-                    "][credits] readonly value=" + credits + ">";
-
-                $(this).next("select").remove();
-                $(this).after(creditsHTML);
-                updateCounters();
-            });
+            let local_i = i;
+            $(selector + " li select:last").change(() => onCompulsoryGroupSelected(local_i));
         }
+    };
+
+    var getCompulsoryGroupSelect = function(i) {
+        return $('select[name="data[ChosenExam][' +  (i + compulsoryExams.length) + '][exam_id]"]');
+    };
+
+    var onCompulsoryGroupSelected = function(i) {
+        var el = getCompulsoryGroupSelect(i);
+        var examId = $(el).val();
+        var exam;
+        // XXX(jacquerie): I apologize.
+        for (var j = 0; j < exams.length; j++) {
+            if (exams[j]["id"] == examId) {
+                exam = exams[j];
+            }
+        }
+
+        var credits = exam["credits"];
+        var creditsHTML = "<input class=credits name=data[ChosenExam][" +
+            (i + compulsoryExams.length)  +
+            "][credits] readonly value=" + credits + ">";
+
+        el.next('input[class="credits"]').remove();
+        $(el).after(creditsHTML);
+        updateCounters();
     };
 
     var addFreeChoiceExams = function () {
@@ -188,24 +199,8 @@ function on_curriculum_selected() {
             var $selectHTML = $(selectHTML);
             var deleteHTML = "<a class=delete></a>";
 
-            $selectHTML.change({ i: i }, function (e) {
-                var examId = $(this).val();
-                var exam;
-                // XXX(jacquerie): I apologize.
-                for (var j = 0; j < exams.length; j++) {
-                    if (exams[j]["id"] == examId) {
-                        exam = exams[j];
-                    }
-                }
-
-                var creditsHTML = "<input readonly name=data[ChosenExam][" +
-                    (e.data.i + compulsoryGroups.length + compulsoryExams.length) +
-                    "][credits] class=credits value=" + exam['credits'] + ">";
-
-                $(this).next("select").remove();
-                $(this).after(creditsHTML);
-                updateCounters();
-            });
+            let local_i = i;
+            $selectHTML.change(() => onFreeChoiceExamSelected(local_i));
 
             // Add an hidden field with the ID of this free choice exam
             var free_choice_exam_id = "<input type=hidden name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][free_choice_exam_id] value=" + freeChoiceExam["id"] + ">";
@@ -216,13 +211,39 @@ function on_curriculum_selected() {
             $(selector).append($("<li>").append($selectHTML).append(free_choice_exam_id).append(year_input).append(deleteHTML));
 
             // If this is a draft proposal, then we need to find the selection for this group, if any.
-            for (var j = 0; j < proposal['chosen_exams'].length; j++) {
-                if (proposal['chosen_exams'][j]['free_choice_exam_id'] == freeChoiceExam['id']) {
-                    console.log(proposal['chosen_exams'][j]);
-                    $('select[name="data[ChosenExam][' +  (i + compulsoryGroups.length + compulsoryExams.length) + '][exam_id]"]').val(proposal['chosen_exams'][j]['exam_id']);
+            if (proposal['chosen_exams'] !== undefined) {
+                for (var j = 0; j < proposal['chosen_exams'].length; j++) {
+                    if (proposal['chosen_exams'][j]['free_choice_exam_id'] == freeChoiceExam['id']) {
+                        getFreeChoiceExamSelect(i).val(proposal['chosen_exams'][j]['exam_id']);
+                        onFreeChoiceExamSelected(i);
+                    }
                 }
             }
         }
+    };
+
+    var onFreeChoiceExamSelected = function(i) {
+        var el = getFreeChoiceExamSelect(i);
+        var examId = el.val();
+        var exam;
+        // XXX(jacquerie): I apologize.
+        for (var j = 0; j < exams.length; j++) {
+            if (exams[j]["id"] == examId) {
+                exam = exams[j];
+            }
+        }
+
+        var creditsHTML = "<input readonly name=data[ChosenExam][" +
+            (i + compulsoryGroups.length + compulsoryExams.length) +
+            "][credits] class=credits value=" + exam['credits'] + ">";
+
+        el.next('input[class="credits"]').remove();
+        el.after(creditsHTML);
+        updateCounters();
+    };
+
+    var getFreeChoiceExamSelect = function(i) {
+        return $('select[name="data[ChosenExam][' +  (i + compulsoryGroups.length + compulsoryExams.length) + '][exam_id]"]');
     };
 
     var addButtons = function () {

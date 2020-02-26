@@ -203,15 +203,34 @@ class ProposalsController extends AppController {
                 if (array_key_exists('ChosenFreeChoiceExam', $data))
                     $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
-                // If the proposal was already submitted, we may have the data
+                // If the proposal was already submitted, we may have the data set in chosen_exams and
+                // chosen_free_choice_exams: we need to get rid of it to replace with the new one.
+                $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                // $old_chosen_exams = $proposal['chosen_exams'];
+                // $old_chosen_free_choice_exams = $proposal['free_choice_chosen_exams'];
+
+                $proposal['chosen_exams'] = [];
+                $proposal['chosen_free_choice_exams'] = [];
+
+                $this->Proposals->save($proposal);
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
-                $proposal['state'] = 'submitted';
+                if (array_key_exists('action-close', $this->request->getData())) {
+                    $proposal['state'] = 'submitted';
+                }
+                else {
+                    $proposal['state'] = 'draft';
+                }
+
                 $proposal['curriculum_id'] = $cur_id;
 
                 if ($this->Proposals->save($proposal)) {
-                    return $this->redirect(['action' => 'view', $proposal['id']]);
+                    if ($proposal['state'] == 'submitted')
+                        return $this->redirect(['action' => 'view', $proposal['id']]);
+                    else
+                        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
                 else {
                     $this->Flash->error(Utils::error_to_string($proposal->errors()));
