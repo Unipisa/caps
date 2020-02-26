@@ -45,17 +45,8 @@ class ExamsController extends AppController {
                 return $this->redirect([ 'action' => 'index']);
                 // ok! redirect?
             } else {
-                // collect error messages
-                foreach ($exams as $exam) {
-                  foreach ($exam->errors() as $field => $errors) {
-                    foreach ($errors as $error) {
-                      $this->Flash->error('Errore nel campo "'.$field.'" dell\'esame "'.$exam['name'].'" '.$error);
-                    }
-                  }
-                }
-                // debug($payload);
-                // debug($exams);
-                // debug($result);
+                // where is the error message?
+                // redirect?
             }
         }
 

@@ -2,8 +2,7 @@
 <?php echo $this->element('update_navigation'); ?>
 <script>
 // per upload_csv
-csv_upload_fields = ['nome','codice','settore','crediti'];
-csv_upload_fields_db = ['name','code','sector','credits'];
+csv_upload_fields = ['name','code','sector','credits'];
 csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
 </script>
 
@@ -84,7 +83,6 @@ csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
 <div style="display:none" id="caps-admin-add-csv" class="caps-admin-add-csv">
     Carica elenco esami da un file CSV:
     <input id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
-    <input type="submit" id="csv_file_reload" value="ricarica">
     <div style="display:none" id="csv_options_div">
         separatore colonne:
         <select name="csv_separator">

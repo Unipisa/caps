@@ -132,7 +132,7 @@ function preparePreview() {
     $("#csv_preview_table").html(html);
 }
 
-function csv_upload_file(evt) {
+function readSingleFile(evt) {
     var f = evt.target.files[0];
     if (f) {
     var r = new FileReader();
@@ -151,7 +151,7 @@ function csvSubmit() {
     var payload = csv_data.map(function(row){
         var obj = {};
         for (var i=0;i<csv_upload_fields.length;i++){
-            obj[csv_upload_fields_db[i]] = row[csv_column_map[i]];
+            obj[csv_upload_fields[i]] = row[csv_column_map[i]];
         }
         return obj;
     })
@@ -199,8 +199,7 @@ function csvSubmit_form_variant() {
 }
 
 $("document").ready(function(){
-    $("#csv_file_input").change(csv_upload_file);
-    $("#csv_file_reload").click(csv_upload_file);
+    $("#csv_file_input").change(readSingleFile);
     $("select[name='csv_separator']").change(function() {
         csv_column_separator = $(this).val();
         preparePreview();
