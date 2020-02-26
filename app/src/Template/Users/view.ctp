@@ -47,6 +47,11 @@
                        'controller' => 'proposals',
                        'action' => 'add',
                        $proposal['id'] ]);
+                   echo " — ";
+                   echo $this->Html->link('Anteprima', [
+                   'controller' => 'proposals',
+                   'action' => 'view',
+                   $proposal['id'] ]);
                    break;
                case "submitted":
                case "approved":
