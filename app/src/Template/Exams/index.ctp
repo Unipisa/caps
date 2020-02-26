@@ -72,8 +72,6 @@ csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
                 );
             ?>
         </li>
-    </ul>
-    <ul>
         <li>
             <a onclick='$("#caps-admin-add-csv").toggle()'>Aggiungi esami da file CSV</a>
         </li>
