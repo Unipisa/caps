@@ -213,7 +213,8 @@ class ProposalsController extends AppController {
                 $proposal['chosen_exams'] = [];
                 $proposal['chosen_free_choice_exams'] = [];
 
-                $this->Proposals->save($proposal);
+                if (! $proposal->isNew())
+                    $this->Proposals->save($proposal);
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
