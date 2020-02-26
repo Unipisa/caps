@@ -269,7 +269,7 @@ class ProposalsController extends AppController {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
-        $proposal['state'] = approved;
+        $proposal['state'] = 'approved';
         $this->Proposals->save($proposal);
 
         return $this->redirect(

@@ -2,7 +2,9 @@
 
 <table class='caps-todo'>
   <tr>
+    <th>Corso di Laurea</th>
     <th>Curriculum</th>
+    <th>Anno Accademico</th>
     <th>Ultima modifica</th>
     <th>Stato</th>
     <th>Azioni</th>
@@ -32,8 +34,9 @@
       }
     ?>
       <tr>
-       <td><?php echo $proposal['curriculum']['name']; ?>
-       </td>
+       <td><?php echo $proposal['curriculum']['degree']['name']; ?></td>
+       <td><?php echo $proposal['curriculum']['name']; ?></td>
+       <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>
