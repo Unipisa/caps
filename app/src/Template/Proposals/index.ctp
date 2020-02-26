@@ -20,7 +20,7 @@
 
 <div id="proposalFilterFormDiv">
 <?php
-echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'proposalsFilterForm']);
+echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
 echo $this->Form->control('state',
   [
    'label' => __('stato'),
