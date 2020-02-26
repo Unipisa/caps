@@ -48,7 +48,7 @@ table {
     height: 60px;
     padding: 0 0 0 70px;
     background-image: url("img/cherubino_white.png"), url("img/logo_white.png");
-    background-position: 0 0, right bottom;
+    background-position: 0 0, right center;
 }
 
 div .disclaimer {
