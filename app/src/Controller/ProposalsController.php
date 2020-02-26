@@ -198,8 +198,11 @@ class ProposalsController extends AppController {
                 $data = $this->request->getData()['data'];
                 $cur_id = $this->request->getData()['curriculum_id'];
 
-                if (array_key_exists('ChosenExam', $data))
-                    $patch_data['chosen_exams'] = $data['ChosenExam'];
+                if (array_key_exists('ChosenExam', $data)) {
+                    $patch_data['chosen_exams'] = array_filter($data['ChosenExam'], function($e) {
+                        return array_key_exists('exam_id', $e);
+                    });
+                }
                 if (array_key_exists('ChosenFreeChoiceExam', $data))
                     $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
 
