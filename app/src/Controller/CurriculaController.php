@@ -57,8 +57,45 @@ class CurriculaController extends AppController {
                 return $this->redirect(['action' => 'index']);
             }
             if ($this->request->getData('clone')) {
-                debug($selected);
-                $this->Flash->error('duplica: non ancora implementato');
+                $year = intval($this->request->getData('year'));
+
+                if ($year <= 0) {
+                    $this->Flash->error('Anno non valido specificato');
+                    return;
+                }
+
+                foreach ($selected as $curriculum_id) {
+                    $curriculum = $this->Curricula
+                        ->findById($curriculum_id)
+                        ->contain([ 'CompulsoryGroups', 'CompulsoryExams', 'FreeChoiceExams' ])
+                        ->firstOrFail();
+
+                    // We set the id and the id of all the children entities to null, so that a call to save will
+                    // automatically create new entities.
+                    $curriculum['id'] = null;
+                    $curriculum->isNew(true);
+                    $curriculum['academic_year'] = $year;
+
+                    foreach ($curriculum['compulsory_groups'] as $cg) {
+                        $cg['id'] = null;
+                        $cg->isNew(true);
+                    }
+                    foreach ($curriculum['compulsory_exams'] as $ce) {
+                        $ce['id'] = null;
+                        $ce->isNew(true);
+                    }
+                    foreach ($curriculum['free_choice_exams'] as $fce) {
+                        $fce['id'] = null;
+                        $fce->isNew(true);
+                    }
+
+                    if (! $this->Curricula->save($curriculum)) {
+                        $this->Flash->error('Impossibile duplicare il curriculum: ' + $curriculum['name']);
+                        return $this->redirect([ 'action' => 'index' ]);
+                    }
+                }
+                // debug($selected);
+                $this->Flash->success('Curricula correttamente duplicati');
             } else if ($this->request->getData('delete')) {
                 $delete_count = 0;
                 foreach($selected as $curriculum_id) {
