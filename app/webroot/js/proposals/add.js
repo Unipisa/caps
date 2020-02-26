@@ -79,6 +79,9 @@ function on_curriculum_selected() {
 
                 $("#proposalForm").slideDown();
 
+                $("input[type=submit]").show();
+                updateCounters();
+
                 stop_loading();
             }).catch((err) => {
                 console.log(err);
@@ -171,7 +174,7 @@ function on_curriculum_selected() {
             // If this is a draft proposal, then we need to find the selection for this group, if any.
             if (proposal['chosen_exams'] !== undefined) {
                 for (var j = 0; j < proposal['chosen_exams'].length; j++) {
-                    if (proposal['chosen_exams'][j]['compulsory_group_id'] == compulsoryGroup['id']) {
+                    if (proposal['chosen_exams'][j]['compulsory_group_id'] == compulsoryGroup['id'] && proposal['chosen_exams'][j]['exam_id'] != null) {
                         getCompulsoryGroupSelect(i).val(proposal['chosen_exams'][j]['exam_id']);
                         onCompulsoryGroupSelected(i);
                     }
@@ -237,7 +240,7 @@ function on_curriculum_selected() {
             // If this is a draft proposal, then we need to find the selection for this group, if any.
             if (proposal['chosen_exams'] !== undefined) {
                 for (var j = 0; j < proposal['chosen_exams'].length; j++) {
-                    if (proposal['chosen_exams'][j]['free_choice_exam_id'] == freeChoiceExam['id']) {
+                    if (proposal['chosen_exams'][j]['free_choice_exam_id'] == freeChoiceExam['id'] && proposal['chosen_exams'][j]['exam_id'] != null) {
                         getFreeChoiceExamSelect(i).val(proposal['chosen_exams'][j]['exam_id']);
                         onFreeChoiceExamSelected(i);
                     }
@@ -392,9 +395,9 @@ function on_curriculum_selected() {
         $("h3 span").each(updateCounter);
 
         if ($(".creditsError").length == 0) {
-            $("input[type=submit]").show();
+            $("input[class=\"submit-button\"]").show();
         } else {
-            $("input[type=submit]").hide();
+            $("input[class=\"submit-button\"]").hide();
         }
     };
 
