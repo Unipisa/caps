@@ -175,7 +175,7 @@ class ProposalsController extends AppController {
 
 				if ($proposal_id != null) {
 					$proposal = $this->Proposals->find()->contain([
-            	'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+            	        'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
 						->where([ 'Proposals.id' => $proposal_id ])
 						->firstOrFail();
 
@@ -202,6 +202,8 @@ class ProposalsController extends AppController {
                     $patch_data['chosen_exams'] = $data['ChosenExam'];
                 if (array_key_exists('ChosenFreeChoiceExam', $data))
                     $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
+
+                // If the proposal was already submitted, we may have the data
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
