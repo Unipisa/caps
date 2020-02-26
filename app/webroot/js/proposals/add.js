@@ -73,6 +73,10 @@ function on_curriculum_selected() {
                 addDeleteButtons();
                 addKonamiCode();
 
+                if (proposal['chosen_exams'] !== undefined) {
+                    loadAdditionalExams();
+                }
+
                 $("#proposalForm").slideDown();
 
                 stop_loading();
@@ -81,6 +85,26 @@ function on_curriculum_selected() {
                 stop_loading();
             });
     }
+
+    var loadAdditionalExams = function() {
+        // We only need to add exams that are not linked to a requirement, as the others have already been loaded in the
+        // corresponding select and input forms at this point.
+        for (j = 0; j < proposal['chosen_exams'].length; j++) {
+            let exam = proposal['chosen_exams'][j];
+            if (exam['compulsory_exam_id'] === null &&
+                exam['compulsory_group_id'] === null &&
+                exam['free_choice_exam_id'] === null) {
+                addMathematicsExam(exam['chosen_year'], exam);
+            }
+        }
+
+        for (j = 0; j < proposal['chosen_free_choice_exams'].length; j++) {
+            let exam = proposal['chosen_free_choice_exams'][j];
+            addFreeChoiceExam(exam['chosen_year'], exam);
+        }
+
+        updateCounters();
+    };
 
     var addCompulsoryExams = function () {
         for (var i = 0; i < compulsoryExams.length; i++) {
@@ -246,83 +270,113 @@ function on_curriculum_selected() {
         return $('select[name="data[ChosenExam][' +  (i + compulsoryGroups.length + compulsoryExams.length) + '][exam_id]"]');
     };
 
+    var getMathematicsExamSelect = function(i) {
+        return $('select[name="data[ChosenExam][' + i + '][exam_id]"]');
+    }
+
+    var onMathematicsExamChosen = function(i) {
+        var el = getMathematicsExamSelect(i);
+        var examId = el.val();
+        var exam;
+        // XXX(jacquerie): I apologize.
+        for (var j = 0; j < exams.length; j++) {
+            if (exams[j]["id"] == examId) {
+                exam = exams[j];
+            }
+        }
+
+        var creditsHTML = "<input name=data[ChosenExam][" + i + "][credits] class=credits readonly value=" + exam['credits'] + ">";
+
+        $(el).next("select").remove();
+        $(el).after(creditsHTML);
+        updateCounters();
+    };
+
+    var addMathematicsExam = function(year, chosen_exam = null) {
+        var i = compulsoryExams.length + compulsoryGroups.length + freeChoiceExams.length + lastExamAdded;
+
+        var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
+        for (var j = 0; j < exams.length; j++) {
+            var exam = exams[j];
+            selectHTML += "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"] + "</option>";
+        }
+        selectHTML += "</select>";
+        var $selectHTML = $(selectHTML);
+
+        let local_i = i;
+        $selectHTML.change(() => onMathematicsExamChosen(local_i));
+
+        // This ID is used in the closure to set up the correct year.
+        let thisExamID = i;
+        lastExamAdded++;
+
+        var deleteHTML = "<a href=# class=delete></a>";
+
+        $("nav#nav-year-" + year).each((j, nav) => {
+            // Read the year from the ID
+            // year = $(nav).attr('id').split('-')[2];
+
+            var year_input = "<input type=hidden name=data[ChosenExam][" +
+                thisExamID + "][chosen_year] value=" + year + ">";
+
+            deleteHTML = year_input + deleteHTML;
+
+            $(nav).next("hr").next("ul").append($("<li>").append($selectHTML).append(deleteHTML));
+        });
+
+        if (chosen_exam != null) {
+            getMathematicsExamSelect(i).val(chosen_exam['exam_id']);
+            onMathematicsExamChosen(i);
+        }
+
+    };
+
+    var addFreeChoiceExam = function(year, exam = null) {
+        if (exam != null) {
+            var name = exam['name'];
+            var credits = exam['credits'];
+        }
+        else {
+            var name = "";
+            var credits = "";
+        }
+
+        var inputHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] type=text placeholder='Un esame a scelta libera' class=exam value=" + name + "></input>";
+        var creditsHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 class=credits value=" + credits + "></input>";
+        var deleteHTML = "<a href=# class=delete></a>";
+
+        // This ID is used in the closure to set up the correct year.
+        let thisExamID = lastFreeChoiceExamAdded;
+
+        $("nav#nav-year-" + year).each((j, nav) => {
+            // Read the year from the ID
+            // year = $(nav).attr('id').split('-')[2];
+
+            var year_input = "<input type=hidden name=data[ChosenFreeChoiceExam][" +
+                thisExamID + "][chosen_year] value=" + year + ">";
+
+            inputHTML = inputHTML + year_input;
+
+            $(nav).next("hr").next("ul").append("<li>" + inputHTML + creditsHTML + deleteHTML + "</li>");
+        });
+
+        lastFreeChoiceExamAdded++;
+    };
+
     var addButtons = function () {
         var buttonsHTML = "<ul class=actions><li><a href=# class=newMathematicsExam>Aggiungi esame di Matematica</li><li><a href=# class=newFreeChoiceExam>Aggiungi esame a scelta libera</a></li></ul>";
         $("#proposalForm nav").append(buttonsHTML);
 
         $(".newMathematicsExam").click(function (e) {
             e.preventDefault();
-
-            var i = compulsoryExams.length + compulsoryGroups.length + freeChoiceExams.length + lastExamAdded;
-            var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
-            for (var j = 0; j < exams.length; j++) {
-                var exam = exams[j];
-                selectHTML += "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"] + "</option>";
-            }
-            selectHTML += "</select>";
-            var $selectHTML = $(selectHTML);
-
-            $selectHTML.change({ i: i }, function (e) {
-                var examId = $(this).val();
-                var exam;
-                // XXX(jacquerie): I apologize.
-                for (var j = 0; j < exams.length; j++) {
-                    if (exams[j]["id"] == examId) {
-                        exam = exams[j];
-                    }
-                }
-
-                var creditsHTML = "<input name=data[ChosenExam][" + e.data.i + "][credits] class=credits readonly value=" + exam['credits'] + ">";
-
-                $(this).next("select").remove();
-                $(this).after(creditsHTML);
-                updateCounters();
-            });
-
-            // This ID is used in the closure to set up the correct year.
-            let thisExamID = i;
-
-            lastExamAdded++;
-
-            var deleteHTML = "<a href=# class=delete></a>";
-
-            $(this).closest("nav").each((j, nav) => {
-                // Read the year from the ID
-                year = $(nav).attr('id').split('-')[2];
-
-                var year_input = "<input type=hidden name=data[ChosenExam][" +
-                    thisExamID + "][chosen_year] value=" + year + ">";
-
-                deleteHTML = year_input + deleteHTML;
-
-                $(nav).next("hr").next("ul").append($("<li>").append($selectHTML).append(deleteHTML));
-            });
-
+            year = $(this).closest('nav').attr('id').split('-')[2];
+            addMathematicsExam(year);
         });
 
         $(".newFreeChoiceExam").click(function (e) {
             e.preventDefault();
-
-            var inputHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] type=text placeholder='Un esame a scelta libera' class=exam></input>";
-            var creditsHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 class=credits></input>";
-            var deleteHTML = "<a href=# class=delete></a>";
-
-            // This ID is used in the closure to set up the correct year.
-            let thisExamID = lastFreeChoiceExamAdded;
-
-            $(this).closest("nav").each ((j, nav) => {
-                // Read the year from the ID
-                year = $(nav).attr('id').split('-')[2];
-
-                var year_input = "<input type=hidden name=data[ChosenFreeChoiceExam][" +
-                    thisExamID + "][chosen_year] value=" + year + ">";
-
-                inputHTML = inputHTML + year_input;
-
-                $(nav).next("hr").next("ul").append("<li>" + inputHTML + creditsHTML + deleteHTML + "</li>");
-            });
-
-            lastFreeChoiceExamAdded++;
+            year = $(this).closest('nav').attr('id').split('-')[2];
+            addFreeChoiceExam(year);
         });
     };
 
