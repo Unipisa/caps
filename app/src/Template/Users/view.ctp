@@ -20,16 +20,16 @@
     // Compute the status
       switch ($proposal['state']) {
           case 'draft':
-              $status = 'Bozza';
+              $status = '✏ Bozza';
               break;
           case 'submitted':
-              $status = 'Sottomesso';
+              $status = '✉ Sottomesso';
               break;
           case 'approved':
-              $status = "Approvato ✓";
+              $status = "✓ Approvato";
               break;
           case 'rejected':
-              $status = 'Rigettato';
+              $status = '✗ Rigettato';
               break;
       }
     ?>
