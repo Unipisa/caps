@@ -143,6 +143,14 @@ function on_curriculum_selected() {
             var year_input = "<input type=hidden name=data[ChosenExam][" + (i + compulsoryExams.length) + "][chosen_year] value=" + year + ">";
 
             $(selector).append("<li><select name=data[ChosenExam][" + (i + compulsoryExams.length) + "][exam_id] class=exam>" + groupHTML + examsHTML + compulsory_group_id + year_input + "</li></select>");
+
+            // If this is a draft proposal, then we need to find the selection for this group, if any.
+            for (var j = 0; j < proposal['chosen_exams'].length; j++) {
+                if (proposal['chosen_exams'][j]['compulsory_group_id'] == compulsoryGroup['id']) {
+                    $('select[name="data[ChosenExam][' +  (i + compulsoryExams.length) + '][exam_id]"]').val(proposal['chosen_exams'][j]['exam_id']);
+                }
+            }
+
             $(selector + " li select:last").change({ i: i }, function (e) {
                 var examId = $(this).val();
                 var exam;
@@ -206,6 +214,14 @@ function on_curriculum_selected() {
             var year_input = "<input type=hidden name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][chosen_year] value=" + year + ">";
 
             $(selector).append($("<li>").append($selectHTML).append(free_choice_exam_id).append(year_input).append(deleteHTML));
+
+            // If this is a draft proposal, then we need to find the selection for this group, if any.
+            for (var j = 0; j < proposal['chosen_exams'].length; j++) {
+                if (proposal['chosen_exams'][j]['free_choice_exam_id'] == freeChoiceExam['id']) {
+                    console.log(proposal['chosen_exams'][j]);
+                    $('select[name="data[ChosenExam][' +  (i + compulsoryGroups.length + compulsoryExams.length) + '][exam_id]"]').val(proposal['chosen_exams'][j]['exam_id']);
+                }
+            }
         }
     };
 
