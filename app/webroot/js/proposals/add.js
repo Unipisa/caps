@@ -89,6 +89,12 @@ function on_curriculum_selected() {
             });
     }
 
+    // Create an <option> tag describing the given exam, for insertion into a select.
+    var createExamOption = function(exam) {
+        return "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] +
+            " — " + exam["sector"] + " — " + exam['credits'] + " CFU" + "</option>";
+    };
+
     var loadAdditionalExams = function() {
         // We only need to add exams that are not linked to a requirement, as the others have already been loaded in the
         // corresponding select and input forms at this point.
@@ -124,7 +130,7 @@ function on_curriculum_selected() {
             }
 
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
-            var examHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option value=" + examId + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"]  + "</option></select>";
+            var examHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam>" + createExamOption(exam) + "</select>";
             var creditsHTML = "<input class=credits name=data[ChosenExam][" +
                 i + "][credits] value=" + exam['credits'] + ' readonly>';
 
@@ -160,7 +166,7 @@ function on_curriculum_selected() {
             var groupHTML = "<option value='' disabled selected>Un esame a scelta nel gruppo " + groupName + "</option>";
             var examsHTML = "";
             for (var j = 0; j < groupExams.length; j++) {
-                examsHTML += "<option value=" + groupExams[j]["id"] + ">" + groupExams[j]["code"] + " — " + groupExams[j]["name"] + " — " + groupExams[j]["sector"] + "</option>";
+                examsHTML += createExamOption(groupExams[j]);
             }
 
             // Add an hidden field with the ID of this compulsoryGroup
@@ -220,7 +226,7 @@ function on_curriculum_selected() {
             var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
             for (var j = 0; j < exams.length; j++) {
                 var exam = exams[j];
-                selectHTML += "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"] + "</option>";
+                selectHTML += createExamOption(exam);
             }
             selectHTML += "</select>";
             var $selectHTML = $(selectHTML);
@@ -301,7 +307,7 @@ function on_curriculum_selected() {
         var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
         for (var j = 0; j < exams.length; j++) {
             var exam = exams[j];
-            selectHTML += "<option value=" + exam["id"] + ">" + exam["code"] + " — " + exam["name"] + " — " + exam["sector"] + "</option>";
+            selectHTML += createExamOption(exam);
         }
         selectHTML += "</select>";
         var $selectHTML = $(selectHTML);
