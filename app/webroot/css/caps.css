@@ -3,7 +3,7 @@ form div {
 }
 
 form .submit input[type=submit] {
-    padding: 1% 0;
+    padding: 8px 12px 8px 12px;
     font-weight: bold;
 }
 
