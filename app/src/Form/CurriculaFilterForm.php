@@ -1,17 +1,11 @@
 <?php
 namespace App\Form;
 
-use Cake\Form\Form;
 use Cake\Form\Schema;
-use Cake\Validation\Validator;
+use App\Form\FilterForm;
 
-class CurriculaFilterForm extends Form
+class CurriculaFilterForm extends FilterForm
 {
-    public function __construct($query) {
-      parent::__construct();
-      $this->query = $query;
-    }
-
     protected function _buildSchema(Schema $schema)
     {
         return $schema
@@ -19,30 +13,6 @@ class CurriculaFilterForm extends Form
           ->addField('academic_year', ['type' => 'string'])
           ->addField('degree', ['type' => 'string'])
           ;
-    }
-
-    public function validationDefault(Validator $validator)
-    {
-        // $validator->requirePresence('status')
-        // ->requirePresence('surname');
-
-        return $validator;
-    }
-
-    public function filterFieldLike($dbfield, $field) {
-        if (!empty($this->getData($field))) {
-          $this->query = $this->query->where([
-            $dbfield.' LIKE' => '%'.$this->getData($field).'%'
-          ]);
-        }
-      }
-
-    public function filterFieldEqual($dbfield, $field) {
-        if (!empty($this->getData($field))) {
-          $this->query = $this->query->where([
-            $dbfield => $this->getData($field)
-          ]);
-        }
     }
 
     protected function _execute(array $data) {
