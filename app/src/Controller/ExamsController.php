@@ -87,17 +87,8 @@ class ExamsController extends AppController {
 
                 $delete_count = 0;
                 foreach($selected as $exam_id) {
-                    $exam = $this->Exams->findById($exam_id)->firstOrFail();
-                    $use_count = TableRegistry::getTableLocator()->get('ChosenExams')->find('all')
-                        ->where(['exam_id' => $exam_id])
-                        ->count();
-                    if ($use_count == 0) {
-                        if ($this->Exams->delete($exam)) {
-                            $delete_count ++;
-                        }
-                    } else {
-                        $this->Flash->error(__('L\'esame {code} non può essere rimosso perché viene utilizzato {count} volte',
-                        ['code' => $exam['codice'], 'count' => $use_count]));
+                    if ($this->deleteIfNotUsed($exam_id)) {
+                        $delete_count ++;
                     }
                 }
                 if ($delete_count > 1) {
@@ -169,25 +160,29 @@ class ExamsController extends AppController {
         if (!$user['admin']) {
             throw new ForbiddenException();
         }
+        if ($this->deleteIfNotUsed($id))
+            $this->Flash->success(__('Esame cancellato con successo.'));
+        return $this->redirect(['action' => 'index']);
+    }
 
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
+    protected function deleteIfNotUsed($exam_id) {
+        $exam = $this->Exams->findById($exam_id)->firstOrFail();
+        $use_count = 0;
+        foreach(['ChosenExams', 'CompulsoryExams'] as $related_table) {
+            $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
+                ->where(['exam_id' => $exam_id])
+                ->count();
         }
-
-        $exam = $this->Exams->findById($id)->firstOrFail();
-        if (!$exam) {
-            throw new NotFoundException(__('Errore: esame non esistente.'));
+        if ($use_count>0) {
+            $this->Flash->error(__('L\'esame {code} non può essere rimosso perché viene utilizzato {count} volte',
+            ['code' => $exam['codice'], 'count' => $use_count]));
+            return False;
         }
-
-        if ($this->request->is(['post', 'put'])) {
-            if ($this->Exams->delete($exam)) {
-                $this->Flash->success(__('Esame cancellato con successo.'));
-                return $this->redirect(['action' => 'index']);
-            }
+        if (!$this->Exams->delete($exam)) {
+            $this->Flash->error(__('Cancellazione non riuscita'));
+            return False;
         }
-
-        $this->Flash->error(__('Error: esame non cancellato.'));
-        $this->redirect(['action' => 'index']);
+        return True;
     }
 
 }

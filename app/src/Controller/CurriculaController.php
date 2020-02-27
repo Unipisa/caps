@@ -96,20 +96,12 @@ class CurriculaController extends AppController {
                 }
                 // debug($selected);
                 $this->Flash->success('Curricula correttamente duplicati');
+                return $this->redirect(['action' => 'index']);
             } else if ($this->request->getData('delete')) {
                 $delete_count = 0;
                 foreach($selected as $curriculum_id) {
-                    $curriculum = $this->Curricula->findById($curriculum_id)->firstOrFail();
-                    $proposal_count = TableRegistry::getTableLocator()->get('Proposals')->find('all')
-                        ->where(['curriculum_id' => $curriculum_id])
-                        ->count();
-                    if ($proposal_count == 0) {
-                        if ($this->Curricula->delete($curriculum)) {
-                            $delete_count ++;
-                        }
-                    } else {
-                        $this->Flash->error(__('Il curriculum {name} {year} non può essere rimosso perché ci sono {count} piani di studio collegati',
-                        ['name' => $curriculum['name'], 'year' => $curriculum['year'], 'count' => $proposal_count]));
+                    if ($this->deleteIfNotUsed($curriculum_id)) {
+                        $delete_count ++;
                     }
                 }
                 if ($delete_count > 1) {
@@ -212,31 +204,29 @@ class CurriculaController extends AppController {
             throw new ForbiddenException();
         }
 
-        if (!$id) {
-            throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
+        if ($this->deleteIfNotUsed($id)) {
+            $this->Flash->success(__('Curriculum cancellato con successo.'));
         }
-
-        $curriculum = $this->Curricula->findById($id)->firstOrFail();
-
-        if (!$curriculum) {
-            throw new NotFoundException(__('Errore: curriculum non esistente.'));
-        }
-
-        if ($this->request->is(['post', 'put'])) {
-            if ($this->Curricula->delete($curriculum)) {
-                $this->Flash->success(__('Curriculum cancellato con successo.'));
-                return $this->redirect(
-                    ['action' => 'index']
-                );
-            }
-        }
-
-        $this->Flash->error(__('Error: curriculum non cancellato.'));
-        $this->redirect(
-            ['action' => 'index']
-        );
+        return $this->redirect(['action' => 'index']);
     }
 
+    protected function deleteIfNotUsed($curriculum_id) {
+        $curriculum = $this->Curricula->findById($curriculum_id)->firstOrFail();
+        $proposal_count = TableRegistry::getTableLocator()->get('Proposals')->find('all')
+            ->where(['curriculum_id' => $curriculum_id])
+            ->count();
+        if ($proposal_count == 0) {
+            if ($this->Curricula->delete($curriculum)) {
+                return True;
+            } else {
+                $this->flash->error(__('Cancellazione del curriculum non riuscita'));
+            }
+        } else {
+            $this->Flash->error(__('Il curriculum {name} {year} non può essere rimosso perché ci sono {count} piani di studio collegati',
+            ['name' => $curriculum['name'], 'year' => $curriculum['year'], 'count' => $proposal_count]));
+        }
+        return False;
+    }
 }
 
 ?>
