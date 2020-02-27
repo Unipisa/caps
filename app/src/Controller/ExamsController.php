@@ -6,6 +6,7 @@ use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
+use App\Form\ExamsFilterForm;
 
 class ExamsController extends AppController {
 
@@ -30,38 +31,88 @@ class ExamsController extends AppController {
     public function index () {
         $user = $this->Auth->user();
 
+        $exams = $this->Exams->find()
+            ->order([ 'Exams.name' => 'asc' ]);
+
+        $filterForm = new ExamsFilterForm($exams);
+        $filterData = $this->request->getQuery();
+        if (!key_exists('name', $filterData) || !$filterForm->validate($filterData)) {
+          // no filter form provided or data not valid: set defaults:
+          $filterData = [
+            'name' => '',
+            'code' => '',
+            'sector' => '',
+            'credits' => null
+          ];
+        }
+        $exams = $filterForm->execute($filterData);
+        $this->set('filterForm', $filterForm);
+
         if ($this->request->is("post")) {
-            // csv bulk upload
             if (!$user['admin']) {
                 throw new ForbiddenException();
             }
-            $good_count = 0;
-            $bad_count = 0;
-            $payload = json_decode($this->request->getData()['payload'], True);
-            $exams = $this->Exams->newEntities($payload);
-            $result = $this->Exams->saveMany($exams);
-            if ($result) {
-                $this->Flash->success('Inseriti ' . count($result) . ' esami.');
-                return $this->redirect([ 'action' => 'index']);
-                // ok! redirect?
-            } else {
-                // collect error messages
-                foreach ($exams as $exam) {
-                  foreach ($exam->errors() as $field => $errors) {
-                    foreach ($errors as $error) {
-                      $this->Flash->error('Errore nel campo "'.$field.'" dell\'esame "'.$exam['name'].'" '.$error);
+            if ($this->request->getData('payload')) {
+                // csv bulk upload
+                $good_count = 0;
+                $bad_count = 0;
+                $payload = json_decode($this->request->getData()['payload'], True);
+                $exams = $this->Exams->newEntities($payload);
+                $result = $this->Exams->saveMany($exams);
+                if ($result) {
+                    $this->Flash->success('Inseriti ' . count($result) . ' esami.');
+                    return $this->redirect([ 'action' => 'index']);
+                    // ok! redirect?
+                } else {
+                    // collect error messages
+                    foreach ($exams as $exam) {
+                      foreach ($exam->errors() as $field => $errors) {
+                        foreach ($errors as $error) {
+                          $this->Flash->error('Errore nel campo "'.$field.'" dell\'esame "'.$exam['name'].'" '.$error);
+                        }
+                      }
                     }
-                  }
+                    // debug($payload);
+                    // debug($exams);
+                    // debug($result);
                 }
-                // debug($payload);
-                // debug($exams);
-                // debug($result);
+            }
+
+            if ($this->request->getData('delete')) {
+                $selected = $this->request->getData('selection');
+                if (!$selected) {
+                    $this->Flash->error(__('nessun esame selezionato'));
+                    return $this->redirect(['action' => 'index']);
+                }
+
+                $delete_count = 0;
+                foreach($selected as $exam_id) {
+                    $exam = $this->Exams->findById($exam_id)->firstOrFail();
+                    $use_count = TableRegistry::getTableLocator()->get('ChosenExams')->find('all')
+                        ->where(['exam_id' => $exam_id])
+                        ->count();
+                    if ($use_count == 0) {
+                        if ($this->Exams->delete($exam)) {
+                            $delete_count ++;
+                        }
+                    } else {
+                        $this->Flash->error(__('L\'esame {code} non può essere rimosso perché viene utilizzato {count} volte',
+                        ['code' => $exam['codice'], 'count' => $use_count]));
+                    }
+                }
+                if ($delete_count > 1) {
+                    $this->Flash->success(__('{delete_count} esami cancellati con successo', ['delete_count' => $delete_count]));
+                } else if ($delete_count == 1) {
+                    $this->Flash->success(__('un esame cancellato con successo'));
+                } else {
+                    $this->Flash->success(__('nessun esame cancellato'));
+                }
+                return $this->redirect(['action' => 'index']);
             }
         }
-
-        $this->set('exams', $this->exams());
+        $this->set('exams', $exams);
         $this->set('_serialize', [ 'exams' ]);
-        $this->set('paginated_exams', $this->Paginator->paginate($this->exams()->limit(4)));
+        $this->set('paginated_exams', $this->Paginator->paginate($exams->cleanCopy()));
     }
 
     /**

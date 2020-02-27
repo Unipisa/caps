@@ -4,7 +4,7 @@
         <li class="caps-admin-link">
             <?php
                 echo $this->Html->link(
-                    '↑&nbspIndietro',
+                    '↑&nbsp;Indietro',
                     ['action' => 'index'],
                     ['escape' => false]
                 );
@@ -13,7 +13,7 @@
         <li class="caps-admin-link">
             <?php
                 echo $this->Html->link(
-                    '✎&nbspModifica',
+                    '✎&nbsp;Modifica',
                     ['action' => 'edit', $curriculum['id']],
                     ['escape' => false] // non so a cosa serve
                 );
@@ -22,7 +22,7 @@
         <li class="">
             <?php
                 echo $this->Form->postLink(
-                    '✗&nbspElimina',
+                    '✗&nbsp;Elimina',
                     ['action' => 'delete', $curriculum['id']],
                     ['escape' => false,
                      'class' => 'action reject',
