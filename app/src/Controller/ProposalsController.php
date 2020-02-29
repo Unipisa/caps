@@ -50,6 +50,82 @@ class ProposalsController extends AppController {
         ];
       }
       $proposals = $filterForm->execute($filterData);
+
+      if ($this->request->is("post")) {
+          if (!$this->user['admin']) {
+              throw new ForbiddenException();
+          }
+
+          $action = null;
+          foreach(['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
+              if ($this->request->getData($i)) {
+                  if ($action) {
+                      $this->Flash->error(__('richiesta non valida'));
+                      return $this->redirect(['action' => 'index']);
+                  }
+                  $action = $i;
+              }
+          }
+
+          if ($action) {
+              $context = [
+                  'approve' => [
+                      'state' => 'approved',
+                      'plural' => __('approvati'),
+                      'singular' => __('approvato')
+                  ],
+                  'reject' => [
+                      'state' => 'rejected',
+                      'plural' => __('rifiutati'),
+                      'singular' => __('approvati')
+                  ],
+                  'resubmit' => [
+                      'state' => 'submitted',
+                      'plural' => __('risottomessi'),
+                      'singular' => __('risottomesso')
+                  ],
+                  'redraft' => [
+                      'state' => 'draft',
+                      'plural' => __('riportati in bozza'),
+                      'singular' => __('riportato in bozza')
+                  ],
+                  'delete' => [
+                      'plural' => __('eliminati'),
+                      'singular' => __('eliminato')
+                  ]][$action];
+
+              $selected = $this->request->getData('selection');
+              if (!$selected) {
+                  $this->Flash->error(__('nessun piano selezionato'));
+                  return $this->redirect(['action' => 'index']);
+              }
+
+              $count = 0;
+              foreach($selected as $proposal_id) {
+                  $proposal = $this->Proposals->findById($proposal_id)
+                      ->firstOrFail();
+                  if ($action === 'delete') {
+                      if ($this->Proposals->delete($proposal)) {
+                          $count ++;
+                      }
+                  } else {
+                      $proposal['state'] = $context['state'];
+                      if ($this->Proposals->save($proposal)) {
+                          $count ++;
+                      }
+                  }
+              }
+              if ($count > 1) {
+                  $this->Flash->success(__('{count} piani {what}', ['count' => $count, 'what' => $context['plural']]));
+              } else if ($count == 1) {
+                  $this->Flash->success(__('piano {what}', ['what' => $context['singular']]));
+              } else {
+                  $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
+              }
+              return $this->redirect(['action' => 'index']);
+          }
+      }
+
       $this->set('filterForm', $filterForm);
       $this->set('proposals', $this->Paginator->paginate($proposals));
       $this->set('selected', 'index');
@@ -88,10 +164,10 @@ class ProposalsController extends AppController {
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula' ])
             ->firstOrFail();
 
-        // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
+        // Check that the user matches, otherwise he/she may not be allowed to see, let alone delete
         // of the given proposal.
         if ($proposal['user']['username'] != $this->user['user'] && ! $this->user['admin']) {
-            throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
+            throw new ForbiddenException('Utente non autorizzato a eliminare questo piano');
         }
 
         if ($proposal['state'] != 'draft') {

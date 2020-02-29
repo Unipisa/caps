@@ -60,20 +60,22 @@ echo $this->Form->end();
 <?php endif; ?>
 
 <h2>Piani di Studio</h2>
+<?php echo $this->Form->create(); ?>
 <table class="caps-todo">
     <tr>
+        <th></th>
         <th>Stato</th>
         <th>Nome</th>
         <th>Anno</th>
         <th>Laurea</th>
         <th>Piano di Studio</th>
-        <th>Azioni</th>
     </tr>
 <?php foreach ($proposals as $proposal): ?>
 <?php
     $curriculum = $proposal['curriculum'];
 ?>
     <tr>
+        <td class="caps-admin-proposal-id"><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
         <td class="caps-admin-proposal-state">
             <?php echo $this->Html->link(
                 [
@@ -118,35 +120,31 @@ echo $this->Form->end();
                 );
             ?>
         </td>
-        <td class="caps-admin-proposal-actions">
-            <ul class="actions">
-            <?php if ($owner['admin']): ?>
-              <?php if ($proposal['state'] === 'submitted'):?>
-                <li>
-                    <?php
-                        echo $this->Html->link(
-                            'Approva ✓',
-                            ['action' => 'adminApprove', $proposal['id']],
-                            ['class' => 'accept']
-                        );
-                    ?>
-                </li>
-                <li>
-                    <?php
-                        echo $this->Html->link(
-                            'Rifiuta ✗',
-                            ['action' => 'adminReject', $proposal['id']],
-                            ['class' => 'reject']
-                        );
-                    ?>
-                </li>
-              <?php endif; ?>
-            <?php endif; ?>
-            </ul>
-        </td>
     </tr>
 <?php endforeach; ?>
 <?php unset($proposal); ?>
 </table>
 
 <?php echo $this->element('pagination'); ?>
+
+<div class="caps-admin-add">
+    <ul>
+        <li>
+            <div class="submit"><input type="submit" name="approve" style="width:100%" onclick="return confirm('Confermi di voler approvare i piani di studio selezionati?')" value="Approva i piani di studio selezionati"/></div>
+        </li>
+        <li>
+            <div class="submit"><input type="submit" name="reject" style="width:100%" onclick="return confirm('Confermi di voler rifiutare i piani di studio selezionati?')" value="Rifiuta i piani di studio selezionati"/></div>
+        </li>
+        <li>
+            <div class="submit"><input type="submit" name="resubmit" style="width:100%" onclick="return confirm('Confermi di voler riportare in valutazione i piani di studio selezionati?')" value="Riporta in valutazione i piani di studio selezionati"/></div>
+        </li>
+        <li>
+            <div class="submit"><input type="submit" name="redraft" style="width:100%" onclick="return confirm('Confermi di voler riportare in bozza i piani di studio selezionati?')" value="Riporta in bozza i piani di studio selezionati"/></div>
+        </li>
+        <li>
+            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i piani di studio selezionati?')" value="Elimina i piani di studio selezionati"/></div>
+        </li>
+    </ul>
+</div>
+
+<?php echo $this->Form->end(); ?>
