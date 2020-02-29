@@ -29,8 +29,6 @@ class ExamsController extends AppController {
     }
 
     public function index () {
-        $user = $this->Auth->user();
-
         $exams = $this->Exams->find()
             ->order([ 'Exams.name' => 'asc' ]);
 
@@ -49,7 +47,7 @@ class ExamsController extends AppController {
         $this->set('filterForm', $filterForm);
 
         if ($this->request->is("post")) {
-            if (!$user['admin']) {
+            if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
             if ($this->request->getData('payload')) {
@@ -122,8 +120,7 @@ class ExamsController extends AppController {
     }
 
     public function edit($id = null) {
-        $user =  $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 
@@ -156,8 +153,7 @@ class ExamsController extends AppController {
     }
 
     public function delete ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
         if ($this->deleteIfNotUsed($id))

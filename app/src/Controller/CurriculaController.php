@@ -47,8 +47,7 @@ class CurriculaController extends AppController {
         if ($this->request->is(['post', 'put'])) {
             // azioni sulla selezione
             // clone / delete
-            $user = $this->Auth->user();
-            if (!$user['admin']) {
+            if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
             $selected = $this->request->getData('selection');
@@ -139,8 +138,7 @@ class CurriculaController extends AppController {
     }
 
     public function edit ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 
@@ -199,8 +197,7 @@ class CurriculaController extends AppController {
     }
 
     public function delete ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 

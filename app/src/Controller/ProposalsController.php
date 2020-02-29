@@ -28,18 +28,16 @@ class ProposalsController extends AppController {
 
     public function index()
     {
-      $user = $this->Auth->user();
-
       $proposals = $this->Proposals->find();
       $proposals = $proposals
         ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
         ->order([ 'Users.surname' => 'asc' ]);
 
-      if ($user['admin']) {
+      if ($this->user['admin']) {
           // admin può vedere tutti i proposal
       } else {
           // posso vedere solo i miei proposal
-          $proposals = $proposals->where(['Users.username' => $user['user']]);
+          $proposals = $proposals->where(['Users.username' => $this->user['user']]);
       }
 
       $filterForm = new ProposalsFilterForm($proposals);
@@ -58,8 +56,6 @@ class ProposalsController extends AppController {
     }
 
     public function view ($id = null) {
-        $user = $this->Auth->user();
-
         if (!$id) {
             throw new NotFoundException('');
         }
@@ -74,7 +70,7 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']['username'] != $user['user'] && !$user['admin']) {
+        if ($proposal['user']['username'] != $this->user['user'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -83,8 +79,6 @@ class ProposalsController extends AppController {
     }
 
     public function delete($id) {
-        $user = $this->Auth->user();
-
         if (! $id) {
             throw new NotFoundException();
         }
@@ -96,7 +90,7 @@ class ProposalsController extends AppController {
 
         // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
         // of the given proposal.
-        if ($proposal['user']['username'] != $user['user'] && ! $user['admin']) {
+        if ($proposal['user']['username'] != $this->user['user'] && ! $this->user['admin']) {
             throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
         }
 
@@ -117,8 +111,6 @@ class ProposalsController extends AppController {
     }
 
     public function duplicate($id) {
-        $user = $this->Auth->user();
-
         if (! $id) {
             throw new NotFoundException();
         }
@@ -130,7 +122,7 @@ class ProposalsController extends AppController {
 
         // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
         // of the given proposal.
-        if ($proposal['user']['username'] != $user['user'] && ! $user['admin']) {
+        if ($proposal['user']['username'] != $this->user['user'] && ! $this->user['admin']) {
             throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
         }
 
@@ -165,8 +157,7 @@ class ProposalsController extends AppController {
     }
 
     public function add ($proposal_id = null) {
-	    $user = $this->Auth->user();
-        $username = $user['user'];
+        $username = $this->user['user'];
 
         // Find the user in the database matching the one logged in
         $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
@@ -180,7 +171,7 @@ class ProposalsController extends AppController {
 						->firstOrFail();
 
 					// Check if the user is the right owner
-					if ($proposal['user']['username'] != $user['user']) {
+					if ($proposal['user']['username'] != $this->user['user']) {
 						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
 					}
 				}
@@ -259,8 +250,7 @@ class ProposalsController extends AppController {
     }
 
     public function adminApprove ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 
@@ -283,8 +273,7 @@ class ProposalsController extends AppController {
     }
 
     public function adminReject ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 

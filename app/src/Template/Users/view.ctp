@@ -1,4 +1,4 @@
-<h2>Piani di studio di <?php echo $user['name']; ?></h2>
+<h2>Piani di studio di <?php echo $user_entry['name']; ?></h2>
 
 <table class='caps-todo'>
   <tr>
@@ -95,7 +95,7 @@
 }
 ?>
 
-<?php if ($owner['id'] == $user['id']): ?>
+<?php if ($owner['id'] == $user_entry['id']): ?>
   <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
        e non se qualcuno sta visualizzando il profile come amministratore. //-->
   <div class="caps-admin-add">

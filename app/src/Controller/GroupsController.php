@@ -24,11 +24,10 @@ class GroupsController extends AppController {
     }
 
     public function index () {
-        $user = $this->Auth->user();
         $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
 
         if ($this->request->is("post")) {
-            if (!$user['admin']) {
+            if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
 
@@ -57,7 +56,6 @@ class GroupsController extends AppController {
         }
 
         $this->set('groups', $groups);
-        $this->set('owner', $user);
         $this->set('_serialize', ['groups']);
     }
 
@@ -75,8 +73,7 @@ class GroupsController extends AppController {
     }
 
     public function edit($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 
@@ -115,8 +112,7 @@ class GroupsController extends AppController {
     }
 
     public function delete ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 

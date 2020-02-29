@@ -24,9 +24,8 @@ class UsersController extends AppController {
 		public function view($id = null) {
 			$this->Auth->deny();
 
-			$user = $this->Auth->user();
 			$owner = $this->Users->find()
-				->where([ 'username' => $user['user'] ])
+				->where([ 'username' => $this->user['user'] ])
 				->first();
 
 			if ($id == null || $id == $owner['id']) {
@@ -38,7 +37,7 @@ class UsersController extends AppController {
 					->first();
 			}
 
-			if ($id != null && !$user['admin'])
+			if ($id != null && !$this->user['admin'])
 			  throw new  ForbiddenException('Cannot access another user profile');
 
 			$proposals = $this->Users->Proposals->find()
@@ -46,7 +45,7 @@ class UsersController extends AppController {
 				->where([ 'Users.id' => $user_entry['id'] ])
 				->order([ 'Proposals.modified' => 'DESC' ]);
 
-			$this->set('user', $user_entry);
+            $this->set('user_entry', $user_entry);
 			$this->set('owner', $owner);
 			$this->set('proposals', $proposals);
 		}
