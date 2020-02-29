@@ -83,18 +83,13 @@ echo $this->Form->end();
                     'submitted' => __('da valutare'),
                     'approved' => __('approvato'),
                     'rejected' => __('rifiutato')
-                ][$proposal['state']], [
-                    'controller' => 'users',
-                    'action' => 'view',
-                    $proposal['user']['id']
-                ]);
+                ][$proposal['state']],
+                ['action' => 'view', $proposal['id']]);
             ?></td>
         <td class="caps-admin-proposal-name">
-            <?php echo $this->Html->link($proposal['user']['name'], [
-                    'controller' => 'users',
-                    'action' => 'view',
-                    $proposal['user']['id']
-                ]);
+            <?php echo $this->Html->link(
+                $proposal['user']['name'],
+                ['action' => 'view', $proposal['id']]);
             ?></td>
         <td class="caps-admin-proposal-year">
             <?php
@@ -127,22 +122,22 @@ echo $this->Form->end();
 
 <?php echo $this->element('pagination'); ?>
 
-<div class="caps-admin-add">
+<div class="caps-admin-actions">
     <ul>
         <li>
-            <div class="submit"><input type="submit" name="approve" style="width:100%" onclick="return confirm('Confermi di voler approvare i piani di studio selezionati?')" value="Approva i piani di studio selezionati"/></div>
+            <div class="submit"><input class="green" type="submit" name="approve" style="width:100%" onclick="return confirm('Confermi di voler approvare i piani di studio selezionati?')" value="✓ Approva i piani di studio selezionati"/></div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="reject" style="width:100%" onclick="return confirm('Confermi di voler rifiutare i piani di studio selezionati?')" value="Rifiuta i piani di studio selezionati"/></div>
+            <div class="submit"><input class="red" type="submit" name="reject" style="width:100%" onclick="return confirm('Confermi di voler rifiutare i piani di studio selezionati?')" value="✗ Rifiuta i piani di studio selezionati"/></div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="resubmit" style="width:100%" onclick="return confirm('Confermi di voler riportare in valutazione i piani di studio selezionati?')" value="Riporta in valutazione i piani di studio selezionati"/></div>
+            <div class="submit"><input class="yellow" type="submit" name="resubmit" style="width:100%" onclick="return confirm('Confermi di voler riportare in valutazione i piani di studio selezionati?')" value="⎌ Riporta in valutazione i piani di studio selezionati"/></div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="redraft" style="width:100%" onclick="return confirm('Confermi di voler riportare in bozza i piani di studio selezionati?')" value="Riporta in bozza i piani di studio selezionati"/></div>
+            <div class="submit"><input class="yellow" type="submit" name="redraft" style="width:100%" onclick="return confirm('Confermi di voler riportare in bozza i piani di studio selezionati?')" value="⎌ Riporta in bozza i piani di studio selezionati"/></div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i piani di studio selezionati?')" value="Elimina i piani di studio selezionati"/></div>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i piani di studio selezionati?')" value="🗑 Elimina i piani di studio selezionati"/></div>
         </li>
     </ul>
 </div>

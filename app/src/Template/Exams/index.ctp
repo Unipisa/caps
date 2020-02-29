@@ -66,7 +66,7 @@ echo $this->Form->end();
 
 <?php echo $this->element('pagination'); ?>
 
-<div class="caps-admin-add">
+<div class="caps-admin-actions">
     <ul>
         <li>
             <?php
@@ -78,7 +78,7 @@ echo $this->Form->end();
             ?>
         </li>
         <li>
-            <a onclick='$("#caps-admin-add-csv").toggle()'>Aggiungi esami da file CSV</a>
+            <a onclick='$("#caps-admin-actions-csv").toggle()'>Aggiungi esami da file CSV</a>
         </li>
         <li>
             <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere gli esami selezionati?')" value="Elimina gli esami selezionati"/></div>
@@ -88,7 +88,7 @@ echo $this->Form->end();
 <?php echo $this->Form->end(); ?>
 
 
-<div style="display:none" id="caps-admin-add-csv" class="caps-admin-add-csv">
+<div style="display:none" id="caps-admin-actions-csv" class="caps-admin-actions-csv">
     Carica elenco esami da un file CSV:
     <input id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
     <input type="submit" id="csv_file_reload" value="ricarica">
@@ -108,7 +108,7 @@ echo $this->Form->end();
         campo codice: <select name="csv_field[1]"></select>
         campo settore: <select name="csv_field[2]"></select>
         campo crediti: <select name="csv_field[3]"></select>
-        <div class="caps-admin-add">
+        <div class="caps-admin-actions">
             <ul>
                 <li>
                     <a onclick='csvSubmit()'>Aggiungi tutti gli esami elencati di seguito</a>

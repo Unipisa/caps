@@ -98,7 +98,7 @@
 <?php if ($owner['id'] == $user_entry['id']): ?>
   <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
        e non se qualcuno sta visualizzando il profile come amministratore. //-->
-  <div class="caps-admin-add">
+  <div class="caps-admin-actions">
     <ul>
       <li>
         <?php echo $this->Html->link('Nuovo piano di studi', [

@@ -29,7 +29,7 @@
     <?php unset($degree); ?>
 </table>
 
-<div class="caps-admin-add">
+<div class="caps-admin-actions">
     <ul>
         <li>
             <?php
