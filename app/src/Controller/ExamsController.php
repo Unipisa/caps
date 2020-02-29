@@ -94,7 +94,7 @@ class ExamsController extends AppController {
                 if ($delete_count > 1) {
                     $this->Flash->success(__('{delete_count} esami cancellati con successo', ['delete_count' => $delete_count]));
                 } else if ($delete_count == 1) {
-                    $this->Flash->success(__('un esame cancellato con successo'));
+                    $this->Flash->success(__('esame cancellato con successo'));
                 } else {
                     $this->Flash->success(__('nessun esame cancellato'));
                 }

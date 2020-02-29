@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Degrees Controller
@@ -19,8 +20,40 @@ class DegreesController extends AppController
      */
     public function index()
     {
-        $degrees = $this->paginate($this->Degrees);
-        $this->set(compact('degrees'));
+        $degrees = $this->Degrees->find();
+
+        if ($this->request->is("post")) {
+            if (!$this->user['admin']) {
+                throw new ForbiddenException();
+            }
+
+            if ($this->request->getData('delete')) {
+                $selected = $this->request->getData('selection');
+                if (!$selected) {
+                    $this->Flash->error(__('nessun corso selezionato'));
+                    return $this->redirect(['action' => 'index']);
+                }
+
+                $delete_count = 0;
+                foreach($selected as $degree_id) {
+                    if ($this->deleteIfNotUsed($degree_id)) {
+                        $delete_count ++;
+                    }
+                }
+                if ($delete_count > 1) {
+                    $this->Flash->success(__('{delete_count} corsi cancellati con successo', ['delete_count' => $delete_count]));
+                } else if ($delete_count == 1) {
+                    $this->Flash->success(__('corso cancellato con successo'));
+                } else {
+                    $this->Flash->success(__('nessun corso cancellato'));
+                }
+                return $this->redirect(['action' => 'index']);
+            }
+        }
+
+        $paginated_degrees = $this->paginate($degrees->cleanCopy());
+        $this->set(compact('degrees', 'paginated_degrees'));
+        $this->set('_serialize', [ 'degrees' ]);
     }
 
     /**
@@ -77,15 +110,36 @@ class DegreesController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $degree = $this->Degrees->get($id);
+        if (!$this->user['admin']) {
+            throw new ForbiddenException();
+        }
 
-        if ($this->Degrees->delete($degree)) {
+        $this->request->allowMethod(['post', 'delete']);
+
+        if ($this->deleteIfNotUsed($id)) {
             $this->Flash->success(__('Il corso di laurea è stato cancellato.'));
-        } else {
-            $this->Flash->error(__('Non è stato possibile cancellare il corso di laurea.'));
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    protected function deleteIfNotUsed($degree_id) {
+        $degree = $this->Degrees->findById($degree_id)->firstOrFail();
+        $use_count = 0;
+        foreach(['Curricula'] as $related_table) {
+            $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
+                ->where(['degree_id' => $degree_id])
+                ->count();
+        }
+        if ($use_count>0) {
+            $this->Flash->error(__('Il corso {name} non può essere rimosso perché viene utilizzato {count} volte',
+            ['name' => $degree['name'], 'count' => $use_count]));
+            return False;
+        }
+        if (!$this->Degrees->delete($degree)) {
+            $this->Flash->error(__('Cancellazione non riuscita'));
+            return False;
+        }
+        return True;
     }
 }

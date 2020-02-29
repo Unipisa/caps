@@ -1,4 +1,37 @@
-<?php echo $this->element('updating_navigation'); ?>
+<nav class="caps-admin-navigation actions">
+    <ul>
+        <li class="caps-admin-link">
+            <?php
+                echo $this->Html->link(
+                    '↑&nbsp;Indietro',
+                    ['action' => 'index'],
+                    ['escape' => false]
+                );
+            ?>
+        </li>
+        <li class="caps-admin-link">
+            <?php
+                echo $this->Html->link(
+                    '✎&nbsp;Modifica',
+                    ['action' => 'edit', $group['id']],
+                    ['escape' => false]
+                );
+            ?>
+        </li>
+        <li class="">
+            <?php
+                echo $this->Form->postLink(
+                    '✗&nbsp;Elimina',
+                    ['action' => 'delete', $group['id']],
+                    ['escape' => false,
+                     'class' => 'action reject',
+                     'confirm' => __('Sei sicuro di voler cancellare questo gruppo?')
+                    ]
+                );
+            ?>
+        </li>
+    </ul>
+</nav>
 
 <h2><?php echo $group['name']; ?></h2>
 

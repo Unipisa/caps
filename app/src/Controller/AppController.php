@@ -52,16 +52,11 @@ class AppController extends Controller
         $this->loadComponent('Auth', [
           'authenticate' => [
             'Unipi' => Configure::read('UnipiAuthenticate') ] ]);
-        // $this->loadComponent('Authentication.Authentication');
 
-        /*
-         * Enable the following component for recommended CakePHP security settings.
-         * see https://book.cakephp.org/3.0/en/controllers/components/security.html
-         */
-        //$this->loadComponent('Security');
+        $this->user = $this->Auth->user();
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('Caps', Configure::read('Caps'));
-        $this->set('owner', $this->Auth->user());
+        $this->set('owner', $this->user);
     }
 }

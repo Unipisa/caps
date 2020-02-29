@@ -14,7 +14,7 @@
                 echo $this->Html->link(
                     '✎&nbsp;Modifica',
                     ['action' => 'edit', $exam['id']],
-                    ['escape' => false] // non so a cosa serve
+                    ['escape' => false]
                 );
             ?>
         </li>
