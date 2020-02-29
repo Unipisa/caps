@@ -76,7 +76,7 @@ class AddExtendedInfoToProposals extends AbstractMigration
                     if ($compulsory_exam['exam_id'] == $ce['exam_id']) {
                         // Found a match! save it in the database and remove this constraint; we also remove the year
                         // chosen for the exam in this case, it might have been guessed incorrectly before.
-                        $this->myFetchAll('update chosen_exams set compulsory_exam_id = :ceid, chosen_year = :year where id = :id',
+                        $this->myExecute('update chosen_exams set compulsory_exam_id = :ceid, chosen_year = :year where id = :id',
                             [ 'ceid' => $compulsory_exam['id'], 'year' => $compulsory_exam['year'], 'id' => $ce['id'] ]);
                         unset($compulsory_exams[$kc]);
                         unset($chosen_exams[$k]);
@@ -94,7 +94,7 @@ class AddExtendedInfoToProposals extends AbstractMigration
                         if ($cge['exam_id'] == $ce['exam_id']) {
                             // Found a match! save it in the database and remove this constraint; we also remove the year
                             // chosen for the exam in this case, it might have been guessed incorrectly before.
-                            $this->myFetchAll('update chosen_exams set compulsory_group_id = :cgid, chosen_year = :year where id = :id',
+                            $this->myExecute('update chosen_exams set compulsory_group_id = :cgid, chosen_year = :year where id = :id',
                                 [ 'cgid' => $compulsory_group['id'], 'year' => $compulsory_group['year'], 'id' => $ce['id'] ]);
                             unset($compulsory_groups[$kc]);
                             unset($chosen_exams[$k]);
@@ -114,7 +114,7 @@ class AddExtendedInfoToProposals extends AbstractMigration
             foreach ($free_choice_exams as $kc => $fce) {
                 if (count($chosen_exams) > 0 ) {
                     $ce = array_pop($chosen_exams);
-                    $this->myFetchAll('update chosen_exams set free_choice_exam_id = :fceid, chosen_year = :year where id = :id',
+                    $this->myExecute('update chosen_exams set free_choice_exam_id = :fceid, chosen_year = :year where id = :id',
                         [ 'fceid' => $fce['id'], 'year' => $fce['year'], 'id' => $ce['id'] ]);
                     unset($free_choice_exams[$kc]);
                 }
@@ -147,6 +147,15 @@ class AddExtendedInfoToProposals extends AbstractMigration
         $stmt->execute($params);
 
         return $stmt->fetchAll();
+    }
+
+    private function myExecute($sql, $params) {
+        $conn = $this->getAdapter()->getConnection();
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt;
     }
 
     // Build a mapping between the values of the given key in the array data, and the position
