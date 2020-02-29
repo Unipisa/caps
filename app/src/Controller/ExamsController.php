@@ -59,8 +59,6 @@ class ExamsController extends AppController {
                 $result = $this->Exams->saveMany($exams);
                 if ($result) {
                     $this->Flash->success('Inseriti ' . count($result) . ' esami.');
-                    return $this->redirect([ 'action' => 'index']);
-                    // ok! redirect?
                 } else {
                     // collect error messages
                     foreach ($exams as $exam) {
@@ -74,6 +72,7 @@ class ExamsController extends AppController {
                     // debug($exams);
                     // debug($result);
                 }
+                return $this->redirect([ 'action' => 'index']);
             }
 
             if ($this->request->getData('delete')) {

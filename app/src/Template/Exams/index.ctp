@@ -97,7 +97,7 @@ echo $this->Form->end();
         <select name="csv_separator">
             <option value=",">, virgola</option>
             <option value=";">; punto e virgola</option>
-            <option value="\t">tabulazione</option>
+            <option value="&#9;">tabulazione</option>
             <option value=":">: due punti</option>
         </select>
         intestazioni: <select name="csv_headers">
