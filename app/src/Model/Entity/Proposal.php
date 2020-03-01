@@ -30,6 +30,7 @@ class Proposal extends Entity
         'approved' => true,
         'submitted' => true,
         'frozen' => true,
+        'state' => true,
         'user_id' => true, // TODO: Forse questo campo dovrebbe non essere qui?
         'modified' => true,
         'curriculum_id' => true,

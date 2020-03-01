@@ -132,8 +132,8 @@ function preparePreview() {
     $("#csv_preview_table").html(html);
 }
 
-function readSingleFile(evt) {
-    var f = evt.target.files[0];
+function csv_upload_file(f) {
+//    var f = evt.target.files[0];
     if (f) {
     var r = new FileReader();
     r.onload = function(e) {
@@ -144,14 +144,14 @@ function readSingleFile(evt) {
     } else {
         alert("Failed to load file");
     }
-    r.readAsText(f);f
+    r.readAsText(f);
 }
 
 function csvSubmit() {
     var payload = csv_data.map(function(row){
         var obj = {};
         for (var i=0;i<csv_upload_fields.length;i++){
-            obj[csv_upload_fields[i]] = row[csv_column_map[i]];
+            obj[csv_upload_fields_db[i]] = row[csv_column_map[i]];
         }
         return obj;
     })
@@ -199,7 +199,12 @@ function csvSubmit_form_variant() {
 }
 
 $("document").ready(function(){
-    $("#csv_file_input").change(readSingleFile);
+    $("#csv_file_input").change(function (evt) {
+        csv_upload_file(evt.target.files[0]);
+    });
+    $("#csv_file_reload").click(function (evt) {
+        csv_upload_file($("#csv_file_input").files[0]);
+    });
     $("select[name='csv_separator']").change(function() {
         csv_column_separator = $(this).val();
         preparePreview();

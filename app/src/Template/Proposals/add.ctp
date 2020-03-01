@@ -33,7 +33,8 @@ echo $this->Form->create('Proposal');
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
 <?php
-echo $this->Form->submit('Chiudi Piano di Studio');
+echo $this->Form->submit('Chiudi Piano di Studio', [ 'name' => 'action-close', 'class' => 'submit-button' ]);
+echo $this->Form->submit('Salva bozza', [ 'name' => 'action-save' ]);
 echo $this->Form->end();
 ?>
 </div>

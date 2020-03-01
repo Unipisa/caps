@@ -1,8 +1,10 @@
-<h2>Piani di studio di <?php echo $user['name']; ?></h2>
+<h2>Piani di studio di <?php echo $user_entry['name']; ?></h2>
 
 <table class='caps-todo'>
   <tr>
+    <th>Corso di Laurea</th>
     <th>Curriculum</th>
+    <th>Anno Accademico</th>
     <th>Ultima modifica</th>
     <th>Stato</th>
     <th>Azioni</th>
@@ -16,39 +18,69 @@
     $num_proposals++;
 
     // Compute the status
-    if ($proposal['approved']) {
-      $status = 'Approvato ✓';
-    }
-    else if ($proposal['frozen']) {
-      $status = 'Archiviato';
-    }
-    else if ($proposal['submitted']) {
-      $status = 'Inviato';
-    }
-    else {
-      $status = 'Aperto';
-    }
-
+      switch ($proposal['state']) {
+          case 'draft':
+              $status = '✏ Bozza';
+              break;
+          case 'submitted':
+              $status = '✉ Sottomesso';
+              break;
+          case 'approved':
+              $status = "✓ Approvato";
+              break;
+          case 'rejected':
+              $status = '✗ Rigettato';
+              break;
+      }
     ?>
       <tr>
-       <td><?php echo $proposal['curriculum']['name']; ?>
-       </td>
+       <td><?php echo $proposal['curriculum']['degree']['name']; ?></td>
+       <td><?php echo $proposal['curriculum']['name']; ?></td>
+       <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
        <td><?php echo $proposal['modified']; ?></td>
        <td><?php echo $status; ?></td>
        <td>
-         <?php
-           if (!$proposal['submitted'] && !$proposal['frozen'] && !$proposal['approved']) {
-             echo $this->Html->link('Modifica', [
-               'controller' => 'proposals',
-               'action' => 'add',
-               $proposal['id'] ]);
-           }
-           else {
-             echo $this->Html->link('Visualizza', [
-               'controller' => 'proposals',
-               'action' => 'view',
-               $proposal['id'] ]);
-           }
+           <?php
+           switch ($proposal['state']) {
+               case "draft":
+                   echo $this->Html->link('Modifica', [
+                       'controller' => 'proposals',
+                       'action' => 'add',
+                       $proposal['id'] ]);
+                   echo " — ";
+                   echo $this->Html->link('Anteprima', [
+                   'controller' => 'proposals',
+                   'action' => 'view',
+                   $proposal['id'] ]);
+                   break;
+               case "submitted":
+               case "approved":
+               case "rejected":
+                   echo $this->Html->link('Visualizza', [
+                       'controller' => 'proposals',
+                       'action' => 'view',
+                       $proposal['id'] ]);
+         }
+
+         echo " — ";
+
+         if ($proposal['state'] != 'draft') {
+             echo $this->Html->link('Crea una copia', [
+                'controller' => 'proposals',
+                 'action' => 'duplicate',
+                 $proposal['id']
+             ]);
+         }
+         else {
+             echo $this->Html->link('Elimina', [
+                 'controller' => 'proposals',
+                 'action' => 'delete',
+                 $proposal['id']
+             ], [
+                 'confirm' => __('Sei sicuro di voler cancellare il piano?')
+             ]);
+         }
+
          ?>
        </td>
       </tr>
@@ -63,10 +95,10 @@
 }
 ?>
 
-<?php if ($owner['id'] == $user['id']): ?>
+<?php if ($owner['id'] == $user_entry['id']): ?>
   <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
        e non se qualcuno sta visualizzando il profile come amministratore. //-->
-  <div class="caps-admin-add">
+  <div class="caps-admin-actions">
     <ul>
       <li>
         <?php echo $this->Html->link('Nuovo piano di studi', [

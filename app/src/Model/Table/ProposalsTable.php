@@ -48,8 +48,13 @@ class ProposalsTable extends Table
             'foreignKey' => 'curriculum_id'
         ]);
 
-        $this->hasMany('ChosenExams')->setProperty('chosen_exams');
-        $this->hasMany('ChosenFreeChoiceExams')->setProperty('chosen_free_choice_exams');
+        $this->hasMany('ChosenExams', [
+            'dependent' => true
+        ])->setProperty('chosen_exams');
+
+        $this->hasMany('ChosenFreeChoiceExams', [
+            'dependent' => true
+        ])->setProperty('chosen_free_choice_exams');
     }
 
     /**
@@ -65,16 +70,7 @@ class ProposalsTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->boolean('approved')
-            ->allowEmptyString('approved');
-
-        $validator
-            ->boolean('submitted')
-            ->allowEmptyString('submitted');
-
-        $validator
-            ->boolean('frozen')
-            ->allowEmptyString('frozen');
+            ->inList('state', ['draft', 'submitted', 'approved', 'rejected']);
 
         return $validator;
     }

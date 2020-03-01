@@ -1,5 +1,15 @@
+form div {
+    padding: 0;
+}
+
+form .submit input[type=submit] {
+    padding: 8px 12px 8px 12px;
+    font-weight: bold;
+}
+
 ul, li {
     margin: 0;
+    padding: 0 0 0.5em 0;
 }
 
 select {
@@ -38,7 +48,7 @@ table {
     height: 60px;
     padding: 0 0 0 70px;
     background-image: url("img/cherubino_white.png"), url("img/logo_white.png");
-    background-position: 0 0, right bottom;
+    background-position: 0 0, right center;
 }
 
 div .disclaimer {
@@ -73,17 +83,17 @@ select#academicYearSelect {
     display: none;
 }
 
-.proposalsFilterForm select {
+.filterForm select {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm input {
+.filterForm input {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm .input {
+.filterForm .input {
     clear: none;
     width: auto;
     display: inline-block;
@@ -205,6 +215,7 @@ select#academicYearSelect {
     text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
 }
 
+.green,
 .planActions .accept,
 .actions .accept {
     color: #fff;
@@ -216,47 +227,52 @@ select#academicYearSelect {
     border-color: #25691a;
 }
 
+.green:hover,
 .planActions .accept:hover,
 .actions .accept:hover {
     background: #5BA150;
     border-color: #25691a;
 }
 
+.red,
 .planActions .reject,
 .actions .reject {
-    color: #fff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
-    background: #c43c35;
-    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35));
-    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: linear-gradient(top, #ee5f5b, #c43c35);
-    border-color: #7f1711;
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+    background: #c43c35 !important;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35)) !important;
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: linear-gradient(top, #ee5f5b, #c43c35) !important;
+    border-color: #7f1711 !important;
 }
 
+.red:hover,
 .planActions .reject:hover,
 .actions .reject:hover {
-    background: #c43c35;
-    border-color: #7f1711;
+    background: #c43c35 !important;
+    border-color: #7f1711 !important;
 }
 
+.yellow,
 .planActions .back {
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	background: #ffcc00;
-	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800));
-	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -o-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: linear-gradient(top, #ffcc00, #E6B800);
-    border-color: #a68500;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+	background: #ffcc00 !important;
+	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800)) !important;
+	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -o-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: linear-gradient(top, #ffcc00, #E6B800) !important;
+    border-color: #a68500 !important;
 }
 
+.yellow:hover,
 .planActions .back:hover {
-	background: #ffcc00;
-    border-color: #a68500;
+	background: #ffcc00 !important;
+    border-color: #a68500 !important;
 }
 
 .bureaucracy {
@@ -395,13 +411,13 @@ select#academicYearSelect {
     border-color: #a68500;
 }
 
-.caps-admin-add ul {
+.caps-admin-actions ul {
     width: 100%;
     list-style-type: none;
     margin-top: 30px;
 }
 
-.caps-admin-add ul li a {
+.caps-admin-actions ul li a {
     color: #fff;
     width: 100%;
     display: block;
@@ -419,7 +435,7 @@ select#academicYearSelect {
     text-decoration: none;
 }
 
-.caps-admin-add ul li a:hover {
+.caps-admin-actions ul li a:hover {
     background: #5BA150;
     border-color: #25691a;
 }
