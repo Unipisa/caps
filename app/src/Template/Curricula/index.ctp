@@ -65,7 +65,7 @@ echo $this->Form->end();
         </li>
         <li>
             <div class="submit" style="display:inline">
-                <input type="submit" name="clone" style="width:70%" value="Duplica i curricula selezionati"/>
+                <input class="yellow" type="submit" name="clone" style="width:70%" value="Duplica i curricula selezionati"/>
             </div>
             <div class="input text" style="display:inline">
                 <label for="anno" style="display:inline">Anno</label>
@@ -73,7 +73,7 @@ echo $this->Form->end();
             </div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i curricula selezionati?')" value="Elimina i curricula selezionati"/></div>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i curricula selezionati?')" value="Elimina i curricula selezionati"/></div>
         </li>
     </ul>
 </div>

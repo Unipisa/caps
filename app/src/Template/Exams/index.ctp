@@ -78,10 +78,10 @@ echo $this->Form->end();
             ?>
         </li>
         <li>
-            <a onclick='$("#caps-admin-actions-csv").toggle()'>Aggiungi esami da file CSV</a>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere gli esami selezionati?')" value="Elimina gli esami selezionati"/></div>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere gli esami selezionati?')" value="Elimina gli esami selezionati"/></div>
+            <a class="yellow" onclick='$("#caps-admin-actions-csv").toggle()'>Aggiungi esami da file CSV</a>
         </li>
     </ul>
 </div>

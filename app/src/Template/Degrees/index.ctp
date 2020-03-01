@@ -40,7 +40,7 @@
             ?>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')" value="Elimina i corsi selezionati"/></div>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')" value="Elimina i corsi selezionati"/></div>
         </li>
     </ul>
 </div>

@@ -36,7 +36,7 @@
             ?>
         </li>
         <li>
-            <div class="submit"><input type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i gruppi selezionati?')" value="Elimina i gruppi selezionati"/></div>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i gruppi selezionati?')" value="Elimina i gruppi selezionati"/></div>
         </li>
     </ul>
 </div>
