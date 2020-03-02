@@ -1,5 +1,4 @@
-<?php if ($proposal != null) {
-    ?>
+<?php if ($proposal != null): ?>
       <script type="text/javascript">
         var proposal = <?php echo json_encode($proposal); ?>;
 				var curriculumURL = "<?php echo $this->Url->build(
@@ -15,8 +14,7 @@
                     [ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json']);
                 ?>";
       </script>
-    <?php
-}?>
+<?php endif; ?>
 <?php echo $this->Html->script('proposals/add.js'); ?>
 
 <h2>Nuovo piano di studio
