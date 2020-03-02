@@ -51,6 +51,13 @@
       </tr>
 </table>
 
+<?php if ($curriculum['notes'] != ""): ?>
+  <h3>Nota</h3>
+    <p>
+      <?php echo $curriculum['notes']; ?>
+    </p>
+<?php endif; ?>
+
 <h3>Esami obbligatori</h3>
 <table class="caps-admin-compulsory-exams">
     <tr>

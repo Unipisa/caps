@@ -24,6 +24,9 @@
     echo $this->Form->control(
         'academic_year'
     );
+    echo $this->Form->control(
+        'notes'
+    );
     echo $this->Form->submit($curriculum->isNew() ? 'Crea' : 'Aggiorna');
     echo $this->Form->end();
 ?>

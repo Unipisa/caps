@@ -28,6 +28,7 @@
 echo $this->Form->create('Proposal');
 ?>
 <div id="curriculum-select"></div>
+<div id="proposalNotes"></div>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
 <?php

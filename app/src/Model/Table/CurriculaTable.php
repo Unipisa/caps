@@ -61,6 +61,10 @@ class CurriculaTable extends Table
             ->maxLength('name', 255)
             ->allowEmptyString('name', false);
 
+        $validator
+            ->scalar('notes')
+            ->allowEmptyString('name', false);
+
         return $validator;
     }
 }

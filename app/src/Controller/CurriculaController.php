@@ -25,7 +25,9 @@ class CurriculaController extends AppController {
 
     public function index () {
         $curricula = $this->Curricula->find('all')
-            ->contain([ 'Degrees']);
+            ->contain([ 'Degrees'])
+            ->order([ 'academic_year' => 'DESC' ]);
+
         $filterForm = new CurriculaFilterForm($curricula);
         $filterData = $this->request->getQuery();
         if (!key_exists('academic_year', $filterData) || !$filterForm->validate($filterData)) {
@@ -42,7 +44,6 @@ class CurriculaController extends AppController {
         $this->set('curricula', $curricula);
         $this->set('_serialize', [ 'curricula' ]);
         $this->set('paginated_curricula', $this->Paginator->paginate($curricula->cleanCopy()));
-
 
         if ($this->request->is(['post', 'put'])) {
             // azioni sulla selezione

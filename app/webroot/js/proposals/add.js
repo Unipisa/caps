@@ -81,8 +81,20 @@ function on_curriculum_selected() {
 
                 $("input[type=submit]").show();
                 updateCounters();
-
                 stop_loading();
+
+                // If there is any note to show to the user, do this now. The note is also kept in display to make sure
+                // that the user does not forgets about it.
+                if (response['notes'] != "") {
+                    $('#proposalNotes').html(response['notes']);
+                    alert(response['notes']);
+                    $('#proposalNotes').slideDown('slow');
+                }
+                else {
+                    $('#proposalNotes').html("");
+                    $('#proposalNotes').hide();
+                }
+
             }).catch((err) => {
                 console.log(err);
                 stop_loading();

@@ -30,7 +30,8 @@ class Curriculum extends Entity
         'compulsory_groups' => true,
         'free_choice_exams' => true,
         'academic_year' => true,
-        'degree_id' => true
+        'degree_id' => true,
+        'notes' => true
     ];
 
     public function tostring() {
