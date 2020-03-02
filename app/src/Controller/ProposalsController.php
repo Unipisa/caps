@@ -270,8 +270,8 @@ class ProposalsController extends AppController {
                     $action = 'save';
                 }
 
-                $data = $this->request->getData()['data'];
-                $cur_id = $this->request->getData()['curriculum_id'];
+                $data = $this->request->getData('data');
+                $cur_id = $this->request->getData('curriculum_id');
 
                 $patch_data = [];
                 if (array_key_exists('ChosenExam', $data)) {
