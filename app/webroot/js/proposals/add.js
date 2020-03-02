@@ -570,8 +570,20 @@ function on_academic_year_selected() {
     $('#curriculum-id').change(on_curriculum_selected);
 }
 
+function on_submit_clicked(e) {
+    if (! confirm(
+            'Una volta sottomesso il piano, non sarà più possibile modificarlo, ' +
+            'nè sottometterne di nuovi fino ad avvenuta approvazione.\n\n' +
+            'Sottomettere definitivamente il piano?')) {
+        e.preventDefault();
+    }
+}
+
 $(document).ready(function () {
     $("input[type=submit]").hide();
+
+    // Setup a confirmation dialog for the submission
+    $('.submit-button').on('click', on_submit_clicked);
 
     start_loading();
 
