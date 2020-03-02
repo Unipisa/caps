@@ -62,7 +62,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
             <?php if (isset($owner)): ?>
                 <ul class='status'>
                     <li>
-                        <?php echo $owner['name']; ?>
+                        <?php
+                          echo $this->Html->link($owner['name'], [ 'controller' => 'users', 'action' => 'login' ]);
+                        ?>
                     </li>
                     <li>
                         <?php
