@@ -262,6 +262,26 @@ class ProposalsController extends AppController {
             }
 
             if ($this->request->is('post')) {
+                // Select the action desired by the user
+                if (array_key_exists('action-close', $this->request->getData())) {
+                    $action = 'close';
+                }
+                else {
+                    $action = 'save';
+                }
+
+                // Before saving, if the action is 'action-close', we need to check if the user has already submitted
+                // other proposals. If that's the case, we throw an error and stop here.
+                if ($action == 'close') {
+                    $previous_proposals = $this->Proposals->find()->contain(['Users'])
+                        ->where(['Users.username' => $username, 'state' => 'submitted'])
+                        ->count();
+                    if ($previous_proposals > 0) {
+                        $this->Flash->error('Non è possibile sottomettere più di un piano alla volta');
+                        return $this->redirect(['controller' => 'users', 'action' => 'view']);
+                    }
+                }
+
                 $data = $this->request->getData()['data'];
                 $cur_id = $this->request->getData()['curriculum_id'];
 
@@ -288,7 +308,7 @@ class ProposalsController extends AppController {
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
-                if (array_key_exists('action-close', $this->request->getData())) {
+                if ($action == 'close') {
                     $proposal['state'] = 'submitted';
                 }
                 else {
