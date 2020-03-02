@@ -14,7 +14,6 @@ class AddNotesToCurricula extends AbstractMigration
     {
         $table = $this->table('curricula');
         $table->addColumn('notes', 'text', [
-            'default' => "",
             'null' => false,
         ]);
         $table->update();

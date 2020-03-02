@@ -85,7 +85,7 @@ function on_curriculum_selected() {
 
                 // If there is any note to show to the user, do this now. The note is also kept in display to make sure
                 // that the user does not forgets about it.
-                if (response['notes'] != "") {
+                if (response['notes'] !== undefined && response['notes'] != "") {
                     $('#proposalNotes').html(response['notes']);
                     alert(response['notes']);
                     $('#proposalNotes').slideDown('slow');
