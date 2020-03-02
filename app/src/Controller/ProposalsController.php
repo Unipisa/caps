@@ -270,21 +270,10 @@ class ProposalsController extends AppController {
                     $action = 'save';
                 }
 
-                // Before saving, if the action is 'action-close', we need to check if the user has already submitted
-                // other proposals. If that's the case, we throw an error and stop here.
-                if ($action == 'close') {
-                    $previous_proposals = $this->Proposals->find()->contain(['Users'])
-                        ->where(['Users.username' => $username, 'state' => 'submitted'])
-                        ->count();
-                    if ($previous_proposals > 0) {
-                        $this->Flash->error('Non è possibile sottomettere più di un piano alla volta');
-                        return $this->redirect(['controller' => 'users', 'action' => 'view']);
-                    }
-                }
-
                 $data = $this->request->getData()['data'];
                 $cur_id = $this->request->getData()['curriculum_id'];
 
+                $patch_data = [];
                 if (array_key_exists('ChosenExam', $data)) {
                     $patch_data['chosen_exams'] = array_filter($data['ChosenExam'], function($e) {
                         return array_key_exists('exam_id', $e);
@@ -297,8 +286,6 @@ class ProposalsController extends AppController {
                 // chosen_free_choice_exams: we need to get rid of it to replace with the new one.
                 $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
                 $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
-                // $old_chosen_exams = $proposal['chosen_exams'];
-                // $old_chosen_free_choice_exams = $proposal['free_choice_chosen_exams'];
 
                 $proposal['chosen_exams'] = [];
                 $proposal['chosen_free_choice_exams'] = [];
@@ -309,7 +296,19 @@ class ProposalsController extends AppController {
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
                 if ($action == 'close') {
-                    $proposal['state'] = 'submitted';
+                    // Before saving, if the action is 'action-close', we need to check if the user has already submitted
+                    // other proposals. If that's the case, we save it as draft and throw an error.
+                    $previous_proposals = $this->Proposals->find()->contain(['Users'])
+                        ->where(['Users.username' => $username, 'state' => 'submitted'])
+                        ->count();
+
+                    if ($previous_proposals > 0) {
+                        $this->Flash->error('Non è possibile sottomettere più di un piano alla volta: il piano è stato salvato come bozza.');
+                        $proposal['state'] = 'draft';
+                    }
+                    else {
+                        $proposal['state'] = 'submitted';
+                    }
                 }
                 else {
                     $proposal['state'] = 'draft';

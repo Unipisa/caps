@@ -62,8 +62,7 @@ class CurriculaTable extends Table
             ->allowEmptyString('name', false);
 
         $validator
-            ->scalar('notes')
-            ->allowEmptyString('name', false);
+            ->naturalNumber('academic_year');
 
         return $validator;
     }
