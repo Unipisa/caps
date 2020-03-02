@@ -413,9 +413,9 @@ function on_curriculum_selected() {
         $("h3 span").each(updateCounter);
 
         if ($(".creditsError").length == 0) {
-            $("input[class=\"submit-button\"]").show();
+            enable_close_action();
         } else {
-            $("input[class=\"submit-button\"]").hide();
+            disable_close_action();
         }
     };
 
@@ -482,6 +482,14 @@ function on_curriculum_selected() {
             }
         });
     };
+
+function enable_close_action() {
+    $("input[class=\"submit-button\"]").prop('disabled', false);
+}
+
+function disable_close_action() {
+    $("input[class=\"submit-button\"]").prop('disabled', true);
+}
 
 function start_loading() {
     loadingCount++;
