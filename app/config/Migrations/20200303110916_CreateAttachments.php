@@ -1,5 +1,6 @@
 <?php
 use Migrations\AbstractMigration;
+use Phinx\Db\Adapter\MysqlAdapter;
 
 class CreateAttachments extends AbstractMigration
 {
@@ -30,7 +31,8 @@ class CreateAttachments extends AbstractMigration
         ]);
         $table->addColumn('data', 'blob', [
             'default' => null,
-            'null' => false
+            'null' => false,
+            'limit' => MysqlAdapter::BLOB_LONG
         ]);
         $table->addColumn('mimetype', 'string', [
             'default' => null,
