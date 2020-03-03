@@ -218,6 +218,7 @@ select#academicYearSelect {
 
 .planActions {
     list-style-type: none;
+    margin-top: 50px;
 }
 
 .planActions li {
