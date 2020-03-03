@@ -28,7 +28,7 @@ class CreateAttachments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('data', 'binary', [
+        $table->addColumn('data', 'blob', [
             'default' => null,
             'null' => false
         ]);
