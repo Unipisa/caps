@@ -235,7 +235,7 @@ function on_curriculum_selected() {
             var year = freeChoiceExam["year"];
 
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
-            var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
+            var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam><option selected disabled>Un esame a scelta</option>";
             for (var j = 0; j < exams.length; j++) {
                 var exam = exams[j];
                 selectHTML += createExamOption(exam);
@@ -316,7 +316,7 @@ function on_curriculum_selected() {
     var addMathematicsExam = function(year, chosen_exam = null) {
         var i = compulsoryExams.length + compulsoryGroups.length + freeChoiceExams.length + lastExamAdded;
 
-        var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame di Matematica a scelta</option>";
+        var selectHTML = "<select name=data[ChosenExam][" + i + "][exam_id] class=exam><option selected disabled>Un esame a scelta</option>";
         for (var j = 0; j < exams.length; j++) {
             var exam = exams[j];
             selectHTML += createExamOption(exam);
@@ -385,7 +385,7 @@ function on_curriculum_selected() {
     };
 
     var addButtons = function () {
-        var buttonsHTML = "<ul class=actions><li><a href=# class=newMathematicsExam>Aggiungi esame di Matematica</li><li><a href=# class=newFreeChoiceExam>Aggiungi esame a scelta libera</a></li></ul>";
+        var buttonsHTML = "<ul class=actions><li><a href=# class=newMathematicsExam>Aggiungi esame</li><li><a href=# class=newFreeChoiceExam>Aggiungi esame a scelta libera</a></li></ul>";
         $("#proposalForm nav").append(buttonsHTML);
 
         $(".newMathematicsExam").click(function (e) {
