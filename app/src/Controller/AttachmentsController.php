@@ -62,7 +62,7 @@ class AttachmentsController extends AppController
                 ]);
             }
 
-            $attachment['data'] = file_get_contents($data['tmp_name']);
+            $attachment['data'] = fopen($data['tmp_name'], 'r');
 
             if ($attachment['data'] == "") {
                 $this->Flash->error('Impossibile caricare un file vuoto');
