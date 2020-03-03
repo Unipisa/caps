@@ -69,6 +69,7 @@ echo $this->Form->end();
         <th>Anno</th>
         <th>Laurea</th>
         <th>Piano di Studio</th>
+        <th>Azioni</th>
     </tr>
 <?php foreach ($proposals as $proposal): ?>
 <?php
@@ -89,21 +90,18 @@ echo $this->Form->end();
         <td class="caps-admin-proposal-name">
             <?php echo $this->Html->link(
                 $proposal['user']['name'],
-                ['action' => 'view', $proposal['id']]);
+                ['controller' => 'users', 'action' => 'view', $proposal['user']['id']]);
             ?></td>
         <td class="caps-admin-proposal-year">
             <?php
-                echo $this->Html->link(
-                    $curriculum['academic_year'],
-                    ['action' => 'view', $proposal['id']]
-                );
+                echo $curriculum['academic_year'];
             ?>
         </td>
         <td class="caps-admin-proposal-degree">
             <?php
                 echo $this->Html->link(
                     $curriculum['degree']['name'],
-                    ['action' => 'view', $proposal['id']]
+                    ['controller' => 'degrees', 'action' => 'view', $curriculum['degree']['id']]
                 );
             ?>
         </td>
@@ -111,8 +109,16 @@ echo $this->Form->end();
             <?php
                 echo $this->Html->link(
                     $curriculum['name'],
-                    ['action' => 'view', $proposal['id']]
+                    ['controller' => 'curricula', 'action' => 'view', $curriculum['id'] ]
                 );
+            ?>
+        </td>
+        <td>
+            <?php
+            echo $this->Html->link(
+                'Visualizza',
+                [ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]
+            );
             ?>
         </td>
     </tr>
