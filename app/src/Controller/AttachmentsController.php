@@ -81,7 +81,8 @@ class AttachmentsController extends AppController
             $proposal = $this->Attachments->Proposals->get($attachment['proposal_id'], [
                 'contain' => 'Users'
             ]);
-            if (!$user['admin'] && $user['id'] != $proposal['user_id']) {
+
+            if (!$this->user['admin'] && $user['id'] != $proposal['user_id']) {
                 throw new ForbiddenException('Impossibile allegare file a questo piano');
             }
 
