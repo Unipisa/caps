@@ -162,6 +162,41 @@
     </div>
 </div>
 
+<div class="attachments">
+  <h3>Allegati</h3>
+    <ul>
+    <?php foreach ($proposal['attachments'] as $att): ?>
+      <li>
+          <?php
+          echo $this->Html->link($att['filename'], [
+              'controller' => 'attachments',
+              'action' => 'view',
+              $att['id']
+          ]);
+          ?> —
+          <?php
+          echo $this->Form->postLink('Elimina', [
+              'controller' => 'attachments',
+              'action' => 'delete',
+              $att['id']
+          ], [
+              'confirm' => 'Cancellare definitivamente l\'allegato?'
+          ]);
+          ?>
+      </li>
+    <?php endforeach ?>
+    </ul>
+    <?php
+        echo $this->Form->create('Attachment', [
+            'url' => [ 'controller' => 'attachments', 'action'=> 'add' ],
+            'type' => 'file'
+        ]);
+        echo $this->Form->file('data');
+        echo $this->Form->hidden('proposal_id', [ 'value' => $proposal['id'] ]);
+        echo $this->Form->submit('Allega nuovo file');
+        echo $this->Form->end();
+    ?>
+</div>
 
 <?php if ($owner['admin']): ?>
     <!-- Toolbar per l'amministratore //-->

@@ -52,6 +52,10 @@ class ProposalsTable extends Table
             'dependent' => true
         ])->setProperty('chosen_exams');
 
+        $this->hasMany('Attachments', [
+            'dependent' => true
+        ]);
+
         $this->hasMany('ChosenFreeChoiceExams', [
             'dependent' => true
         ])->setProperty('chosen_free_choice_exams');
