@@ -77,7 +77,7 @@ $num_proposals = 0;
                <td><?php echo $proposal['curriculum']['degree']['name']; ?></td>
                <td><?php echo $proposal['curriculum']['name']; ?></td>
                <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
-               <td><?php echo $proposal['modified']; ?></td>
+               <td><?php echo $proposal['modified']->i18nformat('dd/MM/yyyy, hh:mm'); ?></td>
                <td><?php echo $status; ?></td>
                <td>
                    <?php
