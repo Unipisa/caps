@@ -77,3 +77,7 @@ table {
 div {
     page-break-inside: avoid;
 }
+
+.attachments {
+    display: none;
+}
