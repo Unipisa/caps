@@ -385,7 +385,11 @@ function on_curriculum_selected() {
     };
 
     var addButtons = function () {
-        var buttonsHTML = "<ul class=actions><li><a href=# class=newMathematicsExam>Aggiungi esame</li><li><a href=# class=newFreeChoiceExam>Aggiungi esame a scelta libera</a></li></ul>";
+        var buttonsHTML = `<ul class="actions">` +
+            `<li><a href="#" class="newMathematicsExam">Aggiungi esame di ${Caps['cds']}</li>` +
+            `<li><a href="#" class="newFreeChoiceExam">Aggiungi esame a scelta libera</a></li>` +
+            "</ul>";
+
         $("#proposalForm nav").append(buttonsHTML);
 
         $(".newMathematicsExam").click(function (e) {
