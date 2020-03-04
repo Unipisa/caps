@@ -60,6 +60,43 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 ?>
             </h1>
             <?php if (isset($owner)): ?>
+                <ul class="topmenu">
+                    <?php if ($owner['admin']): ?>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Piani di studio', [
+                            'controller' => 'proposals',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Aggiornamento dati', [
+                            'controller' => 'curricula',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
+                    <?php else: ?>
+                    <li>
+                        <?php
+                          echo $this->Html->link('I miei piani di studio', [
+                              'controller' => 'users',
+                              'action' => 'view'
+                          ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Nuovo piano', [
+                            'controller' => 'proposals',
+                            'action' => 'add'
+                        ]);
+                        ?>
+                    </li>
+                    <?php endif; ?>
+                </ul>
                 <ul class='status'>
                     <li>
                         <?php
@@ -95,7 +132,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         <div id="footer">
 						<p class="attribution">
 								Caps version <?php if (isset($capsVersion)) { echo $capsVersion; } ?>
-								--
+                            —
             <?php
                 echo $this->Html->link(
                     $this->Html->image('cake.power.gif', array('alt' => isset($cakeDescription) ? $cakeDescription : "", 'border' => '0')),

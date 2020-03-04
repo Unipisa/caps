@@ -320,12 +320,42 @@ select#academicYearSelect {
     background: url("img/nyan.gif");
 }
 
-.status {
+ul.topmenu {
+    margin: 0;
+    margin-top: 20px;
+    width: 48%;
+    clear: none;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+.topmenu li {
     list-style-type: none;
-    margin-right: 0%;
+    display: inline-block;
+    font-size: 120%;
+    padding-right: 16px;
+}
+
+.topmenu li > a {
+    border: 1px solid transparent;
+    padding: 10px;
+}
+
+.topmenu li > a:hover {
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: #2a62bccc;
+}
+
+ul.status {
+    list-style-type: none;
+    margin: 0;
     padding-right: 8px;
     margin-top: 16px;
     text-align: right;
+    clear: none;
+    display: inline-block;
+    width: 48%;
 }
 
 .status li {
