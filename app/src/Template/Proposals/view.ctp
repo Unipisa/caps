@@ -164,7 +164,8 @@
 
 <div class="attachments">
   <h3>Allegati</h3>
-    <ul>
+    <p>
+    <ol>
     <?php foreach ($proposal['attachments'] as $att): ?>
       <li>
           <?php
@@ -180,12 +181,12 @@
               'action' => 'delete',
               $att['id']
           ], [
-              'confirm' => 'Cancellare definitivamente l\'allegato?'
+              'confirm' => 'Cancellare definitivamente l\'allegato?',
           ]);
           ?>
       </li>
     <?php endforeach ?>
-    </ul>
+    </ol>
     <?php
         echo $this->Form->create('Attachment', [
             'url' => [ 'controller' => 'attachments', 'action'=> 'add' ],
@@ -195,7 +196,7 @@
         echo $this->Form->hidden('proposal_id', [ 'value' => $proposal['id'] ]);
         echo $this->Form->submit('Allega nuovo file');
         echo $this->Form->end();
-    ?>
+    ?></p>
 </div>
 
 <?php if ($owner['admin']): ?>

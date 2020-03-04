@@ -299,6 +299,10 @@ select#academicYearSelect {
     border-color: #a68500 !important;
 }
 
+.attachments ol > li {
+    margin-left: 18px;
+}
+
 .bureaucracy {
     display: none;
 }
