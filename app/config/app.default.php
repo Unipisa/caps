@@ -26,6 +26,7 @@ return [
     'Caps' => [
         'cds' => 'Testing',
         'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
+        'timezone' => 'Europe/Rome'
     ],
 
     'UnipiAuthenticate' => [
