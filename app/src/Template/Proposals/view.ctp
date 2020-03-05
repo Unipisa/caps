@@ -102,9 +102,9 @@
         <td><?php echo $code ?></td>
         <td><?php echo $name ?>
         <?php if (count($exam['tags']) > 0): ?>
-            <small>[<strong>
+            <div class="proposal-tag">
                 <?php echo $exam->tagsToString(); ?>
-                </strong>]</small>
+            </div>
         <?php endif; ?>
         </td>
         <td><?php echo $sector ?></td>

@@ -303,6 +303,16 @@ select#academicYearSelect {
     margin-left: 18px;
 }
 
+.proposal-tag {
+    display: inline-block;
+    border-radius: 2px;
+    border: 1px solid black;
+    padding: 1px 4px 1px 4px;
+    font-size: 80%;
+    margin-left: 6px;
+    font-weight: bold;
+}
+
 .bureaucracy {
     display: none;
 }
