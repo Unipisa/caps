@@ -180,16 +180,21 @@
               'action' => 'view',
               $att['id']
           ]);
-          ?> —
-          <?php
-          echo $this->Form->postLink('Elimina', [
-              'controller' => 'attachments',
-              'action' => 'delete',
-              $att['id']
-          ], [
-              'confirm' => 'Cancellare definitivamente l\'allegato?',
-          ]);
           ?>
+          —
+          caricato da: <strong><?php echo $att['user']['name'] ?></strong>
+          <?php if ($owner['user'] == $att['user']['username'] || $owner['admin']): ?>
+              —
+              <?php
+              echo $this->Form->postLink('Elimina', [
+                  'controller' => 'attachments',
+                  'action' => 'delete',
+                  $att['id']
+              ], [
+                  'confirm' => 'Cancellare definitivamente l\'allegato?',
+              ]);
+              ?>
+          <?php endif; ?>
       </li>
     <?php endforeach ?>
     </ol>
