@@ -40,6 +40,7 @@ echo $this->Form->end();
     <tr>
         <th></th>
         <th>Nome</th>
+        <th>Tags</th>
         <th>Codice</th>
         <th>Settore</th>
         <th>Crediti</th>
@@ -56,6 +57,7 @@ echo $this->Form->end();
                 );
             ?>
         </td>
+        <td class="caps-admin-exams-credits"><?php echo $exam->tagsToString(); ?></td>
         <td class="caps-admin-exams-code"><?php echo $exam['code']; ?></td>
         <td class="caps-admin-exams-sector"><?php echo $exam['sector']; ?></td>
         <td class="caps-admin-exams-credits"><?php echo $exam['credits']; ?></td>

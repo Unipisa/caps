@@ -39,6 +39,12 @@ class ExamsTable extends Table
             'targetForeignKey' => 'group_id',
             'joinTable' => 'exams_groups'
         ]);
+
+        $this->belongsToMany('Tags', [
+            'foreignKey' => 'exam_id',
+            'targetForeignKey' => 'tag_id',
+            'joinTable' => 'tags_exams'
+        ]);
     }
 
     /**

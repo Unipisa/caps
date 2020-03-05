@@ -4,15 +4,14 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Exam Entity
+ * Tag Entity
  *
  * @property int $id
  * @property string|null $name
- * @property string|null $code
- * @property string|null $sector
- * @property int|null $credits
+ *
+ * @property \App\Model\Entity\Exam[] $exams
  */
-class Exam extends Entity
+class Tag extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -25,18 +24,6 @@ class Exam extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'code' => true,
-        'sector' => true,
-        'credits' => true,
-        'tags' => true
+        'exams' => true
     ];
-
-    // Get a string representation of the tags
-    public function tagsToString() {
-        return implode(", ",
-            array_map(function ($tag) {
-                return $tag['name'];
-            }, $this['tags'])
-        );
-    }
 }

@@ -100,7 +100,13 @@
     ?>
     <tr>
         <td><?php echo $code ?></td>
-        <td><?php echo $name ?></td>
+        <td><?php echo $name ?>
+        <?php if (count($exam['tags']) > 0): ?>
+            <small>[<strong>
+                <?php echo $exam->tagsToString(); ?>
+                </strong>]</small>
+        <?php endif; ?>
+        </td>
         <td><?php echo $sector ?></td>
         <td><?php echo $chosen_exam['credits']; ?></td>
         <td><?php

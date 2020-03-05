@@ -43,13 +43,17 @@
     <tr>
         <th>Codice</th>
         <td><?php echo $exam['code']; ?></td>
-      </tr>
-      <tr>
+    </tr>
+    <tr>
         <th>Settore</th>
         <td><?php echo $exam['sector']; ?></td>
-      </tr>
-      <tr>
+    </tr>
+    <tr>
         <th>Crediti</th>
         <td><?php echo $exam['credits']; ?></td>
+    </tr>
+    <tr>
+        <th>Tags</th>
+        <td><?php echo $exam->tagsToString(); ?></td>
     </tr>
 </table>

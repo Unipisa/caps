@@ -30,6 +30,7 @@ class ExamsController extends AppController {
 
     public function index () {
         $exams = $this->Exams->find()
+            ->contain([ 'Tags'])
             ->order([ 'Exams.name' => 'asc' ]);
 
         $filterForm = new ExamsFilterForm($exams);
@@ -111,7 +112,9 @@ class ExamsController extends AppController {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $exam = $this->Exams->findById($id)->firstOrFail();
+        $exam = $this->Exams->get($id, [
+            'contain' => 'Tags'
+        ]);
         if (!$exam) {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
@@ -124,7 +127,9 @@ class ExamsController extends AppController {
         }
 
         if ($id) { // edit
-            $exam = $this->Exams->findById($id)->contain([ 'Groups' ])->firstOrFail();
+            $exam = $this->Exams->get($id, [
+                'contain' => [ 'Groups', 'Tags' ]
+            ]);
             if (!$exam) {
                 throw new NotFoundException(__('Errore: esame non esistente.'));
             }
@@ -140,14 +145,35 @@ class ExamsController extends AppController {
 
         if ($this->request->is(['post', 'put'])) {
             $exam = $this->Exams->patchEntity($exam, $this->request->getData());
+
+            // If there are new tags to add, do it
+            foreach (explode(',', $this->request->getData('new-tags')) as $tag) {
+                $tag = trim($tag);
+                if ($tag != "") {
+                    $t = $this->Exams->Tags->newEntity();
+                    $t['name'] = $tag;
+                    $exam['tags'][] = $t;
+                }
+            }
+
             if ($this->Exams->save($exam)) {
                 $this->Flash->success($success_message);
+
+                // If an exam is saved, we may have to cleanup the tags, so that the unused ones get
+                // removed from the database.
+                foreach ($this->Exams->Tags->find('all')->contain([ 'Exams' ]) as $tag) {
+                    if (count($tag['exams']) == 0) {
+                        $this->Exams->Tags->delete($tag);
+                    }
+                }
+
                 return $this->redirect(['action' => $then]);
             }
             $this->Flash->error($failure_message);
         }
 
         $this->set('exam', $exam);
+        $this->set('tags', $this->Exams->Tags->find('list'));
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
