@@ -213,7 +213,6 @@
 <?php if ($owner['admin']): ?>
     <!-- Toolbar per l'amministratore //-->
     <ul class=planActions>
-        <!-- FIXME: simplify this logic -->
         <?php if ($proposal['state'] === 'submitted'): ?>
         <li>
             <?php

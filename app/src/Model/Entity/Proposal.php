@@ -38,4 +38,20 @@ class Proposal extends Entity
         'chosen_exams' => true,
         'chosen_free_choice_exams' => true
     ];
+
+    public function getStateString()
+    {
+        switch ($this->state) {
+            case 'draft':
+                return 'bozza';
+            case 'submitted':
+                return 'sottomesso';
+            case 'approved':
+                return 'approvato';
+            case 'rejected':
+                return 'rigettato';
+            default:
+                return $this->state;
+        }
+    }
 }

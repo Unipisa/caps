@@ -79,12 +79,7 @@ echo $this->Form->end();
         <td class="caps-admin-proposal-id"><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
         <td class="caps-admin-proposal-state">
             <?php echo $this->Html->link(
-                [
-                    'draft' => __('bozza'),
-                    'submitted' => __('da valutare'),
-                    'approved' => __('approvato'),
-                    'rejected' => __('rifiutato')
-                ][$proposal['state']],
+                $proposal->getStateString(),
                 ['action' => 'view', $proposal['id']]);
             ?></td>
         <td class="caps-admin-proposal-name">

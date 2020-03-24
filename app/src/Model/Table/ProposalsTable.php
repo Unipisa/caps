@@ -73,9 +73,6 @@ class ProposalsTable extends Table
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
 
-        $validator
-            ->inList('state', ['draft', 'submitted', 'approved', 'rejected']);
-
         return $validator;
     }
 

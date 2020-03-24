@@ -71,6 +71,9 @@ $num_proposals = 0;
                   case 'rejected':
                       $status = '<span style=\'color: red;\'>✗</span> Rigettato';
                       break;
+                  default:
+                      $status = '<span style=\'color: darkslategray;\'>⚙</span> ' . $proposal['state'];
+                      break;
               }
             ?>
               <tr>
@@ -96,22 +99,26 @@ $num_proposals = 0;
                        case "submitted":
                        case "approved":
                        case "rejected":
+                       default:
                            echo $this->Html->link('Visualizza', [
                                'controller' => 'proposals',
                                'action' => 'view',
                                $proposal['id'] ]);
+
                  }
 
-                 echo " — ";
 
                  if ($proposal['state'] != 'draft') {
+                     echo " — ";
                      echo $this->Html->link('Crea una copia', [
                         'controller' => 'proposals',
                          'action' => 'duplicate',
                          $proposal['id']
                      ]);
                  }
-                 else {
+
+                 if ($proposal['state'] != 'approved' && $proposal['state'] != 'rejected' && $proposal['state'] != 'submitted') {
+                     echo " — ";
                      echo $this->Html->link('Elimina', [
                          'controller' => 'proposals',
                          'action' => 'delete',
