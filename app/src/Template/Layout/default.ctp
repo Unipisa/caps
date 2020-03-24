@@ -78,6 +78,14 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                         ]);
                         ?>
                     </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Impostazioni', [
+                            'controller' => 'settings',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
                     <?php else: ?>
                     <li>
                         <?php
