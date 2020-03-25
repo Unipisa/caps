@@ -15,7 +15,7 @@ class AddStateToProposals extends AbstractMigration
         $table = $this->table('proposals');
         $table->addColumn('state', 'string', [
             'default' => '',
-            'limit' => 15,
+            'limit' => 32,
             'null' => false,
         ]);
         $table->update();
