@@ -14,22 +14,6 @@ use Cake\Http\Exception\ForbiddenException;
  */
 class SettingsController extends AppController
 {
-    // Here is a list of the fields which are expected to be present in the database.
-    // If they are not, we automatically create the relevant fields in the form when
-    // the user navigates there.
-    //
-    // The value specified here is the default value proposed in case there is nothing
-    // set in the database. Please note that if the code queries the Settings before
-    // this page is accessed and saved, then a null value will be returned, instead of
-    // this default.
-    //
-    // Additional fields are still displayed and shown to the user, for compatibility.
-    private $required_fields = [
-        [ 'field' => 'user-instructions', 'value' => '', 'fieldtype' => 'textarea' ],
-        [ 'field' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
-        [ 'field' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
-    ];
-
     /**
      * Index method
      *
@@ -52,17 +36,8 @@ class SettingsController extends AppController
             }
         }
 
-        $settings = $this->Settings->find('all')->toArray();
-        $settings_keys = array_map(function ($s) { return $s['field']; }, $settings);
-
-        foreach ($this->required_fields as $field) {
-            if (! in_array($field['field'], $settings_keys)) {
-                $newsetting = $this->Settings->newEntity($field);
-                $this->Settings->save($newsetting);
-                $settings[] = $newsetting;
-            }
-        }
-
-        $this->set(compact('settings'));
+        // This cannot be called settings because that's already used by AppController.
+        $settings_data = $this->Settings->find('all');
+        $this->set(compact('settings_data'));
     }
 }

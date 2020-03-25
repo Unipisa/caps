@@ -32,7 +32,10 @@ use App\Application;
  */
 class AppController extends Controller
 {
-    private $settingsInstance = null;
+    // Reference to the settingsTable, which is cached in case the user requests some configuration keys. In this way,
+    // we make sure that subsequent requests for configuration keys will be handled by this cache instead of triggering
+    // a new query to the database.
+    private $settingsTable = null;
 
     /**
      * Initialization hook method.
@@ -61,32 +64,27 @@ class AppController extends Controller
         $this->user = $this->Auth->user();
 
         $this->set('capsVersion', Application::getVersion());
-        $this->set('Caps', Configure::read('Caps'));
         $this->set('owner', $this->user);
+
+        // NOTE: In principle we may load the configuration only when needed,
+        // to avoid a useles query. This does not appear to hurt performance
+        // in any meaningful way, though.
+        $this->set('settings', $this->getSettings());
+    }
+
+    private function loadSettingsTable() {
+        if ($this->settingsTable == null) {
+            $this->settingsTable = TableRegistry::getTableLocator()->get('Settings');
+        }
     }
 
     public function getSettings() {
-        if ($this->settingsInstance == null) {
-            $this->settingsInstance = [];
-
-            // Load the key / value pairs from the settings table
-            $settings_table = TableRegistry::getTableLocator()->get('Settings');
-            foreach ($settings_table->find() as $s) {
-                $this->settingsInstance[$s->field] = $s->value;
-            }
-        }
-
-        return $this->settingsInstance;
+        $this->loadSettingsTable();
+        return $this->settingsTable->getSettings();
     }
 
     public function getSetting($field, $default = null) {
-        $settings = $this->getSettings();
-
-        if (array_key_exists($field, $settings)) {
-            return $settings[$field];
-        }
-        else {
-            return $default;
-        }
+        $this->loadSettingsTable();
+        return $this->settingsTable->getSetting($field, $default);
     }
 }

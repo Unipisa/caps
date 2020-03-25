@@ -51,7 +51,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     echo $this->Html->link(
                         'Compilazione Assistita<br/>'
 												.'Piani di Studio<br/>'
-												. $Caps['cds'],
+												. $settings['cds'],
                         '/',
                         array(
                             'escape' => false
@@ -128,9 +128,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 </ul>
             <?php endif; ?>
         </div>
-	<?php if ($Caps['disclaimer']) {?>
+	<?php if ($settings['disclaimer'] != null) {?>
 		<div class="disclaimer">
-		<?php echo $Caps['disclaimer']; ?>
+		<?php echo $settings['disclaimer']; ?>
 		</div>
 	<?php } ?>
 		<div id="content">

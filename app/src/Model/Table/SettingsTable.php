@@ -20,6 +20,26 @@ use Cake\Validation\Validator;
  */
 class SettingsTable extends Table
 {
+    // Here is a list of the fields which are expected to be present in the database.
+    // If they are not, we automatically create the relevant fields in the form when
+    // the table is loaded.
+    //
+    // The value specified here is the default value proposed in case there is nothing
+    // set in the database. Please note that if the code queries the Settings before
+    // this page is accessed and saved, then a null value will be returned, instead of
+    // this default.
+    //
+    // Additional fields are still displayed and shown to the user, for compatibility.
+    private $required_fields = [
+        [ 'field' => 'user-instructions', 'value' => '', 'fieldtype' => 'textarea' ],
+        [ 'field' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'cds', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ]
+    ];
+
+    private $settingsInstance = null;
+
     /**
      * Initialize method
      *
@@ -33,6 +53,55 @@ class SettingsTable extends Table
         $this->setTable('settings');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
+        $this->initData();
+    }
+
+    public function getSettings() {
+        if ($this->settingsInstance == null) {
+            $this->settingsInstance = [];
+
+            // Load the key / value pairs from the settings table
+            foreach ($this->find() as $s) {
+                $this->settingsInstance[$s->field] = $s->value;
+            }
+        }
+
+        return $this->settingsInstance;
+    }
+
+    public function getSetting($field, $default = null) {
+        $settings = $this->getSettings();
+
+        if (array_key_exists($field, $settings)) {
+            return $settings[$field];
+        }
+        else {
+            return $default;
+        }
+    }
+
+    private function initData() {
+        $this->settingsInstance = [];
+        $settings_data = $this->find('all')->toArray();
+
+        foreach ($settings_data as $s) {
+            $this->settingsInstance[$s->field] = $s->value;
+        }
+
+        $settings_keys = array_map(function ($s) {
+                return $s['field'];
+            },
+            $settings_data);
+
+        foreach ($this->required_fields as $field) {
+            if (! in_array($field['field'], $settings_keys)) {
+                $newsetting = $this->newEntity($field);
+                $this->save($newsetting);
+                $settings_data[] = $newsetting;
+                $this->settingsInstance[$newsetting->field] = $newsetting->value;
+            }
+        }
     }
 
     /**

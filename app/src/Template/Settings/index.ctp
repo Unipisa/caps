@@ -7,7 +7,7 @@
 <h2>Impostazioni</h2>
 
 <?php echo $this->Form->create(); ?>
-<?php foreach ($settings as $setting): ?>
+<?php foreach ($settings_data as $setting): ?>
     <?php
         echo $this->Form->control($setting->field, [
             'label' => $setting->field,
