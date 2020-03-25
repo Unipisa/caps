@@ -48,9 +48,9 @@ class SettingsTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->scalar('key')
-            ->maxLength('key', 255)
-            ->allowEmptyString('key');
+            ->scalar('field')
+            ->maxLength('field', 255)
+            ->allowEmptyString('field');
 
         $validator
             ->scalar('value')

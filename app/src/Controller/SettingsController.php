@@ -25,9 +25,9 @@ class SettingsController extends AppController
     //
     // Additional fields are still displayed and shown to the user, for compatibility.
     private $required_fields = [
-        [ 'key' => 'user-instructions', 'value' => '', 'fieldtype' => 'textarea' ],
-        [ 'key' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
-        [ 'key' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'user-instructions', 'value' => '', 'fieldtype' => 'textarea' ],
+        [ 'field' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
     ];
 
     /**
@@ -44,19 +44,19 @@ class SettingsController extends AppController
             // We need to loop over the provided data, and update the relevant fields in the database.
             $data = $this->request->getData();
 
-            foreach ($data as $key => $value) {
+            foreach ($data as $field => $value) {
                 $this->Settings->query()->update()
                     ->set([ 'value' => $value ])
-                    ->where([ 'key' => $key ])
+                    ->where([ 'field' => $field ])
                     ->execute();
             }
         }
 
         $settings = $this->Settings->find('all')->toArray();
-        $settings_keys = array_map(function ($s) { return $s['key']; }, $settings);
+        $settings_keys = array_map(function ($s) { return $s['field']; }, $settings);
 
         foreach ($this->required_fields as $field) {
-            if (! in_array($field['key'], $settings_keys)) {
+            if (! in_array($field['field'], $settings_keys)) {
                 $newsetting = $this->Settings->newEntity($field);
                 $this->Settings->save($newsetting);
                 $settings[] = $newsetting;

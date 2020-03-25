@@ -72,18 +72,18 @@ class AppController extends Controller
             // Load the key / value pairs from the settings table
             $settings_table = TableRegistry::getTableLocator()->get('Settings');
             foreach ($settings_table->find() as $s) {
-                $this->settingsInstance[$s->key] = $s->value;
+                $this->settingsInstance[$s->field] = $s->value;
             }
         }
 
         return $this->settingsInstance;
     }
 
-    public function getSetting($key, $default = null) {
+    public function getSetting($field, $default = null) {
         $settings = $this->getSettings();
 
-        if (array_key_exists($key, $settings)) {
-            return $settings[$key];
+        if (array_key_exists($field, $settings)) {
+            return $settings[$field];
         }
         else {
             return $default;

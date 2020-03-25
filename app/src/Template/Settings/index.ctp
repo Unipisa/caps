@@ -9,8 +9,8 @@
 <?php echo $this->Form->create(); ?>
 <?php foreach ($settings as $setting): ?>
     <?php
-        echo $this->Form->control($setting->key, [
-            'label' => $setting->key,
+        echo $this->Form->control($setting->field, [
+            'label' => $setting->field,
             'value' => $setting->value,
             'type' => $setting->fieldtype
         ]);
