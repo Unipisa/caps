@@ -21,11 +21,6 @@ form .submit input[type=submit]:disabled {
     box-shadow: none;
 }
 
-ul, li {
-    margin: 0;
-    padding: 0 0 0.5em 0;
-}
-
 select {
     padding: 1%;
     vertical-align: 45%;
@@ -63,6 +58,11 @@ table {
     padding: 0 0 0 70px;
     background-image: url("img/cherubino_white.png"), url("img/logo_white.png");
     background-position: 0 0, right center;
+}
+
+#header ul, .caps-admin-navigation ul, .caps-admin-navigation li, .caps-admin-actions li, .caps-admin-actions ul {
+    margin: 0;
+    padding: 0 0 0.5em 0;
 }
 
 div .disclaimer {

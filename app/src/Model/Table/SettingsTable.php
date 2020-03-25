@@ -57,6 +57,11 @@ class SettingsTable extends Table
             ->maxLength('value', 255)
             ->allowEmptyString('value');
 
+        $validator
+            ->scalar('fieldtype')
+            ->maxLength('fieldtype', 255)
+            ->inList('fieldtype', [ 'text', 'textarea' ]);
+
         return $validator;
     }
 }

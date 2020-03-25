@@ -23,6 +23,7 @@ class Setting extends Entity
      */
     protected $_accessible = [
         'key' => true,
-        'value' => true
+        'value' => true,
+        'fieldtype' => true
     ];
 }

@@ -40,6 +40,9 @@ class UsersController extends AppController {
 			if ($id != null && !$this->user['admin'])
 			  throw new  ForbiddenException('Cannot access another user profile');
 
+			$instructions = $this->getSetting('user-instructions');
+			$this->set('instructions', ($instructions != null) ? $instructions : "");
+
 			$proposals = $this->Users->Proposals->find()
 				->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
 				->where([ 'Users.id' => $user_entry['id'] ])

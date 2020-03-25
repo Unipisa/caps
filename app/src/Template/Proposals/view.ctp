@@ -33,19 +33,11 @@
     <h3>Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
 </div>
 
-<?php if($proposal['state'] === 'approved'): ?>
-<div class="success">
-    Il tuo Piano di Studi è stato approvato.
-</div>
-<?php elseif($proposal['state'] === 'submitted'): ?>
+<?php if ($message != ""): ?>
 <div class="notice">
-    Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.
+    <?php echo $message; ?>
 </div>
 <?php endif; ?>
-
-<div class="notice">
-    Se desideri modificarlo manda una mail alla Segreteria Studenti.
-</div>
 
 <?php for ($year = 1; $year <= 3; $year++): ?>
 

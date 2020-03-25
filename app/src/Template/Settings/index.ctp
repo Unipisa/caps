@@ -11,7 +11,8 @@
     <?php
         echo $this->Form->control($setting->key, [
             'label' => $setting->key,
-            'value' => $setting->value
+            'value' => $setting->value,
+            'type' => $setting->fieldtype
         ]);
     ?>
 <?php endforeach; ?>

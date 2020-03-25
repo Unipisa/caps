@@ -152,8 +152,23 @@ class ProposalsController extends AppController {
             throw new ForbiddenException(__(''));
         }
 
+        // Setup the message to show to the user
+        switch ($proposal['state']) {
+            case 'submitted':
+                $message = $this->getSetting('submitted-message',
+                    'Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.');
+                break;
+            case 'approved':
+                $message = $this->getSetting('approved-message',
+                    'Il tuo piano di studi è stato approvato.');
+                break;
+            default:
+                $message = "";
+        }
+
+        $this->set('message', $message);
         $this->set('proposal', $proposal);
-				$this->set('_serialize', [ 'proposal' ]);
+        $this->set('_serialize', [ 'proposal' ]);
     }
 
     public function delete($id) {

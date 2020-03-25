@@ -17,6 +17,8 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use App\Auth;
 use App\Application;
 
@@ -30,6 +32,7 @@ use App\Application;
  */
 class AppController extends Controller
 {
+    private $settingsInstance = null;
 
     /**
      * Initialization hook method.
@@ -51,12 +54,39 @@ class AppController extends Controller
 
         $this->loadComponent('Auth', [
           'authenticate' => [
-            'Unipi' => Configure::read('UnipiAuthenticate') ] ]);
+            'Unipi' => Configure::read('UnipiAuthenticate')
+          ]
+        ]);
 
         $this->user = $this->Auth->user();
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('Caps', Configure::read('Caps'));
         $this->set('owner', $this->user);
+    }
+
+    public function getSettings() {
+        if ($this->settingsInstance == null) {
+            $this->settingsInstance = [];
+
+            // Load the key / value pairs from the settings table
+            $settings_table = TableRegistry::getTableLocator()->get('Settings');
+            foreach ($settings_table->find() as $s) {
+                $this->settingsInstance[$s->key] = $s->value;
+            }
+        }
+
+        return $this->settingsInstance;
+    }
+
+    public function getSetting($key, $default = null) {
+        $settings = $this->getSettings();
+
+        if (array_key_exists($key, $settings)) {
+            return $settings[$key];
+        }
+        else {
+            return $default;
+        }
     }
 }

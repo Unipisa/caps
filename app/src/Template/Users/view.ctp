@@ -1,5 +1,9 @@
 <h2>Piani di studio — <?php echo $user_entry['name']; ?>, matricola <?php echo $user_entry['number']; ?></h2>
 
+<p>
+    <?= $instructions ?>
+</p>
+
 <?php
 // We first organize proposals into a tree structure coherent with the display strategy, i.e.,
 // we want them subdivided by degree, and then further subdivided in drafts and non-drafts
@@ -24,7 +28,6 @@ foreach ($proposals as $p) {
 }
 
 $num_proposals = 0;
-
 ?>
 
 <?php foreach ($degrees as $degree_id => $degree): ?>
