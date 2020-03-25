@@ -64,6 +64,7 @@ class AppController extends Controller
         $this->user = $this->Auth->user();
 
         $this->set('capsVersion', Application::getVersion());
+        $this->set('Caps', Configure::read('Caps'));
         $this->set('owner', $this->user);
 
         // NOTE: In principle we may load the configuration only when needed,
