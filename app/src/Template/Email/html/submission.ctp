@@ -2,6 +2,15 @@
     table, td, tr, th {
         text-align: left;
     }
+    .proposal-tag {
+        display: inline-block;
+        border-radius: 2px;
+        border: 1px solid black;
+        padding: 1px 4px 1px 4px;
+        font-size: 80%;
+        margin-left: 6px;
+        font-weight: bold;
+    }
 </style>
 
 <h3>Piano di studi sottomesso</h3>
