@@ -45,7 +45,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 								echo $this->Html->link(
 										'Compilazione Assistita<br/>'
 										.'Piani di Studio<br/>'
-										. $Caps['cds'],
+										. $settings['cds'],
 										'/',
 										array(
 												'escape' => false
