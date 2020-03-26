@@ -218,10 +218,13 @@ select#academicYearSelect {
 
 .planActions {
     list-style-type: none;
-    margin-top: 50px;
+    padding: 0px;
+    margin: 50px 0px 0px;
 }
 
 .planActions li {
+    margin: 0px;
+    padding: 0px;
     width: 33%;
     display: inline-block;
     text-align: center;
