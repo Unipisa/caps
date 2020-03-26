@@ -49,7 +49,6 @@ class UsersController extends AppController {
 				->order([ 'Proposals.modified' => 'DESC' ]);
 
             $this->set('user_entry', $user_entry);
-			$this->set('owner', $owner);
 			$this->set('proposals', $proposals);
 		}
 

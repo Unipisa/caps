@@ -142,13 +142,11 @@ $num_proposals = 0;
 
 <?php endforeach; ?>
 
-<?php if ($num_proposals == 0) {  ?>
+<?php if ($num_proposals == 0):  ?>
     <p>Al momento non è stato presentato alcun piano di studio.</p>
-<?php
-}
-?>
+<?php endif; ?>
 
-<?php if ($owner['id'] == $user_entry['id']): ?>
+<?php if ($owner['user'] == $user_entry['username']): ?>
   <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
        e non se qualcuno sta visualizzando il profile come amministratore. //-->
   <div class="caps-admin-actions">
