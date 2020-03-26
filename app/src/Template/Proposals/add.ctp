@@ -14,7 +14,7 @@
             [ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json']);
                 ?>";
         var Caps = {
-            'cds': "<?php echo $Caps['cds']; ?>"
+            'cds': "<?php echo $settings['cds']; ?>"
         }
     </script>
 <?php endif; ?>
