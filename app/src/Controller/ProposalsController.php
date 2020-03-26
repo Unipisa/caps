@@ -41,7 +41,8 @@ class ProposalsController extends AppController {
         $email->setTo($this->user['email'])
             ->setEmailFormat('html')
             ->setSubject('Piano di studi sottomesso')
-            ->addCc(explode(',', $this->getSetting('notified-emails')))
+            ->addCc(array_map(function($address) { return trim($address); },
+                explode(',', $this->getSetting('notified-emails'))))
             ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
         $email->viewBuilder()->setTemplate('submission');
         $email->send();
