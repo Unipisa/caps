@@ -1,7 +1,7 @@
 <div class="bureaucracy">
     <div class="heading">
         <img class="left" src="/css/img/cherubino_black.png"/>
-        <h2 class="department">Dipartimento di Matematica — Università di Pisa</h2>
+        <h2 class="department"><?php echo $settings['department'] ?></h2>
         <h2 class="degree"><?php echo $proposal['curriculum']['degree']['name']; ?>
         </h2>
         <h2 class="year"><?php

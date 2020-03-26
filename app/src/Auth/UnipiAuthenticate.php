@@ -48,7 +48,8 @@ class UnipiAuthenticate extends BaseAuthenticate {
             'number' => '000000',
             'admin' => in_array($data['username'], $admin_usernames),
             'surname' => '',
-            'givenname' => ''
+            'givenname' => '',
+            'email' => $data['username'] . '@studenti.unipi.it'
         ];
         foreach($config['fakes'] as $fake) {
             if (is_array($fake)) {
@@ -121,7 +122,8 @@ class UnipiAuthenticate extends BaseAuthenticate {
                 'name' => $m['cn'][0],
                 'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
                 'role' => $role,
-                'admin' => in_array($data['username'], $config['admins'])
+                'admin' => in_array($data['username'], $config['admins']),
+                'email' => $data['username'] . '@studenti.unipi.it'
             );
         }
 

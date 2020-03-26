@@ -35,7 +35,9 @@ class SettingsTable extends Table
         [ 'field' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'cds', 'value' => '', 'fieldtype' => 'text' ],
-        [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ]
+        [ 'field' => 'department', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'notified-emails', 'value' => '', 'fieldtype' => 'text' ]
     ];
 
     private $settingsInstance = null;
@@ -129,7 +131,7 @@ class SettingsTable extends Table
         $validator
             ->scalar('fieldtype')
             ->maxLength('fieldtype', 255)
-            ->inList('fieldtype', [ 'text', 'textarea' ]);
+            ->inList('fieldtype', [ 'text', 'textarea', 'checkbox' ]);
 
         return $validator;
     }

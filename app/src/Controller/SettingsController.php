@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Form\Form;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Mailer\Email;
 
 /**
  * Settings Controller

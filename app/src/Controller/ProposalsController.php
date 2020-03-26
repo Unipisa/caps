@@ -10,6 +10,7 @@ use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use Cake\Log\Log;
 use App\Form\ProposalsFilterForm;
+use Cake\Mailer\Email;
 
 class ProposalsController extends AppController {
 
@@ -24,6 +25,26 @@ class ProposalsController extends AppController {
     public function beforeFilter ($event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
+    }
+
+    private function notifySubmission($id) {
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
+                'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
+                'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
+                'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
+                'Curricula.Degrees' ])
+            ->firstOrFail();
+
+        $email = new Email();
+
+        $email->setTo($this->user['email'])
+            ->setEmailFormat('html')
+            ->setSubject('Piano di studi sottomesso')
+            ->addCc(explode(',', $this->getSetting('notified-emails')))
+            ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
+        $email->viewBuilder()->setTemplate('submission');
+        $email->send();
     }
 
     public function index()
@@ -337,8 +358,10 @@ class ProposalsController extends AppController {
                 $proposal['curriculum_id'] = $cur_id;
 
                 if ($this->Proposals->save($proposal)) {
-                    if ($proposal['state'] == 'submitted')
+                    if ($proposal['state'] == 'submitted') {
+                        $this->notifySubmission($proposal['id']);
                         return $this->redirect(['action' => 'view', $proposal['id']]);
+                    }
                     else
                         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
