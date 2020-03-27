@@ -138,6 +138,10 @@ select#academicYearSelect {
     background-color: rgb(44, 104, 119);
 }
 
+#proposalForm hr.proposal-year {
+     margin-top: 35px;
+ }
+
 #proposalForm ul {
     clear: both;
     padding: 1% 0;

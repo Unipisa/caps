@@ -47,9 +47,9 @@ function on_curriculum_selected() {
             2: 'Secondo anno',
             3: 'Terzo anno'
         };
-        var baseHTML = "<hr>";
+        var baseHTML = "";
         for (i = 1; i <= degree['years']; i++) {
-            baseHTML = baseHTML + "<h3>" + year_title[i] +
+            baseHTML = baseHTML + "<hr class='proposal-year'>-<h3>" + year_title[i] +
                 " <span></span>/60</h3><nav id=\"nav-year-" + i + "\"></nav><hr><ul></ul>";
         }
 
@@ -414,19 +414,29 @@ function on_curriculum_selected() {
     };
 
     var updateCounters = function () {
-        $("h3 span").each(updateCounter);
+        let creditCount = 0;
+        let years = 0;
 
-        if ($(".creditsError").length == 0) {
+        $("h3 span").each(function () {
+            creditCount += updateCounter(this);
+            years += 1;
+        });
+
+        console.log('credits = ' + creditCount);
+        console.log('years = ' + years);
+
+        if (creditCount >= years * 60) {
             enable_close_action();
-        } else {
+        }
+        else {
             disable_close_action();
         }
     };
 
-    var updateCounter = function () {
+    var updateCounter = function (elem) {
         var result = 0;
 
-        $(this).closest("h3").next("nav").next("hr").next("ul").each(function () {
+        $(elem).closest("h3").next("nav").next("hr").next("ul").each(function () {
             $(this).find(".credits").each(function () {
                 var credits = parseInt($(this).val());
                 result += isNaN(credits) ? 0 : credits;
@@ -435,25 +445,28 @@ function on_curriculum_selected() {
 
         // Clean classes, so only one in creditsError or creditsWarning
         // is set at any time.
-        $(this).removeClass("creditsError");
-        $(this).removeClass("creditsWarning");
+        $(elem).removeClass("creditsError");
+        $(elem).removeClass("creditsWarning");
 
         $("#proposalWarning").hide();
 
         if (result < 60) {
-            $(this).addClass("creditsError");
+            $(elem).addClass("creditsError");
         } else if (result > 60) {
-            $(this).addClass("creditsWarning");
+            $(elem).addClass("creditsWarning");
 
             $("#proposalWarning").html(
                 "<strong>Attenzione</strong>: il numero di crediti per anno è "
                 + "superiore a 60. È comunque possibile chiudere il piano "
-                + "di studi, ma si consiglia di ricontrollarlo attentamente "
+                + "di studi se si raggiunge il totale di crediti necessari, "
+                + "ma si consiglia di ricontrollarlo attentamente "
                 + "prima di procedere.");
             $("#proposalWarning").show();
         }
 
-        $(this).html(result);
+        $(elem).html(result);
+
+        return result;
     };
 
     var addDeleteButtons = function () {
