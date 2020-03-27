@@ -417,6 +417,8 @@ function on_curriculum_selected() {
         let creditCount = 0;
         let years = 0;
 
+        $("#proposalWarning").hide();
+
         $("h3 span").each(function () {
             creditCount += updateCounter(this);
             years += 1;
@@ -448,7 +450,6 @@ function on_curriculum_selected() {
         $(elem).removeClass("creditsError");
         $(elem).removeClass("creditsWarning");
 
-        $("#proposalWarning").hide();
 
         if (result < 60) {
             $(elem).addClass("creditsError");
