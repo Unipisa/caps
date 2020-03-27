@@ -424,9 +424,6 @@ function on_curriculum_selected() {
             years += 1;
         });
 
-        console.log('credits = ' + creditCount);
-        console.log('years = ' + years);
-
         if (creditCount >= years * 60) {
             enable_close_action();
         }
