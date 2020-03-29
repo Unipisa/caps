@@ -27,9 +27,6 @@ class Proposal extends Entity
      * @var array
      */
     protected $_accessible = [
-        'approved' => true,
-        'submitted' => true,
-        'frozen' => true,
         'state' => true,
         'user_id' => true, // TODO: Forse questo campo dovrebbe non essere qui?
         'modified' => true,
