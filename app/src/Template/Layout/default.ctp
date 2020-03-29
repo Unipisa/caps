@@ -59,9 +59,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     );
                 ?>
             </h1>
-            <?php if (isset($owner)): ?>
+            <?php if (isset($user)): ?>
                 <ul class="topmenu">
-                    <?php if ($owner['admin']): ?>
+                    <?php if ($user['admin']): ?>
                     <li>
                         <?php
                         echo $this->Html->link('Piani di studio', [
@@ -108,7 +108,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 <ul class='status'>
                     <li>
                         <?php
-                          echo $this->Html->link($owner['name'], [ 'controller' => 'users', 'action' => 'login' ]);
+                          echo $this->Html->link($user['name'], [ 'controller' => 'users', 'action' => 'login' ]);
                         ?>
                     </li>
                     <li>

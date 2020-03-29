@@ -59,7 +59,7 @@ class ProposalsController extends AppController {
           // admin può vedere tutti i proposal
       } else {
           // posso vedere solo i miei proposal
-          $proposals = $proposals->where(['Users.username' => $this->user['user']]);
+          $proposals = $proposals->where(['Users.username' => $this->user['username']]);
       }
 
       $filterForm = new ProposalsFilterForm($proposals);
@@ -170,7 +170,7 @@ class ProposalsController extends AppController {
             throw new NotFoundException('');
         }
 
-        if ($proposal['user']['username'] != $this->user['user'] && !$this->user['admin']) {
+        if ($proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -205,7 +205,7 @@ class ProposalsController extends AppController {
 
         // Check that the user matches, otherwise he/she may not be allowed to see, let alone delete
         // of the given proposal.
-        if ($proposal['user']['username'] != $this->user['user'] && ! $this->user['admin']) {
+        if ($proposal['user']['username'] != $this->user['username'] && ! $this->user['admin']) {
             throw new ForbiddenException('Utente non autorizzato a eliminare questo piano');
         }
 
@@ -237,7 +237,7 @@ class ProposalsController extends AppController {
 
         // Check that the user matches, otherwise he/she may not be allowed to see, let alone make a duplicate
         // of the given proposal.
-        if ($proposal['user']['username'] != $this->user['user'] && ! $this->user['admin']) {
+        if ($proposal['user']['username'] != $this->user['username'] && ! $this->user['admin']) {
             throw new ForbiddenException('Utente non autorizzato a clonare questo piano');
         }
 
@@ -272,10 +272,10 @@ class ProposalsController extends AppController {
     }
 
     public function add ($proposal_id = null) {
-        $username = $this->user['user'];
+        $username = $this->user['username'];
 
         // Find the user in the database matching the one logged in
-        $owner = $this->Proposals->Users->find()->contain([ 'Proposals' ])
+        $user = $this->Proposals->Users->find()->contain([ 'Proposals' ])
             ->where([ 'Users.username' => $username ])
             ->firstOrFail();
 
@@ -285,17 +285,17 @@ class ProposalsController extends AppController {
 						->where([ 'Proposals.id' => $proposal_id ])
 						->firstOrFail();
 
-					// Check if the user is the right owner
-					if ($proposal['user']['username'] != $this->user['user']) {
+					// Check if the user is the right user
+					if ($proposal['user']['username'] != $this->user['username']) {
 						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
 					}
 				}
 				else {
 					$proposal = $this->Proposals->newEntity();
-					$proposal->user = $owner;
+					$proposal->user = $user;
 				}
 
-        if ($owner) {
+        if ($user) {
             if ($proposal['state'] === 'submitted') {
                 return $this->redirect(['action' => 'view', $proposal['id']]);
             }
@@ -382,7 +382,6 @@ class ProposalsController extends AppController {
                 ])
             );
             $this->set('proposal', $proposal);
-            $this->set('owner', $owner);
         } else {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }

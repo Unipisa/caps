@@ -1,4 +1,4 @@
-<?php if ($owner['admin']): ?>
+<?php if ($user['admin']): ?>
 <nav class="caps-admin-navigation">
     <ul>
       <li></li>

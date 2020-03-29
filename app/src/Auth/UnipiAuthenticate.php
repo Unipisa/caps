@@ -13,13 +13,13 @@ use Cake\Log\Log;
 class UnipiAuthenticate extends BaseAuthenticate {
 
     protected $_defaultConfig  = [
-    	'fields' => [
-        	'username' => 'username',
-	        'password' => 'password'
-	    ],
-	    'userModel' => 'Users',
-	    'contain' => null,
-	    'passwordHasher' => 'Default'
+        'fields' => [
+            'username' => 'username',
+            'password' => 'password'
+        ],
+        'userModel' => 'Users',
+        'contain' => null,
+        'passwordHasher' => 'Default'
     ];
 
     public function __construct($registry, $config = NULL) {
@@ -27,7 +27,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
         $ini_filename = APP . DS . ".." . DS . "unipi.ini";
         if (file_exists($ini_filename)) {
             $this->setConfig(parse_ini_file ($ini_filename));
-      }
+        }
     }
 
     public function authenticate(ServerRequest $request, Response $response) {
@@ -37,12 +37,13 @@ class UnipiAuthenticate extends BaseAuthenticate {
 
         $admin_usernames = [];
         if (array_key_exists('admins', $config)) {
-          $admin_usernames = $config['admins'];
+            $admin_usernames = $config['admins'];
         }
+
         // Allow admins to browse as a student.
         $user = [
             'ldap_dn' => '',
-            'user' => $data['username'],
+            'username' => $data['username'],
             'name' => 'Utente Dimostrativo',
             'role' => 'student',
             'number' => '000000',
@@ -51,13 +52,14 @@ class UnipiAuthenticate extends BaseAuthenticate {
             'givenname' => '',
             'email' => $data['username'] . '@studenti.unipi.it'
         ];
+
         foreach($config['fakes'] as $fake) {
             if (is_array($fake)) {
                 // configuration contains user info
                 if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
                     foreach($user as $key => $val) {
                         if (array_key_exists($key, $fake)) {
-                          $user[$key] = $fake[$key];
+                            $user[$key] = $fake[$key];
                         }
                     }
                     return $user;
@@ -65,8 +67,8 @@ class UnipiAuthenticate extends BaseAuthenticate {
             } else {
                 // configuration only contains username
                 if ($data['username'] == $fake && $data['password'] == $fake) {
-                  $user['user'] = $fake;
-                  return $user;
+                    $user['username'] = $fake;
+                    return $user;
                 }
             }
         }
@@ -116,9 +118,9 @@ class UnipiAuthenticate extends BaseAuthenticate {
             // an array of its properties so we can use them after now.
             return array (
                 'ldap_dn' => $m['dn'],
-                'user' => $data['username'],
-				'givenname' => $m['givenname'][0],
-				'surname' => $m['sn'][0],
+                'username' => $data['username'],
+                'givenname' => $m['givenname'][0],
+                'surname' => $m['sn'][0],
                 'name' => $m['cn'][0],
                 'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
                 'role' => $role,

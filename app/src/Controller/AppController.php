@@ -61,11 +61,22 @@ class AppController extends Controller
           ]
         ]);
 
-        $this->user = $this->Auth->user();
+        $authuser = $this->Auth->user();
+
+        // Find the user in the database and set it as the user field in the controller
+        if ($authuser != null) {
+            $this->user = TableRegistry::getTableLocator()->get('Users')
+                ->find()
+                ->where(['username' => $authuser['username']])
+                ->firstOrFail();
+        }
+        else {
+            $this->user = null;
+        }
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('Caps', Configure::read('Caps'));
-        $this->set('owner', $this->user);
+        $this->set('user', $this->user);
 
         // NOTE: In principle we may load the configuration only when needed,
         // to avoid a useles query. This does not appear to hurt performance

@@ -30,7 +30,9 @@ class User extends Entity
         'number' => true,
         'proposal' => true,
         'givenname' => true,
-        'surname' => true
+        'surname' => true,
+        'email' => true,
+        'admin' => true
     ];
 
     public function getIdentifier()

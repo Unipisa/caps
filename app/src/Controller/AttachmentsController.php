@@ -27,8 +27,8 @@ class AttachmentsController extends AppController
             'contain' => ['Users', 'Proposals']
         ]);
 
-        // Check if the user is the owner of the file, or is an administrator
-        if (!$this->user['admin'] && $attachment['user']['username'] != $this->user['user'])
+        // Check if the user is the user of the file, or is an administrator
+        if (!$this->user['admin'] && $attachment['user']['username'] != $this->user['username'])
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
 
         return $this->response
@@ -47,7 +47,7 @@ class AttachmentsController extends AppController
         $attachment = $this->Attachments->newEntity();
 
         if ($this->request->is('post')) {
-            $user = $this->Attachments->Users->find()->where([ 'username' => $this->user['user'] ])->firstOrFail();
+            $user = $this->Attachments->Users->find()->where([ 'username' => $this->user['username'] ])->firstOrFail();
             $attachment['user_id'] = $user['id'];
             $attachment['proposal_id'] = $this->request->getData('proposal_id');
 
@@ -121,8 +121,8 @@ class AttachmentsController extends AppController
         $proposal_id = $attachment['proposal_id'];
         $user = $attachment['user'];
 
-        // Check if the user is the owner of the file, or is an administrator
-        if (!$this->user['admin'] && $user['username'] != $this->user['user'])
+        // Check if the user is the user of the file, or is an administrator
+        if (!$this->user['admin'] && $user['username'] != $this->user['username'])
             throw new ForbiddenException('Impossibile cancellare il file selezionato');
 
         if ($this->Attachments->delete($attachment)) {

@@ -146,7 +146,7 @@ $num_proposals = 0;
     <p>Al momento non è stato presentato alcun piano di studio.</p>
 <?php endif; ?>
 
-<?php if ($owner['user'] == $user_entry['username']): ?>
+<?php if ($user['username'] == $user_entry['username']): ?>
   <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
        e non se qualcuno sta visualizzando il profile come amministratore. //-->
   <div class="caps-admin-actions">

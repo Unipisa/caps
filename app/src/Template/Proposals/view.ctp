@@ -175,7 +175,7 @@
           ?>
           —
           caricato da: <strong><?php echo $att['user']['name'] ?></strong>
-          <?php if ($owner['user'] == $att['user']['username'] || $owner['admin']): ?>
+          <?php if ($user['username'] == $att['user']['username'] || $user['admin']): ?>
               —
               <?php
               echo $this->Form->postLink('Elimina', [
@@ -202,7 +202,7 @@
     ?></p>
 </div>
 
-<?php if ($owner['admin']): ?>
+<?php if ($user['admin']): ?>
     <!-- Toolbar per l'amministratore //-->
     <ul class=planActions>
         <?php if ($proposal['state'] === 'submitted'): ?>
