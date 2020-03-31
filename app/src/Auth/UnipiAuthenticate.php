@@ -50,7 +50,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
             'admin' => in_array($data['username'], $admin_usernames),
             'surname' => '',
             'givenname' => '',
-            'email' => $data['username'] . '@studenti.unipi.it'
+            'email' => 'unknown@nodomain.no'
         ];
 
         foreach($config['fakes'] as $fake) {
@@ -125,7 +125,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
                 'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
                 'role' => $role,
                 'admin' => in_array($data['username'], $config['admins']),
-                'email' => $data['username'] . '@studenti.unipi.it'
+                'email' => $m['mail'][0]
             );
         }
 
