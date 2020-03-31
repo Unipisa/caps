@@ -50,6 +50,8 @@ $num_proposals = 0;
             <th>Curriculum</th>
             <th>Anno di immatricolazione</th>
             <th>Ultima modifica</th>
+            <th>Data di sottomissione</th>
+            <th>Data di approvazione</th>
             <th>Stato</th>
             <th>Azioni</th>
           </tr>
@@ -84,6 +86,13 @@ $num_proposals = 0;
                <td><?php echo $proposal['curriculum']['name']; ?></td>
                <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
                <td><?php echo $proposal['modified']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?></td>
+               <td><?php echo ($proposal['submitted_date'] != null) ?
+                       $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non sottomesso';
+               ?></td>
+               <td><?php
+                   echo ($proposal['approved_date'] != null) ?
+                        $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non approvato';
+               ?></td>
                <td><?php echo $status; ?></td>
                <td>
                    <?php

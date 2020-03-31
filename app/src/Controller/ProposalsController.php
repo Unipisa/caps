@@ -11,6 +11,8 @@ use App\Caps\Utils;
 use Cake\Log\Log;
 use App\Form\ProposalsFilterForm;
 use Cake\Mailer\Email;
+use Cake\I18n\Time;
+use Cake\Core\Configure;
 
 class ProposalsController extends AppController {
 
@@ -45,6 +47,27 @@ class ProposalsController extends AppController {
                 explode(',', $this->getSetting('notified-emails'))))
             ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
         $email->viewBuilder()->setTemplate('submission');
+        $email->send();
+    }
+
+    private function notifyApproval($id) {
+        $proposal = $this->Proposals->findById($id)
+            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
+                'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
+                'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
+                'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
+                'Curricula.Degrees' ])
+            ->firstOrFail();
+
+        $email = new Email();
+
+        $email->setTo($proposal['user']['email'])
+            ->setEmailFormat('html')
+            ->setSubject('Piano di studi approvato')
+            ->addCc(array_map(function($address) { return trim($address); },
+                explode(',', $this->getSetting('notified-emails'))))
+            ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
+        $email->viewBuilder()->setTemplate('approval');
         $email->send();
     }
 
@@ -132,7 +155,23 @@ class ProposalsController extends AppController {
                       }
                   } else {
                       $proposal['state'] = $context['state'];
+
+                      switch ($context['state']) {
+                          case 'approved':
+                              $proposal['approved_date'] = Time::now();
+                              break;
+                          case 'submitted':
+                              $proposal['submitted_date'] = Time::now();
+                              break;
+                          default:
+                              break;
+                      }
+
                       if ($this->Proposals->save($proposal)) {
+                          if ($context['state'] == 'approved') {
+                              $this->notifyApproval($proposal['id']);
+                          }
+
                           $count ++;
                       }
                   }
@@ -250,6 +289,10 @@ class ProposalsController extends AppController {
         // The new plan should be in the draft state
         $newp->state = 'draft';
 
+        // Reset also the submitted and approved dates
+        $newp->submitted_date = null;
+        $newp->approved_date  = null;
+
         // For each of the selected exams we need to clear the ID, so that saving this object will create new entities
         // for the selections, making this proposal effectively independent of the original one.
         foreach ($newp['chosen_exams'] as $key => &$chosen_exam) {
@@ -350,6 +393,7 @@ class ProposalsController extends AppController {
                     }
                     else {
                         $proposal['state'] = 'submitted';
+                        $proposal['submitted_date'] = Time::now();
                     }
                 }
                 else {
@@ -402,7 +446,9 @@ class ProposalsController extends AppController {
         }
 
         $proposal['state'] = 'approved';
+        $proposal['approved_date'] = Time::now();
         $this->Proposals->save($proposal);
+        $this->notifyApproval($proposal['id']);
 
         return $this->redirect(
             ['controller' => 'proposals',

@@ -33,7 +33,9 @@ class Proposal extends Entity
         'curriculum_id' => true,
         'user' => true,
         'chosen_exams' => true,
-        'chosen_free_choice_exams' => true
+        'chosen_free_choice_exams' => true,
+        'submitted_date' => true,
+        'approved_date' => true
     ];
 
     public function getStateString()
