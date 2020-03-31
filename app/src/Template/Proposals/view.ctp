@@ -149,14 +149,14 @@
         <div class="result">
             Esito: <ul>
                 <li>Approvato ☐</li>
-                <li>Rifiutato ☐</li>
+                <!-- <li>Rifiutato ☐</li> //-->
             </ul>
         </div><br>
-        <div class="confirmation">Firma del Presidente</div>
+        <div class="confirmation"><?= $settings['approval-signature-text'] ?></div>
     </div>
 
     <div class="right">
-        <div class="signature">Firma dello studente</div>
+        <div class="signature"><!-- Firma dello studente //--></div>
     </div>
 </div>
 

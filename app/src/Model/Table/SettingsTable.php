@@ -37,7 +37,8 @@ class SettingsTable extends Table
         [ 'field' => 'cds', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'department', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ],
-        [ 'field' => 'notified-emails', 'value' => '', 'fieldtype' => 'text' ]
+        [ 'field' => 'notified-emails', 'value' => '', 'fieldtype' => 'text' ],
+        [ 'field' => 'approval-signature-text', 'value' => '', 'fieldtype' => 'text' ]
     ];
 
     private $settingsInstance = null;
