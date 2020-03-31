@@ -122,7 +122,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
                 'givenname' => $m['givenname'][0],
                 'surname' => $m['sn'][0],
                 'name' => $m['cn'][0],
-                'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : "",
+                'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : $m['unipidipendentematricola'][0],
                 'role' => $role,
                 'admin' => in_array($data['username'], $config['admins']),
                 'email' => $m['mail'][0]

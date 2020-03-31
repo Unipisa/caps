@@ -20,7 +20,7 @@
         <h3 class="curriculum">Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
         <h3 class="name">Nome e cognome: <?php echo $proposal['user']['name']; ?></h3>
         <h3 class="number">Matricola: <?php echo $proposal['user']['number']; ?></h3>
-        <h3 class="email">Email: </h3>
+        <h3 class="email">Email: <?= $proposal['user']['email'] ?></h3>
         <h3 class="telephone">Telefono: </h3>
     </div>
     <div class="plea">
