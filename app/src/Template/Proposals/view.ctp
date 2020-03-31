@@ -144,15 +144,28 @@
 
 <div class="bureaucracy">
     <div class="left">
-        <div class="date">Data di presentazione</div><br>
+        <div class="date">Data di presentazione: <?=
+            ($proposal['submitted_date'] != null) ?
+                $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non ancora presentato';
+        ?></div><br>
         <div class="examined">Esaminato dal CdS in data</div><br>
         <div class="result">
             Esito: <ul>
-                <li>Approvato ☐</li>
+                <li>
+                    <?php if ($proposal['state'] == 'approved')
+                        echo "Approvato ☒";
+                    else
+                        echo "Approvato ☐";
+                    ?>
+                </li>
                 <!-- <li>Rifiutato ☐</li> //-->
             </ul>
         </div><br>
-        <div class="confirmation"><?= $settings['approval-signature-text'] ?></div>
+        <div class="confirmation"><?php
+            if ($proposal['state'] == 'approved')
+                echo $settings['approval-signature-text'];
+            ?>
+        </div>
     </div>
 
     <div class="right">
