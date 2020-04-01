@@ -24,7 +24,9 @@ class GroupsController extends AppController {
     }
 
     public function index () {
-        $groups = $this->Groups->find('all')->contain([ 'Exams' ]);
+        $groups = $this->Groups->find('all')->contain([ 'Exams' => function($q) {
+            return $q->order([ 'Exams.name' => 'asc' ]);
+        } ]);
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
