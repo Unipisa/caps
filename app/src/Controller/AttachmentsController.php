@@ -24,11 +24,13 @@ class AttachmentsController extends AppController
     public function view($id = null)
     {
         $attachment = $this->Attachments->get($id, [
-            'contain' => ['Users', 'Proposals']
+            'contain' => ['Users', 'Proposals', 'Proposals.Users' ]
         ]);
 
-        // Check if the user is the user of the file, or is an administrator
-        if (!$this->user['admin'] && $attachment['user']['username'] != $this->user['username'])
+        // Check if the user is the owner of the file or of the proposal, or is an administrator
+        if ( ! $this->user['admin'] &&
+             $attachment['user']['username'] != $this->user['username'] &&
+             $this->user['username'] != $attachment['proposal']['user']['username'] )
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
 
         return $this->response
