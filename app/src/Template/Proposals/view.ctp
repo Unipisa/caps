@@ -148,24 +148,17 @@
             ($proposal['submitted_date'] != null) ?
                 $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non ancora presentato';
         ?></div><br>
-        <div class="examined">Esaminato dal CdS in data</div><br>
+        <?php if ($proposal['state'] == 'approved'): ?>
+        <div class="examined">Esaminato in data: <?= $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') ?></div><br>
         <div class="result">
             Esito: <ul>
-                <li>
-                    <?php if ($proposal['state'] == 'approved')
-                        echo "Approvato ☒";
-                    else
-                        echo "Approvato ☐";
-                    ?>
-                </li>
+                <li>Approvato ☒</li>
                 <!-- <li>Rifiutato ☐</li> //-->
             </ul>
-        </div><br>
-        <div class="confirmation"><?php
-            if ($proposal['state'] == 'approved')
-                echo $settings['approval-signature-text'];
-            ?>
         </div>
+        <br>
+        <div class="confirmation"><?= $settings['approval-signature-text']; ?></div>
+        <?php endif; ?>
     </div>
 
     <div class="right">
