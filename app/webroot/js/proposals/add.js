@@ -470,7 +470,7 @@ function on_curriculum_selected() {
 
         if (! doubleExamsOk) {
             text = text
-                + '<strong>Attenzione: </strong> il piano di studi contiene esami ripetuti.'
+                + '<strong>Attenzione: </strong> il piano di studi contiene esami ripetuti. '
                 + 'Correggere prima della sottomisione.<br><br>';
         }
 
