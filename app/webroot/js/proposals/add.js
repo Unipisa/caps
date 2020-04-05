@@ -414,17 +414,76 @@ function on_curriculum_selected() {
     };
 
     var updateCounters = function () {
+        // This checks if each year in the plan has at most 60 credits. If one year
+        // has strictly more than 60 credits, then a warning will be displayed.
+        let creditCountPerYearOk = true;
+
+        // This variable checks if the number of credits is enough to enable closing
+        // the proposal, and submitting.
+        let creditCountOk = false;
+
+        // This variable tracks if double exams are found in the proposal
+        let doubleExamsOk = true;
+
         let creditCount = 0;
         let years = 0;
 
         $("#proposalWarning").hide();
 
         $("h3 span").each(function () {
-            creditCount += updateCounter(this);
+            let thisYearCount = updateCounter(this);
+
+            if (thisYearCount > 60) {
+                creditCountPerYearOk = false;
+            }
+
+            creditCount += thisYearCount;
             years += 1;
         });
 
-        if (creditCount >= years * 60) {
+        creditCountOk = creditCount >= years * 60;
+
+        let exams_ids = [];
+
+        $('select.exam').each(function (j,e) {
+            let this_id = parseInt(e.value);
+
+            if (! isNaN(this_id)) {
+                if (exams_ids.includes(this_id)) {
+                    doubleExamsOk = false;
+                }
+                else {
+                    exams_ids.push(this_id);
+                }
+            }
+        });
+
+        let text = "";
+
+        if (! creditCountPerYearOk) {
+            text = text + "<strong>Attenzione: </strong> il numero di crediti per anno è "
+                + "superiore a 60. È comunque possibile chiudere il piano "
+                + "di studi se si raggiunge il totale di crediti necessari, "
+                + "ma si consiglia di ricontrollarlo attentamente "
+                + "prima di procedere.<br><br>";
+        }
+
+        if (! doubleExamsOk) {
+            text = text
+                + '<strong>Attenzione: </strong> il piano di studi contiene esami ripetuti.'
+                + 'Correggere prima della sottomisione.<br><br>';
+        }
+
+        $('#proposalWarning').html(text);
+
+        if (text != "") {
+            $('#proposalWarning').show();
+        }
+        else {
+            $('#proposalWarning').hide();
+        }
+
+        if (creditCountOk && doubleExamsOk) {
             enable_close_action();
         }
         else {
@@ -453,12 +512,7 @@ function on_curriculum_selected() {
         } else if (result > 60) {
             $(elem).addClass("creditsWarning");
 
-            $("#proposalWarning").html(
-                "<strong>Attenzione</strong>: il numero di crediti per anno è "
-                + "superiore a 60. È comunque possibile chiudere il piano "
-                + "di studi se si raggiunge il totale di crediti necessari, "
-                + "ma si consiglia di ricontrollarlo attentamente "
-                + "prima di procedere.");
+
             $("#proposalWarning").show();
         }
 
