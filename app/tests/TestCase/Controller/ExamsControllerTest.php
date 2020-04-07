@@ -15,7 +15,7 @@ use Cake\ORM\TableRegistry;
  */
 class ExamsControllerTest extends IntegrationTestCase
 {
-    public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups'];
+    public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
 
     public function setUp()
     {
@@ -39,7 +39,7 @@ class ExamsControllerTest extends IntegrationTestCase
             'Auth' => [
                 'User' => [
                     'id' => 1,
-                    'user' => 'mario.rossi', // see UsersFixture.php
+                    'username' => 'mario.rossi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'MARIO ROSSI',
                     'role' => 'student',
@@ -58,7 +58,7 @@ class ExamsControllerTest extends IntegrationTestCase
             'Auth' => [
                 'User' => [
                     'id' => 2,
-                    'user' => 'alice.verdi', // see UsersFixture.php
+                    'username' => 'alice.verdi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'ALICE VERDI',
                     'role' => 'staff',
