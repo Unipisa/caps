@@ -1,6 +1,6 @@
 <div class="bureaucracy">
     <div class="heading">
-        <img class="left" src="/css/img/cherubino_black.png"/>
+        <?php echo $this->Html->image('cherubino_black.png', [ 'class' => 'left' ]) ?>
         <h2 class="department"><?php echo $settings['department'] ?></h2>
         <h2 class="degree"><?php echo $proposal['curriculum']['degree']['name']; ?>
         </h2>
@@ -149,7 +149,11 @@
                 $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non ancora presentato';
         ?></div><br>
         <?php if ($proposal['state'] == 'approved'): ?>
-        <div class="examined">Esaminato in data: <?= $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') ?></div><br>
+        <div class="examined">Esaminato in data: <?=
+            ($proposal['approved_date'] != null) ?
+                $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') :
+                'data non disponibile'
+            ?></div><br>
         <div class="result">
             Esito: <ul>
                 <li>Approvato ☒</li>
