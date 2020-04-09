@@ -92,17 +92,10 @@ class UsersController extends AppController {
                         'Error adding user ' . $authuser['username'] . ' to the database');
                 }
 
-                // If the user is an admin, show the administration panel...
-                if ($authuser['admin']) {
-                    return $this->redirect(
-                        $this->Auth->redirectUrl(
-                            ['controller' => 'proposals', 'action' => 'index']
-                        )
-                    );
-                }
-                else {
-                    return $this->redirect($this->Auth->redirectUrl([ 'action' => 'index' ]));
-                }
+                // We redirect the user to the redirectUrl, if any. Otherwise, the user will be redirected again to
+                // this page with a valid session, which will send him/her to the index or admin/index depending on
+                // their status.
+                return  $this->redirect($this->Auth->redirectUrl());
             }
         }
         else {
@@ -110,11 +103,10 @@ class UsersController extends AppController {
                 $user = $this->Auth->user();
 
                 if ($user['admin']) {
-                    return $this->redirect([ 'controller' => 'proposals',
-                        'action' => 'index' ]);
+                    return $this->redirect([ 'controller' => 'proposals', 'action' => 'index' ]);
                 }
                 else {
-                    return $this->redirect([ 'action' => 'index' ]);
+                    return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
                 }
             }
         }
