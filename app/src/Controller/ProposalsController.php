@@ -29,44 +29,48 @@ class ProposalsController extends AppController {
         $this->Auth->deny();
     }
 
-    private function notifySubmission($id) {
-        $proposal = $this->Proposals->findById($id)
+    private function get_proposal($id) {
+        return $this->Proposals->findById($id)
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
                 'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
                 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
                 'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
                 'Curricula.Degrees' ])
             ->firstOrFail();
+    }
 
+    private function createProposalEmail($proposal) {
         $email = new Email();
 
-        $email->setTo($this->user['email'])
-            ->setEmailFormat('html')
-            ->setSubject('Piano di studi sottomesso')
-            ->addCc(array_map(function($address) { return trim($address); },
-                explode(',', $this->getSetting('notified-emails'))))
-            ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
+        // Find the address that need to be notified in Cc, if any
+        $cc_addresses = array_map(function($address) { return trim($address); },
+            explode(',', $this->getSetting('notified-emails')));
+        $cc_addresses = array_filter($cc_addresses, function ($address) {
+            return trim($address) != "";
+        });
+        if (count($cc_addresses) > 0) {
+            $email->addCc($cc_addresses);
+        }
+
+        $email->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ])
+            ->setEmailFormat('html');
+
+        return $email;
+    }
+
+    private function notifySubmission($id) {
+        $email = $this->createProposalEmail($this->get_proposal($id))
+            ->setTo($this->user['email'])
+            ->setSubject('Piano di studi sottomesso');
         $email->viewBuilder()->setTemplate('submission');
         $email->send();
     }
 
     private function notifyApproval($id) {
-        $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
-                'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
-                'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-                'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
-                'Curricula.Degrees' ])
-            ->firstOrFail();
-
-        $email = new Email();
-
-        $email->setTo($proposal['user']['email'])
-            ->setEmailFormat('html')
-            ->setSubject('Piano di studi approvato')
-            ->addCc(array_map(function($address) { return trim($address); },
-                explode(',', $this->getSetting('notified-emails'))))
-            ->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal ]);
+        $proposal = $this->get_proposal($id);
+        $email = $this->createProposalEmail($proposal)
+            ->setTo($proposal['user']['email'])
+            ->setSubject('Piano di studi approvato');
         $email->viewBuilder()->setTemplate('approval');
         $email->send();
     }
