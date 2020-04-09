@@ -415,8 +415,9 @@ class ProposalsController extends AppController {
                         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
                 else {
+                    debug(var_export($proposal->errors(), TRUE));
                     $this->Flash->error(Utils::error_to_string($proposal->errors()));
-                    return $this->redirect(['action' => 'view', $proposal['id']]);
+                    return $this->redirect(['action' => 'add', $proposal['id']]);
                 }
             }
 

@@ -362,7 +362,7 @@ function on_curriculum_selected() {
             var credits = "";
         }
 
-        var inputHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] type=text placeholder='Un esame a scelta libera' class=exam value=" + name + "></input>";
+        var inputHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] required type=text placeholder='Un esame a scelta libera' class=exam value=" + name + "></input>";
         var creditsHTML = "<input name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 required class=credits value=" + credits + "></input>";
         var deleteHTML = "<a href=# class=delete></a>";
 
