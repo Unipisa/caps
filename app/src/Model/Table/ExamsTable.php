@@ -4,7 +4,9 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\Rule\IsUnique;
 use Cake\Validation\Validator;
+
 
 /**
  * Exams Model
@@ -79,5 +81,11 @@ class ExamsTable extends Table
             ->notEmptyString('credits', 'Inserire un numero di crediti');
 
         return $validator;
+    }
+
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->isUnique(['code']));        
+        return $rules;
     }
 }
