@@ -38,15 +38,14 @@ class Application extends BaseApplication
     {
         $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
         $version = trim(exec('git describe --tags'));
-        $commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
         $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
         $commitDate->setTimezone(new \DateTimeZone('UTC'));
         $commitDate = $commitDate->format('Y-m-d H:i:s');
 
         if ($branch === "master") {        
-            return sprintf('%s [%s %s]', $version, $commitHash, $commitDate);
+            return sprintf('%s [%s]', $version, $commitDate);
         } else {
-            return sprintf('%s-%s [%s %s]', $version, $branch, $commitHash, $commitDate);
+            return sprintf('%s-%s [%s]', $version, $branch, $commitDate);
         }
     }
 
