@@ -1,4 +1,4 @@
-<?php echo $this->Html->script('upload_csv.js'); ?>
+<?php echo $this->Html->script('upload_csv.js?rev=2'); ?>
 <?php echo $this->element('update_navigation'); ?>
 <script>
 // per upload_csv
