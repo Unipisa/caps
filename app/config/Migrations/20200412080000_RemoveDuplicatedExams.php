@@ -19,6 +19,25 @@ class RemoveDuplicatedExams extends AbstractMigration
         foreach ($codes as $code => $ids) {
             for ($i = 1 ; $i < count($ids); $i ++) {
                 $id = $ids[$i];
+
+                // Before removing the exam we make sure that it is replaced by the
+                // one we are keeping in the database. 
+                $this->myExecute(
+                    'update chosen_exams set exam_id = :oldid where exam_id = :id', 
+                    [ 'oldid' => $ids[0] , 'id' => $id ]
+                );
+
+                // And we update any compulsory_exams and/or groups just in case
+                $this->myExecute(
+                    'delete from exams_groups where exam_id = :id',
+                    [ 'id' => $id ]
+                );
+
+                $this->myExecute(
+                    'update compulsory_exams set exam_id = :oldid where exam_id = :id',
+                    [ 'oldid' => $ids[0], 'id' => $id ]
+                );
+
                 echo "removing duplicated exam code=" . $code . " id=" . $id . "\n";
                 // Viene mantenuto l'esame con id piu' basso, che e' il primo
                 // che e' stato creato.
