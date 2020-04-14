@@ -67,9 +67,9 @@ class ExamsTable extends Table
             ->notEmptyString('name', 'Inserire un nome');
 
         $validator
+            ->allowEmptyString('code')
             ->scalar('code')
-            ->maxLength('code', 5)
-            ->notEmptyString('code', 'Inserire un codice');
+            ->maxLength('code', 5);
 
         $validator
             ->scalar('sector')

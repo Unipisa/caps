@@ -156,6 +156,12 @@ class ExamsController extends AppController {
                 }
             }
 
+            // If the code is '', make it null => this works on MySQL that allows 
+            // multiple null keys even when forced to be unique. 
+            if ($exam->code == '') {
+                $exam->code = null;
+            }
+
             if ($this->Exams->save($exam)) {
                 $this->Flash->success($success_message);
 
