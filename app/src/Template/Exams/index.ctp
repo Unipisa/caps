@@ -1,10 +1,31 @@
-<?php echo $this->Html->script('upload_csv.js'); ?>
+<?php echo $this->Html->script('upload_csv.js?rev=2'); ?>
 <?php echo $this->element('update_navigation'); ?>
 <script>
 // per upload_csv
 csv_upload_fields = ['nome','codice','settore','crediti'];
 csv_upload_fields_db = ['name','code','sector','credits'];
 csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
+db_exams = null; // codice -> exam
+
+function csv_click() {
+    $("#caps-admin-actions-csv").toggle();
+    if (db_exams === null) {
+        db_exams = {};
+        $.get("exams.json", function(data) {
+            data.exams.forEach(function(exam) {
+                db_exams[exam.code] = exam;
+            })
+        });
+    }
+}
+
+function csv_validator(item) {
+    if (item.name === "") return "nome vuoto";
+    if (item.code === "") return "codice vuoto";
+    if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
+    return null;   
+}
+
 </script>
 
 <div id="examsFilterFormDiv">
@@ -83,7 +104,7 @@ echo $this->Form->end();
             <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere gli esami selezionati?')" value="Elimina gli esami selezionati"/></div>
         </li>
         <li>
-            <a class="yellow" onclick='$("#caps-admin-actions-csv").toggle()'>Aggiungi esami da file CSV</a>
+            <a class="yellow" onclick='csv_click()'>Aggiungi esami da file CSV</a>
         </li>
     </ul>
 </div>
@@ -113,7 +134,7 @@ echo $this->Form->end();
         <div class="caps-admin-actions">
             <ul>
                 <li>
-                    <a onclick='csvSubmit()'>Aggiungi tutti gli esami elencati di seguito</a>
+                    <a onclick='csvSubmit()'>Aggiungi tutti gli esami selezionati di seguito</a>
                 </li>
             </ul>
         </div>
