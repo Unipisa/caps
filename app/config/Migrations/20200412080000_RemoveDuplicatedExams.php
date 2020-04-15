@@ -5,7 +5,12 @@ class RemoveDuplicatedExams extends AbstractMigration
 {
     public function up()
     {
-        $exams = $this->fetchAll('select id, code from exams order by id');
+        // The exams with empty code need to have it set to NULL, and are somewhat
+        // specials, as they will be ignored by the following queries
+        $this->myExecute('update exams set code = NULL where code = :emptycode', 
+            [ 'emptycode' => '' ]);
+
+        $exams = $this->fetchAll('select id, code from exams where code IS NOT NULL order by id');
         $codes = [];
 
         foreach ($exams as $exam) {
