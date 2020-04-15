@@ -115,9 +115,7 @@ class ExamsController extends AppController {
         $exam = $this->Exams->get($id, [
             'contain' => 'Tags'
         ]);
-        if (!$exam) {
-            throw new NotFoundException(__('Errore: esame non esistente.'));
-        }
+        
         $this->set('exam', $exam);
     }
 
