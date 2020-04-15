@@ -5,6 +5,14 @@ class RemoveDuplicatedExams extends AbstractMigration
 {
     public function up()
     {
+        // Make sure we allow null values in the code column
+        $table = $this->table('exams');
+        $table->changeColumn('code', 'string', [
+            'default' => null,
+            'limit' => 5,
+            'null' => true,
+        ])->save();
+
         // The exams with empty code need to have it set to NULL, and are somewhat
         // specials, as they will be ignored by the following queries
         $this->myExecute('update exams set code = NULL where code = :emptycode', 
