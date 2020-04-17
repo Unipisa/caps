@@ -1,5 +1,5 @@
 # CAPS
-master: [![Build Status](https://travis-ci.org/Unipisa/caps.svg?branch=master)](https://travis-ci.org/Unipisa/caps), develop: [![Build Status](https://travis-ci.org/Unipisa/caps.svg?branch=develop)](https://travis-ci.org/Unipisa/caps)
+![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master) ![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)
 
 Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio presso il Dipartimento di Matematica, Università di Pisa.
 
