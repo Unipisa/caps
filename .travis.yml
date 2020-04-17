@@ -6,7 +6,7 @@ php:
   - 7.3
 
 before_script:
-  - test -f composer.json || cd app ; test -e config/app.php || ln -s config/app.default.php config/app.php
+  - cp app/config/app.default.php app/config/app.php
   - test -f composer.json || cd app ; composer install
 
 script:
