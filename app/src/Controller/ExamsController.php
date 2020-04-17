@@ -10,6 +10,13 @@ use App\Form\ExamsFilterForm;
 
 class ExamsController extends AppController {
 
+    public $paginate = [
+        'limit' => 25,
+        'order' => [
+            'Exams.name' => 'asc'
+        ]
+    ];
+
     public function initialize()
     {
         parent::initialize();
@@ -30,8 +37,7 @@ class ExamsController extends AppController {
 
     public function index () {
         $exams = $this->Exams->find()
-            ->contain([ 'Tags'])
-            ->order([ 'Exams.name' => 'asc' ]);
+            ->contain([ 'Tags']);
 
         $filterForm = new ExamsFilterForm($exams);
         $filterData = $this->request->getQuery();
@@ -101,7 +107,7 @@ class ExamsController extends AppController {
         }
         $this->set('exams', $exams);
         $this->set('_serialize', [ 'exams' ]);
-        $this->set('paginated_exams', $this->Paginator->paginate($exams->cleanCopy()));
+        $this->set('paginated_exams', $this->paginate($exams->cleanCopy()));
     }
 
     /**
@@ -115,7 +121,7 @@ class ExamsController extends AppController {
         $exam = $this->Exams->get($id, [
             'contain' => 'Tags'
         ]);
-        
+
         $this->set('exam', $exam);
     }
 
@@ -154,8 +160,8 @@ class ExamsController extends AppController {
                 }
             }
 
-            // If the code is '', make it null => this works on MySQL that allows 
-            // multiple null keys even when forced to be unique. 
+            // If the code is '', make it null => this works on MySQL that allows
+            // multiple null keys even when forced to be unique.
             if ($exam->code == '') {
                 $exam->code = null;
             }
