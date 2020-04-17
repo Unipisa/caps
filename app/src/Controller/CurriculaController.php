@@ -11,6 +11,15 @@ use App\Form\CurriculaFilterForm;
 
 class CurriculaController extends AppController {
 
+    public $paginate = [
+        'contain' => [ 'Degrees' ],
+        'sortWhitelist' => [ 'academic_year', 'name', 'Degrees.name' ],
+        'limit' => 25,
+        'order' => [
+            'academic_year' => 'desc'
+        ]
+    ];
+
     public function initialize()
     {
         parent::initialize();
@@ -25,8 +34,7 @@ class CurriculaController extends AppController {
 
     public function index () {
         $curricula = $this->Curricula->find('all')
-            ->contain([ 'Degrees'])
-            ->order([ 'academic_year' => 'DESC' ]);
+            ->contain([ 'Degrees']);
 
         $filterForm = new CurriculaFilterForm($curricula);
         $filterData = $this->request->getQuery();
@@ -43,7 +51,7 @@ class CurriculaController extends AppController {
 
         $this->set('curricula', $curricula);
         $this->set('_serialize', [ 'curricula' ]);
-        $this->set('paginated_curricula', $this->Paginator->paginate($curricula->cleanCopy()));
+        $this->set('paginated_curricula', $this->paginate($curricula->cleanCopy()));
 
         if ($this->request->is(['post', 'put'])) {
             // azioni sulla selezione

@@ -28,11 +28,11 @@ echo $this->Form->end();
 <table>
     <tr>
         <th></th>
-        <th>Anno</th>
-        <th>Laurea</th>
-        <th>Nome</th>
+        <th><?= $this->Paginator->sort('academic_year', 'Anno'); ?></th>
+        <th><?= $this->Paginator->sort('Degrees.name', 'Laurea'); ?></th>
+        <th><?= $this->Paginator->sort('name', 'Nome'); ?></th>
     </tr>
-    <?php foreach ($curricula as $curriculum): ?>
+    <?php foreach ($paginated_curricula as $curriculum): ?>
     <tr>
         <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
         <td class="caps-admin-curricula-year"><?php echo $curriculum['academic_year']; ?></td>
