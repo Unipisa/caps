@@ -16,12 +16,20 @@ use Cake\Core\Configure;
 
 class ProposalsController extends AppController {
 
+    public $paginate = [
+        'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
+        'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name' ],
+        'limit' => 25,
+        'order' => [
+            'Users.surname' => 'asc'
+        ]
+    ];
+
     public function initialize()
     {
         parent::initialize();
-
-        $this->loadComponent('RequestHandler');
         $this->loadComponent('Paginator');
+        $this->loadComponent('RequestHandler');
     }
 
     public function beforeFilter ($event) {
@@ -77,10 +85,8 @@ class ProposalsController extends AppController {
 
     public function index()
     {
-      $proposals = $this->Proposals->find();
-      $proposals = $proposals
-        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ])
-        ->order([ 'Users.surname' => 'asc' ]);
+      $proposals = $this->Proposals->find()
+        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
 
       if ($this->user['admin']) {
           // admin può vedere tutti i proposal
@@ -192,7 +198,7 @@ class ProposalsController extends AppController {
       }
 
       $this->set('filterForm', $filterForm);
-      $this->set('proposals', $this->Paginator->paginate($proposals));
+      $this->set('proposals', $this->paginate($proposals->cleanCopy()));
       $this->set('selected', 'index');
     }
 

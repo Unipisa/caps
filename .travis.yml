@@ -1,0 +1,16 @@
+language: php
+
+dist: trusty
+
+php:
+  - 7.3
+
+before_script:
+  - cp app/config/app.default.php app/config/app.php
+  - test -f composer.json || cd app ; composer install
+
+script:
+  - test -d vendor || cd app; vendor/bin/phpunit
+
+notifications:
+  email: false

@@ -23,7 +23,7 @@ function csv_validator(item) {
     if (item.name === "") return "nome vuoto";
     if (item.code === "") return "codice vuoto";
     if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
-    return null;   
+    return null;
 }
 
 </script>
@@ -60,11 +60,11 @@ echo $this->Form->end();
 <table class="caps-exams">
     <tr>
         <th></th>
-        <th>Nome</th>
+        <th><?= $this->Paginator->sort('name', 'Nome'); ?></th>
         <th>Tags</th>
-        <th>Codice</th>
-        <th>Settore</th>
-        <th>Crediti</th>
+        <th><?= $this->Paginator->sort('code', 'Codice'); ?></th>
+        <th><?= $this->Paginator->sort('sector', 'Settore'); ?></th>
+        <th>    <?= $this->Paginator->sort('credits', 'Crediti'); ?></th>
     </tr>
 <?php foreach ($paginated_exams as $exam): ?>
     <tr>

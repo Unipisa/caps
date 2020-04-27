@@ -18,10 +18,11 @@
     </div>
     <div class="data">
         <h3 class="curriculum">Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
+        <h3 class="curriculum">Anno di immatricolazione: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?></h3>
         <h3 class="name">Nome e cognome: <?php echo $proposal['user']['name']; ?></h3>
         <h3 class="number">Matricola: <?php echo $proposal['user']['number']; ?></h3>
         <h3 class="email">Email: <?= $proposal['user']['email'] ?></h3>
-        <h3 class="telephone">Telefono: </h3>
+        <!-- h3 class="telephone">Telefono: </h3> //-->
     </div>
     <div class="plea">
         <p>chiede l'approvazione del seguente Piano di Studio:</p>
@@ -30,7 +31,11 @@
 
 <div class="heading--web">
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
-    <h3>Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
+    <h3>
+      <?= $proposal['curriculum']['degree']['name'] ?> — 
+      Curriculum <?php echo $proposal['curriculum']['name']; ?>
+      (anno di immatricolazione <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?>)
+    </h3>
 </div>
 
 <?php if ($message != ""): ?>

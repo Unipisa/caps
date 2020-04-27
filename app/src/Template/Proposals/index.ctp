@@ -65,10 +65,10 @@ echo $this->Form->end();
     <tr>
         <th></th>
         <th>Stato</th>
-        <th>Nome</th>
-        <th>Anno</th>
-        <th>Laurea</th>
-        <th>Piano di Studio</th>
+        <th><?= $this->Paginator->sort('Users.surname', 'Nome'); ?></th>
+        <th><?= $this->Paginator->sort('academic_year', 'Anno'); ?></th>
+        <th><?= $this->Paginator->sort('Degress.name', 'Laurea'); ?></th>
+        <th><?= $this->Paginator->sort('Curricula.name', 'Piano di studio'); ?></th>
         <th>Azioni</th>
     </tr>
 <?php foreach ($proposals as $proposal): ?>
