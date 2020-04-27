@@ -98,11 +98,16 @@ $num_proposals = 0;
                    <?php
                    switch ($proposal['state']) {
                        case "draft":
-                           echo $this->Html->link('Modifica', [
-                               'controller' => 'proposals',
-                               'action' => 'add',
-                               $proposal['id'] ]);
-                           echo " — ";
+                            // We don't allow administrators to edit the proposals as the user: the edit button
+                            // is only displayed if the username of the logged-in user matches the owner of the
+                            // proposal.
+                            if ($user['username'] == $proposal['user']['username']) {
+                                echo $this->Html->link('Modifica', [
+                                    'controller' => 'proposals',
+                                    'action' => 'add',
+                                    $proposal['id'] ]);
+                                echo " — ";
+                           }
                            echo $this->Html->link('Anteprima', [
                            'controller' => 'proposals',
                            'action' => 'view',
