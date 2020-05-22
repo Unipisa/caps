@@ -27,7 +27,7 @@ class AttachmentsController extends AppController
             'contain' => ['Users', 'Proposals', 'Proposals.Users' ]
         ]);
 
-        if (! $attachment->canViewAttachement($this->user)) {
+        if (! $attachment->canViewAttachment($this->user)) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
 
