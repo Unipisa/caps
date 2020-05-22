@@ -29,6 +29,14 @@ class AddCommentToAttachments extends AbstractMigration
             'default' => null
         ]);
 
+        $table->changeColumn('data', 'blob', [
+            'null' => true
+        ]);
+
+        $table->changeColumn('mimetype', 'string',[
+            'null' => true
+        ]);
+
         $table->update();
     }
 
@@ -38,6 +46,14 @@ class AddCommentToAttachments extends AbstractMigration
         $table->changeColumn('filename', 'string', [
             'null' => false,
             'default' => null
+        ]);
+
+        $table->changeColumn('data', 'blob', [
+            'null' => false
+        ]);
+
+        $table->changeColumn('mimetype', 'string',[
+            'null' => false
         ]);
 
         $table->removeColumn('created');
