@@ -306,8 +306,17 @@ select#academicYearSelect {
     border-color: #a68500 !important;
 }
 
-.attachments ol > li {
-    margin-left: 18px;
+.attachments ul > li {
+    margin-left: 0px;
+    border: 1px solid gray;
+    padding: 6px;
+    list-style-type: none;
+    border-left: 10px solid rgb(44, 104, 119);
+    margin-bottom: 10px;
+}
+
+.attachments ul {
+    margin-bottom: 25px;
 }
 
 .proposal-tag {

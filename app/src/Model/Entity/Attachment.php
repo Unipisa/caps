@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use App\Model\Entity\User;
 
 /**
  * Attachment Entity
@@ -31,6 +32,24 @@ class Attachment extends Entity
         'proposal_id' => true,
         'user' => true,
         'data' => true,
-        'proposal' => true
+        'proposal' => true,
+        'created' => true,
+        'comment' => true
     ];
+
+    /**
+     * This function checks if a user can see an attachment.
+     *
+     * @param \App\Model\Entity\User $user
+     * @return bool
+     */
+    public function canViewAttachment($user) {
+        return $user != null && ($user['admin'] ||
+                $user['username'] == $this->user['username'] ||
+                $user['username'] == $this->proposal->user['username']);
+    }
+
+    public function canDeleteAttachment($user) {
+        return $user != null && ($user['admin'] || $user['username'] == $this->user['username']);
+    }
 }

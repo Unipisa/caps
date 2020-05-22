@@ -32,7 +32,7 @@
 <div class="heading--web">
     <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
     <h3>
-      <?= $proposal['curriculum']['degree']['name'] ?> — 
+      <?= $proposal['curriculum']['degree']['name'] ?> —
       Curriculum <?php echo $proposal['curriculum']['name']; ?>
       (anno di immatricolazione <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?>)
     </h3>
@@ -176,49 +176,74 @@
 </div>
 
 <div class="attachments">
-  <h3>Allegati</h3>
+  <?php if (count($proposal['attachments']) > 0): ?>
+    <h3>Allegati e commenti</h3>
+  <?php endif ?>
     <p>
-    <ol>
+    <ul class="attachments">
     <?php foreach ($proposal['attachments'] as $att): ?>
-      <li>
-          <?php
-          echo $this->Html->link($att['filename'], [
-              'controller' => 'attachments',
-              'action' => 'view',
-              $att['id']
-          ]);
-          ?>
-          —
-          caricato da: <strong><?php echo $att['user']['name'] ?></strong>
-          <?php if ($user['username'] == $att['user']['username'] || $user['admin']): ?>
-              —
-              <?php
-              echo $this->Form->postLink('Elimina', [
-                  'controller' => 'attachments',
-                  'action' => 'delete',
-                  $att['id']
-              ], [
-                  'confirm' => 'Cancellare definitivamente l\'allegato?',
-              ]);
+    <?php if ($att->canViewAttachment($user)): ?>
+          <li class="attachment">
+              <?php if ($att['comment'] != ""): ?>
+                <?= $att['comment'] ?><br><br>
+              <?php endif ?>
+
+              <?php if($att['filename'] != null): ?>
+                  <strong>Allegato</strong>:
+                  <?php
+                  echo $this->Html->link($att['filename'], [
+                      'controller' => 'attachments',
+                      'action' => 'view',
+                      $att['id']
+                  ]);
+                  ?><br><br>
+              <?php endif ?>
+              <strong><?php echo $att['user']['name'] ?></strong>
+              <?php if ($att['created'] != null) {
+                  ?>  — <?php
+                  echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+              }
               ?>
-          <?php endif; ?>
-      </li>
+
+                  <?php if ($att->canDeleteAttachment($user)): ?>
+                  — [
+                  <?php
+                  echo $this->Form->postLink('Elimina questo commento e allegato', [
+                      'controller' => 'attachments',
+                      'action' => 'delete',
+                      $att['id']
+                  ], [
+                      'confirm' => 'Cancellare definitivamente l\'allegato?',
+                  ]);
+                  ?> ]
+              <?php endif ?>
+          </li>
+    <?php endif ?>
     <?php endforeach ?>
-    </ol>
+    </ul>
     <?php
-        echo $this->Form->create('Attachment', [
-            'url' => [ 'controller' => 'attachments', 'action'=> 'add' ],
-            'type' => 'file'
-        ]);
-        echo $this->Form->file('data');
-        echo $this->Form->hidden('proposal_id', [ 'value' => $proposal['id'] ]);
-        echo $this->Form->submit('Allega nuovo file');
-        echo $this->Form->end();
+        if ($proposal->canAddAttachment($user)) { ?>
+            <h3>Inserisci un nuovo allegato o commento</h3>
+            <?php
+            echo $this->Form->create('Attachment', [
+                'url' => ['controller' => 'attachments', 'action' => 'add'],
+                'type' => 'file'
+            ]);
+            ?>
+            <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
+            <?php
+            echo $this->Form->textarea('comment');
+            echo $this->Form->file('data');
+            echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]);
+            echo $this->Form->submit('Aggiungi commento e/o allegato');
+            echo $this->Form->end();
+        }
     ?></p>
 </div>
 
 <?php if ($user['admin']): ?>
     <!-- Toolbar per l'amministratore //-->
+    <h3>Azioni disponibili</h3>
     <ul class=planActions>
         <?php if ($proposal['state'] === 'submitted'): ?>
         <li>
