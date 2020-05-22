@@ -1,5 +1,6 @@
 <?php
 use Migrations\AbstractMigration;
+use Phinx\Db\Adapter\MysqlAdapter;
 
 class AddCommentToAttachments extends AbstractMigration
 {
@@ -30,11 +31,13 @@ class AddCommentToAttachments extends AbstractMigration
         ]);
 
         $table->changeColumn('data', 'blob', [
-            'null' => true
+            'null' => true,
+            'limit' => MysqlAdapter::BLOB_LONG
         ]);
 
         $table->changeColumn('mimetype', 'string',[
-            'null' => true
+            'null' => true,
+            'limit' => 255
         ]);
 
         $table->update();
@@ -49,11 +52,13 @@ class AddCommentToAttachments extends AbstractMigration
         ]);
 
         $table->changeColumn('data', 'blob', [
-            'null' => false
+            'null' => false,
+            'default' => null
         ]);
 
         $table->changeColumn('mimetype', 'string',[
-            'null' => false
+            'null' => false,
+            'default' => null
         ]);
 
         $table->removeColumn('created');
