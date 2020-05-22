@@ -124,13 +124,21 @@ $num_proposals = 0;
 
                  }
 
+                 if ($proposal['state'] == 'submitted') {
+                    echo " — ";
+                    echo $this->Html->link('Richiedi parere', [
+                        'controller' => 'proposals',
+                        'action' => 'share',
+                        $proposal['id']
+                    ]);
+                }
 
                  if ($proposal['state'] != 'draft') {
                      echo " — ";
                      echo $this->Html->link('Crea una copia', [
                         'controller' => 'proposals',
-                         'action' => 'duplicate',
-                         $proposal['id']
+                        'action' => 'duplicate',
+                        $proposal['id']
                      ]);
                  }
 
