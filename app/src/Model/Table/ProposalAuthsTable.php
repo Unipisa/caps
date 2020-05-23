@@ -79,6 +79,7 @@ class ProposalAuthsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['proposal_id'], 'Proposals'));
+        $rules->add($rules->isUnique(['secret']));
 
         return $rules;
     }
