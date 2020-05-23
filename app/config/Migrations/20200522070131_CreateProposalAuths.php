@@ -27,18 +27,12 @@ class CreateProposalAuths extends AbstractMigration
             'limit' => 255,
             'null' => false,
         ]);
-        $table->addColumn('created_by_user_id', 'integer', [
-            'default' => null,
-            'limit' => 11,
-            'null' => false,
-        ]);
-        $table->addColumn('created_on', 'datetime',[
+        $table->addColumn('created', 'datetime',[
             'default' => null,
             'null' => null,
         ]);
         $table->create();
 
         $table->addForeignKey('proposal_id', 'proposals')->save();
-        $table->addForeignKey('created_by_user_id', 'users')->save();
     }
 }

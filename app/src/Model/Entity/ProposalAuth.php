@@ -10,8 +10,7 @@ use Cake\ORM\Entity;
  * @property int|null $proposal_id
  * @property string|null $email
  * @property string|null $secret
- * @property int|null $created_by_user_id
- * @property \Cake\I18n\FrozenTime|null $created_on
+ * @property \Cake\I18n\FrozenTime|null $created
  *
  * @property \App\Model\Entity\Proposal $proposal
  * @property \App\Model\Entity\User $user
@@ -31,8 +30,7 @@ class ProposalAuth extends Entity
         'proposal_id' => true,
         'email' => true,
         'secret' => true,
-        'created_by_user_id' => true,
-        'created_on' => true,
+        'created' => true,
         'proposal' => true,
         'user' => true,
     ];

@@ -26,10 +26,10 @@
 
 <p>
     Ti chiediamo di
-    <?php $this->Html->link("visualizzare il piano di studi ed inserire un tuo commento ", [
-        "controller" => "proposal",
+    <?= $this->Html->link("visualizzare il piano di studi ed inserire un tuo commento ", [
+        "controller" => "proposals",
         "action" => "view",
-        "id" => $proposal['id'],
+        $proposal['id'],
         "?" => ["secret" => $proposal_auth['secret']],
         "_full" => true ])
     ?>

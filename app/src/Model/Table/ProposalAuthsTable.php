@@ -10,7 +10,6 @@ use Cake\Validation\Validator;
  * ProposalAuths Model
  *
  * @property \App\Model\Table\ProposalsTable&\Cake\ORM\Association\BelongsTo $Proposals
- * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
  *
  * @method \App\Model\Entity\ProposalAuth get($primaryKey, $options = [])
  * @method \App\Model\Entity\ProposalAuth newEntity($data = null, array $options = [])
@@ -20,6 +19,8 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\ProposalAuth patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\ProposalAuth[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\ProposalAuth findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class ProposalAuthsTable extends Table
 {
@@ -37,11 +38,10 @@ class ProposalAuthsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Timestamp');
+
         $this->belongsTo('Proposals', [
             'foreignKey' => 'proposal_id',
-        ]);
-        $this->belongsTo('Users', [
-            'foreignKey' => 'created_by_user_id',
         ]);
     }
 
@@ -55,20 +55,16 @@ class ProposalAuthsTable extends Table
     {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', null, 'create');
+            ->notEmptyString('id', null, 'create');
 
         $validator
             ->email('email')
-            ->allowEmptyString('email');
+            ->notEmptyString('email');
 
         $validator
             ->scalar('secret')
             ->maxLength('secret', 255)
-            ->allowEmptyString('secret');
-
-        $validator
-            ->dateTime('created_on')
-            ->allowEmptyDateTime('created_on');
+            ->notEmptyString('secret');
 
         return $validator;
     }
@@ -82,9 +78,7 @@ class ProposalAuthsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['proposal_id'], 'Proposals'));
-        $rules->add($rules->existsIn(['created_by_user_id'], 'Users'));
 
         return $rules;
     }

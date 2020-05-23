@@ -444,7 +444,7 @@ class ProposalsController extends AppController {
     }
 
     public function share ($id) {
-        $proposal = $this->Proposals->get($id);
+        $proposal = $this->get_proposal($id);
         if (!$this->user['admin'] && $this->user['id']!=$proposal['user_id']) {
             throw new ForbiddenException();
         }
@@ -453,7 +453,6 @@ class ProposalsController extends AppController {
         $proposal_auth = $ProposalAuths->newEntity();
 
         if ($this->request->is('post')) {
-            $proposal_auth['created_by_user_id'] = $this->user['id'];
             $proposal_auth['created_on'] = Time::now();
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = Security::randomBytes(8);
@@ -462,7 +461,7 @@ class ProposalsController extends AppController {
                 $email = $this->createProposalEmail($proposal)
                 ->setTo($proposal_auth['email'])
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
-                $email->setViewVars(['proposal_auth', $proposal_auth]);
+                $email->setViewVars(['proposal_auth' => $proposal_auth]);
                 $email->viewBuilder()->setTemplate('share');
                 $email->send();
                 $this->Flash->success("inviato email con richiesta di parere");
@@ -471,9 +470,9 @@ class ProposalsController extends AppController {
                 debug(var_export($proposal_auth->errors(), TRUE));
                 $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
             } 
+
             return $this->redirect(['controller' => 'Users', 'action' => 'view']);
         }
-
         $this->set('proposal_auth', $proposal_auth);
     }
 
