@@ -306,12 +306,26 @@ select#academicYearSelect {
     border-color: #a68500 !important;
 }
 
-.attachments ul > li {
+li.attachment {
     margin-left: 0px;
-    border: 1px solid gray;
     padding: 6px;
     list-style-type: none;
     border-left: 10px solid rgb(44, 104, 119);
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+
+li.authorization {
+    margin-left: 0px;
+    padding: 6px;
+    list-style-type: none;
+    border-left: 10px solid #FFCC00;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
     margin-bottom: 10px;
 }
 

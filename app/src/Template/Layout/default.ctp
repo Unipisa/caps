@@ -33,7 +33,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 
         echo $this->Html->css('cake.generic');
         // echo $this->Html->css('chosen.min');
-        echo $this->Html->css('caps.css?v=1');
+        echo $this->Html->css('caps.css?v=2');
         echo $this->Html->css('caps.print.css?v=1', array('media' => 'print'));
 
         echo $this->Html->script('jquery-3.4.1.min');
