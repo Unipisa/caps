@@ -44,8 +44,8 @@ class ProposalsController extends AppController {
                 'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
                 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
                 'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
-                'Curricula.Degrees' ])
-            ->firstOrFail();
+                'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
+    ->firstOrFail();
     }
 
     private function createProposalEmail($proposal) {
@@ -203,22 +203,8 @@ class ProposalsController extends AppController {
       $this->set('selected', 'index');
     }
 
-    public function view ($id = null) {
-        if (!$id) {
-            throw new NotFoundException('');
-        }
-
-        $proposal = $this->Proposals->findById($id)
-            ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
-                        'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
-                        'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-                        'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
-                        'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
-            ->firstOrFail();
-
-        if (!$proposal) {
-            throw new NotFoundException('');
-        }
+    public function view ($id) {
+        $proposal = $this->get_proposal($id);
 
         // authorization
         $secret = $this->request->getQuery('secret');
@@ -474,7 +460,7 @@ class ProposalsController extends AppController {
                 $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
             }
 
-            //return $this->redirect(['controller' => 'Users', 'action' => 'view']);
+            return $this->redirect(['controller' => 'Users', 'action' => 'view']);
         }
         $this->set('proposal_auth', $proposal_auth);
     }
