@@ -321,21 +321,21 @@ class ProposalsController extends AppController {
             ->where([ 'Users.username' => $username ])
             ->firstOrFail();
 
-				if ($proposal_id != null) {
-					$proposal = $this->Proposals->find()->contain([
-            	        'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
-						->where([ 'Proposals.id' => $proposal_id ])
-						->firstOrFail();
+        if ($proposal_id != null) {
+            $proposal = $this->Proposals->find()->contain([
+                'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
+                ->where([ 'Proposals.id' => $proposal_id ])
+                ->firstOrFail();
 
-					// Check if the user is the right user
-					if ($proposal['user']['username'] != $this->user['username']) {
-						throw ForbiddenException('Il piano di studi non è di proprietà di questo utente');
-					}
-				}
-				else {
-					$proposal = $this->Proposals->newEntity();
-					$proposal->user = $user;
-				}
+            // Check if the user is the right user
+            if ($proposal['user']['id'] != $this->user['id']) {
+                throw new ForbiddenException();
+            }
+        }
+        else {
+            $proposal = $this->Proposals->newEntity();
+            $proposal->user = $user;
+        }
 
         if ($user) {
             if ($proposal['state'] === 'submitted') {
