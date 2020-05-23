@@ -176,13 +176,24 @@
 </div>
 
 <div class="attachments">
-  <?php if (count($proposal['attachments']) > 0): ?>
+
+    <?php
+      $secret = $this->request->getQuery('secret');
+
+      $visible_attachment_count = count(
+          array_filter(
+              $proposal['attachments'],
+              function ($a) use ($user, $secret) { return $a->canViewAttachment($user, $secret); }
+          ));
+     ?>
+
+  <?php if ($visible_attachment_count > 0): ?>
     <h3>Allegati e commenti</h3>
   <?php endif ?>
     <p>
     <ul class="attachments">
     <?php foreach ($proposal['attachments'] as $att): ?>
-    <?php if ($att->canViewAttachment($user)): ?>
+    <?php if ($att->canViewAttachment($user, $secret)): ?>
           <li class="attachment">
               <?php if ($att['comment'] != ""): ?>
                 <?= $att['comment'] ?><br><br>
@@ -211,7 +222,7 @@
                   echo $this->Form->postLink('Elimina questo commento e allegato', [
                       'controller' => 'attachments',
                       'action' => 'delete',
-                      $att['id']
+                      $att['id'], $secret
                   ], [
                       'confirm' => 'Cancellare definitivamente l\'allegato?',
                   ]);
@@ -222,7 +233,7 @@
     <?php endforeach ?>
     </ul>
     <?php
-        if ($proposal->canAddAttachment($user)) { ?>
+        if ($proposal->canAddAttachment($user, $secret)) { ?>
             <h3>Inserisci un nuovo allegato o commento</h3>
             <?php
             echo $this->Form->create('Attachment', [
@@ -232,6 +243,7 @@
             ?>
             <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
             <?php
+            echo $this->Form->hidden('secret', [ 'value' => $secret]);
             echo $this->Form->textarea('comment');
             echo $this->Form->file('data');
             echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]);

@@ -52,6 +52,8 @@ class AttachmentsController extends AppController
             $attachment['proposal_id'] = $this->request->getData('proposal_id');
             $attachment['comment'] = $this->request->getData('comment');
 
+            $secret = $this->request->getData('secret');
+
             $data = $this->request->getData('data');
 
             if ($data['tmp_name'] == "" && $attachment['comment'] == "") {
@@ -81,10 +83,10 @@ class AttachmentsController extends AppController
 
             // Check that the user owns the given proposal, or is an adminstrator
             $proposal = $this->Attachments->Proposals->get($attachment['proposal_id'], [
-                'contain' => 'Users'
+                'contain' => [ 'Users', 'ProposalAuths' ]
             ]);
 
-            if (! $proposal->canAddAttachment($this->user)) {
+            if (! $proposal->canAddAttachment($this->user, $secret)) {
                 throw new ForbiddenException('Impossibile allegare file a questo piano');
             }
 
@@ -98,7 +100,8 @@ class AttachmentsController extends AppController
             return $this->redirect([
                         'controller' => 'proposals',
                         'action' => 'view',
-                        $attachment['proposal_id']
+                        $attachment['proposal_id'],
+                        "secret" => $secret
                     ]
                 );
         }
@@ -114,7 +117,7 @@ class AttachmentsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($id = null, $secret = null)
     {
         $attachment = $this->Attachments->get($id, [
             'contain' => [ 'Users', 'Proposals' ]
@@ -136,7 +139,8 @@ class AttachmentsController extends AppController
         return $this->redirect([
             'controller' => 'proposals',
             'action' => 'view',
-            $proposal_id
+            $proposal_id,
+            "secret" => $secret
         ]);
     }
 }

@@ -59,6 +59,10 @@ class ProposalsTable extends Table
         $this->hasMany('ChosenFreeChoiceExams', [
             'dependent' => true
         ])->setProperty('chosen_free_choice_exams');
+
+        $this->hasMany('ProposalAuths', [
+            'dependent' => true
+        ])->setProperty('auths');
     }
 
     /**

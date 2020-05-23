@@ -36,7 +36,8 @@ class Proposal extends Entity
         'chosen_exams' => true,
         'chosen_free_choice_exams' => true,
         'submitted_date' => true,
-        'approved_date' => true
+        'approved_date' => true,
+        'auths' => true
     ];
 
     public function getStateString()
@@ -61,7 +62,23 @@ class Proposal extends Entity
      *
      * @param \App\Model\Entity\User $user
      */
-    public function canAddAttachment($user) {
-        return $user != null && ($user['admin'] || $user['username'] == $this->user['username']);
+    public function canAddAttachment($user, $secret = null) {
+        return $user != null && (
+            $user['admin'] || $user['username'] == $this->user['username']) ||
+            $this->checkSecret($secret);
+    }
+
+    public function checkSecret($secret) {
+        if ($secret == null) {
+            return false;
+        }
+
+        foreach ($this->auths as $a) {
+            if ($a['secret'] == $secret) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

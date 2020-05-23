@@ -213,7 +213,7 @@ class ProposalsController extends AppController {
                         'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
                         'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
                         'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
-                        'Curricula.Degrees' ])
+                        'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
             ->firstOrFail();
 
         if (!$proposal) {
@@ -222,11 +222,7 @@ class ProposalsController extends AppController {
 
         // authorization
         $secret = $this->request->getQuery('secret');
-        if ($secret != false) {
-            $ProposalAuths = TableRegistry::getTableLocator()->get('ProposalAuths');
-            $proposal_auth = $ProposalAuths->find()->where(['secret' => $secret, 'proposal_id' => $proposal['id']])->firstOrFail();
-            // authorized!
-        } else if ($proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
+        if (!$proposal->checkSecret($secret) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -464,7 +460,7 @@ class ProposalsController extends AppController {
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = base64_encode(Security::randomBytes(8));
 
-            if ($ProposalAuths->save($proposal_auth)) {                
+            if ($ProposalAuths->save($proposal_auth)) {
                 $email = $this->createProposalEmail($proposal)
                 ->setTo($proposal_auth['email'])
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
@@ -476,7 +472,7 @@ class ProposalsController extends AppController {
             else {
                 debug(var_export($proposal_auth->errors(), TRUE));
                 $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
-            } 
+            }
 
             //return $this->redirect(['controller' => 'Users', 'action' => 'view']);
         }
