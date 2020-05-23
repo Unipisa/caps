@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use \App\Model\Entity\User;
 
 /**
  * Proposal Entity
@@ -52,5 +53,15 @@ class Proposal extends Entity
             default:
                 return $this->state;
         }
+    }
+
+    /**
+     * This functions checks if a user has the permission to add an
+     * attachment to this proposal.
+     *
+     * @param \App\Model\Entity\User $user
+     */
+    public function canAddAttachment($user) {
+        return $user != null && ($user['admin'] || $user['username'] == $this->user['username']);
     }
 }
