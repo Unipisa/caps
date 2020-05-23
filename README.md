@@ -66,3 +66,121 @@ students_base_dn = "dc=studenti,ou=people,dc=unipi,dc=it"
 ; Base DN dove cercare i docenti
 admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
 ```
+
+## struttura dati
+
+    Attachment
+        id
+        filename
+        user -> User
+        proposal -> Proposal
+        data
+        mimetype
+        comment
+        created
+
+    ChosenExam
+        id
+        credits
+        chosen_year
+        exam -> Exam
+        proposal -> Proposal
+        compulsory_group -> CompulsoryGroup (*)
+        compulsory_exam -> CompulsoryExams (*)
+        free_choice_exam -> FreeChoiceExam (*) (?)
+
+    ChosenFreeChoiceExam
+        id
+        name
+        credits
+        chosen_year
+        proposal -> Proposal
+        free_choice_exam -> FreeChoiceExam (*)
+
+    CompulsoryExam
+        id
+        year
+        position
+        exam -> Exam
+        curriculum -> Curriculum
+
+    CompulsoryGroup
+        id
+        year
+        position
+        group -> Group
+        curriculum -> Curriculum
+
+    Curriculum
+        id
+        name
+        academic_year
+        notes
+        degree -> Degrees (*)
+        proposals <- Proposals
+        free_choice_exams <- FreeChoiceExam
+        compulsory_exams <- CompulsoryExam
+        compulsory_groups <- CompulsoryGroup
+        <- Proposal
+
+    Exam
+        id
+        name
+        code
+        sector
+        credits
+        <-> Exam
+
+    FreeChoiceExam
+        id
+        year
+        position
+        curriculum -> Curriculum
+
+    Group
+        id
+        name
+        <-> Exam
+
+    ProposalAuth
+        id
+        email
+        secret
+        created
+        proposal -> Proposal
+
+    Proposal
+        id
+        modified
+        state
+        submitted_date
+        approved_date
+        user -> User
+        curriculum -> Curriculum
+        <- ChosenExam
+        <- ChosenFreeChoiceExam
+        <- ProposalAuth
+        <- Attachment
+
+    Settings
+        id
+        field
+        value
+        fieldtype
+
+    Tag
+        id
+        name
+        <-> Exam
+
+    User
+        id
+        username
+        name
+        number
+        givenname
+        surname
+        email
+        admin
+
+(*) nel database manca il constraint!!
