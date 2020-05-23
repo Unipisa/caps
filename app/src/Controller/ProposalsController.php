@@ -453,14 +453,14 @@ class ProposalsController extends AppController {
                 $email->setViewVars(['proposal_auth' => $proposal_auth]);
                 $email->viewBuilder()->setTemplate('share');
                 $email->send();
-                $this->Flash->success("inviato email con richiesta di parere");
+                $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
             }
             else {
                 debug(var_export($proposal_auth->errors(), TRUE));
                 $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
             }
 
-            return $this->redirect(['controller' => 'Users', 'action' => 'view']);
+            return $this->redirect(['action' => 'view', $proposal['id']]);
         }
         $this->set('proposal_auth', $proposal_auth);
     }

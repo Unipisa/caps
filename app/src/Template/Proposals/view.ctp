@@ -251,6 +251,20 @@
             echo $this->Form->end();
         }
     ?></p>
+
+    <?php
+        echo $this->Form->create('ProposalAuth', [
+            'url' => ['controller' => 'proposals', $proposal['id'], 'action' => 'share']
+        ]);
+        echo $this->Form->control(
+            'email',
+            ['label' => 'Email']);
+        echo $this->Form->submit('Richiedi parere');
+        
+        echo $this->Form->end();
+    ?>
+
+
 </div>
 
 <?php if ($user['admin']): ?>
