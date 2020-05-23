@@ -180,20 +180,29 @@
     <?php
       $secret = $this->request->getQuery('secret');
 
-      $visible_attachment_count = count(
-          array_filter(
-              $proposal['attachments'],
-              function ($a) use ($user, $secret) { return $a->canViewAttachment($user, $secret); }
-          ));
+      $visible_attachments = array_filter(
+          $proposal['attachments'],
+          function ($a) use ($user, $secret) { return $a->canViewAttachment($user, $secret); }
+      );
+
+      $authorizations = $proposal->auths;
+
+      // Construct an array with the attachments and the authorizations, and sort it
+      $attachments_and_auths = array_merge($visible_attachments, $authorizations);
+      usort($attachments_and_auths, function ($a, $b) {
+          return $a->created->getTimestamp() - $b->created->getTimestamp();
+      });
+
+      $events_count = count($attachments_and_auths);
      ?>
 
-  <?php if ($visible_attachment_count > 0): ?>
+  <?php if ($events_count > 0): ?>
     <h3>Allegati e commenti</h3>
   <?php endif ?>
     <p>
     <ul class="attachments">
-    <?php foreach ($proposal['attachments'] as $att): ?>
-    <?php if ($att->canViewAttachment($user, $secret)): ?>
+    <?php foreach ($attachments_and_auths as $att): ?>
+    <?php if ($att instanceof \App\Model\Entity\Attachment): ?>
           <li class="attachment">
               <?php if ($att['comment'] != ""): ?>
                 <?= $att['comment'] ?><br><br>
@@ -229,6 +238,14 @@
                   ?> ]
               <?php endif ?>
           </li>
+    <?php else: ?>
+        <li class="authorization">
+            Richiesta di parere inviata <strong>a <?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
+                ?>  — <?php
+                echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+            }
+            ?>
+        </li>
     <?php endif ?>
     <?php endforeach ?>
     </ul>
