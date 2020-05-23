@@ -224,7 +224,7 @@ class ProposalsController extends AppController {
         $secret = $this->request->getQuery('secret');
         if ($secret != false) {
             $ProposalAuths = TableRegistry::getTableLocator()->get('ProposalAuths');
-            $proposal_auth = $ProposalAuths->find()->where(['secret' => $secret])->firstOrFail();
+            $proposal_auth = $ProposalAuths->find()->where(['secret' => $secret, 'proposal_id' => $proposal['id']])->firstOrFail();
             // authorized!
         } else if ($proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
@@ -459,6 +459,7 @@ class ProposalsController extends AppController {
         $proposal_auth = $ProposalAuths->newEntity();
 
         if ($this->request->is('post')) {
+            $proposal_auth['proposal_id'] = $proposal['id'];
             $proposal_auth['created_on'] = Time::now();
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = base64_encode(Security::randomBytes(8));
