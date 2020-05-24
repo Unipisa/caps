@@ -433,20 +433,23 @@ class ProposalsController extends AppController {
 
     public function share ($id) {
         $proposal = $this->get_proposal($id);
+
         if (!$this->user['admin'] && $this->user['id']!=$proposal['user_id']) {
             throw new ForbiddenException();
         }
-        $ProposalAuths = TableRegistry::getTableLocator()->get('ProposalAuths');
 
-        $proposal_auth = $ProposalAuths->newEntity();
+        if ($proposal['state'] != 'submitted') {
+            throw new ForbiddenException('Si può chiedere un parere solo su piani sottomessi.');
+        }
+
+        $proposal_auth = $this->Proposals->ProposalAuths->newEntity();
 
         if ($this->request->is('post')) {
             $proposal_auth['proposal_id'] = $proposal['id'];
-            $proposal_auth['created_on'] = Time::now();
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = base64_encode(Security::randomBytes(8));
 
-            if ($ProposalAuths->save($proposal_auth)) {
+            if ($this->Proposals->ProposalsAuths->save($proposal_auth)) {
                 $email = $this->createProposalEmail($proposal)
                 ->setTo($proposal_auth['email'])
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');

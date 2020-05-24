@@ -27,7 +27,7 @@ class AttachmentsController extends AppController
             'contain' => ['Users', 'Proposals', 'Proposals.Users' ]
         ]);
 
-        if (! $attachment->canViewAttachment($this->user)) {
+        if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
 
@@ -86,7 +86,7 @@ class AttachmentsController extends AppController
                 'contain' => [ 'Users', 'ProposalAuths' ]
             ]);
 
-            if (! $proposal->canAddAttachment($this->user, $secret)) {
+            if (! $this->user || ! $this->user->canAddAttachment($proposal, $secret)) {
                 throw new ForbiddenException('Impossibile allegare file a questo piano');
             }
 
@@ -123,7 +123,7 @@ class AttachmentsController extends AppController
             'contain' => [ 'Users', 'Proposals' ]
         ]);
 
-        if (! $attachment->canDeleteAttachment($this->user)) {
+        if (! $this->user || ! $this->user->canDeleteAttachment($attachment)) {
             throw new ForbiddenException('Impossibile cancellare il file selezionato');
         }
 

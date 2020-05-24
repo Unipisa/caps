@@ -1,15 +1,15 @@
 #!/bin/bash
 
-grep pagine.dm.unipi.it ~/.ssh/config > /dev/null
+grep caps.dm.unipi.it ~/.ssh/config > /dev/null
 if [ $? -ne 0 ]; then
-  echo "Configurazione per pagine.dm.unipi.it non trovata in ~/.ssh/config"
+  echo "Configurazione per caps.dm.unipi.it non trovata in ~/.ssh/config"
   echo " > Perché questo script funzioni, è necessario che si possa effettuare"
-  echo " > ssh pagine.dm.unipi.it senza autenticazione"
+  echo " > ssh caps.dm.unipi.it senza autenticazione"
   echo ""
   echo "Provo a procedere ugualmente"
 fi
 
-ssh -L 1636:idm2.unipi.it:636 pagine.dm.unipi.it -N &
+ssh -L 1636:idm2.unipi.it:636 caps.dm.unipi.it -N &
 ssh_pid=$!
 
 trap shutdown INT
