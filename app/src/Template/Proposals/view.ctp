@@ -209,6 +209,15 @@
     <ul class="attachments">
     <?php foreach ($attachments_and_auths as $att): ?>
     <?php if ($att instanceof \App\Model\Entity\Attachment): ?>
+
+            <?php
+                // Determiniamo se si tratta di commento e/o allegato
+                $obj_name = "allegato";
+                if ($att->filename == null) {
+                    $obj_name = "commento";
+                }
+            ?>
+
           <li class="attachment">
               <?php if ($att['comment'] != ""): ?>
                 <?= $att['comment'] ?><br><br>
@@ -234,12 +243,12 @@
                   <?php if ($user && $user->canDeleteAttachment($att)): ?>
                   — [
                   <?php
-                  echo $this->Form->postLink('Elimina questo commento e allegato', [
+                  echo $this->Form->postLink('Elimina questo ' . $obj_name, [
                       'controller' => 'attachments',
                       'action' => 'delete',
                       $att['id'], $secret
                   ], [
-                      'confirm' => 'Cancellare definitivamente l\'allegato?',
+                      'confirm' => 'Cancellare definitivamente l\'' . $obj_name . '?',
                   ]);
                   ?> ]
               <?php endif ?>
@@ -275,17 +284,21 @@
         }
     ?></p>
 
-    <?php
-        echo $this->Form->create('ProposalAuth', [
-            'url' => ['controller' => 'proposals', $proposal['id'], 'action' => 'share']
-        ]);
-        echo $this->Form->control(
-            'email',
-            ['label' => 'Email']);
-        echo $this->Form->submit('Richiedi parere');
+    <?php if ($proposal['state'] == 'submitted'): ?>
+        <h3>Richiesta parere</h3>
+        <?php
+            echo $this->Form->create('ProposalAuth', [
+                'url' => ['controller' => 'proposals', $proposal['id'], 'action' => 'share']
+            ]);
+            echo $this->Form->control(
+                'email',
+                ['label' => 'Email']);
+            echo $this->Form->submit('Richiedi parere');
 
-        echo $this->Form->end();
-    ?>
+            echo $this->Form->end();
+        ?>
+
+    <?php endif ?>
 
 
 </div>
