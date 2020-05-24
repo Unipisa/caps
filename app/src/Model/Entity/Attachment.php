@@ -36,21 +36,4 @@ class Attachment extends Entity
         'created' => true,
         'comment' => true
     ];
-
-    /**
-     * This function checks if a user can see an attachment.
-     *
-     * @param \App\Model\Entity\User $user
-     * @return bool
-     */
-    public function canViewAttachment($user, $secret = null) {
-        return $user != null && ($user['admin'] ||
-                $user['username'] == $this->user['username'] ||
-                ($this->proposal != NULL && $user['username'] == $this->proposal->user['username']) ||
-                ($this->proposal != NULL && $this->proposal->checkSecret($secret)));
-    }
-
-    public function canDeleteAttachment($user) {
-        return $user != null && ($user['admin'] || $user['username'] == $this->user['username']);
-    }
 }

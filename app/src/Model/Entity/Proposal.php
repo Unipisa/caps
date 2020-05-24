@@ -56,18 +56,6 @@ class Proposal extends Entity
         }
     }
 
-    /**
-     * This functions checks if a user has the permission to add an
-     * attachment to this proposal.
-     *
-     * @param \App\Model\Entity\User $user
-     */
-    public function canAddAttachment($user, $secret = null) {
-        return $user != null && (
-            $user['admin'] || $user['username'] == $this->user['username']) ||
-            $this->checkSecret($secret);
-    }
-
     public function checkSecret($secret) {
         if ($secret == null) {
             return false;

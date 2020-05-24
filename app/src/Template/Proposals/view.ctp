@@ -188,7 +188,7 @@
 
       $visible_attachments = array_filter(
           $proposal['attachments'],
-          function ($a) use ($user, $secret) { return $a->canViewAttachment($user, $secret); }
+          function ($a) use ($user, $secret) { return $user && $user->canViewAttachment($a, $secret); }
       );
 
       $authorizations = $proposal->auths;
@@ -231,7 +231,7 @@
               }
               ?>
 
-                  <?php if ($att->canDeleteAttachment($user)): ?>
+                  <?php if ($user && $user->canDeleteAttachment($att)): ?>
                   — [
                   <?php
                   echo $this->Form->postLink('Elimina questo commento e allegato', [
@@ -256,7 +256,7 @@
     <?php endforeach ?>
     </ul>
     <?php
-        if ($proposal->canAddAttachment($user, $secret)) { ?>
+        if ($user && $user->canAddAttachment($proposal, $secret)) { ?>
             <h3>Inserisci un nuovo allegato o commento</h3>
             <?php
             echo $this->Form->create('Attachment', [
@@ -283,7 +283,7 @@
             'email',
             ['label' => 'Email']);
         echo $this->Form->submit('Richiedi parere');
-        
+
         echo $this->Form->end();
     ?>
 
