@@ -50,7 +50,7 @@ class User extends Entity
     public function canAddAttachment(Proposal $proposal, string $secret = null)
     {
         return $this['admin'] ||
-            $this['id'] == $proposal->user['user_id'] ||
+            $this['id'] == $proposal['user_id'] ||
             $proposal->checkSecret($secret);
     }
 
