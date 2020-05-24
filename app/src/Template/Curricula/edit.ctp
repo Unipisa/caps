@@ -78,6 +78,9 @@
     <?php } ?>
 </table>
 <?php
+    $years = [];
+    for($y = 1; $y <= $curriculum['degree']['years']; $y++) $years[$y] = $y;
+
     echo $this->Form->create(
         'CompulsoryExams', [
             'url' => [
@@ -109,7 +112,7 @@
         [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $years
         ]
     );
     echo $this->Form->submit('Aggiungi esame',
@@ -197,7 +200,7 @@
         [
             'class' => 'caps-admin-curriculum-group-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $years
         ]
     );
     echo $this->Form->submit('Aggiungi gruppo',
