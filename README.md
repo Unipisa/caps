@@ -87,7 +87,7 @@ admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
         proposal -> Proposal
         compulsory_group -> CompulsoryGroup (*)
         compulsory_exam -> CompulsoryExams (*)
-        free_choice_exam -> FreeChoiceExam (*) (?)
+        free_choice_exam -> FreeChoiceExam (*) 
 
     ChosenFreeChoiceExam
         id

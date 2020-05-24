@@ -1,3 +1,9 @@
+<script>
+    var proposal = <?= json_encode($proposal) ?>;
+</script>
+
+<?= $this->Html->script('proposals/view.js?rev=1') ?>
+
 <div class="bureaucracy">
     <div class="heading">
         <?php echo $this->Html->image('cherubino_black.png', [ 'class' => 'left' ]) ?>
@@ -324,3 +330,7 @@
         </li>
     </ul>
 <?php endif; ?>
+
+<!--div id="proposal_div">
+<button id="edit_button" onclick="populate_html()">edit</button>
+</div-->
