@@ -1,5 +1,5 @@
 <script>
-    var proposal = <?= json_encode($proposal) ?>;
+    var proposal_json = <?= json_encode($proposal) ?>;
 </script>
 
 <?= $this->Html->script('proposals/view.js?rev=1') ?>
@@ -331,6 +331,5 @@
     </ul>
 <?php endif; ?>
 
-<!--div id="proposal_div">
-<button id="edit_button" onclick="populate_html()">edit</button>
-</div-->
+<div id="proposal_div">
+</div>
