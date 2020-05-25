@@ -37,11 +37,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         echo $this->Html->css('caps.print.css?v=1', array('media' => 'print'));
 
         echo $this->Html->script('jquery-3.4.1.min');
-        // echo $this->Html->script('chosen.jquery.min');
-        /* if (is_file(WWW_ROOT . 'js' . DS . $this->request->params['controller'] . DS . $this->request->params['action'] . '.js')) {
-            echo $this->Html->script($this->request->params['controller'] . '/' . $this->request->params['action']);
-        } */
-	?>
+    ?>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 </head>
 <body>
 	<div id="container">

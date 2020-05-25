@@ -1,5 +1,13 @@
 <script>
     var proposal_json = <?= json_encode($proposal) ?>;
+    
+    var caps_json = {
+        curriculumURL: <?= json_encode($this->Url->build([ 'action' => 'view', 'controller' => 'curricula' ])) ?>,
+        examsURL: <?= json_encode($this->Url->build([ 'controller' => 'exams', 'action' => 'index', '_ext' => 'json'])) ?>,
+        groupsURL: <?= json_encode($this->Url->build([ 'controller' => 'groups', 'action' => 'index', '_ext' => 'json'])) ?>,
+        curriculaURL: <?= json_encode($this->Url->build([ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json'])) ?>,
+        cds: <?= json_encode($settings['cds']) ?>
+    };
 </script>
 
 <?= $this->Html->script('proposals/view.js?rev=1') ?>
