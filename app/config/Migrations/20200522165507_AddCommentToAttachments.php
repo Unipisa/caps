@@ -46,21 +46,6 @@ class AddCommentToAttachments extends AbstractMigration
     public function down() {
         $table = $this->table('attachments');
 
-        $table->changeColumn('filename', 'string', [
-            'null' => false,
-            'default' => null
-        ]);
-
-        $table->changeColumn('data', 'blob', [
-            'null' => false,
-            'default' => null
-        ]);
-
-        $table->changeColumn('mimetype', 'string',[
-            'null' => false,
-            'default' => null
-        ]);
-
         $table->removeColumn('created');
         $table->removeColumn('comment');
 
