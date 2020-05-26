@@ -85,9 +85,11 @@ admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
         chosen_year
         exam -> Exam
         proposal -> Proposal
-        compulsory_group -> CompulsoryGroup (*)
-        compulsory_exam -> CompulsoryExams (*)
-        free_choice_exam -> FreeChoiceExam (*) 
+        compulsory_group -> CompulsoryGroup (*) (!) 
+        compulsory_exam -> CompulsoryExams (*) (!) 
+        free_choice_exam -> FreeChoiceExam (*) (!) 
+        (*) uno solo dei tre puo' essere non null: indica la corrispondenza dell'esame nel curriculum
+        (*) se tutti e tre sono null vuol dire che l'esame non era previsto nel curriculum
 
     ChosenFreeChoiceExam
         id
@@ -95,7 +97,9 @@ admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
         credits
         chosen_year
         proposal -> Proposal
-        free_choice_exam -> FreeChoiceExam (*)
+        free_choice_exam -> FreeChoiceExam (*) (!)
+        (*) se non null indica la corrispondenza dell'esame nel curriculum. Ma attualmente l'utente non puo' inserirlo, infatti è sempre null!
+        (*) se null significa che e' un esame non in databse e  non previsto dal curriculum.
 
     CompulsoryExam
         id
@@ -116,7 +120,7 @@ admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
         name
         academic_year
         notes
-        degree -> Degrees (*)
+        degree -> Degrees (!)
         proposals <- Proposals
         free_choice_exams <- FreeChoiceExam
         compulsory_exams <- CompulsoryExam
@@ -183,4 +187,4 @@ admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
         email
         admin
 
-(*) nel database manca il constraint!!
+(!) nel database manca il constraint!!
