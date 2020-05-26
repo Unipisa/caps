@@ -109,11 +109,12 @@ class Exam {
             this.can_be_changed = true;
             this.is_compulsory = false;
         } else if (!this.is_empty) {
-            this.position = [4, this.json.id];
+            this.position = [3, this.json.id];
             this.text_gruppo = "Personalizzato";
             this.can_be_changed = true;
             this.is_compulsory = false;
         } else {
+            // può succedere ?!?!
             this.position = [5, this.json.id];
             this.text_group = "";
             this.can_be_changed = true;
@@ -123,7 +124,7 @@ class Exam {
 
     populate_tr($tr, proposal) {
         var self = this;
-        if (self.is_empty) return self.populate_tr_edit($tr, proposal);
+        if (self.is_empty && proposal.edit_mode) return self.populate_tr_edit($tr, proposal);
         
         var $exam_name_td = $("<td></td>");
         
@@ -131,29 +132,34 @@ class Exam {
         // bisogna gestire la presenza di esami "segnaposto" che corrispondono ad elementi del curriculum
         // non ancora scelti dall'utente.
         
-        var $edit_button = null;
-        var $trash_button = null;
-        if (self.can_be_changed) {
-            $edit_button = $("<button></button>").addClass("edit-button fas fa-edit").click(function() {
-                self.populate_tr_edit($tr, proposal);
-                $(".edit-button").prop("disabled", true);
-                $(".add-button").prop("disabled", true);
-            });
+        if (proposal.edit_mode) {
+            var $edit_button = null;
+            var $trash_button = null;
+            if (self.can_be_changed) {
+                $edit_button = $("<button></button>").addClass("edit-button fas fa-edit").click(function() {
+                    self.populate_tr_edit($tr, proposal);
+                    $(".edit-button").prop("disabled", true);
+                    $(".add-button").prop("disabled", true);
+                    $(".trash-button").prop("disabled", true);
+                });
+            } else {
+                $edit_button = $("<i></i>").addClass("fas fa-ban");
+            }  
+            if (!self.is_compulsory) {
+                $trash_button = $("<button></button>").addClass("trash-button fas fa-trash").click(function() {
+                    var lst = self.is_custom ? proposal.json.chosen_free_choice_exams : proposal.json.chosen_exams;
+                    var i = 0;
+                    for(;i<lst.length && lst[i].id != self.json.id;i++);
+                    if (i == lst.length) throw "runtime error: cannot find exam!";
+                    lst.splice(i, 1);
+                    proposal.update();
+                });
+            }
+            $tr.empty();
+            $tr.append($("<td></td>").addClass("edit").append($edit_button).append($trash_button));
         } else {
-            $edit_button = $("<i></i>").addClass("fas fa-ban");
-        }  
-        if (!self.is_compulsory) {
-            $trash_button = $("<button></button>").addClass("fas fa-trash").click(function() {
-                var lst = self.is_custom ? proposal.json.chosen_free_choice_exams : proposal.json.chosen_exams;
-                var i = 0;
-                for(;i<lst.length && lst[i].id != self.json.id;i++);
-                if (i == lst.length) throw "runtime error: cannot find exam!";
-                lst.splice(i, 1);
-                proposal.update();
-            });
+            $tr.empty();
         }
-        $tr.empty();
-        $tr.append($("<td></td>").addClass("edit").append($edit_button).append($trash_button));
         $tr.append($("<td></td>").text(self.code));
         $exam_name_td.text(self.name);
         if (self.tags.length>0) {
@@ -242,6 +248,7 @@ class Proposal {
         this.json = proposal_json;
         this.$div = $div;
         this.update();
+        this.edit_mode = false;
     }
     
     update() {
@@ -284,19 +291,31 @@ class Proposal {
     }
 
     populate_html() {
+        var self = this;
         var curriculum = this.json.curriculum;
         var academic_year = parseInt(curriculum.academic_year);
         this.$div.empty();
-        this.$div.append($("<h3></h3>").text(
-            curriculum.degree.name + " — Curriculum "  
-            + curriculum.name + " (anno di immatricolazione "
-            + academic_year + "/" + (academic_year+1) + ")"));
-        
-        var self = this;
+        if (this.edit_mode) {
+            var $button = $("<button></button>");
+            $button.addClass("fas fa-check").text("salva modifiche").click(function() {
+                self.save();
+            });
+        } else {
+            this.$div.append($("<h3></h3>").text(
+                curriculum.degree.name + " — Curriculum "  
+                + curriculum.name + " (anno di immatricolazione "
+                + academic_year + "/" + (academic_year+1) + ") ")
+                .append($("<button></button>").addClass("fas fa-edit").text("modifica").click(function() {
+                    self.edit_mode = true;
+                    self.populate_html();
+                })));
+        }
         this.year_exams.forEach(function(exams, year) {
             self.$div.append($("<h3></h3>").text([null, "Primo", "Secondo", "Terzo", "Quarto", "Quinto"][year] + " anno"));
             var $table = $("<table></table>");
-            $table.append("<tr><th class=edit></th><th>Codice</th><th>Nome</th><th>Settore</th><th>Crediti</th><th>Gruppo</th>");
+            $table.append("<tr>"); 
+            if (self.edit_mode) $table.append("<th></th>")
+            $table.append("<th>Codice</th><th>Nome</th><th>Settore</th><th>Crediti</th><th>Gruppo</th>");
             exams.forEach(function(exam) {
                 var $tr = $("<tr></tr>");
                 exam.populate_tr($tr, self);
@@ -304,34 +323,29 @@ class Proposal {
             });
             var $year_credits = $("<strong></strong>").text(self.year_credits[year]);
 
-            var $exam_name_td = $("<td></td>");
-
-            var $button = $("<button></button>").addClass("add-button fa fa-plus-square").click(function() {
-                self.json.chosen_exams.push({
-                    id: caps.get_new_id(),
-                    chosen_year: year,
-                    compulsory_exam: null,
-                    compulsory_exam_id: null,
-                    compulsory_group: null,
-                    compulsory_group_id: null,
-                    free_choice_exam: null,
-                    free_choice_exam_id: null,
-                    credits: null,
-                    exam: null,
-                    exam_id: null,
-                    name: null
+            var $tr = $("<tr></tr>")
+            if (self.edit_mode) {
+                var $button = $("<button></button>").addClass("add-button fa fa-plus-square").click(function() {
+                    self.json.chosen_exams.push({
+                        id: caps.get_new_id(),
+                        chosen_year: year,
+                        compulsory_exam: null,
+                        compulsory_exam_id: null,
+                        compulsory_group: null,
+                        compulsory_group_id: null,
+                        free_choice_exam: null,
+                        free_choice_exam_id: null,
+                        credits: null,
+                        exam: null,
+                        exam_id: null,
+                        name: null
+                    });
+                    self.update();
                 });
-                self.update();
-            });
-
-
-            $table.append($("<tr></tr>")
-                .append($("<td></td>").addClass("edit").append($button))
-                .append($("<td></td>"))
-                .append($exam_name_td)
-                .append($("<td></td>"))
-                .append($("<td></td>").html("<b>" + self.year_credits[year] + "</b> / " + CREDITS_PER_YEAR))
-                .append("<td></td>"));
+                $tr.append($("<td></td>").append($button));
+            }
+            $tr.append("<td></td><td></td><td></td><td><b>" + self.year_credits[year] + "</b> / " + CREDITS_PER_YEAR + "</td><td></td>");
+            $table.append($tr);
             self.$div.append($table);
         });   
         if (self.duplicated) {
@@ -349,5 +363,5 @@ function start() {
 }
 
 $(function() {
-    // start();
+    start();
 });
