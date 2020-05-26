@@ -449,7 +449,7 @@ class ProposalsController extends AppController {
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = base64_encode(Security::randomBytes(8));
 
-            if ($this->Proposals->ProposalsAuths->save($proposal_auth)) {
+            if ($this->Proposals->ProposalAuths->save($proposal_auth)) {
                 $email = $this->createProposalEmail($proposal)
                 ->setTo($proposal_auth['email'])
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
