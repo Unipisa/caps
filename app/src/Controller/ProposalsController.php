@@ -228,6 +228,12 @@ class ProposalsController extends AppController {
 
         $this->set('message', $message);
         $this->set('proposal', $proposal);
+        // json_encode is not able to serialize resources.
+        // hence we remove attachments before serializing
+        $save_attachments = $proposal->attachments;
+        $proposal->attachments = null;
+        $this->set('proposal_json', json_encode($proposal));
+        $proposal->attachments = $save_attachments; 
         $this->set('_serialize', [ 'proposal' ]);
     }
 

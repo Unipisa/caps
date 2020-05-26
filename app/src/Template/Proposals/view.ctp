@@ -1,5 +1,5 @@
 <script>
-    var proposal_json = <?= json_encode($proposal) ?>;
+    var proposal_json = <?= $proposal_json ?>;
     
     var caps_json = {
         curriculumURL: <?= json_encode($this->Url->build([ 'action' => 'view', 'controller' => 'curricula' ])) ?>,
