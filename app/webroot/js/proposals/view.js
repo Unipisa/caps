@@ -5,6 +5,8 @@ proposal_json
 examsURL
 */
 
+var CREDITS_PER_YEAR = 60;
+
 var caps;
 class Caps {
     constructor(json) {
@@ -59,7 +61,13 @@ class Exam {
     constructor(exam_json) {
         // exam_json può rappresentare un ChosenExam oppure un ChosenFreeChoiceExam
         this.json = exam_json;
+        this.duplicated = false;
         this.update();
+    }
+
+    is_same_as(other_exam) {
+        if (this.code == null && other_exam.code == null) return this.name == other_exam.name; 
+        return this.code == other_exam.code;
     }
 
     update() {
@@ -131,11 +139,10 @@ class Exam {
                 $(".edit-button").prop("disabled", true);
                 $(".add-button").prop("disabled", true);
             });
+        } else {
+            $edit_button = $("<i></i>").addClass("fas fa-ban");
         }  
         if (!self.is_compulsory) {
-            // due casi:
-            // 1. esame a scelta libera non previsto dal curriculum
-            // 2. esame personalizzato (mai previsto dal curriculum)
             $trash_button = $("<button></button>").addClass("fas fa-trash").click(function() {
                 var lst = self.is_custom ? proposal.json.chosen_free_choice_exams : proposal.json.chosen_exams;
                 var i = 0;
@@ -144,10 +151,7 @@ class Exam {
                 lst.splice(i, 1);
                 proposal.update();
             });
-        } else {
-            // è un esame obbligatorio: non lo puoi cambiare
-            $edit_button = $("<i></i>").addClass("fas fa-ban");
-        }  
+        }
         $tr.empty();
         $tr.append($("<td></td>").addClass("edit").append($edit_button).append($trash_button));
         $tr.append($("<td></td>").text(self.code));
@@ -159,6 +163,7 @@ class Exam {
         $tr.append($("<td></td>").text(self.sector));
         $tr.append($("<td></td>").text(self.credits));
         $tr.append($("<td></td>").text(self.text_gruppo));
+        if (self.duplicated) $tr.css('background-color', 'yellow');
     }
 
     populate_tr_edit($tr, proposal) {
@@ -241,29 +246,41 @@ class Proposal {
     
     update() {
         var self = this;
-        this.year_exams = []; // year -> Exam
-        this.year_credits = [];
-        this.credits = 0;
+        self.year_exams = []; // year -> Exam
+        self.year_credits = [];
+        self.credits = 0;
+        self.duplicated = 0;
 
-        this.years = this.json.curriculum.degree.years;
+        self.years = self.json.curriculum.degree.years;
+        self.expected_credits = 0;
     
-        for (var year=1; year <= this.years; year++) {
-            this.year_exams[year] = [];
-            this.year_credits[year] = 0;
+        for (var year=1; year <= self.years; year++) {
+            self.year_exams[year] = [];
+            self.year_credits[year] = 0;
+            self.expected_credits += CREDITS_PER_YEAR;
         };
     
-        this.json.chosen_exams.concat(this.json.chosen_free_choice_exams).forEach(function(exam_json) {
+        var lst = []
+
+        self.json.chosen_exams.concat(self.json.chosen_free_choice_exams).forEach(function(exam_json) {
             var exam = new Exam(exam_json);
             self.year_exams[exam.chosen_year].push(exam);
             self.year_credits[exam.chosen_year] += exam.credits;
             self.credits += exam.credits;
+            lst.forEach(function(previous_exam) {
+                if (exam.is_same_as(previous_exam)) {
+                    exam.duplicated = true;
+                    self.duplicated ++;
+                }
+            });
+            lst.push(exam);
         });
 
-        this.year_exams.forEach(function(exams) {
+        self.year_exams.forEach(function(exams) {
             exams.sort(function (a,b) {return compare_arrays(a.position,b.position)});
         });
 
-        this.populate_html();
+        self.populate_html();
     }
 
     populate_html() {
@@ -313,10 +330,16 @@ class Proposal {
                 .append($("<td></td>"))
                 .append($exam_name_td)
                 .append($("<td></td>"))
-                .append($("<td></td>").append($year_credits))
+                .append($("<td></td>").html("<b>" + self.year_credits[year] + "</b> / " + CREDITS_PER_YEAR))
                 .append("<td></td>"));
             self.$div.append($table);
         });   
+        if (self.duplicated) {
+            self.$div.append($("<p></p>").css("background-color","yellow").text("Attenzione: alcuni esami sono duplicati!"));
+        }
+        if (self.credits < self.expected_credits) {
+            self.$div.append($("<p></p>").css("background-color","yellow").text("Hai inserito solo " + self.credits + " crediti su " + self.expected_credits + " attesi"));
+        }
     }
 };
 
