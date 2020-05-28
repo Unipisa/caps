@@ -150,79 +150,119 @@ function get_ordinal(n) {
     return ["primo", "secondo", "terzo", "quarto", "quinto", "sesto", "settimo", "ottavo", "nono", "decimo"][n-1] || (n + "-esimo"); 
 }
 
+function assert(condition, message) {
+    console.assert(condition, message);
+}
+
 class Exam {
     constructor(proposal, exam_json) {
         // exam_json può rappresentare un ChosenExam oppure un ChosenFreeChoiceExam
         this.json = exam_json;
         this.duplicated = false;
-        this.update(proposal);
+        this.id = caps.get_new_id();
+
+
+
+        this.is_custom = false;
+        this.is_empty = false;
+        this.is_compulsory = false;
+        this.can_be_changed = false;
+        this.credits = this.json.credits;
+        this.expected_credits = null;
+        this.chosen_year = this.json.chosen_year;
+        this.expected_year = null;
+        this.tags = [];
+           
+        if (this.json.compulsory_exam_id != null) {
+            // esame obbligatorio senza scelta
+            assert(this.json.exam);
+            assert(this.json.compulsory_exam.id === this.json.compulsory_exam_id);
+            assert(this.json.compulsory_exam.exam_id === this.json.exam_id);
+            assert(this.json.compulsory_group_id === null);
+            assert(this.json.compulsory_group === null);
+            assert(this.json.exam_id === this.json.exam.id);
+            assert(!this.json.name);
+            this.code = this.json.exam.code;
+            this.sector = this.json.exam.sector;
+            this.name = this.json.exam.name;
+            this.tags = this.json.exam.tags || []; // warning: i gli esami caricati non hanno i tags
+            if (this.json.exam.credits != this.credits) this.expected_credits = this.json.exam.credits;
+            if (this.json.compulsory_exam.year != this.chosen_year) this.expected_year = this.json.compulsory_exam.year;
+            this.position = [1, this.json.compulsory_exam.position];
+            this.text_gruppo = "Obbligatorio";
+            this.is_compulsory = true;
+            assert(this.json.exam_id); 
+        } else if (this.json.compulsory_group_id != null) {
+            // esame obbligatorio con scelta in un gruppo
+            assert(this.json.compulsory_exam_id === null);
+            assert(this.json.compulsory_exam === null);
+            assert(this.json.compulsory_group.id === this.json.compulsory_group_id);
+            assert(!this.json.name);
+            if (this.json.exam) {
+                assert(this.json.exam_id === this.json.exam.id);
+                this.code = this.json.exam.code;
+                this.sector = this.json.exam.sector;
+                this.name = this.json.exam.name;
+                this.tags = this.json.exam.tags || []; // warning: gli esami caricati non hanno i tags
+                assert(this.tags.length >= 0); // è un array
+                if (this.json.exam.credits != this.credits) this.expected_credits = this.json.exam.credits;
+            } else {
+                // l'esame non è stato ancora scelto
+                this.is_empty = true;
+            }
+            if (this.json.compulsory_group.year != this.chosen_year) this.expected_year = this.json.compulsory_group.year;
+            this.position = [2, this.json.compulsory_group.position];
+            this.text_gruppo = this.json.compulsory_group.group.name;
+            this.can_be_changed = true;
+            this.is_compulsory = true;
+        } else if (this.json.exam_id) {
+            // esame a scelta libera scelto tra quelli del corso
+            assert(this.json.compulsory_exam === null);
+            assert(this.json.compulsory_group === null);
+            console.assert(!this.json.name);
+            this.code = this.json.exam.code;
+            this.sector = this.json.exam.sector;
+            this.name = this.json.exam.name;
+            this.tags = this.json.exam.tags || []; // warning: gli esami caricati non hanno i tags
+            assert(this.tags.length >= 0); // è un array
+            if (this.json.exam.credits != this.credits) this.expected_credits = this.json.exam.credits;
+            this.position = [3, this.json.id];
+            this.text_gruppo = "Esame a scelta";
+            this.can_be_changed = true;
+        } else if (this.json.name) {
+            // esame a scelta libera personalizzato
+            assert(this.json.compulsory_exam === undefined);
+            assert(this.json.compulsory_group === undefined);
+            assert(this.json.exam === undefined);
+            this.code = null;
+            this.sector = null;
+            this.name = this.json.name;
+            this.position = [4, this.json.id];
+            this.text_gruppo = "Esame personalizzato";
+            this.can_be_changed = true;
+            this.is_custom = true;
+        } else {
+            // esame a scelta libera non ancora scelto
+            this.code = null;
+            this.sector = null;
+            this.name = null;
+            this.position = [4, this.json.id];
+            this.text_gruppo = "Esame a scelta";
+            this.can_be_changed = true;
+            this.is_empty = true;
+        }
+
+        if (this.json._auto) this.text_group += " auto"; // debugging
+        if (this.expected_year) {
+            proposal.add_warning("nel curriculum selezionato l'esame \"" + this.name + "\" è previsto al " + get_ordinal(this.expected_year) + " anno");
+        }
+
+        this.warning = this.duplicated || this.is_empty || this.expected_year || this.expected_credits;
     }
 
     is_same_as(other_exam) {
         if (this.code == null && other_exam.code == null) return this.name == other_exam.name; 
         return this.code == other_exam.code;
-    }
-
-    update(proposal) {
-        var e = this.json;
-        this.is_custom = false;
-        this.is_empty = false;
-        if (e.exam_id != null) {
-            this.id = "E" + this.json.id; // choosen exam
-            e = e.exam;
-        } else if (this.json.name != null) {
-            this.is_custom = true;
-            this.id = "F" + this.json.id; // choosen free_choice_exam
-        } else {
-            // esame a scelta libera ancora da inserire
-            // oppure esame obbligatorio da scegliere in un gruppo ma non ancora scelto
-            this.id = "X" + this.json.id; 
-            this.is_empty = true;
-        }
-        this.credits = e.credits;
-        this.code = e.code;
-        this.name = e.name;
-        this.sector = e.sector;
-        this.credits = e.credits;
-        this.tags = e.tags ? e.tags : [];
-        this.chosen_year = this.json.chosen_year;
-        this.expected_year = null;
-           
-        if (this.json.compulsory_exam_id != null) {
-            this.position = [1, this.json.compulsory_exam.position];
-            this.text_gruppo = "Obbligatorio";
-            this.can_be_changed = false;
-            this.is_compulsory = true;
-            this.expected_year = this.json.compulsory_exam.year;
-        } else if (this.json.compulsory_group_id != null) {
-            this.position = [2, this.json.compulsory_group.position];
-            this.text_gruppo = this.json.compulsory_group.group.name; // obbligatorio nel gruppo
-            this.can_be_changed = true;
-            this.is_compulsory = true;
-            this.expected_year = this.json.compulsory_group.year;
-        } else if (!this.is_custom) {
-            this.position = [3, this.json.id];
-            this.text_gruppo = "A scelta libera";
-            this.can_be_changed = true;
-            this.is_compulsory = false;
-        } else if (!this.is_empty) {
-            this.position = [3, this.json.id];
-            this.text_gruppo = "Personalizzato";
-            this.can_be_changed = true;
-            this.is_compulsory = false;
-        } else {
-            // può succedere ?!?!
-            this.position = [5, this.json.id];
-            this.text_group = "";
-            this.can_be_changed = true;
-            this.is_compulsory = false;
-        }
-
-        this.warning = this.duplicated || this.is_empty;
-        if (this.expected_year && this.expected_year !== this.chosen_year) {
-            this.warning = true;
-            proposal.add_warning("nel curriculum selezionato l'esame \"" + this.name + "\" è previsto al " + get_ordinal(this.expected_year) + " anno");
-        }
     }
 
     populate_tr($tr, proposal) {
@@ -267,7 +307,7 @@ class Exam {
         }
         $tr.append($exam_name_td);
         $tr.append($("<td></td>").text(self.sector));
-        $tr.append($("<td></td>").text(self.credits));
+        $tr.append($("<td></td>").text(self.expected_credits?self.credits + " / " + self.expected_credits:self.credits));
         $tr.append($("<td></td>").text(self.text_gruppo));
     }
 
@@ -277,7 +317,7 @@ class Exam {
         
         // due casi:
         // 1. esame a scelta libera in un gruppo
-        // 2. esame a scelta libera tra tutti gli esami in database
+        // 2. esame a scelta libera tra tutti gli esami in database (custom)
         var $button = $("<button></button>").addClass("done-button fas fa-check").click(function() {
             proposal.update();
         });
@@ -324,8 +364,12 @@ class Exam {
                 } else if (val == "") {
                     proposal.update();
                 } else {
-                    self.json.exam_id = parseInt($select.val());
+                    self.json.exam_id = parseInt(val);
                     self.json.exam = id_exams[self.json.exam_id];
+                    self.json.credits = self.json.exam.credits; // in teoria l'utente potrebbe selezionare un numero diverso di crediti
+                    if (self.json._auto) {
+                        delete self.json._auto;
+                    }
                     proposal.update();
                 }
             });
@@ -399,14 +443,14 @@ class Proposal {
 
     update() {
         var self = this;
-        return self.update_changed_curriculum().then(function() {self.update_base()}).then(function() {self.populate_html()});
+        return self.fix_curriculum().then(function() {self.update_base()}).then(function() {self.populate_html()});
     }
 
     add_warning(message) {
         if (!this.warnings.includes(message)) this.warnings.push(message);
     }
 
-    update_changed_curriculum() {
+    fix_curriculum() {
         var curriculum_example = {
             "id": 9, "name": "Curriculum completo", "academic_year": 2021, "degree_id": 3, "notes": "mettiamoci tutto!",
             "degree": {"id": 3,"name": "Laurea Triennale", "years": 3},
@@ -444,16 +488,29 @@ class Proposal {
         // cosi si può togliere gli esami man mano che vengono 
         // associati a scelte obbligatorie (esami obbligatori o obbligo nel gruppo)
         // le scelte "libere" non vengono associate, tanto sono inutili (si potranno togliere)
-        var chosen_exams = this.json.chosen_exams.slice(0); 
-        chosen_exams.forEach(function(chosen){
-            chosen.compulsory_exam_id = null;
-            chosen.compulsory_exam = null
-            chosen.compulsory_group_id = null;
-            chosen.compulsory_group = null
-            chosen.free_choice_exam_id = null;
-            chosen.free_choice_exam = null;
+        var chosen_exams = this.json.chosen_exams.slice(0);
+        // fa una copia dei requisiti del curriculum cosi' posso rimuovere quelli
+        // gia' soddisfatti
+        var compulsory_exams = curriculum.compulsory_exams.slice(0);
+        var compulsory_groups = curriculum.compulsory_groups.slice(0);
+        // se un requisito soddisfa il curriculum lo tengo
+        // altrimenti lo tolgo (evidentemente e' cambiato il curriculum)
+        chosen_exams.forEach(function(chosen, i){
+            if (chosen.compulsory_exam && chosen.compulsory_exam.curriculum_id === curriculum.id) {
+                compulsory_exams = compulsory_exams.filter(function(compulsory_exam){return compulsory_exam.id != chosen.compulsory_exam_id});
+            } else {
+                chosen.compulsory_exam_id = null;
+                chosen.compulsory_exam = null
+            }
+            if (chosen.compulsory_group && chosen.compulsory_group.curriculum_id === curriculum.id) {
+                compulsory_groups = compulsory_groups.filter(function(compulsory_group){return compulsory_group.id != chosen.compulsory_group_id});
+            } else {
+                chosen.compulsory_group_id = null;
+                chosen.compulsory_group = null
+            }
         });
-        curriculum.compulsory_exams.forEach(function(compulsory_exam){
+        // cerca di soddisfare i requisiti del curriculum
+        compulsory_exams.forEach(function(compulsory_exam){
             var i=0;
             for (;i<chosen_exams.length;++i) {
                 var chosen = chosen_exams[i];
@@ -486,7 +543,7 @@ class Proposal {
             }
         });
         // bisogna caricare tutti i gruppi menzionati nel curriculum
-        return Promise.all(curriculum.compulsory_groups.map(function(group){
+        return Promise.all(compulsory_groups.map(function(group){
             return [group, caps.get_group_exams(group.id)];
         })).then(function(groups){
             groups.forEach(function(couple) {
