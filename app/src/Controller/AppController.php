@@ -58,7 +58,8 @@ class AppController extends Controller
         $this->loadComponent('Auth', [
           'authenticate' => [
             'Unipi' => Configure::read('UnipiAuthenticate')
-          ]
+          ],
+          'authError' => false
         ]);
 
         $authuser = $this->Auth->user();

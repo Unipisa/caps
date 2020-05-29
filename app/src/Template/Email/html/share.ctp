@@ -23,15 +23,16 @@
 
 <h3>Richiesta di parere sul piano di studi</h3>
 <p>
-    Ti chiediamo di prendere visione del piano di studi 
-    sottomesso per approvazione dallo studente <?= $proposal['user']['name'] ?> 
+    Ti chiediamo di prendere visione del piano di studi
+    sottomesso per approvazione dallo studente <?= $proposal['user']['name'] ?>
     (matricola: <?= $proposal['user']['number'] ?>). <br>
     Curriculum: <?= $proposal['curriculum']['name'] ?><br>
     Anno di immatricolazione: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?><br>
     <?= $proposal['curriculum']['degree']['name'] ?><br>
     <?= $settings['department'] ?>
 </p>
-<p>Puoi aggiungere un commento al piano di studi accedendo alla seguente pagina: <br>
+<p>Puoi aggiungere un commento al piano di studi accedendo alla seguente
+   pagina utilizzando le credenziali di Ateneo: <br>
     <?= $this->Html->link($url, $url); ?>
 </p>
 
