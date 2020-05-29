@@ -688,5 +688,5 @@ function start() {
 }
 
 $(function() {
-    start();
+    // start();
 });
