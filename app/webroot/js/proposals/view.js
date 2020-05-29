@@ -267,7 +267,9 @@ class Exam {
 
     populate_tr($tr, proposal) {
         var self = this;
-        if (self.warning) $tr.css('background-color', 'yellow');
+        if (self.warning) {
+            $tr.css('background-color', 'yellow');
+        }
         if (self.is_empty && proposal.edit_mode) return self.populate_tr_edit($tr, proposal);
         
         var $exam_name_td = $("<td></td>");
@@ -691,5 +693,5 @@ function start() {
 }
 
 $(function() {
-    start();
+    // start();
 });

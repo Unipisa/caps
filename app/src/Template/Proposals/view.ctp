@@ -10,7 +10,7 @@
     };
 </script>
 
-<?= $this->Html->script('proposals/view.js?rev=2') ?>
+<?= $this->Html->script('proposals/view.js?rev=3') ?>
 
 <div class="bureaucracy">
     <div class="heading">
