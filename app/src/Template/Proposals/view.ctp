@@ -1,6 +1,6 @@
 <script>
     var proposal_json = <?= $proposal_json ?>;
-    
+
     var caps_json = {
         curriculumURL: <?= json_encode($this->Url->build([ 'action' => 'view', 'controller' => 'curricula' ])) ?>,
         examsURL: <?= json_encode($this->Url->build([ 'controller' => 'exams', 'action' => 'index', '_ext' => 'json'])) ?>,
@@ -263,7 +263,7 @@
           </li>
     <?php else: ?>
         <li class="authorization">
-            Richiesta di parere inviata <strong>a <?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
+            Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
                 ?>  — <?php
                 echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
             }
