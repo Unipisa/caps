@@ -257,17 +257,16 @@ class Exam {
             proposal.add_warning("nel curriculum selezionato l'esame \"" + this.name + "\" è previsto al " + get_ordinal(this.expected_year) + " anno");
         }
 
-        this.warning = this.duplicated || this.is_empty || this.expected_year || this.expected_credits;
     }
-
+    
     is_same_as(other_exam) {
         if (this.code == null && other_exam.code == null) return this.name == other_exam.name; 
         return this.code == other_exam.code;
     }
-
+    
     populate_tr($tr, proposal) {
         var self = this;
-        if (self.warning) {
+        if (this.duplicated || this.is_empty || this.expected_year || this.expected_credits) {
             $tr.css('background-color', 'yellow');
         }
         if (self.is_empty && proposal.edit_mode) return self.populate_tr_edit($tr, proposal);
@@ -477,111 +476,107 @@ class Proposal {
             ]
         };
         var self = this;
-        var curriculum = self.json.curriculum;
         if (!self.edit_mode) return Promise.resolve(); // non adattare il curriculum se non lo stiamo modificando
-
-        // rimuovi eventuali esami che erano stati aggiunti automaticamente per soddisfare
-        // il vecchio curriculum
-        this.json.chosen_exams = this.json.chosen_exams.filter(function(chosen_exam){
-            return chosen_exam._auto !== true; 
-        });
-
-        // fa una copia dell'array degli esami scelti
-        // cosi si può togliere gli esami man mano che vengono 
-        // associati a scelte obbligatorie (esami obbligatori o obbligo nel gruppo)
-        // le scelte "libere" non vengono associate, tanto sono inutili (si potranno togliere)
-        var chosen_exams = this.json.chosen_exams.slice(0);
-        // fa una copia dei requisiti del curriculum cosi' posso rimuovere quelli
-        // gia' soddisfatti
-        var compulsory_exams = curriculum.compulsory_exams.slice(0);
-        var compulsory_groups = curriculum.compulsory_groups.slice(0);
-        // se un requisito soddisfa il curriculum lo tengo
-        // altrimenti lo tolgo (evidentemente e' cambiato il curriculum)
-        chosen_exams.forEach(function(chosen, i){
-            if (chosen.compulsory_exam && chosen.compulsory_exam.curriculum_id === curriculum.id) {
-                compulsory_exams = compulsory_exams.filter(function(compulsory_exam){return compulsory_exam.id != chosen.compulsory_exam_id});
-            } else {
-                chosen.compulsory_exam_id = null;
-                chosen.compulsory_exam = null
-            }
-            if (chosen.compulsory_group && chosen.compulsory_group.curriculum_id === curriculum.id) {
-                compulsory_groups = compulsory_groups.filter(function(compulsory_group){return compulsory_group.id != chosen.compulsory_group_id});
-            } else {
-                chosen.compulsory_group_id = null;
-                chosen.compulsory_group = null
-            }
-        });
-        // cerca di soddisfare i requisiti del curriculum
-        compulsory_exams.forEach(function(compulsory_exam){
-            var i=0;
-            for (;i<chosen_exams.length;++i) {
-                var chosen = chosen_exams[i];
-                if (chosen.exam_id == compulsory_exam.exam_id) {
-                    chosen.compulsory_exam_id = compulsory_exam.id;
-                    chosen.compulsory_exam = compulsory_exam;
-                    chosen_exams.splice(i,1);
-                    break;
+        return caps.get_curriculum(self.json.curriculum.id).then(function(curriculum) {    
+            // rimuovi eventuali esami che erano stati aggiunti automaticamente per soddisfare
+            // il vecchio curriculum
+            self.json.chosen_exams = self.json.chosen_exams.filter(function(chosen_exam){
+                return chosen_exam._auto !== true; 
+            });
+    
+            // fa una copia dell'array degli esami scelti
+            // cosi si può togliere gli esami man mano che vengono 
+            // associati a scelte obbligatorie (esami obbligatori o obbligo nel gruppo)
+            // le scelte "libere" non vengono associate, tanto sono inutili (si potranno togliere)
+            var chosen_exams = self.json.chosen_exams.slice(0);
+            // fa una copia dei requisiti del curriculum cosi' posso rimuovere quelli
+            // gia' soddisfatti
+            var compulsory_exams = curriculum.compulsory_exams.slice(0);
+            var compulsory_groups = curriculum.compulsory_groups.slice(0);
+            // se un requisito soddisfa il curriculum lo tengo
+            // altrimenti lo tolgo (evidentemente e' cambiato il curriculum)
+            chosen_exams.forEach(function(chosen, i){
+                if (chosen.compulsory_exam && chosen.compulsory_exam.curriculum_id === curriculum.id) {
+                    compulsory_exams = compulsory_exams.filter(function(compulsory_exam){return compulsory_exam.id != chosen.compulsory_exam_id});
+                } else {
+                    chosen.compulsory_exam_id = null;
+                    chosen.compulsory_exam = null
                 }
-            };
-            if (i == chosen_exams.length) { 
-                // esame obbligatorio non soddisfatto: bisogna aggiungere l'esame
-                this.json.chosen_exams.push(
-                    {
-                        _auto: true, // this chosen exam has been created automatically: remove if curriculum is changed
-                        id: caps.get_new_id(),
-                        credits: compulsory_exam.exam.credits,
-                        chosen_year: compulsory_exam.year,
-                        exam_id: compulsory_exam.exam.id,
-                        exam: compulsory_exam.exam,
-                        proposal_id: self.json.id,
-                        compulsory_exam_id: compulsory_exam.id,
-                        compulsory_exam: compulsory_exam,
-                        compulsory_group_id: null,
-                        compulsory_group: null,
-                        free_choice_exam: null,
-                        free_choice_exam_id: null
-                    }
-                );
-            }
-        });
-        // bisogna caricare tutti i gruppi menzionati nel curriculum
-        return Promise.all(compulsory_groups.map(function(group){
-            return [group, caps.get_group_exams(group.id)];
-        })).then(function(groups){
-            groups.forEach(function(couple) {
-                var group = couple[0];
-                var group_exams = couple[1];
-                var i=0;
-                for (;i<chosen_exams.length;++i) {
+                if (chosen.compulsory_group && chosen.compulsory_group.curriculum_id === curriculum.id) {
+                    compulsory_groups = compulsory_groups.filter(function(compulsory_group){return compulsory_group.id != chosen.compulsory_group_id});
+                } else {
+                    chosen.compulsory_group_id = null;
+                    chosen.compulsory_group = null
+                }
+            });
+            // cerca di soddisfare i requisiti del curriculum
+            compulsory_exams.forEach(function(compulsory_exam){
+                var i = chosen_exams.findIndex(function(chosen_exam) {return chosen_exam.exam_id == compulsory_exam.exam_id});
+                if (i >= 0) {
                     var chosen = chosen_exams[i];
-                    var j=0;
-                    for (;j<group_exams.length && group_exams[j].id != chosen.exam_id;j++);
-                    if (j<group_exams.length) {
+                    if (chosen.exam_id == compulsory_exam.exam_id) {
+                        chosen.compulsory_exam_id = compulsory_exam.id;
+                        chosen.compulsory_exam = compulsory_exam;
+                        chosen_exams.splice(i,1);
+                    }
+                } else { 
+                    // esame obbligatorio non soddisfatto: bisogna aggiungere l'esame
+                    self.json.chosen_exams.push(
+                        {
+                            _auto: true, // this chosen exam has been created automatically: remove if curriculum is changed
+                            id: caps.get_new_id(),
+                            credits: compulsory_exam.exam.credits,
+                            chosen_year: compulsory_exam.year,
+                            exam_id: compulsory_exam.exam.id,
+                            exam: compulsory_exam.exam,
+                            proposal_id: self.json.id,
+                            compulsory_exam_id: compulsory_exam.id,
+                            compulsory_exam: compulsory_exam,
+                            compulsory_group_id: null,
+                            compulsory_group: null,
+                            free_choice_exam: null,
+                            free_choice_exam_id: null
+                        }
+                    );
+                }
+            });
+            // bisogna caricare tutti i gruppi menzionati nel curriculum
+            return Promise.all(compulsory_groups.map(function(group) {
+                return [group, caps.get_group_exams(group.id)];
+            })).then(function(groups) {
+                groups.forEach(function(couple) {
+                    var group = couple[0];
+                    var group_exams = couple[1];
+                    var i = chosen_exams.findIndex(function(chosen) {
+                        return group_exams.findIndex(function(group_exam) {
+                            return group_exam.id == chosen.exam_id
+                        }) >= 0;                        
+                    });
+                    if (i >= 0) {
+                        var chosen = chosen_exams[i];
                         chosen.compulsory_group_id = group.id;
                         chosen.compulsory_group = group;
                         chosen_exams.splice(i,1);
-                        break;
+                    } else {
+                        // esame nel gruppo non soddisfatto: aggiungi segnaposto per forzare la scelta
+                        self.json.chosen_exams.push({
+                            _auto: true,
+                            id: caps.get_new_id(),
+                            credits: null,
+                            chosen_year: group.year,
+                            exam_id: null,
+                            exam: null,
+                            proposal_id: self.json.id,
+                            compulsory_exam_id: null,
+                            compulsory_exam: null,
+                            compulsory_group_id: group.id,
+                            compulsory_group: group,
+                            free_choice_exam: null,
+                            free_choice_exam_id: null
+                        });
                     }
-                }
-                if (i == chosen_exams.length) {
-                    // esame nel gruppo non soddisfatto: aggiungi segnaposto per forzare la scelta
-                    self.json.chosen_exams.push({
-                        _auto: true,
-                        id: caps.get_new_id(),
-                        credits: null,
-                        chosen_year: group.year,
-                        exam_id: null,
-                        exam: null,
-                        proposal_id: self.json.id,
-                        compulsory_exam_id: null,
-                        compulsory_exam: null,
-                        compulsory_group_id: group.id,
-                        compulsory_group: group,
-                        free_choice_exam: null,
-                        free_choice_exam_id: null
-                    });
-                }
-            });
+                });
+            });    
         });
     }
 
@@ -693,5 +688,5 @@ function start() {
 }
 
 $(function() {
-    // start();
+    start();
 });
