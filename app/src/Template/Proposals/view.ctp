@@ -292,7 +292,7 @@
         }
     ?></p>
 
-    <?php if ($proposal['state'] == 'submitted'): ?>
+    <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
         <h3>Richiesta parere</h3>
         <?php
             echo $this->Form->create('ProposalAuth', [
