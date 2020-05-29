@@ -313,7 +313,7 @@
 
 <?php if ($user['admin']): ?>
     <!-- Toolbar per l'amministratore //-->
-    <h3>Azioni disponibili</h3>
+    <h3 class="planActions">Azioni disponibili</h3>
     <ul class=planActions>
         <?php if ($proposal['state'] === 'submitted'): ?>
         <li>
