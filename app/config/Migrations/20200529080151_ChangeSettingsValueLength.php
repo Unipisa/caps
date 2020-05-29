@@ -10,11 +10,21 @@ class ChangeSettingsValueLength extends AbstractMigration
      * http://docs.phinx.org/en/latest/migrations.html#the-change-method
      * @return void
      */
-    public function change()
+    public function up()
     {
+        $table = $this->table('settings');
+        $table->changeColumn('value', 'text', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->update();
+    }
+
+    public function down() {
         $table = $this->table('settings');
         $table->changeColumn('value', 'string', [
             'default' => null,
+            'limit' => 255,
             'null' => false,
         ]);
         $table->update();
