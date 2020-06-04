@@ -7,6 +7,7 @@
         <th></th>
         <th>Nome</th>
         <th>Anni</th>
+        <th>Richiesta parere</th>
     </tr>
     <?php foreach ($degrees as $degree): ?>
         <tr>
@@ -23,6 +24,16 @@
             </td>
             <td class="caps-admin-degrees-years">
                 <?php echo ($degree['years']) ?>
+            </td>
+            <td class="caps-admin-degrees-enable-sharing">
+                <?php
+                    if ($degree['enable_sharing']) {
+                        echo "Abilitata";
+                    }
+                    else {
+                        echo "Non abilitata";
+                    }
+                ?>
             </td>
         </tr>
     <?php endforeach ?>

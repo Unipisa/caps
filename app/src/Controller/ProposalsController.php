@@ -233,7 +233,7 @@ class ProposalsController extends AppController {
         $save_attachments = $proposal->attachments;
         $proposal->attachments = null;
         $this->set('proposal_json', json_encode($proposal));
-        $proposal->attachments = $save_attachments; 
+        $proposal->attachments = $save_attachments;
         $this->set('_serialize', [ 'proposal' ]);
     }
 
@@ -446,6 +446,10 @@ class ProposalsController extends AppController {
 
         if ($proposal['state'] != 'submitted') {
             throw new ForbiddenException('Si può chiedere un parere solo su piani sottomessi.');
+        }
+
+        if (! $proposal['curriculum']['degree']['enable_sharing']) {
+            throw new ForbiddenException('Richiesta parere disabilitata per questo corso di Laurea');
         }
 
         $proposal_auth = $this->Proposals->ProposalAuths->newEntity();

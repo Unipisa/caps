@@ -13,6 +13,11 @@ echo $this->Form->control(
 echo $this->Form->control(
     'years'
 );
+echo $this->Form->control(
+    'enable_sharing', [
+        'label' => 'Richiesta parere abilitata'
+    ]
+);
 if ($degree->isNew()):
   echo $this->Form->submit('Salva corso di laurea');
 else:

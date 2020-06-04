@@ -61,6 +61,9 @@ class DegreesTable extends Table
             ->scalar('years')
             ->notEmptyString('years');
 
+        $validator
+            ->boolean('enable_sharing');
+
         return $validator;
     }
 }

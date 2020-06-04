@@ -124,7 +124,7 @@ $num_proposals = 0;
 
                  }
 
-                 if ($proposal['state'] == 'submitted') {
+                 if ($proposal['state'] == 'submitted' && $proposal['curriculum']['degree']['enable_sharing']) {
                     echo " — ";
                     echo $this->Html->link('Richiedi parere', [
                         'controller' => 'proposals',

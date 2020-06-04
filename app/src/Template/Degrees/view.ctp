@@ -44,4 +44,16 @@
         <th>Anni</th>
         <td><?php echo $degree['years']; ?></td>
     </tr>
+    <tr>
+        <th>Richiesta parere</th>
+        <td><?php
+                if ($degree['enable_sharing']) {
+                    echo "Abilitata";
+                }
+                else {
+                    echo "Non abilitata";
+                }
+            ?>
+        </td>
+    </tr>
 </table>
