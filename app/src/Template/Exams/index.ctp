@@ -19,10 +19,13 @@ function csv_click() {
     }
 }
 
-function csv_validator(item) {
+function csv_validator(item, context) {
+    if (!context.used_codes) context.used_codes = {};
     if (item.name === "") return "nome vuoto";
     if (item.code === "") return "codice vuoto";
     if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
+    if (context.used_codes.hasOwnProperty(item.code)) return "codice già utilizzato";
+    context.used_codes[item.code] = true;
     return null;
 }
 
@@ -112,7 +115,7 @@ echo $this->Form->end();
 
 
 <div style="display:none" id="caps-admin-actions-csv" class="caps-admin-actions-csv">
-    Carica elenco esami da un file CSV:
+    Carica elenco esami da un file CSV (si potranno selezionare gli esami da caricare):
     <input id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
     <input type="submit" id="csv_file_reload" value="ricarica">
     <div style="display:none" id="csv_options_div">

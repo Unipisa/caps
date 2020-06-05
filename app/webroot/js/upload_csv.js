@@ -83,6 +83,7 @@ function csv_to_array() {
 
 function fill_table_html() {
     table_html = "";
+    let validation_context = {};
     for (var i=-1; i<csv_data.length; i++) {
         var row = Array(csv_upload_fields.length+2);
         if (i==-1) {
@@ -101,7 +102,7 @@ function fill_table_html() {
                 csv_upload_fields_db.forEach(function(field, j) {
                     obj[field] = csv_data[i][csv_column_map[j]];
                 });
-                error = csv_validator(obj);
+                error = csv_validator(obj, validation_context);
             }
             var j = 0;
             row[j] = "<input type='checkbox' id='csv_row_" + i + "' " + (error ? "" : "checked='checked'" )+ ">";
