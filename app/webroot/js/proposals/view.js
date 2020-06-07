@@ -572,7 +572,7 @@ class Proposal {
                             _auto: true,
                             id: caps.get_new_id(),
                             credits: null,
-                            chosen_year: group.year,
+                            chosen_year: compulsory_group.year,
                             exam_id: null,
                             exam: null,
                             proposal_id: self.json.id,
