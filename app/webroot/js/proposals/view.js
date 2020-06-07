@@ -53,33 +53,39 @@ var caps;
 class Caps {
     constructor(json) {
         this.json = json;
-        this.exams = null;
-        this.id_group = null;
+        this.exams = null; // Promise of Array of all exams
+        this.id_group = null; // Promise of Map group_id -> exams
         this.MAX_ID = 2000000000; // ids greater than this are used for new objects
         this.new_id_count = this.MAX_ID;
-        this.curricula = null;
-        this.years = null;
-        this.year_curricula = null;
+        this.curricula = null; // Promise of Array of all curricula
+        this.years = null; // valid when this.curricula is resolved
+        this.year_curricula = null; // valid when this.curricula is resolved
     }
 
     get_exams() {
-        var self = this;
-        if (this.exams != null) return Promise.resolve(this.exams);
-        return $.get(self.json.examsURL).then(function(response) {
-            self.exams = response["exams"];
-            return self.exams;
-        });
+        // @return a Promise of an Array of all exams
+        if (this.exams === null) {
+            this.exams = $.get(this.json.examsURL).then(function(response) {
+                return response["exams"];
+            });
+        }
+        return this.exams;
     }
 
     get_group_exams(group_id) {
-        var self = this;
-        if (this.id_group != null) return Promise.resolve(this.id_group[group_id]);
-        return $.get(self.json.groupsURL).then(function(response) {
-            self.id_group = {};            
-            response["groups"].forEach(function (group) {
-                self.id_group[group.id] = group.exams;                
+        // @return a Promise of the Array of exams in the group `group_id`
+        if (this.id_group === null) {
+            this.id_group = $.get(this.json.groupsURL).then(function(response) {
+                let map = new Map();             
+                response["groups"].forEach(function (group) {
+                    map.set(group.id, group.exams);                
+                });
+                return map;
             });
-            return self.id_group[group_id];
+        };
+
+        return this.id_group.then(function(map) {
+            return map.get(group_id);
         });
     }
 
@@ -88,31 +94,32 @@ class Caps {
         return this.new_id_count;
     }
 
-    get_curricula() {
-        var self = this;
-        if (self.curricula !== null) {
-            return Promise.resolve(self.curricula);
-        }
-        return $.get(self.json.curriculaURL).then(function(response) {
-            self.curricula = response['curricula'];
-            self.years = [];
-            self.year_curricula = new Map();
-            self.curricula.forEach(function(curriculum) {
-                var year = curriculum.academic_year
-                if (!self.years.includes(year)) {
-                    self.years.push(year);
-                    self.year_curricula.set(year,[]);
-                }
-                self.year_curricula.get(year).push(curriculum);                
-            });
-            self.years.sort();
-            return self.curricula;
-        });
+    get_curriculum(id) {
+        // mi sa che questo riporta più informazioni
+        // di get_curricula
+        return $.get(this.json.curriculumURL + "/" + id + ".json");
     }
 
-    get_curriculum(id) {
-        var self=this;
-        return $.get(self.json.curriculumURL + "/" + id + ".json");
+    get_curricula() {
+        if (this.curricula === null) {
+            var self = this;
+            this.curricula = $.get(this.json.curriculaURL).then(function(response) {
+                var curricula = response['curricula'];
+                self.years = [];
+                self.year_curricula = new Map();
+                curricula.forEach(function(curriculum) {
+                    var year = curriculum.academic_year
+                    if (!self.years.includes(year)) {
+                        self.years.push(year);
+                        self.year_curricula.set(year,[]);
+                    }
+                    self.year_curricula.get(year).push(curriculum);                
+                });
+                self.years.sort();
+                return curricula;
+            });
+        }
+        return this.curricula;
     }
 
     get_years() {
@@ -541,11 +548,13 @@ class Proposal {
                 }
             });
             // bisogna caricare tutti i gruppi menzionati nel curriculum
-            return Promise.all(compulsory_groups.map(function(group) {
-                return [group, caps.get_group_exams(group.id)];
-            })).then(function(groups) {
-                groups.forEach(function(couple) {
-                    var group = couple[0];
+            return Promise.all(compulsory_groups.map(function(compulsory_group) {
+                return caps.get_group_exams(compulsory_group.group_id).then(function(exams) {
+                    return [compulsory_group, exams]
+                });
+            })).then(function(group_couples) {
+                group_couples.forEach(function(couple) {
+                    var compulsory_group = couple[0];
                     var group_exams = couple[1];
                     var i = chosen_exams.findIndex(function(chosen) {
                         return group_exams.findIndex(function(group_exam) {
@@ -554,8 +563,8 @@ class Proposal {
                     });
                     if (i >= 0) {
                         var chosen = chosen_exams[i];
-                        chosen.compulsory_group_id = group.id;
-                        chosen.compulsory_group = group;
+                        chosen.compulsory_group_id = compulsory_group.id;
+                        chosen.compulsory_group = compulsory_group;
                         chosen_exams.splice(i,1);
                     } else {
                         // esame nel gruppo non soddisfatto: aggiungi segnaposto per forzare la scelta
@@ -569,8 +578,8 @@ class Proposal {
                             proposal_id: self.json.id,
                             compulsory_exam_id: null,
                             compulsory_exam: null,
-                            compulsory_group_id: group.id,
-                            compulsory_group: group,
+                            compulsory_group_id: compulsory_group.id,
+                            compulsory_group: compulsory_group,
                             free_choice_exam: null,
                             free_choice_exam_id: null
                         });
@@ -637,7 +646,17 @@ class Proposal {
         }
         var $debug = $("<p></p>").text("loading....");
         this.$div.append($debug);
-        caps.get_curriculum(curriculum.id).then(function(curriculum) {$debug.text(JSON.stringify({curriculum: curriculum}))});
+        caps.get_curriculum(curriculum.id).then(function(curriculum) {
+            var text = "curriculum " + curriculum.name + "<br />";
+            text += "compulsory_exams: " + curriculum.compulsory_exams.map(function(compulsory_exam) {
+                return compulsory_exam.exam.name + " (" + compulsory_exam.year + " anno)";
+            }).join(", ") + "<br />";
+            text += "compulsory_groups: " + curriculum.compulsory_groups.map(function(compulsory_group) {
+                return compulsory_group.group.name
+            }).join(", ") + "<br />";
+            text += "free_choice: " + curriculum.free_choice_exams.length;
+            $debug.html(text);
+        });
         this.year_exams.forEach(function(exams, year) {
             self.$div.append($("<h3></h3>").text(get_ordinal(year) + " anno"));
             var $table = $("<table></table>");
@@ -649,8 +668,6 @@ class Proposal {
                 exam.populate_tr($tr, self);
                 $table.append($tr);
             });
-            var $year_credits = $("<strong></strong>").text(self.year_credits[year]);
-
             var $tr = $("<tr></tr>")
             if (self.edit_mode) {
                 var $button = $("<button></button>").addClass("add-button fa fa-plus-square").click(function() {
