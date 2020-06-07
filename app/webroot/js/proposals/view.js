@@ -60,6 +60,7 @@ class Caps {
         this.curricula = null; // Promise of Array of all curricula
         this.years = null; // valid when this.curricula is resolved
         this.year_curricula = null; // valid when this.curricula is resolved
+        this.id_curriculum = new Map(); // Map id -> Promise of full curriculum
     }
 
     get_exams() {
@@ -94,10 +95,11 @@ class Caps {
         return this.new_id_count;
     }
 
-    get_curriculum(id) {
-        // mi sa che questo riporta più informazioni
-        // di get_curricula
-        return $.get(this.json.curriculumURL + "/" + id + ".json");
+    get_curriculum_full(id) {
+        if (!this.id_curriculum.has(id)) {
+            this.id_curriculum.set(id, $.get(this.json.curriculumURL + "/" + id + ".json"));
+        }
+        return this.id_curriculum.get(id);
     }
 
     get_curricula() {
@@ -326,7 +328,10 @@ class Exam {
         // due casi:
         // 1. esame a scelta libera in un gruppo
         // 2. esame a scelta libera tra tutti gli esami in database (custom)
-        var $button = $("<button></button>").addClass("done-button fas fa-check").click(function() {
+        var $done_button = $("<button></button>").addClass("done-button fas fa-check").click(function() {
+            proposal.update();
+        });
+        var $cancel_button = $("<button></button>").addClass("fas fa-times").click(function() {
             proposal.update();
         });
         
@@ -348,43 +353,60 @@ class Exam {
                 id_exams[exam.id] = exam;
             });
             if (!self.is_compulsory) {
-                $select.append($("<option></option>").attr("value", "_").text("-- inserisci esame non in elenco --"))
+                var $option = $("<option></option>").attr("value", "_").text("-- inserisci esame non in elenco --");
+                $select.append($option);
             }
             $exam_name_td.empty().append($select);
             $select.change(function() {
                 var val = $select.val();
                 if (val == "_") {
-                    var $credits = $("<input>").attr("value",self.json.credits).attr("type", "number").attr("min",1).attr("size",3)
-                    .attr("required","required").attr("placeholder", "crediti").change(function(){
-                        self.json.credits = parseInt($credits.val());
-                        if (self.json.name != null) proposal.update();
-                    });
                     var $name = $("<input>").attr("value",self.json.name).attr("type", "text").attr("required","required")
-                    .attr("placeholder", "nome dell'esame").change(function() {
-                        self.json.exam_id = null;
-                        self.json.exam = null;
-                        self.json.name = $name.val();
-                        if (self.json.credits != null) proposal.update();
-                    });
+                    .attr("placeholder", "nome dell'esame");
+                    var $credits = $("<input>").attr("value",self.json.credits).attr("type", "number").attr("min",1).attr("size",3)
+                    .attr("required","required").attr("placeholder", "crediti");
+                    function on_change() {
+                        var credits = parseInt($credits.val());
+                        var name = $name.val();
+                        if (credits > 0 && name.length>0) {
+                            self.json.id = caps.get_new_id(); // se cambio da free a custom l'id non può più essere riutilizzato
+                            self.json.credits = credits;
+                            self.json.name = name;
+                            delete self.json.compulsory_exam;
+                            delete self.json.compulsory_exam_id;
+                            delete self.json.compulsory_group;
+                            delete self.json.compulsory_group_id;
+                            delete self.json.exam;
+                            delete self.json.exam_id;
+                            delete self.json._auto;
+                            proposal.update();
+                        }
+                    }
+                    $name.change(on_change);
+                    $credits.change(on_change);
+                    $done_button.off("click").click(on_change);
                     self.json.credits = null;
                     self.json.name = null;
                     $exam_name_td.empty().append($name).append($credits);
                 } else if (val == "") {
                     proposal.update();
                 } else {
+                    self.json.id = caps.get_new_id(); // se cambio da custom a free l'id non può più essere riutilizzato
                     self.json.exam_id = parseInt(val);
                     self.json.exam = id_exams[self.json.exam_id];
                     self.json.credits = self.json.exam.credits; // in teoria l'utente potrebbe selezionare un numero diverso di crediti
-                    if (self.json._auto) {
-                        delete self.json._auto;
-                    }
+                    delete self.json.name;
+                    self.json.compulsory_exam = null;
+                    self.json.compulsory_exam_id = null;
+                    self.json.compulsory_group = null;
+                    self.json.compulsory_group_id = null;
+                    delete self.json._auto;
                     proposal.update();
                 }
             });
         });
 
         $tr.empty();
-        $tr.append($("<td></td>").addClass("edit").append($button));
+        $tr.append($("<td></td>").addClass("edit").append($done_button).append($cancel_button));
         $tr.append($("<td></td>")); // code
         $tr.append($exam_name_td);  // name
         $tr.append($("<td></td>")); // sector
@@ -484,7 +506,7 @@ class Proposal {
         };
         var self = this;
         if (!self.edit_mode) return Promise.resolve(); // non adattare il curriculum se non lo stiamo modificando
-        return caps.get_curriculum(self.json.curriculum.id).then(function(curriculum) {    
+        return caps.get_curriculum_full(self.json.curriculum.id).then(function(curriculum) {    
             // rimuovi eventuali esami che erano stati aggiunti automaticamente per soddisfare
             // il vecchio curriculum
             self.json.chosen_exams = self.json.chosen_exams.filter(function(chosen_exam){
@@ -627,7 +649,7 @@ class Proposal {
                             $select_curriculum.show().click(function(){
                                 var id = $select_curriculum.val();
                                 if (id === "") return;
-                                caps.get_curriculum(id).then(function(curriculum) {
+                                caps.get_curriculum_full(id).then(function(curriculum) {
                                     self.json.curriculum = curriculum;
                                     self.json.curriculum_id = curriculum.id;
                                     self.update();
@@ -646,7 +668,7 @@ class Proposal {
         }
         var $debug = $("<p></p>").text("loading....");
         this.$div.append($debug);
-        caps.get_curriculum(curriculum.id).then(function(curriculum) {
+        caps.get_curriculum_full(curriculum.id).then(function(curriculum) {
             var text = "curriculum " + curriculum.name + "<br />";
             text += "compulsory_exams: " + curriculum.compulsory_exams.map(function(compulsory_exam) {
                 return compulsory_exam.exam.name + " (" + compulsory_exam.year + " anno)";
