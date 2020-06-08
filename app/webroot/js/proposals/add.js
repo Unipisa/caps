@@ -187,7 +187,7 @@ function on_curriculum_selected() {
             // Store the year for this exam as well
             var year_input = "<input type=hidden name=data[ChosenExam][" + (i + compulsoryExams.length) + "][chosen_year] value=" + year + ">";
 
-            $(selector).append("<li><select name=data[ChosenExam][" + (i + compulsoryExams.length) + "][exam_id] class=exam>" + groupHTML + examsHTML + compulsory_group_id + year_input + "</li></select>");
+            $(selector).append("<li><select name=data[ChosenExam][" + (i + compulsoryExams.length) + "][exam_id] class='exam compulsory'>" + groupHTML + examsHTML + compulsory_group_id + year_input + "</li></select>");
 
             // If this is a draft proposal, then we need to find the selection for this group, if any.
             if (proposal['chosen_exams'] !== undefined) {
@@ -425,6 +425,9 @@ function on_curriculum_selected() {
         // This variable tracks if double exams are found in the proposal
         let doubleExamsOk = true;
 
+        // This variable tracks if all choices in groups have been selected
+        let compulsoryChoicesOk = true;
+
         let creditCount = 0;
         let years = 0;
 
@@ -455,6 +458,10 @@ function on_curriculum_selected() {
                 else {
                     exams_ids.push(this_id);
                 }
+            } else {
+                if (e.classList.contains("compulsory")) {
+                    compulsoryChoicesOk = false;
+                }
             }
         });
 
@@ -474,6 +481,10 @@ function on_curriculum_selected() {
                 + 'Correggere prima della sottomisione.<br><br>';
         }
 
+        if (! compulsoryChoicesOk) {
+            text += 'Non sono state effettuate tutte le scelte obbligatorie.<br /><br />'
+        }
+
         $('#proposalWarning').html(text);
 
         if (text != "") {
@@ -483,7 +494,7 @@ function on_curriculum_selected() {
             $('#proposalWarning').hide();
         }
 
-        if (creditCountOk && doubleExamsOk) {
+        if (creditCountOk && doubleExamsOk && compulsoryChoicesOk) {
             enable_close_action();
         }
         else {

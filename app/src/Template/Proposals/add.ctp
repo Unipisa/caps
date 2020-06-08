@@ -22,7 +22,7 @@
     // This revision number needs to be incremented when adjusting the JS code,
     // so that the browser will be forced to drop the cache on the older versions.
     // We may want to handle this automatically at some point.
-    echo $this->Html->script('proposals/add.js?rev=1');
+    echo $this->Html->script('proposals/add.js?rev=2');
 ?>
 
 <h2>Nuovo piano di studio
