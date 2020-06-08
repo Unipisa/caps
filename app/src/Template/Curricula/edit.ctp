@@ -123,7 +123,7 @@
 
 <hr class="caps-admin-curriculum"/>
 
-<h3>Esami a scelta in un gruppo</h3>
+<h3>Esami obbligatori a scelta in un gruppo</h3>
 <table class="caps-admin-restricted-exams">
     <tr>
         <th>Nome Gruppo</th>
@@ -220,7 +220,7 @@
     </tr>
     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
         <tr>
-            <td class="caps-admin-curriculum-exam-group"><?php echo $free_choice_exam['group']['name']; ?></td>
+            <td class="caps-admin-curriculum-exam-group"><?php echo $free_choice_exam['group']?$free_choice_exam['group']['name']:"esame qualunque"; ?></td>
             <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
             <td class="caps-admin-curriculum-exam-actions">
                 <ul class="actions">

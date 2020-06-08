@@ -156,26 +156,29 @@ function on_curriculum_selected() {
         }
     };
 
+    function get_group_with_id(groupId) {
+        // XXX(jacquerie): I apologize.
+        for (var j = 0; j < groups.length; j++) {
+            if (groups[j].id == groupId) {
+                return groups[j];
+            }
+        }  
+    }
+
     var addCompulsoryGroups = function () {
         for (var i = 0; i < compulsoryGroups.length; i++) {
             var compulsoryGroup = compulsoryGroups[i];
             var groupId = compulsoryGroup["group_id"];
             var year = compulsoryGroup["year"];
 
-            var group;
-            // XXX(jacquerie): I apologize.
-            for (var j = 0; j < groups.length; j++) {
-                if (groups[j]["id"] == groupId) {
-                    group = groups[j];
-                }
-            }
+            var group = get_group_with_id(groupId);
 
             var groupExams = group["exams"];
             var groupName = group["name"];
 
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
 
-            var groupHTML = "<option value='' disabled selected>Un esame a scelta nel gruppo " + groupName + "</option>";
+            var groupHTML = "<option value='' disabled selected>Un esame a scelta nel gruppo " + groupName + "</option>"; // ATTENZIONE: groupName non viene sanificato
             var examsHTML = "";
             for (var j = 0; j < groupExams.length; j++) {
                 examsHTML += createExamOption(groupExams[j]);
@@ -235,10 +238,20 @@ function on_curriculum_selected() {
             var year = freeChoiceExam["year"];
 
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
-            var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam><option selected disabled>Un esame a scelta</option>";
-            for (var j = 0; j < exams.length; j++) {
-                var exam = exams[j];
-                selectHTML += createExamOption(exam);
+            var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam>";
+            if (freeChoiceExam.group_id === null) {
+                selectHTML += $("<option selected disabled></option>").text("Un esame a scelta");
+                for (var j = 0; j < exams.length; j++) {
+                    var exam = exams[j];
+                    selectHTML += createExamOption(exam);
+                }
+            } else {
+                var group = get_group_with_id(freeChoiceExam.group_id);
+                selectHTML += "<option selected disabled>Un esame del gruppo " + group.name + "</option>"; // Attenzione! group.name non viene sanificato
+                for (var j = 0; j < group.exams.length; j++) {
+                    var exam = exams[j];
+                    selectHTML += createExamOption(exam);
+                }
             }
             selectHTML += "</select>";
             var $selectHTML = $(selectHTML);
