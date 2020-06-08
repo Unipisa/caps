@@ -153,7 +153,7 @@ class CurriculaController extends AppController {
 
         if ($id) {
             $curriculum = $this->Curricula->findById($id)
-                ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams', 'Degrees' ])
+                ->contain([ 'CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams' => ['Groups'], 'Degrees' ])
                 ->firstOrFail();
             if (!$curriculum) {
               throw new NotFoundException(__('Errore: curriculum non esistente.'));
