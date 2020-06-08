@@ -721,11 +721,7 @@ class Proposal {
     }
 };
 
-function start() {
+$(function() {
     caps = new Caps(caps_json);
     var proposal = new Proposal(proposal_json, $("#proposal_div"));
-}
-
-$(function() {
-    // start();
 });
