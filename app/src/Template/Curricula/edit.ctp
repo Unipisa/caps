@@ -214,13 +214,13 @@
 <h3>Esami a scelta libera</h3>
 <table class="caps-admin-free-exams">
     <tr>
-        <th>Nome Esame</th>
+        <th>Gruppo</th>
         <th>Anno</th>
         <th>Azioni</th>
     </tr>
     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
         <tr>
-            <td class="caps-admin-curriculum-exam-name">Esame a scelta libera</td>
+            <td class="caps-admin-curriculum-exam-group"><?php echo $free_choice_exam['group']['name']; ?></td>
             <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
             <td class="caps-admin-curriculum-exam-actions">
                 <ul class="actions">
@@ -266,13 +266,13 @@
         ['default' => $curriculum['id'],
             'type' => 'hidden',]
     );
-    // XXX(jacquerie): Ignored by the receiving controller.
     echo $this->Form->control(
-        'name',
-        ['class' => 'caps-admin-curriculum-exam-name-choose',
-            'default' => 'Esame a scelta libera',
-            'disabled' => true,
-            'label' => false]
+        'group_id',
+        ['class' => 'caps-admin-curriculum-group-name-choose',
+            'label' => false,
+            'default' => null,
+            'options' => ["" => "un esame qualunque"] + $groupsList->toArray()
+        ]
     );
     echo $this->Form->control(
         'year',

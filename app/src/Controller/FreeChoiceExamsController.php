@@ -22,7 +22,11 @@ class FreeChoiceExamsController extends AppController {
 
         if ($this->request->is(['post', 'put'])) {
             $newexam = $this->FreeChoiceExams->newEntity();
+            error_log("***" . json_encode($newexam));
+            error_log("***" . json_encode($this->request->data));
             $newexam = $this->FreeChoiceExams->patchEntity($newexam, $this->request->data);
+            error_log("***" . json_encode($newexam));
+            error_log("***" . $newexam->group);
 
             if ($this->FreeChoiceExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
