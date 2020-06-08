@@ -274,12 +274,17 @@
             'options' => ["" => "un esame qualunque"] + $groupsList->toArray()
         ]
     );
+
+    $year_list = [];
+    for ($i=1; $i <= $curriculum['degree']['years']; $i++) {
+        $year_list[$i] = $i;
+    }
     echo $this->Form->control(
         'year',
         [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $year_list
         ]
     );
     echo $this->Form->submit('Aggiungi esame',
