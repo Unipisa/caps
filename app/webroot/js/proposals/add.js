@@ -539,21 +539,15 @@ function on_curriculum_selected() {
 
     var addKonamiCode = function () {
         var status = 0;
-
         $("body").keydown(function (e) {
-            if ((e.which === 38 && (status === 0 || status === 1))
-            ||  (e.which === 40 && (status === 2 || status === 3))
-            ||  (e.which === 37 && (status === 4 || status === 6))
-            ||  (e.which === 39 && (status === 5 || status === 7))
-            ||  (e.which === 66 && status === 8)) {
-                status++;
-            } else if (e.which === 65 && status === 9) {
-                $("#content").append("<div class=nyanCat></div>");
-                $(".nyanCat").fadeOut({
-                    complete: function () { $(this).remove(); },
-                    duration: 2500
-                });
-                status = 0;
+            if (e.which === [38,38,40,40,37,39,37,39,66,65][status]) {
+                if (++ status === 10) {
+                    $("#content").append($("<div class=nyanCat></div>").fadeOut({
+                        complete: function () { $(this).remove(); },
+                        duration: 2500
+                    }));
+                    status = 0;
+                }
             } else {
                 status = 0;
             }
