@@ -220,11 +220,10 @@ function on_curriculum_selected() {
         }
 
         var credits = exam["credits"];
-        var creditsHTML = "<input class=credits name=data[ChosenExam][" +
-            (i + compulsoryExams.length)  +
-            "][credits] readonly value=" + credits + ">";
+        var creditsName = "data[ChosenExam][" + (i + compulsoryExams.length)  + "][credits]";
+        var creditsHTML = "<input class=credits name=" + creditsName + " readonly value=" + credits + ">";
 
-        el.next('input[class="credits"]').remove();
+        el.next('input[name="' + creditsName + '"]').remove();
         $(el).after(creditsHTML);
         updateCounters();
     };
@@ -278,11 +277,10 @@ function on_curriculum_selected() {
             }
         }
 
-        var creditsHTML = "<input readonly name=data[ChosenExam][" +
-            (i + compulsoryGroups.length + compulsoryExams.length) +
-            "][credits] class=credits value=" + exam['credits'] + ">";
+        var creditsName = "data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][credits]";
+        var creditsHTML = "<input readonly name=" + creditsName + " class=credits value=" + exam['credits'] + ">";
 
-        el.next('input[class="credits"]').remove();
+        el.next('input[name="' + creditsName + '"]').remove();
         el.after(creditsHTML);
         updateCounters();
     };
@@ -305,10 +303,9 @@ function on_curriculum_selected() {
                 exam = exams[j];
             }
         }
-
-        var creditsHTML = "<input name=data[ChosenExam][" + i + "][credits] class=credits readonly value=" + exam['credits'] + ">";
-
-        $(el).next("select").remove();
+        var creditsName = "data[ChosenExam][" + i + "][credits]";
+        var creditsHTML = "<input name=" + creditsName + " class=credits readonly value=" + exam['credits'] + ">";
+        $('input[name="' + creditsName + '"]').remove();
         $(el).after(creditsHTML);
         updateCounters();
     };
