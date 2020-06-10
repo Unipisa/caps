@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\ChosenExamsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\ChosenExamsTable Test Case
  */
-class ChosenExamsTableTest extends TestCase
+class ChosenExamsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,18 +15,12 @@ class ChosenExamsTableTest extends TestCase
      * @var \App\Model\Table\ChosenExamsTable
      */
     public $ChosenExams;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.ChosenExams',
-        'app.Exams',
-        'app.Proposals'
-    ];
-
+    public $fixtures = ['app.ChosenExams', 'app.Exams', 'app.Proposals'];
     /**
      * setUp method
      *
@@ -36,10 +29,9 @@ class ChosenExamsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('ChosenExams') ? [] : ['className' => ChosenExamsTable::class];
-        $this->ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('ChosenExams') ? [] : ['className' => \App\Model\Table\ChosenExamsTable::class];
+        $this->ChosenExams = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenExams', $config);
     }
-
     /**
      * tearDown method
      *
@@ -48,10 +40,8 @@ class ChosenExamsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->ChosenExams);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -61,7 +51,6 @@ class ChosenExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -71,7 +60,6 @@ class ChosenExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

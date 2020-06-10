@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\ProposalAuthsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\ProposalAuthsTable Test Case
  */
-class ProposalAuthsTableTest extends TestCase
+class ProposalAuthsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,18 +15,12 @@ class ProposalAuthsTableTest extends TestCase
      * @var \App\Model\Table\ProposalAuthsTable
      */
     public $ProposalAuths;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.ProposalAuths',
-        'app.Proposals',
-        'app.Users',
-    ];
-
+    public $fixtures = ['app.ProposalAuths', 'app.Proposals', 'app.Users'];
     /**
      * setUp method
      *
@@ -36,10 +29,9 @@ class ProposalAuthsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('ProposalAuths') ? [] : ['className' => ProposalAuthsTable::class];
-        $this->ProposalAuths = TableRegistry::getTableLocator()->get('ProposalAuths', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('ProposalAuths') ? [] : ['className' => \App\Model\Table\ProposalAuthsTable::class];
+        $this->ProposalAuths = \Cake\ORM\TableRegistry::getTableLocator()->get('ProposalAuths', $config);
     }
-
     /**
      * tearDown method
      *
@@ -48,10 +40,8 @@ class ProposalAuthsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->ProposalAuths);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -61,7 +51,6 @@ class ProposalAuthsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -71,7 +60,6 @@ class ProposalAuthsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

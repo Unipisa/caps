@@ -4,25 +4,20 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\SettingsController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Controller\SettingsController Test Case
  *
  * @uses \App\Controller\SettingsController
  */
-class SettingsControllerTest extends TestCase
+class SettingsControllerTest extends \Cake\TestSuite\TestCase
 {
-    use IntegrationTestTrait;
-
+    use \Cake\TestSuite\IntegrationTestTrait;
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Settings'
-    ];
-
+    public $fixtures = ['app.Settings'];
     /**
      * Test index method
      *
@@ -32,7 +27,6 @@ class SettingsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test view method
      *
@@ -42,7 +36,6 @@ class SettingsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test add method
      *
@@ -52,7 +45,6 @@ class SettingsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test edit method
      *
@@ -62,7 +54,6 @@ class SettingsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test delete method
      *

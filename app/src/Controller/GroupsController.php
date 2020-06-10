@@ -10,7 +10,7 @@ use Cake\Http\Exception\ForbiddenException;
 
 class GroupsController extends AppController {
 
-   public function initialize()
+   public function initialize(): void
     {
         parent::initialize();
 
@@ -18,7 +18,7 @@ class GroupsController extends AppController {
         $this->loadComponent('Flash');
     }
 
-    public function beforeFilter ($event) {
+    public function beforeFilter (\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }

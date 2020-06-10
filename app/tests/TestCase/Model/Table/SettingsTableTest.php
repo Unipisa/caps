@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\SettingsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\SettingsTable Test Case
  */
-class SettingsTableTest extends TestCase
+class SettingsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,16 +15,12 @@ class SettingsTableTest extends TestCase
      * @var \App\Model\Table\SettingsTable
      */
     public $Settings;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Settings'
-    ];
-
+    public $fixtures = ['app.Settings'];
     /**
      * setUp method
      *
@@ -34,10 +29,9 @@ class SettingsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Settings') ? [] : ['className' => SettingsTable::class];
-        $this->Settings = TableRegistry::getTableLocator()->get('Settings', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('Settings') ? [] : ['className' => \App\Model\Table\SettingsTable::class];
+        $this->Settings = \Cake\ORM\TableRegistry::getTableLocator()->get('Settings', $config);
     }
-
     /**
      * tearDown method
      *
@@ -46,10 +40,8 @@ class SettingsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->Settings);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -59,7 +51,6 @@ class SettingsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *

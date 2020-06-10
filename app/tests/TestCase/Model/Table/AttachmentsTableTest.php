@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\AttachmentsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\AttachmentsTable Test Case
  */
-class AttachmentsTableTest extends TestCase
+class AttachmentsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,18 +15,12 @@ class AttachmentsTableTest extends TestCase
      * @var \App\Model\Table\AttachmentsTable
      */
     public $Attachment;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Attachment',
-        'app.Users',
-        'app.Proposals'
-    ];
-
+    public $fixtures = ['app.Attachment', 'app.Users', 'app.Proposals'];
     /**
      * setUp method
      *
@@ -36,10 +29,9 @@ class AttachmentsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Attachment') ? [] : ['className' => AttachmentsTable::class];
-        $this->Attachment = TableRegistry::getTableLocator()->get('Attachment', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('Attachment') ? [] : ['className' => \App\Model\Table\AttachmentsTable::class];
+        $this->Attachment = \Cake\ORM\TableRegistry::getTableLocator()->get('Attachment', $config);
     }
-
     /**
      * tearDown method
      *
@@ -48,10 +40,8 @@ class AttachmentsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->Attachment);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -61,7 +51,6 @@ class AttachmentsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -71,7 +60,6 @@ class AttachmentsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

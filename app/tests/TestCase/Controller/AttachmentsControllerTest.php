@@ -4,27 +4,20 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\AttachmentsController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Controller\AttachmentsController Test Case
  *
  * @uses \App\Controller\AttachmentsController
  */
-class AttachmentsControllerTest extends TestCase
+class AttachmentsControllerTest extends \Cake\TestSuite\TestCase
 {
-    use IntegrationTestTrait;
-
+    use \Cake\TestSuite\IntegrationTestTrait;
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Attachment',
-        'app.Users',
-        'app.Proposals'
-    ];
-
+    public $fixtures = ['app.Attachment', 'app.Users', 'app.Proposals'];
     /**
      * Test index method
      *
@@ -34,7 +27,6 @@ class AttachmentsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test view method
      *
@@ -44,7 +36,6 @@ class AttachmentsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test add method
      *
@@ -54,7 +45,6 @@ class AttachmentsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test edit method
      *
@@ -64,7 +54,6 @@ class AttachmentsControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test delete method
      *

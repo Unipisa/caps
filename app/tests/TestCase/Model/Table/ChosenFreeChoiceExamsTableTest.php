@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\ChosenFreeChoiceExamsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\ChosenFreeChoiceExamsTable Test Case
  */
-class ChosenFreeChoiceExamsTableTest extends TestCase
+class ChosenFreeChoiceExamsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,17 +15,12 @@ class ChosenFreeChoiceExamsTableTest extends TestCase
      * @var \App\Model\Table\ChosenFreeChoiceExamsTable
      */
     public $ChosenFreeChoiceExams;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.ChosenFreeChoiceExams',
-        'app.Proposals'
-    ];
-
+    public $fixtures = ['app.ChosenFreeChoiceExams', 'app.Proposals'];
     /**
      * setUp method
      *
@@ -35,10 +29,9 @@ class ChosenFreeChoiceExamsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('ChosenFreeChoiceExams') ? [] : ['className' => ChosenFreeChoiceExamsTable::class];
-        $this->ChosenFreeChoiceExams = TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('ChosenFreeChoiceExams') ? [] : ['className' => \App\Model\Table\ChosenFreeChoiceExamsTable::class];
+        $this->ChosenFreeChoiceExams = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams', $config);
     }
-
     /**
      * tearDown method
      *
@@ -47,10 +40,8 @@ class ChosenFreeChoiceExamsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->ChosenFreeChoiceExams);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -60,7 +51,6 @@ class ChosenFreeChoiceExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -70,7 +60,6 @@ class ChosenFreeChoiceExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

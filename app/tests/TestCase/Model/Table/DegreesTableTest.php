@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\DegreesTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\DegreesTable Test Case
  */
-class DegreesTableTest extends TestCase
+class DegreesTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,17 +15,12 @@ class DegreesTableTest extends TestCase
      * @var \App\Model\Table\DegreesTable
      */
     public $Degrees;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Degrees',
-        'app.Curricula'
-    ];
-
+    public $fixtures = ['app.Degrees', 'app.Curricula'];
     /**
      * setUp method
      *
@@ -35,10 +29,9 @@ class DegreesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Degrees') ? [] : ['className' => DegreesTable::class];
-        $this->Degrees = TableRegistry::getTableLocator()->get('Degrees', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('Degrees') ? [] : ['className' => \App\Model\Table\DegreesTable::class];
+        $this->Degrees = \Cake\ORM\TableRegistry::getTableLocator()->get('Degrees', $config);
     }
-
     /**
      * tearDown method
      *
@@ -47,10 +40,8 @@ class DegreesTableTest extends TestCase
     public function tearDown()
     {
         unset($this->Degrees);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -60,7 +51,6 @@ class DegreesTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *

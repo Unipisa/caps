@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\CompulsoryExamsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\CompulsoryExamsTable Test Case
  */
-class CompulsoryExamsTableTest extends TestCase
+class CompulsoryExamsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,18 +15,12 @@ class CompulsoryExamsTableTest extends TestCase
      * @var \App\Model\Table\CompulsoryExamsTable
      */
     public $CompulsoryExams;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.CompulsoryExams',
-        'app.Exams',
-        'app.Curricula'
-    ];
-
+    public $fixtures = ['app.CompulsoryExams', 'app.Exams', 'app.Curricula'];
     /**
      * setUp method
      *
@@ -36,10 +29,9 @@ class CompulsoryExamsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('CompulsoryExams') ? [] : ['className' => CompulsoryExamsTable::class];
-        $this->CompulsoryExams = TableRegistry::getTableLocator()->get('CompulsoryExams', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('CompulsoryExams') ? [] : ['className' => \App\Model\Table\CompulsoryExamsTable::class];
+        $this->CompulsoryExams = \Cake\ORM\TableRegistry::getTableLocator()->get('CompulsoryExams', $config);
     }
-
     /**
      * tearDown method
      *
@@ -48,10 +40,8 @@ class CompulsoryExamsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->CompulsoryExams);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -61,7 +51,6 @@ class CompulsoryExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -71,7 +60,6 @@ class CompulsoryExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

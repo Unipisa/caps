@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\TagsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\TagsTable Test Case
  */
-class TagsTableTest extends TestCase
+class TagsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,17 +15,12 @@ class TagsTableTest extends TestCase
      * @var \App\Model\Table\TagsTable
      */
     public $Tags;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Tags',
-        'app.Exams'
-    ];
-
+    public $fixtures = ['app.Tags', 'app.Exams'];
     /**
      * setUp method
      *
@@ -35,10 +29,9 @@ class TagsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Tags') ? [] : ['className' => TagsTable::class];
-        $this->Tags = TableRegistry::getTableLocator()->get('Tags', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('Tags') ? [] : ['className' => \App\Model\Table\TagsTable::class];
+        $this->Tags = \Cake\ORM\TableRegistry::getTableLocator()->get('Tags', $config);
     }
-
     /**
      * tearDown method
      *
@@ -47,10 +40,8 @@ class TagsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->Tags);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -60,7 +51,6 @@ class TagsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *

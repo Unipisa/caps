@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\FreeChoiceExamsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\FreeChoiceExamsTable Test Case
  */
-class FreeChoiceExamsTableTest extends TestCase
+class FreeChoiceExamsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,17 +15,12 @@ class FreeChoiceExamsTableTest extends TestCase
      * @var \App\Model\Table\FreeChoiceExamsTable
      */
     public $FreeChoiceExams;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.FreeChoiceExams',
-        'app.Curricula'
-    ];
-
+    public $fixtures = ['app.FreeChoiceExams', 'app.Curricula'];
     /**
      * setUp method
      *
@@ -35,10 +29,9 @@ class FreeChoiceExamsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('FreeChoiceExams') ? [] : ['className' => FreeChoiceExamsTable::class];
-        $this->FreeChoiceExams = TableRegistry::getTableLocator()->get('FreeChoiceExams', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('FreeChoiceExams') ? [] : ['className' => \App\Model\Table\FreeChoiceExamsTable::class];
+        $this->FreeChoiceExams = \Cake\ORM\TableRegistry::getTableLocator()->get('FreeChoiceExams', $config);
     }
-
     /**
      * tearDown method
      *
@@ -47,10 +40,8 @@ class FreeChoiceExamsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->FreeChoiceExams);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -60,7 +51,6 @@ class FreeChoiceExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -70,7 +60,6 @@ class FreeChoiceExamsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

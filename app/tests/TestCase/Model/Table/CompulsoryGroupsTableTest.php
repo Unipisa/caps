@@ -4,11 +4,10 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\CompulsoryGroupsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Model\Table\CompulsoryGroupsTable Test Case
  */
-class CompulsoryGroupsTableTest extends TestCase
+class CompulsoryGroupsTableTest extends \Cake\TestSuite\TestCase
 {
     /**
      * Test subject
@@ -16,18 +15,12 @@ class CompulsoryGroupsTableTest extends TestCase
      * @var \App\Model\Table\CompulsoryGroupsTable
      */
     public $CompulsoryGroups;
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.CompulsoryGroups',
-        'app.Groups',
-        'app.Curricula'
-    ];
-
+    public $fixtures = ['app.CompulsoryGroups', 'app.Groups', 'app.Curricula'];
     /**
      * setUp method
      *
@@ -36,10 +29,9 @@ class CompulsoryGroupsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('CompulsoryGroups') ? [] : ['className' => CompulsoryGroupsTable::class];
-        $this->CompulsoryGroups = TableRegistry::getTableLocator()->get('CompulsoryGroups', $config);
+        $config = \Cake\ORM\TableRegistry::getTableLocator()->exists('CompulsoryGroups') ? [] : ['className' => \App\Model\Table\CompulsoryGroupsTable::class];
+        $this->CompulsoryGroups = \Cake\ORM\TableRegistry::getTableLocator()->get('CompulsoryGroups', $config);
     }
-
     /**
      * tearDown method
      *
@@ -48,10 +40,8 @@ class CompulsoryGroupsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->CompulsoryGroups);
-
         parent::tearDown();
     }
-
     /**
      * Test initialize method
      *
@@ -61,7 +51,6 @@ class CompulsoryGroupsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test validationDefault method
      *
@@ -71,7 +60,6 @@ class CompulsoryGroupsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test buildRules method
      *

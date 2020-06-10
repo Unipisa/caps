@@ -10,7 +10,7 @@ use App\Caps\Utils;
 
 class CompulsoryExamsController extends AppController {
 
-    public function beforeFilter ($event) {
+    public function beforeFilter (\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }

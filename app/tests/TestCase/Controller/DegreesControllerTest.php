@@ -4,26 +4,20 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\DegreesController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
-
 /**
  * App\Controller\DegreesController Test Case
  *
  * @uses \App\Controller\DegreesController
  */
-class DegreesControllerTest extends TestCase
+class DegreesControllerTest extends \Cake\TestSuite\TestCase
 {
-    use IntegrationTestTrait;
-
+    use \Cake\TestSuite\IntegrationTestTrait;
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Degrees',
-        'app.Curricula'
-    ];
-
+    public $fixtures = ['app.Degrees', 'app.Curricula'];
     /**
      * Test index method
      *
@@ -33,7 +27,6 @@ class DegreesControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test view method
      *
@@ -43,7 +36,6 @@ class DegreesControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test add method
      *
@@ -53,7 +45,6 @@ class DegreesControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test edit method
      *
@@ -63,7 +54,6 @@ class DegreesControllerTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
-
     /**
      * Test delete method
      *
