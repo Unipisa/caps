@@ -50,7 +50,6 @@ class CurriculaController extends AppController {
         $this->set('filterForm', $filterForm);
 
         $this->set('curricula', $curricula);
-        $this->set('paginated_curricula', $this->Paginator->paginate($curricula));
         $this->set('_serialize', [ 'curricula' ]);
         $this->set('paginated_curricula', $this->paginate($curricula->cleanCopy()));
 
