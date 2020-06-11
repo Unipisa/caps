@@ -9,7 +9,7 @@
         <th>Nome</th>
         <th>Azioni</th>
     </tr>
-    <?php foreach ($curricula as $curriculum): ?>
+    <?php foreach ($paginated_curricula as $curriculum): ?>
     <tr>
         <td class="caps-admin-curricula-id"><?php echo $curriculum['id']; ?></td>
         <td class="caps-admin-curricula-year"><?php echo $curriculum['academic_year']; ?></td>
@@ -51,6 +51,8 @@
     <?php endforeach ?>
     <?php unset($curriculum); ?>
 </table>
+
+<?php echo $this->element('pagination'); ?>
 
 <div class="caps-admin-add">
     <ul>

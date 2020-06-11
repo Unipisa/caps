@@ -26,6 +26,7 @@ class CurriculaController extends AppController {
         $curricula = $this->Curricula->find('all')
             ->contain([ 'Degrees' ]);
         $this->set('curricula', $curricula);
+        $this->set('paginated_curricula', $this->Paginator->paginate($curricula));
         $this->set('_serialize', [ 'curricula' ]);
     }
 
