@@ -4,7 +4,9 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\Rule\IsUnique;
 use Cake\Validation\Validator;
+
 
 /**
  * Exams Model
@@ -39,6 +41,12 @@ class ExamsTable extends Table
             'targetForeignKey' => 'group_id',
             'joinTable' => 'exams_groups'
         ]);
+
+        $this->belongsToMany('Tags', [
+            'foreignKey' => 'exam_id',
+            'targetForeignKey' => 'tag_id',
+            'joinTable' => 'tags_exams'
+        ]);
     }
 
     /**
@@ -59,13 +67,13 @@ class ExamsTable extends Table
             ->notEmptyString('name', 'Inserire un nome');
 
         $validator
+            ->allowEmptyString('code')
             ->scalar('code')
-            ->maxLength('code', 5)
-            ->allowEmptyString('code');
+            ->maxLength('code', 5);
 
         $validator
             ->scalar('sector')
-            ->maxLength('sector', 6)
+            ->maxLength('sector', 15)
             ->allowEmptyString('sector');
 
         $validator
@@ -73,5 +81,11 @@ class ExamsTable extends Table
             ->notEmptyString('credits', 'Inserire un numero di crediti');
 
         return $validator;
+    }
+
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->isUnique(['code']));        
+        return $rules;
     }
 }

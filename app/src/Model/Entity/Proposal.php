@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use \App\Model\Entity\User;
 
 /**
  * Proposal Entity
@@ -27,14 +28,45 @@ class Proposal extends Entity
      * @var array
      */
     protected $_accessible = [
-        'approved' => true,
-        'submitted' => true,
-        'frozen' => true,
+        'state' => true,
         'user_id' => true, // TODO: Forse questo campo dovrebbe non essere qui?
         'modified' => true,
         'curriculum_id' => true,
         'user' => true,
         'chosen_exams' => true,
-        'chosen_free_choice_exams' => true
+        'chosen_free_choice_exams' => true,
+        'submitted_date' => true,
+        'approved_date' => true,
+        'auths' => true
     ];
+
+    public function getStateString()
+    {
+        switch ($this->state) {
+            case 'draft':
+                return 'bozza';
+            case 'submitted':
+                return 'sottomesso';
+            case 'approved':
+                return 'approvato';
+            case 'rejected':
+                return 'rigettato';
+            default:
+                return $this->state;
+        }
+    }
+
+    public function checkSecret($secret) {
+        if ($secret == null) {
+            return false;
+        }
+
+        foreach ($this->auths as $a) {
+            if ($a['secret'] == $secret) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

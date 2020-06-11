@@ -1,15 +1,15 @@
 <?php echo $this->element('update_navigation'); ?>
 
 <h2>Gruppi</h2>
+<?php echo $this->Form->create(); ?>
 <table class="caps-groups">
     <tr>
-        <th>Id</th>
+        <th></th>
         <th>Nome</th>
-        <th>Azioni</th>
     </tr>
     <?php foreach ($groups as $group): ?>
     <tr>
-        <td class="caps-admin-groups-id"><?php echo $group['id']; ?></td>
+        <td class="caps-admin-groups-id"><input type=checkbox name="selection[]" value="<?php echo $group['id']; ?>"></td>
         <td class="caps-admin-groups-name">
             <?php
                 echo $this->Html->link(
@@ -19,35 +19,12 @@
                 );
             ?>
         </td>
-        <td class="caps-admin-groups-actions">
-            <ul class="actions">
-                <li>
-                    <?php
-                        echo $this->Html->link(
-                            __('Modifica'),
-                            [
-                                'action' => 'edit',
-                                $group['id']],
-                            ['class' => 'accept']
-                        ) ." ". $this->Form->postLink(
-                            __('Cancella'),
-                            ['action' => 'delete',
-                                $group['id']],
-                            [
-                              'class' => 'reject',
-                              'confirm' => __('Sei sicuro di voler cancellare il gruppo "{0}"?', $group['name'])
-                            ]
-                        );
-                    ?>
-                </li>
-            </ul>
-        </td>
     </tr>
     <?php endforeach ?>
     <?php unset($group) ?>
 </table>
 
-<div class="caps-admin-add">
+<div class="caps-admin-actions">
     <ul>
         <li>
             <?php
@@ -58,5 +35,9 @@
                 );
             ?>
         </li>
+        <li>
+            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i gruppi selezionati?')" value="Elimina i gruppi selezionati"/></div>
+        </li>
     </ul>
 </div>
+<?php echo $this->Form->end(); ?>

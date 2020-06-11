@@ -7,6 +7,7 @@ use Cake\Database\Driver\Sqlite;
 use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
+use Cake\Mailer\Transport\DebugTransport;
 
 return [
     /**
@@ -26,6 +27,7 @@ return [
     'Caps' => [
         'cds' => 'Testing',
         'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
+        'timezone' => 'Europe/Rome'
     ],
 
     'UnipiAuthenticate' => [
@@ -262,7 +264,7 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => MailTransport::class,
+            'className' => DebugTransport::class,
             /*
              * The following keys are used in SMTP transports:
              */

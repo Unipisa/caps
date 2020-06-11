@@ -16,8 +16,7 @@ class CompulsoryExamsController extends AppController {
     }
 
     public function adminAdd () {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 
@@ -35,8 +34,7 @@ class CompulsoryExamsController extends AppController {
     }
 
     public function delete ($id = null) {
-        $user = $this->Auth->user();
-        if (!$user['admin']) {
+        if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
 

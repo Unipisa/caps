@@ -1,5 +1,24 @@
-ul, li {
-    margin: 0;
+form div {
+    padding: 0;
+}
+
+form .submit input[type=submit] {
+    padding: 8px 12px 8px 12px;
+    font-weight: bold;
+    clear: none;
+}
+
+#completeForm div.submit {
+    clear: none;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+form .submit input[type=submit]:disabled {
+    background-color: #888;
+    color: #ccc;
+    background-image: none;
+    box-shadow: none;
 }
 
 select {
@@ -38,7 +57,12 @@ table {
     height: 60px;
     padding: 0 0 0 70px;
     background-image: url("img/cherubino_white.png"), url("img/logo_white.png");
-    background-position: 0 0, right bottom;
+    background-position: 0 0, right center;
+}
+
+#header ul, .caps-admin-navigation ul, .caps-admin-navigation li, .caps-admin-actions li, .caps-admin-actions ul {
+    margin: 0;
+    padding: 0 0 0.5em 0;
 }
 
 div .disclaimer {
@@ -73,21 +97,30 @@ select#academicYearSelect {
     display: none;
 }
 
-.proposalsFilterForm select {
+.filterForm select {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm input {
+.filterForm input {
     width: auto;
     padding: 2px;
 }
 
-.proposalsFilterForm .input {
+.filterForm .input {
     clear: none;
     width: auto;
     display: inline-block;
     padding: 0 1em 0 0;
+}
+
+#proposalNotes {
+    font-size: 120%;
+    background-color: #e1e080;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 25px;
+    display: none;
 }
 
 #proposalForm h3 {
@@ -104,6 +137,10 @@ select#academicYearSelect {
     clear: both;
     background-color: rgb(44, 104, 119);
 }
+
+#proposalForm hr.proposal-year {
+     margin-top: 35px;
+ }
 
 #proposalForm ul {
     clear: both;
@@ -185,9 +222,13 @@ select#academicYearSelect {
 
 .planActions {
     list-style-type: none;
+    padding: 0px;
+    margin: 50px 0px 0px;
 }
 
 .planActions li {
+    margin: 0px;
+    padding: 0px;
     width: 33%;
     display: inline-block;
     text-align: center;
@@ -205,6 +246,7 @@ select#academicYearSelect {
     text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
 }
 
+.green,
 .planActions .accept,
 .actions .accept {
     color: #fff;
@@ -216,47 +258,89 @@ select#academicYearSelect {
     border-color: #25691a;
 }
 
+.green:hover,
 .planActions .accept:hover,
 .actions .accept:hover {
     background: #5BA150;
     border-color: #25691a;
 }
 
+.red,
 .planActions .reject,
 .actions .reject {
-    color: #fff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
-    background: #c43c35;
-    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35));
-    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: linear-gradient(top, #ee5f5b, #c43c35);
-    border-color: #7f1711;
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+    background: #c43c35 !important;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -ms-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35)) !important;
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35) !important;
+    background-image: linear-gradient(top, #ee5f5b, #c43c35) !important;
+    border-color: #7f1711 !important;
 }
 
+.red:hover,
 .planActions .reject:hover,
 .actions .reject:hover {
-    background: #c43c35;
-    border-color: #7f1711;
+    background: #c43c35 !important;
+    border-color: #7f1711 !important;
 }
 
+.yellow,
 .planActions .back {
-	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	background: #ffcc00;
-	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800));
-	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: -o-linear-gradient(top, #ffcc00, #E6B800);
-	background-image: linear-gradient(top, #ffcc00, #E6B800);
-    border-color: #a68500;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+	background: #ffcc00 !important;
+	background-image: -moz-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -ms-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffcc00), to(#E6B800)) !important;
+	background-image: -webkit-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: -o-linear-gradient(top, #ffcc00, #E6B800) !important;
+	background-image: linear-gradient(top, #ffcc00, #E6B800) !important;
+    border-color: #a68500 !important;
 }
 
+.yellow:hover,
 .planActions .back:hover {
-	background: #ffcc00;
-    border-color: #a68500;
+	background: #ffcc00 !important;
+    border-color: #a68500 !important;
+}
+
+li.attachment {
+    margin-left: 0px;
+    padding: 6px;
+    list-style-type: none;
+    border-left: 10px solid rgb(44, 104, 119);
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+
+li.authorization {
+    margin-left: 0px;
+    padding: 6px;
+    list-style-type: none;
+    border-left: 10px solid #FFCC00;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+.attachments ul {
+    margin-bottom: 25px;
+}
+
+.proposal-tag {
+    display: inline-block;
+    border-radius: 2px;
+    border: 1px solid black;
+    padding: 1px 4px 1px 4px;
+    font-size: 80%;
+    margin-left: 6px;
+    font-weight: bold;
 }
 
 .bureaucracy {
@@ -276,12 +360,42 @@ select#academicYearSelect {
     background: url("img/nyan.gif");
 }
 
-.status {
+ul.topmenu {
+    margin: 0;
+    margin-top: 20px;
+    width: 48%;
+    clear: none;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+.topmenu li {
     list-style-type: none;
-    margin-right: 0%;
+    display: inline-block;
+    font-size: 120%;
+    padding-right: 16px;
+}
+
+.topmenu li > a {
+    border: 1px solid transparent;
+    padding: 10px;
+}
+
+.topmenu li > a:hover {
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: #2a62bccc;
+}
+
+ul.status {
+    list-style-type: none;
+    margin: 0;
     padding-right: 8px;
     margin-top: 16px;
     text-align: right;
+    clear: none;
+    display: inline-block;
+    width: 48%;
 }
 
 .status li {
@@ -291,18 +405,19 @@ select#academicYearSelect {
 }
 
 .status li a {
-    padding: 3% 10px;
-    font-size: 110%;
-    border:1px solid #bbb;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
     text-decoration: none;
-    color: #fff;
-    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
+}
+
+.status li a:hover {
+    text-decoration: underline;
 }
 
 .status .logout {
+    padding: 3% 10px;
+    font-size: 110%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
     color: #fff;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
     background: #c43c35;
@@ -312,7 +427,7 @@ select#academicYearSelect {
     background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
     background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
     background-image: linear-gradient(top, #ee5f5b, #c43c35);
-    border-color: #7f1711;
+    border: 1px solid #7f1711;
 }
 
 .status .logout:hover,
@@ -395,13 +510,13 @@ select#academicYearSelect {
     border-color: #a68500;
 }
 
-.caps-admin-add ul {
+.caps-admin-actions ul {
     width: 100%;
     list-style-type: none;
     margin-top: 30px;
 }
 
-.caps-admin-add ul li a {
+.caps-admin-actions ul li a {
     color: #fff;
     width: 100%;
     display: block;
@@ -419,7 +534,7 @@ select#academicYearSelect {
     text-decoration: none;
 }
 
-.caps-admin-add ul li a:hover {
+.caps-admin-actions ul li a:hover {
     background: #5BA150;
     border-color: #25691a;
 }

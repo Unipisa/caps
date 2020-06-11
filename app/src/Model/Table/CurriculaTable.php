@@ -36,12 +36,7 @@ class CurriculaTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->belongsToMany('Proposals', [
-            'foreignKey' => 'curriculum_id',
-            'targetForeignKey' => 'proposal_id',
-            'joinTable' => 'curricula_proposals'
-        ]);
-
+        $this->hasMany('Proposals')->setProperty('proposals');
         $this->hasMany('FreeChoiceExams')->setProperty('free_choice_exams');
         $this->hasMany('CompulsoryExams')->setProperty('compulsory_exams');
         $this->hasMany('CompulsoryGroups')->setProperty('compulsory_groups');
@@ -65,6 +60,9 @@ class CurriculaTable extends Table
             ->scalar('name')
             ->maxLength('name', 255)
             ->allowEmptyString('name', false);
+
+        $validator
+            ->naturalNumber('academic_year');
 
         return $validator;
     }

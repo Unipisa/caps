@@ -27,6 +27,16 @@ class Exam extends Entity
         'name' => true,
         'code' => true,
         'sector' => true,
-        'credits' => true
+        'credits' => true,
+        'tags' => true
     ];
+
+    // Get a string representation of the tags
+    public function tagsToString() {
+        return implode(", ",
+            array_map(function ($tag) {
+                return $tag['name'];
+            }, $this['tags'])
+        );
+    }
 }

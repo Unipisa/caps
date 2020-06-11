@@ -1,5 +1,9 @@
 # CAPS
+[![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master)](https://travis-ci.org/github/Unipisa/caps/) [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)](https://travis-ci.org/github/Unipisa/caps/)
+
 Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio presso il Dipartimento di Matematica, Università di Pisa.
+
+
 
 
 ## Installazione
@@ -62,3 +66,125 @@ students_base_dn = "dc=studenti,ou=people,dc=unipi,dc=it"
 ; Base DN dove cercare i docenti
 admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
 ```
+
+## struttura dati
+
+    Attachment
+        id
+        filename
+        user -> User
+        proposal -> Proposal
+        data
+        mimetype
+        comment
+        created
+
+    ChosenExam
+        id
+        credits
+        chosen_year
+        exam -> Exam
+        proposal -> Proposal
+        compulsory_group -> CompulsoryGroup (*) (!) 
+        compulsory_exam -> CompulsoryExams (*) (!) 
+        free_choice_exam -> FreeChoiceExam (*) (!) 
+        (*) uno solo dei tre puo' essere non null: indica la corrispondenza dell'esame nel curriculum
+        (*) se tutti e tre sono null vuol dire che l'esame non era previsto nel curriculum
+
+    ChosenFreeChoiceExam
+        id
+        name
+        credits
+        chosen_year
+        proposal -> Proposal
+        free_choice_exam -> FreeChoiceExam (*) (!)
+        (*) se non null indica la corrispondenza dell'esame nel curriculum. Ma attualmente l'utente non puo' inserirlo, infatti è sempre null!
+        (*) se null significa che e' un esame non in databse e  non previsto dal curriculum.
+
+    CompulsoryExam
+        id
+        year
+        position
+        exam -> Exam
+        curriculum -> Curriculum
+
+    CompulsoryGroup
+        id
+        year
+        position
+        group -> Group
+        curriculum -> Curriculum
+
+    Curriculum
+        id
+        name
+        academic_year
+        notes
+        degree -> Degrees (!)
+        proposals <- Proposals
+        free_choice_exams <- FreeChoiceExam
+        compulsory_exams <- CompulsoryExam
+        compulsory_groups <- CompulsoryGroup
+        <- Proposal
+
+    Exam
+        id
+        name
+        code
+        sector
+        credits
+        <-> Exam
+
+    FreeChoiceExam
+        id
+        year
+        position
+        curriculum -> Curriculum
+
+    Group
+        id
+        name
+        <-> Exam
+
+    ProposalAuth
+        id
+        email
+        secret
+        created
+        proposal -> Proposal
+
+    Proposal
+        id
+        modified
+        state
+        submitted_date
+        approved_date
+        user -> User
+        curriculum -> Curriculum
+        <- ChosenExam
+        <- ChosenFreeChoiceExam
+        <- ProposalAuth
+        <- Attachment
+
+    Settings
+        id
+        field
+        value
+        fieldtype
+
+    Tag
+        id
+        name
+        <-> Exam
+
+    User
+        id
+        username
+        name
+        number
+        givenname
+        surname
+        email
+        admin
+
+(!) nel database manca il constraint!!

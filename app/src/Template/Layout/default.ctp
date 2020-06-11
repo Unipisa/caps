@@ -33,46 +33,23 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 
         echo $this->Html->css('cake.generic');
         // echo $this->Html->css('chosen.min');
-        echo $this->Html->css('caps');
-        echo $this->Html->css('caps.print', array('media' => 'print'));
+        echo $this->Html->css('caps.css?v=2');
+        echo $this->Html->css('caps.print.css?v=1', array('media' => 'print'));
 
         echo $this->Html->script('jquery-3.4.1.min');
-        // echo $this->Html->script('chosen.jquery.min');
-        /* if (is_file(WWW_ROOT . 'js' . DS . $this->request->params['controller'] . DS . $this->request->params['action'] . '.js')) {
-            echo $this->Html->script($this->request->params['controller'] . '/' . $this->request->params['action']);
-        } */
-	?>
+    ?>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 </head>
 <body>
 	<div id="container">
         <div id="header">
-					<?php if (isset($owner)): ?>
-							<ul class='status'>
-									<li>
-											<?php echo $owner['name']; ?>
-									</li>
-									<li>
-											<?php
-													echo $this->Html->link(
-															'Logout',
-															array(
-																		'controller' => 'users',
-																		'action' => 'logout'
-															),
-															array(
-																		'class' => 'logout'
-															)
-													);
-											?>
-									</li>
-							</ul>
-					<?php endif; ?>
             <h1>
                 <?php
                     echo $this->Html->link(
                         'Compilazione Assistita<br/>'
 												.'Piani di Studio<br/>'
-												. $Caps['cds'],
+												. $settings['cds'],
                         '/',
                         array(
                             'escape' => false
@@ -80,10 +57,78 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                     );
                 ?>
             </h1>
+            <?php if (isset($user)): ?>
+                <ul class="topmenu">
+                    <?php if ($user['admin']): ?>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Piani di studio', [
+                            'controller' => 'proposals',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Aggiornamento dati', [
+                            'controller' => 'curricula',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Impostazioni', [
+                            'controller' => 'settings',
+                            'action' => 'index'
+                        ]);
+                        ?>
+                    </li>
+                    <?php else: ?>
+                    <li>
+                        <?php
+                          echo $this->Html->link('I miei piani di studio', [
+                              'controller' => 'users',
+                              'action' => 'view'
+                          ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link('Nuovo piano', [
+                            'controller' => 'proposals',
+                            'action' => 'add'
+                        ]);
+                        ?>
+                    </li>
+                    <?php endif; ?>
+                </ul>
+                <ul class='status'>
+                    <li>
+                        <?php
+                          echo $this->Html->link($user['name'], [ 'controller' => 'users', 'action' => 'login' ]);
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        echo $this->Html->link(
+                            'Logout',
+                            array(
+                                'controller' => 'users',
+                                'action' => 'logout'
+                            ),
+                            array(
+                                'class' => 'logout'
+                            )
+                        );
+                        ?>
+                    </li>
+                </ul>
+            <?php endif; ?>
         </div>
-	<?php if ($Caps['disclaimer']) {?>
+	<?php if ($settings['disclaimer'] != null) {?>
 		<div class="disclaimer">
-		<?php echo $Caps['disclaimer']; ?>
+		<?php echo $settings['disclaimer']; ?>
 		</div>
 	<?php } ?>
 		<div id="content">
@@ -93,7 +138,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
         <div id="footer">
 						<p class="attribution">
 								Caps version <?php if (isset($capsVersion)) { echo $capsVersion; } ?>
-								--
+                            —
             <?php
                 echo $this->Html->link(
                     $this->Html->image('cake.power.gif', array('alt' => isset($cakeDescription) ? $cakeDescription : "", 'border' => '0')),

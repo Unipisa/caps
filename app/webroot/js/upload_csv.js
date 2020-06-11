@@ -83,16 +83,33 @@ function csv_to_array() {
 
 function fill_table_html() {
     table_html = "";
+    let validation_context = {};
     for (var i=-1; i<csv_data.length; i++) {
-        var row = Array(csv_upload_fields.length);
+        var row = Array(csv_upload_fields.length+2);
         if (i==-1) {
-            row = csv_upload_fields;
             delimiter = "th";
+            row[0]="";
+            var j;
+            for (j=1;j<row.length-1;++j) {
+                row[j] = csv_upload_fields[j-1];
+            }
+            row[j] = "validazione";
         } else {
             delimiter = "td";
-            for (var j=0;j<row.length;++j) {
-                row[j] = csv_data[i][csv_column_map[j]];
+            var error = null;
+            if (csv_validator) {
+                var obj = {};
+                csv_upload_fields_db.forEach(function(field, j) {
+                    obj[field] = csv_data[i][csv_column_map[j]];
+                });
+                error = csv_validator(obj, validation_context);
             }
+            var j = 0;
+            row[j] = "<input type='checkbox' id='csv_row_" + i + "' " + (error ? "" : "checked='checked'" )+ ">";
+            for (var j=1;j<row.length-1;++j) {
+                row[j] = csv_data[i][csv_column_map[j-1]];
+            }
+            row[j] = error?("<span class='red'>" + error + "</span>"):"";
         }
         table_html += "<tr><"+delimiter+">" + row.join("</"+delimiter+"><"+delimiter+">")+"</"+delimiter+"></tr>\n";
     }
@@ -132,23 +149,25 @@ function preparePreview() {
     $("#csv_preview_table").html(html);
 }
 
-function csv_upload_file(evt) {
-    var f = evt.target.files[0];
+function csv_upload_file(f) {
+//    var f = evt.target.files[0];
     if (f) {
-    var r = new FileReader();
-    r.onload = function(e) {
-        csv_contents = e.target.result;
-        $("#csv_options_div").show();
-        preparePreview();
+        var r = new FileReader();
+        r.onload = function(e) {
+            csv_contents = e.target.result;
+            $("#csv_options_div").show();
+            preparePreview();
         }
+        r.readAsText(f);
     } else {
         alert("Failed to load file");
     }
-    r.readAsText(f);f
 }
 
 function csvSubmit() {
-    var payload = csv_data.map(function(row){
+    var payload = csv_data.filter(function(row, i) {
+        return $("#csv_row_" + i).prop('checked');
+    }).map(function(row){
         var obj = {};
         for (var i=0;i<csv_upload_fields.length;i++){
             obj[csv_upload_fields_db[i]] = row[csv_column_map[i]];
@@ -175,32 +194,13 @@ function csvSubmit() {
     form.submit();
 }
 
-function csvSubmit_form_variant() {
-    var form = document.createElement('form');
-    form.style.visibility = 'hidden';
-    form.method = 'POST';
-    form.action = '';
-
-    var input = document.createElement('input');
-    input.name = '_csrfToken';
-    input.value = csrf_token;
-    form.appendChild(input)
-
-    for (var i=0;i<csv_data.length;i++) {
-        for (var j=0;j<csv_upload_fields.length;++j) {
-            var input = document.createElement('input');
-            input.name = 'exam.'+i+'.'+csv_upload_fields[j];
-            input.value = csv_data[i][csv_column_map[j]];
-            form.appendChild(input);
-        }
-    }
-    document.body.appendChild(form);
-    form.submit();
-}
-
 $("document").ready(function(){
-    $("#csv_file_input").change(csv_upload_file);
-    $("#csv_file_reload").click(csv_upload_file);
+    $("#csv_file_input").change(function (evt) {
+        csv_upload_file(evt.target.files[0]);
+    });
+    $("#csv_file_reload").click(function (evt) {
+        csv_upload_file($("#csv_file_input").files[0]);
+    });
     $("select[name='csv_separator']").change(function() {
         csv_column_separator = $(this).val();
         preparePreview();

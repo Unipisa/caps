@@ -24,6 +24,9 @@
     echo $this->Form->control(
         'academic_year'
     );
+    echo $this->Form->control(
+        'notes'
+    );
     echo $this->Form->submit($curriculum->isNew() ? 'Crea' : 'Aggiorna');
     echo $this->Form->end();
 ?>
@@ -75,6 +78,9 @@
     <?php } ?>
 </table>
 <?php
+    $years = [];
+    for($y = 1; $y <= $curriculum['degree']['years']; $y++) $years[$y] = $y;
+
     echo $this->Form->create(
         'CompulsoryExams', [
             'url' => [
@@ -106,7 +112,7 @@
         [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $years
         ]
     );
     echo $this->Form->submit('Aggiungi esame',
@@ -117,7 +123,7 @@
 
 <hr class="caps-admin-curriculum"/>
 
-<h3>Esami a scelta in un gruppo</h3>
+<h3>Esami obbligatori a scelta in un gruppo</h3>
 <table class="caps-admin-restricted-exams">
     <tr>
         <th>Nome Gruppo</th>
@@ -194,7 +200,7 @@
         [
             'class' => 'caps-admin-curriculum-group-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['Curriculum']['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $years
         ]
     );
     echo $this->Form->submit('Aggiungi gruppo',
@@ -208,13 +214,13 @@
 <h3>Esami a scelta libera</h3>
 <table class="caps-admin-free-exams">
     <tr>
-        <th>Nome Esame</th>
+        <th>Gruppo</th>
         <th>Anno</th>
         <th>Azioni</th>
     </tr>
     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
         <tr>
-            <td class="caps-admin-curriculum-exam-name">Esame a scelta libera</td>
+            <td class="caps-admin-curriculum-exam-group"><?php echo $free_choice_exam['group']?$free_choice_exam['group']['name']:"esame qualunque"; ?></td>
             <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
             <td class="caps-admin-curriculum-exam-actions">
                 <ul class="actions">
@@ -260,20 +266,25 @@
         ['default' => $curriculum['id'],
             'type' => 'hidden',]
     );
-    // XXX(jacquerie): Ignored by the receiving controller.
     echo $this->Form->control(
-        'name',
-        ['class' => 'caps-admin-curriculum-exam-name-choose',
-            'default' => 'Esame a scelta libera',
-            'disabled' => true,
-            'label' => false]
+        'group_id',
+        ['class' => 'caps-admin-curriculum-group-name-choose',
+            'label' => false,
+            'default' => null,
+            'options' => ["" => "un esame qualunque"] + $groupsList->toArray()
+        ]
     );
+
+    $year_list = [];
+    for ($i=1; $i <= $curriculum['degree']['years']; $i++) {
+        $year_list[$i] = $i;
+    }
     echo $this->Form->control(
         'year',
         [
             'class' => 'caps-admin-curriculum-exam-year-choose',
             'label' => false,
-            'options' => (substr($curriculum['name'], 0, strlen('Laurea Triennale')) === 'Laurea Triennale' ? [1 => 1, 2 => 2, 3 => 3] : [1 => 1, 2 => 2])
+            'options' => $year_list
         ]
     );
     echo $this->Form->submit('Aggiungi esame',

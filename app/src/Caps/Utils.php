@@ -10,9 +10,14 @@ class Utils {
      */
      public static function error_to_string($errs) {
          $error_msg = "";
-         foreach ($errs as $field) {
-             foreach ($field as $err) {
-                  $error_msg = $error_msg . $err . "\n";
+
+         foreach ($errs as $table) {
+             foreach ($table as $field) {
+                 foreach ($field as $err) {
+                     foreach ($err as $msg) {
+                         $error_msg = $error_msg . $msg . "\n";
+                     }
+                 }
              }
          }
 

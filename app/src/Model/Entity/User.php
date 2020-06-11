@@ -2,6 +2,8 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use App\Model\Entity\Proposal;
+use App\Model\Entity\Attachment;
 
 /**
  * User Entity
@@ -30,7 +32,9 @@ class User extends Entity
         'number' => true,
         'proposal' => true,
         'givenname' => true,
-        'surname' => true
+        'surname' => true,
+        'email' => true,
+        'admin' => true
     ];
 
     public function getIdentifier()
@@ -41,5 +45,26 @@ class User extends Entity
     public function getOriginalData()
     {
         return $this;
+    }
+
+    public function canAddAttachment(Proposal $proposal, string $secret = null)
+    {
+        return $this['admin'] ||
+            $this['id'] == $proposal['user_id'] ||
+            $proposal->checkSecret($secret);
+    }
+
+    public function canViewAttachment(Attachment $attachment, string $secret = null)
+    {
+        return $this['admin'] ||
+            $this['username'] == $attachment->user['username'] ||
+            ($attachment->proposal != null && $this['id'] == $attachment->proposal['user_id']) ||
+            ($attachment->proposal != null && $attachment->proposal->checkSecret($secret));
+    }
+
+    public function canDeleteAttachment(Attachment $attachment)
+    {
+        return $this['admin'] ||
+            $this['id'] == $attachment['user_id'];
     }
 }

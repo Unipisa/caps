@@ -85,7 +85,7 @@ class UsersControllerTest extends IntegrationTestCase
             'Auth' => [
                 'User' => [
                     'id' => 1,
-                    'user' => 'mario.rossi', // see UsersFixture.php
+                    'username' => 'mario.rossi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'MARIO ROSSI',
                     'role' => 'student',

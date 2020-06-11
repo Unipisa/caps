@@ -24,6 +24,13 @@
         'credits',
         ['label' => 'Crediti',
 				 'type' => 'number']);
+    echo $this->Form->control('tags._ids', [
+        'label' => 'Tags'
+    ]);
+    echo $this->Form->control('new-tags', [
+        'label' => 'Nuovi tag (separati da virgola)',
+        'class' => 'tags-entry'
+    ]);
     echo $this->Form->control(
         'groups._ids',
         ['label' => 'Gruppi',

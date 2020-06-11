@@ -1,5 +1,38 @@
 
-<?php echo $this->element('updating_navigation'); ?>
+<nav class="caps-admin-navigation actions">
+    <ul>
+        <li class="caps-admin-link">
+            <?php
+                echo $this->Html->link(
+                    '↑&nbsp;Indietro',
+                    ['action' => 'index'],
+                    ['escape' => false]
+                );
+            ?>
+        </li>
+        <li class="caps-admin-link">
+            <?php
+                echo $this->Html->link(
+                    '✎&nbsp;Modifica',
+                    ['action' => 'edit', $curriculum['id']],
+                    ['escape' => false] // non so a cosa serve
+                );
+            ?>
+        </li>
+        <li class="">
+            <?php
+                echo $this->Form->postLink(
+                    '✗&nbsp;Elimina',
+                    ['action' => 'delete', $curriculum['id']],
+                    ['escape' => false,
+                     'class' => 'action reject',
+                     'confirm' => __('Sei sicuro di voler cancellare questo curriculum?')
+                    ]
+                );
+            ?>
+        </li>
+    </ul>
+</nav>
 
 <h2>Curriculum</h2>
 
@@ -17,6 +50,13 @@
         <td><?php echo $curriculum['academic_year']; ?></td>
       </tr>
 </table>
+
+<?php if ($curriculum['notes'] != ""): ?>
+  <h3>Nota</h3>
+    <p>
+      <?php echo $curriculum['notes']; ?>
+    </p>
+<?php endif; ?>
 
 <h3>Esami obbligatori</h3>
 <table class="caps-admin-compulsory-exams">

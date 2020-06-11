@@ -36,16 +36,17 @@ class Application extends BaseApplication
      */
     public static function getVersion()
     {
-        $MAJOR = 0;
-        $MINOR = 9;
-        $PATCH = 0;
-
-        $commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
-
+        $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
+        $version = trim(exec('git describe --tags'));
         $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
         $commitDate->setTimezone(new \DateTimeZone('UTC'));
+        $commitDate = $commitDate->format('Y-m-d H:i:s');
 
-        return sprintf('%s.%s.%s-dev.%s (%s)', $MAJOR, $MINOR, $PATCH, $commitHash, $commitDate->format('Y-m-d H:i:s'));
+        if ($branch === "master") {        
+            return sprintf('%s [%s]', $version, $commitDate);
+        } else {
+            return sprintf('%s-%s [%s]', $version, $branch, $commitDate);
+        }
     }
 
     /**

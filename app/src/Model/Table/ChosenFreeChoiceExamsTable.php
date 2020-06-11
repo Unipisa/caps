@@ -59,11 +59,11 @@ class ChosenFreeChoiceExamsTable extends Table
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name');
+            ->notEmptyString('name');
 
         $validator
             ->integer('credits')
-            ->allowEmptyString('credits');
+            ->naturalNumber('credits');
 
         return $validator;
     }
