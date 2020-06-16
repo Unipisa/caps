@@ -50,21 +50,18 @@ bin/cake bake migration CreateProposals approved:boolean submitted:boolean froze
 
 ## Inoltro dell'LDAP in locale
 
-Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''pagine.dm.unipi.it''')
+Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''caps.dm.unipi.it''')
 in locale, va inoltrata la porta tramite SSH:
 ```
-ssh -L 1636:idm2.unipi.it:636 utente@pagine.dm.unipi.it
+ssh -L 1636:idm2.unipi.it:636 utente@caps.dm.unipi.it
 ```
-e poi va modificato il file '''unipi.ini''' per puntare all'LDAP locale, ad esempio:
+e poi va modificato il file '''config/app.php''' per puntare all'LDAP locale, ad esempio:
 ```
 ; URI del server LDAP da interrogare
 ldap_server_uri = ldaps://127.0.0.1:1636/
 
 ; Base DN dove cercare gli studenti
-students_base_dn = "dc=studenti,ou=people,dc=unipi,dc=it"
-
-; Base DN dove cercare i docenti
-admins_base_dn = "dc=dm,ou=people,dc=unipi,dc=it"
+base_dn = "ou=people,dc=unipi,dc=it"
 ```
 
 ## struttura dati

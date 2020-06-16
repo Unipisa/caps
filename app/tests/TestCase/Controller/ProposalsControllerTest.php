@@ -49,7 +49,6 @@ class ProposalsControllerTest extends IntegrationTestCase
                     'username' => 'mario.rossi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'MARIO ROSSI',
-                    'role' => 'student',
                     'number' => '123456',
                     'admin' => false,
                     'surname' => '',

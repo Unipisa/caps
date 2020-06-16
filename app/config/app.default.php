@@ -32,13 +32,10 @@ return [
 
     'UnipiAuthenticate' => [
       // URI del server LDAP da interrogare
-      'ldap_server_uri' => 'ldaps://my-ldap.example.com',
+      'ldap_server_uri' => 'ldaps://127.0.0.1:1636/',
 
       // DN con cui autenticarsi sul server LDAP
-      'bind_dn' => 'cn=admin,dc=example,dc=com',
-
-      // Password del DN sopra
-      'bind_pw' => 'mysecretpassword',
+      'base_dn' => "ou=people,dc=unipi,dc=it",
 
       // LISTA DEGLI UTENTI AMMINISTRATORE
       'admins' => [],
@@ -50,7 +47,6 @@ return [
             'password' => 'my-fake-user',
             'ldap_dn' => '',
             'name' => 'Utente Finto',
-            'role' => 'student',
             'number' => '000000',
             'admin' => false,
             'surname' => 'Finto',
@@ -61,7 +57,6 @@ return [
             'password' => 'other-fake-user',
             'ldap_dn' => '',
             'name' => 'Altro Utente',
-            'role' => 'student',
             'number' => '000111',
             'admin' => false,
             'surname' => 'Altro',

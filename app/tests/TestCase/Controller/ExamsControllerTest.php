@@ -42,7 +42,6 @@ class ExamsControllerTest extends IntegrationTestCase
                     'username' => 'mario.rossi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'MARIO ROSSI',
-                    'role' => 'student',
                     'number' => '123456',
                     'admin' => false,
                     'surname' => '',
@@ -61,7 +60,6 @@ class ExamsControllerTest extends IntegrationTestCase
                     'username' => 'alice.verdi', // see UsersFixture.php
                     'ldap_dn' => '',
                     'name' => 'ALICE VERDI',
-                    'role' => 'staff',
                     'number' => '24680',
                     'admin' => true,
                     'surname' => '',

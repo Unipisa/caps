@@ -10,6 +10,11 @@ use Cake\Http\ServerRequest;
 
 use Cake\Log\Log;
 
+function array_get($array, $key, $default=null) {
+    if (isset($array[$key])) return $array[$key];
+    return $default;
+}
+
 class UnipiAuthenticate extends BaseAuthenticate {
 
     protected $_defaultConfig  = [
@@ -32,7 +37,7 @@ class UnipiAuthenticate extends BaseAuthenticate {
 
     public function authenticate(ServerRequest $request, Response $response) {
         $config = $this->getConfig();
-        // Log::write('debug', "******". print_r($config, true));
+        //        Log::write('debug', "******". print_r($config, true));
         $data = $request->getData();
 
         $admin_usernames = [];
@@ -45,7 +50,6 @@ class UnipiAuthenticate extends BaseAuthenticate {
             'ldap_dn' => '',
             'username' => $data['username'],
             'name' => 'Utente Dimostrativo',
-            'role' => 'student',
             'number' => '000000',
             'admin' => in_array($data['username'], $admin_usernames),
             'surname' => '',
@@ -79,57 +83,38 @@ class UnipiAuthenticate extends BaseAuthenticate {
 
         // We need to connect to the LDAP Unipi server to authenticate the user.
         $ds = ldap_connect($config['ldap_server_uri']);
+
+        if (! $ds) return false;
+
         ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-        if ($ds) {
-            // Try first to authenticate as a professor
-            $role = 'professor';
-            $base_dn = $config['admins_base_dn'];
-            $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
+        $base_dn = array_get($config, 'base_dn', array_get($config, 'admin_base_dn'));
+        $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
+        $r = @ldap_bind($ds, $bind_dn, $data['password']);
 
-            $r = @ldap_bind($ds, $bind_dn, $data['password']);
+        if (! $r) return false;
 
-            if (! $r) {
-                $ds = ldap_connect($config['ldap_server_uri']);
-                ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+        // Search for the user in the tree
+        $results = ldap_search($ds, $base_dn, "uid=" . $data['username']);
 
-                // As a fallback, try to authenticate as a student
-                $base_dn = $config['students_base_dn'];
-                $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
-                $r = @ldap_bind($ds, $bind_dn, $data['password']);
-
-                $role = 'student';
-
-                if (! $r)
-                    return false;
-            }
-
-            // Search for the user in the tree
-            $results = ldap_search($ds, "dc=unipi,dc=it", "uid=" . $data['username']);
-
-            if (ldap_count_entries ($ds, $results) == 0) {
-                return false;
-            }
-
-            $matches = ldap_get_entries ($ds, $results);
-            $m = $matches[0];
-
-            // If we got till here then the user can be logged in. Just make sure that we build up
-            // an array of its properties so we can use them after now.
-            return array (
-                'ldap_dn' => $m['dn'],
-                'username' => $data['username'],
-                'givenname' => $m['givenname'][0],
-                'surname' => $m['sn'][0],
-                'name' => $m['cn'][0],
-                'number' => ($role == 'student') ? $m['unipistudentematricola'][0] : $m['unipidipendentematricola'][0],
-                'role' => $role,
-                'admin' => in_array($data['username'], $config['admins']),
-                'email' => $m['mail'][0]
-            );
+        if (ldap_count_entries ($ds, $results) == 0) {
+            return false;
         }
 
-        return false;
-    }
+        $matches = ldap_get_entries ($ds, $results);
+        $m = $matches[0];
 
+        // If we got till here then the user can be logged in. Just make sure that we build up
+        // an array of its properties so we can use them later
+        return array (
+            'ldap_dn' => $m['dn'],
+            'username' => $data['username'],
+            'givenname' => $m['givenname'][0],
+            'surname' => $m['sn'][0],
+            'name' => $m['cn'][0],
+            'number' => $user['matricola'] = array_get($m, 'unipistudentematricola',[$data['username']])[0],
+            'admin' => in_array($data['username'], $config['admins']),
+            'email' => $m['mail'][0]
+        );
+    }
 }
