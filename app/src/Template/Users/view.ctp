@@ -48,7 +48,7 @@ $num_proposals = 0;
           <tr>
             <th>Corso di Laurea</th>
             <th>Curriculum</th>
-            <th>Anno di immatricolazione</th>
+            <th>Anno</th>
             <th>Ultima modifica</th>
             <th>Data di sottomissione</th>
             <th>Data di approvazione</th>

@@ -1,5 +1,8 @@
 <?php echo $this->Html->script('upload_csv.js?rev=2'); ?>
 <?php echo $this->element('update_navigation'); ?>
+
+<h2>Esami</h2>
+
 <script>
 // per upload_csv
 csv_upload_fields = ['nome','codice','settore','crediti'];
@@ -58,7 +61,6 @@ echo $this->Form->end();
 ?>
 </div>
 
-<h2>Esami</h2>
 <?php echo $this->Form->create(); ?>
 <table class="caps-exams">
     <tr>

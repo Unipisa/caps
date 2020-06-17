@@ -1,23 +1,7 @@
-<?php if ($user['admin']): ?>
-<nav class="caps-admin-navigation">
-    <ul>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li class="caps-update-link">
-          <?php
-              echo $this->Html->link(
-                  'Aggiornamento&nbsp;→',
-                  ['controller' => 'curricula',
-                      'action' => 'index'],
-                  ['escape' => false]
-              );
-          ?>
-      </li>
-    </ul>
-</nav>
+<h2>Piani di Studio</h2>
 
+<?php if ($user['admin']): ?>
+    
 <div id="proposalFilterFormDiv">
 <?php
 echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
@@ -59,7 +43,6 @@ echo $this->Form->end();
 </div>
 <?php endif; ?>
 
-<h2>Piani di Studio</h2>
 <?php echo $this->Form->create(); ?>
 <table class="caps-todo">
     <tr>

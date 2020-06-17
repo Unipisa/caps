@@ -1,7 +1,7 @@
 <nav class="caps-admin-navigation">
     <ul>
         <li <?php
-        if ($this->request->getParam('controller') == 'degrees' &&
+        if ($this->request->getParam('controller') == 'Degrees' &&
             $this->request->getParam('action') == 'index')
             echo 'class="selected"'
         ?>>
@@ -14,7 +14,7 @@
             ?>
         </li>
         <li <?php
-                if ($this->request->getParam('controller') == 'curricula' &&
+                if ($this->request->getParam('controller') == 'Curricula' &&
                     $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
@@ -27,7 +27,7 @@
             ?>
         </li>
         <li <?php
-                if ($this->request->getParam('controller') == 'groups' &&
+                if ($this->request->getParam('controller') == 'Groups' &&
                     $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
@@ -40,7 +40,7 @@
             ?>
         </li>
         <li <?php
-                if ($this->request->getParam('controller') == 'exams' &&
+                if ($this->request->getParam('controller') == 'Exams' &&
                     $this->request->getParam('action') == 'index')
                     echo 'class="selected"'
             ?>>
@@ -49,16 +49,6 @@
                     'Esami',
                     ['controller' => 'exams',
                         'action' => 'index']
-                );
-            ?>
-        </li>
-        <li class="caps-admin-link">
-            <?php
-                echo $this->Html->link(
-                    '←&nbsp;Amministrazione',
-                    ['controller' => 'proposals',
-                        'action' => 'index'],
-                    ['escape' => false]
                 );
             ?>
         </li>
