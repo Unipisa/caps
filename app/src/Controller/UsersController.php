@@ -58,6 +58,9 @@ class UsersController extends AppController {
 
             if (! $authuser) {
                 $this->Flash->error('Username o password non corretti');
+                Log::write('debug',
+                    'User ' . $this->request->getData('username') . ' failed to authenticate'
+                );
             }
             else {
                 $this->Auth->setUser($authuser);
