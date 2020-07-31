@@ -39,7 +39,7 @@ class Application extends BaseApplication
         $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
         $version = trim(exec('git describe --tags'));
         $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
-        $commitDate->setTimezone(new \DateTimeZone('UTC'));
+        $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
         $commitDate = $commitDate->format('Y-m-d H:i:s');
 
         if ($branch === "master") {        
