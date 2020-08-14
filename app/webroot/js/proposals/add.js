@@ -162,7 +162,7 @@ function on_curriculum_selected() {
             if (groups[j].id == groupId) {
                 return groups[j];
             }
-        }  
+        }
     }
 
     var addCompulsoryGroups = function () {
@@ -231,7 +231,7 @@ function on_curriculum_selected() {
         updateCounters();
     };
 
-    var addFreeChoiceExams = function () {https://caps.dm.unipi.it/fisica/
+    var addFreeChoiceExams = function () {
         for (var i = 0; i < freeChoiceExams.length; i++) {
             var freeChoiceExam = freeChoiceExams[i];
             var year = freeChoiceExam["year"];
@@ -239,7 +239,7 @@ function on_curriculum_selected() {
             var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
             var selectHTML = "<select name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id] class=exam>";
             if (freeChoiceExam.group_id === null) {
-                selectHTML += $("<option selected disabled></option>").text("Un esame a scelta");
+                selectHTML += "<option selected disabled>Un esame a scelta</option>";
                 for (var j = 0; j < exams.length; j++) {
                     var exam = exams[j];
                     selectHTML += createExamOption(exam);
