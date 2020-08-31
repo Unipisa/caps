@@ -58,8 +58,8 @@ class ProposalAuthsTable extends Table
             ->notEmptyString('id', null, 'create');
 
         $validator
-            ->email('email')
-            ->notEmptyString('email');
+            ->notEmptyString('email')
+            ->email('email');
 
         $validator
             ->scalar('secret')

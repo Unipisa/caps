@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use App\Model\Entity\ProposalAuth;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
@@ -228,6 +229,11 @@ class ProposalsController extends AppController {
 
         $this->set('message', $message);
         $this->set('proposal', $proposal);
+
+        // Having this is apparently the only way to enforce validation on
+        // the e-mail given in the input.
+        $this->set('proposal_auth', new ProposalAuth());
+
         // json_encode is not able to serialize resources.
         // hence we remove attachments before serializing
         $save_attachments = $proposal->attachments;

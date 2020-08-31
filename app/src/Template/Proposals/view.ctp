@@ -282,14 +282,17 @@
         <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
             <h3>Richiesta parere</h3>
             <?php
-                echo $this->Form->create('ProposalAuth', [
-                    'url' => ['controller' => 'proposals', $proposal['id'], 'action' => 'share']
+                echo $this->Form->create($proposal_auth, [
+                    'url' => [
+                        'controller' => 'proposals',
+                        $proposal['id'],
+                        'action' => 'share'
+                    ]
                 ]);
                 echo $this->Form->control(
                     'email',
-                    ['label' => 'Email']);
+                    [ 'label' => 'Email' ]);
                 echo $this->Form->submit('Richiedi parere');
-
                 echo $this->Form->end();
             ?>
         <?php endif ?>
