@@ -37,6 +37,7 @@ class ExamsController extends AppController {
 
     public function index () {
         $exams = $this->Exams->find()
+            ->order([ 'Exams.name' => 'asc' ])
             ->contain([ 'Tags']);
 
         $filterForm = new ExamsFilterForm($exams);
