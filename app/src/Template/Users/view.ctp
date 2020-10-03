@@ -1,8 +1,13 @@
-<h2>Piani di studio — <?php echo $user_entry['name']; ?>, matricola <?php echo $user_entry['number']; ?></h2>
+<h1><?php echo $user_entry['name']; ?>, matricola <?php echo $user_entry['number']; ?></h1>
 
 <p>
     <?= $instructions ?>
 </p>
+
+<h2>Piani di studio</h2>
+<div class="user-profile-section">
+
+
 
 <?php
 // We first organize proposals into a tree structure coherent with the display strategy, i.e.,
@@ -169,17 +174,85 @@ $num_proposals = 0;
 <?php endif; ?>
 
 <?php if ($user['username'] == $user_entry['username']): ?>
-  <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
-       e non se qualcuno sta visualizzando il profile come amministratore. //-->
-  <div class="caps-admin-actions">
-    <ul>
-      <li>
-        <?php echo $this->Html->link('Nuovo piano di studi', [
-            'controller' => 'proposals',
-            'action' => 'add'
-        ]);
-        ?>
-      </li>
-    </ul>
-  </div>
+    <!-- Pulsante di creazione di un nuovo piano, visibile solo per il proprietario,
+         e non se qualcuno sta visualizzando il profile come amministratore. //-->
+    <div class="caps-admin-actions">
+        <ul>
+            <li>
+                <?php echo $this->Html->link('Nuovo piano di studi', [
+                    'controller' => 'proposals',
+                    'action' => 'add'
+                ]);
+                ?>
+            </li>
+        </ul>
+    </div>
 <?php endif; ?>
+
+</div> <!-- Fine di user-profile-section //-->
+
+
+<h2>Documenti dello studente</h2>
+<div class="user-profile-section">
+<?php
+  if (count($user_entry['documents']) == 0) {
+      echo "<p>Non è stato caricato alcun allegato.</p>";
+  }
+?>
+
+<ul>
+<?php foreach ($user_entry['documents'] as $doc): ?>
+
+    <li class="attachment">
+        <?php if ($doc['comment'] != ""): ?>
+            <?= $doc['comment'] ?><br><br>
+        <?php endif ?>
+
+        <?php if($doc['filename'] != null): ?>
+            <strong>Documento</strong>:
+            <?php
+                echo $this->Html->link($doc['filename'], [
+                    'controller' => 'documents',
+                    'action' => 'view',
+                    $doc['id']
+                ]);
+            ?><br><br>
+        <?php endif ?>
+        <strong><?php echo $doc['owner']['name'] ?></strong>
+        <?php if ($doc['created'] != null): ?>
+          — <?php echo $doc['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
+        <?php endif; ?>
+
+        <?php if ($user['admin'] || $user['id'] == $doc['user_id']): ?>
+            — [
+            <?php echo $this->Form->postLink('Elimina questo documento', [
+                'controller' => 'documents',
+                'action' => 'delete',
+                $doc['id']
+              ], [
+                'confirm' => 'Cancellare definitivamente il documento?',
+            ]);  ?>
+            ]
+        <?php endif ?>
+    </li>
+<?php endforeach; ?>
+</ul>
+
+<?php
+    echo $this->Form->create('Documents', [
+        'url' => ['controller' => 'documents', 'action' => 'add'],
+        'type' => 'file'
+    ]);
+?>  
+    <h3>Nuovo documento</h3>
+    <p>&Egrave; possibile allegare documenti e/o commenti a questo profilo.</p>
+<?php
+echo $this->Form->textarea('comment');
+echo $this->Form->file('data');
+echo $this->Form->hidden('user_id', ['value' => $user_entry['id']]);
+echo $this->Form->submit('Aggiungi documento e/o commento');
+echo $this->Form->end();
+?>
+</div> <!-- Fine di user-profile-section //-->
+
+

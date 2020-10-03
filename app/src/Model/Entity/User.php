@@ -34,7 +34,8 @@ class User extends Entity
         'givenname' => true,
         'surname' => true,
         'email' => true,
-        'admin' => true
+        'admin' => true,
+        'documents' => true
     ];
 
     public function getIdentifier()

@@ -39,6 +39,10 @@ class UsersTable extends Table
         $this->hasMany('Proposals', [
             'foreignKey' => 'user_id'
         ]);
+
+        $this->hasMany('Documents', [
+            'foreignKey' => 'user_id'
+        ]);
     }
 
     /**

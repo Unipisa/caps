@@ -25,6 +25,7 @@ class UsersController extends AppController {
         $this->Auth->deny();
 
         $user = $this->Users->find()
+            ->contain([ 'Documents', 'Documents.Users', 'Documents.Owners' ])
             ->where([ 'username' => $this->user['username'] ])
             ->first();
 
@@ -33,11 +34,16 @@ class UsersController extends AppController {
         }
         else {
             $user_entry = $this->Users->find()
+                ->contain([
+                    'Documents',
+                    'Documents.Users',
+                    'Documents.Owners'
+                ])
                 ->where([ 'id' => $id ])
                 ->first();
         }
 
-        if ($id != null && !$this->user['admin'])
+        if ($id != null && !$this->user['admin'] && $id != $this->user['id'])
             throw new  ForbiddenException('Cannot access another user profile');
 
         $instructions = $this->getSetting('user-instructions');

@@ -246,6 +246,22 @@ select#academicYearSelect {
     text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0px;
 }
 
+div#content > h1 {
+    font-size: 2em;
+}
+
+div.user-profile-section {
+    padding: 15px;
+    /* border-left: 3px dotted #c7c7c7;
+    border-bottom: 3px dotted #c7c7c7; */
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.user-profile-section > ul {
+    margin-left: 0px;
+}
+
 .green,
 .planActions .accept,
 .actions .accept {

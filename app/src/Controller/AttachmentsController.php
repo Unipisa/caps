@@ -53,7 +53,6 @@ class AttachmentsController extends AppController
             $attachment['comment'] = $this->request->getData('comment');
 
             $secret = $this->request->getData('secret');
-
             $data = $this->request->getData('data');
 
             if ($data['tmp_name'] == "" && $attachment['comment'] == "") {
