@@ -10,7 +10,7 @@ use Cake\Validation\Validator;
  * Documents Model
  *
  * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Owners
  *
  * @method \App\Model\Entity\Document get($primaryKey, $options = [])
  * @method \App\Model\Entity\Document newEntity($data = null, array $options = [])
