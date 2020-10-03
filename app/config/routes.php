@@ -47,6 +47,7 @@ Router::defaultRouteClass(DashedRoute::class);
 
 Router::connect('/', [ 'controller' => 'users', 'action' => 'login' ]);
 Router::extensions('json', true);
+Router::extensions('csv');
 
 Router::scope('/', function (RouteBuilder $routes) {
     // Register scoped middleware for in scopes.

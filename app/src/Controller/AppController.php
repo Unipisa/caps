@@ -52,6 +52,7 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
+            'viewClassMap' => ['csv' => 'CsvView.Csv']
         ]);
         $this->loadComponent('Flash');
 

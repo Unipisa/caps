@@ -85,6 +85,25 @@ class ProposalsController extends AppController {
         $email->send();
     }
 
+    private function proposals_to_csv($proposals) {
+        // We need to convert the proposals into a format that the CSV
+        // formatter plugin can understand
+        $data = [];
+        $data[] = [ 'Stato', 'Nome', 'Anno', 'Laurea', 'Piano di Studio' ];
+
+        foreach ($proposals as $p) {
+            $data[] = [
+                $p['state'],
+                $p['user']['name'],
+                $p['curriculum']['academic_year'],
+                $p['curriculum']['degree']['name'],
+                $p['curriculum']['name']
+            ];
+        }
+
+        return $data;
+    }
+
     public function index()
     {
       $proposals = $this->Proposals->find()
@@ -106,6 +125,7 @@ class ProposalsController extends AppController {
           'surname' => ''
         ];
       }
+
       $proposals = $filterForm->execute($filterData);
 
       if ($this->request->is("post")) {
@@ -199,9 +219,17 @@ class ProposalsController extends AppController {
           }
       }
 
-      $this->set('filterForm', $filterForm);
-      $this->set('proposals', $this->paginate($proposals->cleanCopy()));
-      $this->set('selected', 'index');
+      // We only paginate if we're rendering the page. If the user request
+      // the data in CSV format, we send all the data.
+      if ($this->getRequest()->getParam('_ext') === 'csv') {
+          $this->set('data', $this->proposals_to_csv($proposals));
+          $this->set('_serialize', 'data');
+      }
+      else {
+          $this->set('filterForm', $filterForm);
+          $this->set('proposals', $this->paginate($proposals->cleanCopy()));
+          $this->set('selected', 'index');
+      }
     }
 
     public function view ($id) {

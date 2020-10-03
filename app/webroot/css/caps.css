@@ -1,3 +1,10 @@
+.btn {
+    padding: 5px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background: transparent;
+}
+
 form div {
     padding: 0;
 }
@@ -107,7 +114,7 @@ select#academicYearSelect {
     padding: 2px;
 }
 
-.filterForm .input {
+.filterForm .input, .filterForm .submit {
     clear: none;
     width: auto;
     display: inline-block;
