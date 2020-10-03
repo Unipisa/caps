@@ -44,7 +44,7 @@ class CreateDocuments extends AbstractMigration
         $table->addColumn('mimetype', 'string', [
             'default' => null,
             'limit' => 255,
-            'null' => false
+            'null' => true
         ]);
         $table->create();
         $table->addForeignKey('user_id', 'users')->save();
