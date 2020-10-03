@@ -83,6 +83,9 @@ class DocumentsController extends AppController
                 $document['mimetype'] = $data['type'];
                 $document['filename'] = $data['name'];
             }
+            else {
+                $document['filename'] = null;
+            }
 
 
             // We check that the uploading user is either the target of the document,

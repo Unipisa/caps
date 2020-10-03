@@ -243,7 +243,7 @@ $num_proposals = 0;
         'url' => ['controller' => 'documents', 'action' => 'add'],
         'type' => 'file'
     ]);
-?>  
+?>
     <h3>Nuovo documento</h3>
     <p>&Egrave; possibile allegare documenti e/o commenti a questo profilo.</p>
 <?php

@@ -16,7 +16,7 @@ class CreateDocuments extends AbstractMigration
         $table = $this->table('documents');
         $table->addColumn('filename', 'text', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('owner_id', 'integer', [
             'default' => null,
@@ -30,7 +30,7 @@ class CreateDocuments extends AbstractMigration
         ]);
         $table->addColumn('data', 'blob', [
             'default' => null,
-            'null' => false,
+            'null' => true,
             'limit' => MysqlAdapter::BLOB_LONG
         ]);
         $table->addColumn('created', 'datetime', [
@@ -39,7 +39,7 @@ class CreateDocuments extends AbstractMigration
         ]);
         $table->addColumn('comment', 'text', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('mimetype', 'string', [
             'default' => null,
