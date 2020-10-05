@@ -191,6 +191,10 @@ $num_proposals = 0;
 
 </div> <!-- Fine di user-profile-section //-->
 
+<?php
+ // This part is only visible to administrators
+ if ($user['admin']):
+?>
 
 <h2>Documenti dello studente</h2>
 <div class="user-profile-section">
@@ -255,4 +259,7 @@ echo $this->Form->end();
 ?>
 </div> <!-- Fine di user-profile-section //-->
 
+<?php
+ endif;
+ ?>
 

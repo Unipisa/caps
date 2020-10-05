@@ -27,11 +27,8 @@ class DocumentsController extends AppController
             'contain' => ['Users']
         ]);
 
-        // Only the user relative to the document, its owner,
-        //  and administrators are allowed to view the document.
-        if ($document['user_id'] == $this->user['id'] ||
-            $this->user['admin'] ||
-            $document['owner_id'] == $this->user['id']) {
+        // Only administrators can see documents
+        if ($this->user['admin']) {
             return $this->response
                 ->withStringBody(stream_get_contents($document['data']))
                 ->withType($document['mimetype'])
@@ -88,9 +85,8 @@ class DocumentsController extends AppController
             }
 
 
-            // We check that the uploading user is either the target of the document,
-            // or an administrator
-            if ($this->user['admin'] || $this->user['id'] == $document['user_id']) {
+            // We check that the uploading user is an administrator
+            if ($this->user['admin']) {
                 if ($this->Documents->save($document)) {
                     $this->Flash->success(__('Il documento è stato salvato'));
                 }
@@ -127,9 +123,7 @@ class DocumentsController extends AppController
         $user_id = $document['user_id'];
 
         // Check for permissions to delete this object
-        if ($this->user['admin'] ||
-            $this->user['id'] == $document['owner_id']) {
-
+        if ($this->user['admin']) {
             if ($this->Documents->delete($document)) {
                 $this->Flash->success(__('Il documento è stato eliminato.'));
             } else {
