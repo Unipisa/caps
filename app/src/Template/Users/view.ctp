@@ -198,6 +198,8 @@ $num_proposals = 0;
 
 <h2>Documenti dello studente</h2>
 <div class="user-profile-section">
+    <p>I documenti e le annotazioni inserite in questa sezione sono associate a questo utente, e non sono
+      visibili per lo studente. </p>
 <?php
   if (count($user_entry['documents']) == 0) {
       echo "<p>Non è stato caricato alcun allegato.</p>";
