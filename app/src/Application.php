@@ -22,6 +22,7 @@ use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Cake\Cache\Cache;
 
 /**
  * Application setup class.
@@ -36,17 +37,28 @@ class Application extends BaseApplication
      */
     public static function getVersion()
     {
-        $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
-        $version = trim(exec('git describe --tags'));
-        $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
-        $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
-        $commitDate = $commitDate->format('Y-m-d H:i:s');
+        // Try to get the answer from Cache, if possible; we ensure that
+        // we clean the cache on restart, so we always get fresh information
+        // on the application version
+        $version = Cache::read('caps-version');
 
-        if ($branch === "master") {        
-            return sprintf('%s [%s]', $version, $commitDate);
-        } else {
-            return sprintf('%s-%s [%s]', $version, $branch, $commitDate);
+        if ($version == false) {
+            $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
+            $version = trim(exec('git describe --tags'));
+            $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
+            $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
+            $commitDate = $commitDate->format('Y-m-d H:i:s');
+
+            if ($branch === "master") {
+                $version = sprintf('%s [%s]', $version, $commitDate);
+            } else {
+                $version = sprintf('%s-%s [%s]', $version, $branch, $commitDate);
+            }
+
+            Cache::write('caps-version', $version);
         }
+
+        return $version;
     }
 
     /**
