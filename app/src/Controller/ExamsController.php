@@ -124,6 +124,7 @@ class ExamsController extends AppController {
         ]);
 
         $this->set('exam', $exam);
+        $this->set('_serialize', [ 'exam' ]);
     }
 
     public function edit($id = null) {
