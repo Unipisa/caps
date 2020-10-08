@@ -2,21 +2,6 @@
 
 <?php if ($user['admin']): ?>
 
-<p>
-    <script>
-        function downloadCSV() {
-            /*
-             * This is a bit of a hack: we change the URL in the page to make the
-             * controller render the CSV version of the content. This will keep all
-             * the specified filters in place.
-             */
-            location.pathname += ".csv";
-        }
-    </script>
-    <a href="#" onclick="downloadCSV();">Esporta in CSV</a>
-</p>
-
-
 <div id="proposalFilterFormDiv">
 <?php
 echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);

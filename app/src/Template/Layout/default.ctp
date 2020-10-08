@@ -133,6 +133,21 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 	<?php } ?>
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
+            <?php if ($user['admin'] && isset($_serialize)): ?>
+            <p>
+                <script>
+                    function downloadCSV() {
+                        /*
+                        * This is a bit of a hack: we change the URL in the page to make the
+                        * controller render the CSV version of the content. This will keep all
+                        * the specified filters in place.
+                        */
+                        location.pathname += ".csv";
+                    }
+                </script>
+                <a href="#" onclick="downloadCSV();">Esporta in CSV</a>
+            </p>
+            <?php endif; ?>
 			<?php echo $this->fetch('content'); ?>
 		</div>
         <div id="footer">
