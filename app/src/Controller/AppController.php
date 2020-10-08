@@ -21,24 +21,38 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use App\Auth;
 use App\Application;
+use Cake\I18n\FrozenTime;
 use stdClass;
 
+
+
+function is_associative_array($item) {
+    return is_array($item) && (array_keys($item) !== range(0, count($item) - 1));
+}
+
 function recurseFlattenObject($object) {
-    // error_log("recurseFlattenObject (" . gettype($object) . ", " . get_class($object) . ") " . json_encode($object));
+    // error_log("recurseFlattenObject (" . gettype($object) . ") " . json_encode($object));
     $obj = new stdClass(); // empty object
     if (method_exists($object, "toArray")) {
         $properties = $object->toArray();
+    } else if (is_array($object)) {
+        $properties = $object;
     } else {
         $properties = get_object_vars($object);
     }
     foreach($properties as $key => $val) {
-        if (is_array($val)) {
-            $obj->{$key} = implode(",", $val);
-        } else if (is_object($val)) {
-            $subobj = recurseFlattenObject($object);
-            foreach($subobj as $k => $v) {
-                $obj->{$key . "_" . $k} = $v;
+        if (is_object($val) || is_associative_array($val)) {
+            if ($val instanceof FrozenTime) {
+                $obj->{$key} = $val;
+            } else {
+                $subobj = recurseFlattenObject($val);
+                foreach($subobj as $k => $v) {
+                    $obj->{$key . "_" . $k} = $v;
+                }
             }
+        } else if (is_array($val)) {
+            // sequential array
+            $obj->{$key} = implode(",", array_map('json_encode', $val));
         } else {
             $obj->{$key} = $val;
         }
@@ -55,7 +69,7 @@ function recurseFlattenObject($object) {
  */
 function flatten($object) {
     // error_log("flatten(" . json_encode($object) . ")");
-    error_log("flatten type " . gettype($object). " class ". get_class($object));
+    // error_log("flatten type " . gettype($object));
     if (is_array($object) || method_exists($object, "count")) {
         $array = $object;
     } else {
