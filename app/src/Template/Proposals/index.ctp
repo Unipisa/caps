@@ -10,7 +10,7 @@
              * controller render the CSV version of the content. This will keep all
              * the specified filters in place.
              */
-            location.href = location.href.replace('/proposals?', '/proposals.csv?')
+            location.pathname += ".csv";
         }
     </script>
     <a href="#" onclick="downloadCSV();">Esporta in CSV</a>
