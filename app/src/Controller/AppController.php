@@ -21,6 +21,73 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use App\Auth;
 use App\Application;
+use stdClass;
+
+function recurseFlattenObject($object) {
+    // error_log("recurseFlattenObject (" . gettype($object) . ", " . get_class($object) . ") " . json_encode($object));
+    $obj = new stdClass(); // empty object
+    if (method_exists($object, "toArray")) {
+        $properties = $object->toArray();
+    } else {
+        $properties = get_object_vars($object);
+    }
+    foreach($properties as $key => $val) {
+        if (is_array($val)) {
+            $obj->{$key} = implode(",", $val);
+        } else if (is_object($val)) {
+            $subobj = recurseFlattenObject($object);
+            foreach($subobj as $k => $v) {
+                $obj->{$key . "_" . $k} = $v;
+            }
+        } else {
+            $obj->{$key} = $val;
+        }
+    }
+    // error_log("  return " . json_encode($obj));
+    return $obj;
+}
+
+/**
+ * tenta di convertire l'oggetto PHP (tipicamente sarà una Query)
+ * in una tabella (array di array) la cui prima riga 
+ * sono le intestazioni (nomi degli attributi)
+ * e le righe seguenti sono i valori di tali attributi
+ */
+function flatten($object) {
+    // error_log("flatten(" . json_encode($object) . ")");
+    error_log("flatten type " . gettype($object). " class ". get_class($object));
+    if (is_array($object) || method_exists($object, "count")) {
+        $array = $object;
+    } else {
+        $array = [$object];
+    }
+
+    $data = []; // resulting table
+    $data[] = []; // add first row contains headers
+    $headers_map = []; // key => column
+    foreach ($array as $obj) {
+        $row = [];
+        array_pad($row, count($headers_map), Null);
+        $obj = recurseFlattenObject($obj);
+        foreach ($obj as $key => $val) {
+            if (array_key_exists($key, $headers_map)) {
+                $row[$headers_map[$key]] = $val;
+            } else {
+                // add empty column to previous rows and headers
+                $data[0][] = $key;
+                for ($i=1;$i<count($data);++$i) {
+                    $data[$i][] = Null;
+                }
+                $row[] = $val;
+                $headers_map[$key] = count($headers_map);
+            }
+        }
+        $data[] = $row;
+    }
+    // error_log("return table: ". var_export($data,true));
+    return $data;
+}
+
 
 /**
  * Application Controller
@@ -100,5 +167,19 @@ class AppController extends Controller
     public function getSetting($field, $default = null) {
         $this->loadSettingsTable();
         return $this->settingsTable->getSetting($field, $default);
+    }
+
+    public function beforeRender(Event $event)
+    {
+        if ($this->request->is('csv')) {
+            $_serialize = $this->viewVars['_serialize'];
+            if (!is_array($_serialize)) $_serialize = [ $_serialize ];
+            foreach($_serialize as $var) {
+                $data = $this->viewVars[$var];
+                $data = flatten($data);
+                $this->set($var, $data);
+            }
+        }
+        return null;
     }
 }
