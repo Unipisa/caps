@@ -40,6 +40,8 @@
             <div class="sidebar-brand-text mx-3">CAPS<sup><?= $capsShortVersion ?></sup></div>
         </a>
 
+        <?php if ($user): ?>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -69,6 +71,8 @@
                 <span>Nuovo piano</span>
             </a>
         </li>
+
+        <?php endif; ?>
 
         <?php if (isset($user) && $user != null && $user['admin']): ?>
 
@@ -136,6 +140,8 @@
             </a>
         </li>
 
+        <?php endif; ?>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
         <li class="nav-item">
@@ -144,8 +150,6 @@
                 <span>Supporto</span>
             </a>
         </li>
-
-        <?php endif; ?>
 
     </ul>
     <!-- End of Sidebar -->
@@ -184,10 +188,11 @@
                     <div class="topbar-divider d-none d-sm-block"></div>
 
                     <!-- Nav Item - User Information -->
+                    <?php if ($user): ?>
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $user['name'] ?></span>
-                            <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                            <i class="fas fw fa-user"></i>
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -202,6 +207,7 @@
                             </a>
                         </div>
                     </li>
+                    <?php endif; ?>
 
                 </ul>
 
