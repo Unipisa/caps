@@ -69,6 +69,9 @@ class ProposalsController extends AppController {
     }
 
     private function notifySubmission($id) {
+        if ($this->user['email'] == "" || $this->user['email'] == null)
+            return;
+
         $email = $this->createProposalEmail($this->get_proposal($id))
             ->setTo($this->user['email'])
             ->setSubject('Piano di studi sottomesso');
@@ -78,6 +81,9 @@ class ProposalsController extends AppController {
 
     private function notifyApproval($id) {
         $proposal = $this->get_proposal($id);
+        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null)
+            return;
+
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
             ->setSubject('Piano di studi approvato');

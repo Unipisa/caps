@@ -11,9 +11,19 @@
          */
         location.href = location.href.replace('/proposals?', '/proposals.csv?')
     }
+
+    function caps_submitForm(action_name, action_message) {
+        if (confirm(action_message)) {
+            let el = document.getElementById('triggered-action-input');
+            el.name = action_name;
+            el.value = "true";
+
+            let form = document.getElementById('proposal-form');
+            form.submit();
+        }
+    }
 </script>
 
-<?php echo $this->Form->create(); ?>
 
 <div class="row my-2">
     <div class="col-12">
@@ -76,12 +86,27 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Azioni
                         </button>
-                        <div class="dropdown-menu p-2">
-                            <input class="my-1 btn btn-success" type="submit" name="approve" style="width:100%" onclick="return confirm('Confermi di voler approvare i piani di studio selezionati?')" value="✓ Approva i piani di studio selezionati"/>
-                            <input class="my-1 btn btn-danger" type="submit" name="reject" style="width:100%" onclick="return confirm('Confermi di voler rifiutare i piani di studio selezionati?')" value="✗ Rifiuta i piani di studio selezionati"/>
-                            <input class="my-1 btn btn-warning" type="submit" name="resubmit" style="width:100%" onclick="return confirm('Confermi di voler riportare in valutazione i piani di studio selezionati?')" value="⎌ Riporta in valutazione i piani di studio selezionati"/>
-                            <input class="my-1 btn btn-warning" type="submit" name="redraft" style="width:100%" onclick="return confirm('Confermi di voler riportare in bozza i piani di studio selezionati?')" value="⎌ Riporta in bozza i piani di studio selezionati"/>
-                            <input class="my-1 btn btn-danger" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere i piani di studio selezionati?')" value="🗑 Elimina i piani di studio selezionati"/>
+                        <div class="dropdown-menu p-2" style="width: 450px;">
+                            <button class="my-1 btn btn-success" style="width: 100%"
+                                    onclick="caps_submitForm('approve', 'Confermi di voler accettare i piani di studio selezionati?');">
+                                ✓ Approva i piani di studio selezionati
+                            </button>
+                            <button class="my-1 btn btn-danger" style="width: 100%"
+                                    onclick="caps_submitForm('reject', 'Confermi di voler rifiutare i piani di studio selezionati?');">
+                                ✗ Rifiuta i piani di studio selezionati
+                            </button>
+                            <button class="my-1 btn btn-warning" style="width: 100%"
+                                    onclick="caps_submitForm('resubmit', 'Confermi di voler riportare in valutazione i piani di studio selezionati?')">
+                                ⎌ Riporta in valutazione i piani di studio selezionati
+                            </button>
+                            <button class="my-1 btn btn-warning" style="width: 100%"
+                                    onclick="caps_submitForm('redraft', 'Confermi di voler riportare in bozza i piani di studio selezionati?')">
+                                ⎌ Riporta in bozza i piani di studio selezionati
+                            </button>
+                            <button class="my-1 btn btn-danger" style="width: 100%"
+                                    onclick="caps_submitForm('delete', 'Confermi di voler eliminare i piani di studio selezionati?')">
+                                🗑 Elimina i piani di studio selezionati
+                            </button>
                         </div>
                     </div>
 
@@ -93,6 +118,10 @@
                 </div>
 
                 <?php endif; ?>
+
+                <?php echo $this->Form->create('', [ 'id' => 'proposal-form' ]); ?>
+                <input id="triggered-action-input" type="hidden" name="triggered-action" value="" />
+
 
                 <table class="table">
                     <tr><thead>
