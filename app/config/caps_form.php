@@ -4,7 +4,7 @@ return [
     // Used for button elements in button().
     'button' => '<button class="btn btn-primary" {{attrs}}>{{text}}</button>',
     // Used for checkboxes in checkbox() and multiCheckbox().
-    'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}"{{attrs}}>',
+    'checkbox' => '<input class="form-check-input" type="checkbox" name="{{name}}" value="{{value}}"{{attrs}}>',
     // Input group wrapper for checkboxes created via control().
     'checkboxFormGroup' => '{{label}}',
     // Wrapper container for checkboxes.
@@ -47,7 +47,7 @@ return [
     // Multi-Checkbox wrapping container.
     'multicheckboxWrapper' => '<fieldset{{attrs}}>{{content}}</fieldset>',
     // Option element used in select pickers.
-    'option' => '<option value="{{value}}"{{attrs}}>{{text}}</option>',
+    'option' => '<option class="form-control" value="{{value}}"{{attrs}}>{{text}}</option>',
     // Option group element used in select pickers.
     'optgroup' => '<optgroup label="{{label}}"{{attrs}}>{{content}}</optgroup>',
     // Select element,

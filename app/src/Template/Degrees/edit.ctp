@@ -1,27 +1,30 @@
-<?php echo $this->element('updating_navigation'); ?>
+<h1>
+    <?= $degree->isNew() ? "Aggiungi corso di Laurea" : "Modifica corso di Laurea" ?>
+</h1>
 
-<?php if ($degree->isNew()): ?>
-<h2>Aggiungi corso di laurea</h2>
-<?php else: ?>
-<h2>Modifica corso di laurea</h2>
-<?php endif; ?>
-<?php
-echo $this->Form->create($degree);
-echo $this->Form->control(
-    'name'
-);
-echo $this->Form->control(
-    'years'
-);
-echo $this->Form->control(
-    'enable_sharing', [
-        'label' => 'Richiesta parere abilitata'
-    ]
-);
-if ($degree->isNew()):
-  echo $this->Form->submit('Salva corso di laurea');
-else:
-  echo $this->Form->submit('Aggiorna');
-endif;
-echo $this->Form->end();
-?>
+<div class="row my-2">
+    <div class="col">
+        <div class="card shadow">
+            <div class="card-body">
+                <?php
+                    echo $this->Form->create($degree);
+                    echo $this->Form->control('name', ['label' => 'Nome']);
+                    echo $this->Form->control('years', ['label' => 'Anni']);
+                ?>
+                <div class="form-check mb-2">
+                    <input id="enable-sharing" class="form-check-input" type="checkbox" name="sharing" value="<?= $degree['enable_sharing'] ?>" />
+                    <label class="form-check-label" for="enable-sharing">Richiesta parere abilitata</label>
+                </div>
+                <?php
+                    if ($degree->isNew()):
+                        echo $this->Form->submit('Salva corso di laurea');
+                    else:
+                        echo $this->Form->submit('Aggiorna');
+                    endif;
+                    echo $this->Form->end();
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+

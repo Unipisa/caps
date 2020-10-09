@@ -81,15 +81,15 @@ class DegreesController extends AppController
      */
     public function edit($id = null)
     {
-        if ($id) {
-          $degree = $this->Degrees->get($id, [
-              'contain' => []
-          ]);
+        if ($id != null) {
+          $degree = $this->Degrees->get($id);
         } else {
           $degree = $this->Degrees->newEntity();
         }
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
+
             if ($this->Degrees->save($degree)) {
                 $this->Flash->success(__('Il corso di laurea è stato salvato'));
                 return $this->redirect(['action' => 'index']);
@@ -113,8 +113,6 @@ class DegreesController extends AppController
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
-
-        $this->request->allowMethod(['post', 'delete']);
 
         if ($this->deleteIfNotUsed($id)) {
             $this->Flash->success(__('Il corso di laurea è stato cancellato.'));
