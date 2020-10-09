@@ -27,4 +27,19 @@ class Group extends Entity
         'name' => true,
         'exams' => true
     ];
-}
+
+    public function shortExamList($max_exams=5, $max_characters=120) {
+        $s = implode(', ',
+            array_map(function($exam) {
+                return $exam->name;          
+            },array_splice($this->exams,0 , $max_exams)));
+        if (count($this->exams)> $max_exams) {
+            $s .= ",\u{2026}"; // add ellipsis
+        }
+        if (strlen($s)>$max_characters) {
+            // truncate and add ellipsis
+            $s = substr($s, 0, $max_characters-1) . "\u{2026}";
+        }
+        return $s;
+    }
+};

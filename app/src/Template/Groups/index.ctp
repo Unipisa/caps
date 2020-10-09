@@ -6,6 +6,8 @@
     <tr>
         <th></th>
         <th>Nome</th>
+        <th>Numerosità</th>
+        <th>Esami</h>
     </tr>
     <?php foreach ($groups as $group): ?>
     <tr>
@@ -18,6 +20,12 @@
                         $group['id']]
                 );
             ?>
+        </td>
+        <td class="caps-admin-groups-number">
+        <?php echo count($group['exams']); ?>
+        </td>
+        <td class="caps-admin-groups-exams">
+        <?php echo $group->shortExamList(); ?>
         </td>
     </tr>
     <?php endforeach ?>
