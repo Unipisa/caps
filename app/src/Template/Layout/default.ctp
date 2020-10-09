@@ -87,7 +87,7 @@
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-university"></i>
+                <i class="fas fa-fw fa-file-alt"></i>
                 <span>Piani di studi</span>
             </a>
         </li>
