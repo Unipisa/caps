@@ -180,30 +180,6 @@ function csv_validator(item, context) {
                 </table>
 
                 <?php echo $this->element('pagination'); ?>
-
-                <div class="caps-admin-actions">
-                    <ul>
-                        <li>
-                            <?php
-                            echo $this->Html->link(
-                                'Aggiungi esame',
-                                ['controller' => 'exams',
-                                    'action' => 'edit']
-                            );
-                            ?>
-                        </li>
-                        <li>
-                            <div class="submit"><input class="red" type="submit" name="delete" style="width:100%" onclick="return confirm('Confermi di voler rimuovere gli esami selezionati?')" value="Elimina gli esami selezionati"/></div>
-                        </li>
-                        <li>
-                            <a class="yellow" onclick='csv_click()'>Aggiungi esami da file CSV</a>
-                        </li>
-                    </ul>
-                </div>
-                <?php echo $this->Form->end(); ?>
-
-
-
             </div>
         </div>
     </div>
