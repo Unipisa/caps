@@ -49,7 +49,7 @@ function recurseFlattenObject($object) {
 
 /**
  * tenta di convertire l'oggetto PHP (tipicamente sarà una Query)
- * in una tabella (array di array) la cui prima riga 
+ * in una tabella (array di array) la cui prima riga
  * sono le intestazioni (nomi degli attributi)
  * e le righe seguenti sono i valori di tali attributi
  */
@@ -144,6 +144,7 @@ class AppController extends Controller
         }
 
         $this->set('capsVersion', Application::getVersion());
+        $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', Configure::read('Caps'));
         $this->set('user', $this->user);
 

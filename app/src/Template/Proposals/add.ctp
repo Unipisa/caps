@@ -39,9 +39,11 @@ echo $this->Form->create('Proposal');
 <div id="proposalNotes"></div>
 <div id=proposalForm></div>
 <div id="proposalWarning"></div>
+<div class="form-group btn-group">
+    <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
+    <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza">
+</div>
 <?php
-echo $this->Form->submit('Sottometti piano di studio', [ 'name' => 'action-close', 'class' => 'submit-button' ]);
-echo $this->Form->submit('Salva bozza', [ 'name' => 'action-save' ]);
 echo $this->Form->end();
 ?>
 </div>

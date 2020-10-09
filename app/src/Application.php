@@ -41,6 +41,7 @@ class Application extends BaseApplication
         // we clean the cache on restart, so we always get fresh information
         // on the application version
         $version = Cache::read('caps-version');
+        $shortversion = Cache::read('caps-short-version');
 
         if ($version == false) {
             $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
@@ -48,6 +49,7 @@ class Application extends BaseApplication
             $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
             $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
             $commitDate = $commitDate->format('Y-m-d H:i:s');
+            $shortVersion = explode('-', $version)[0];
 
             if ($branch === "master") {
                 $version = sprintf('%s [%s]', $version, $commitDate);
@@ -56,9 +58,15 @@ class Application extends BaseApplication
             }
 
             Cache::write('caps-version', $version);
+            Cache::write('caps-short-version', $shortVersion);
         }
 
         return $version;
+    }
+
+    public static function getShortVersion() {
+        self::getVersion();
+        return Cache::read('caps-short-version');
     }
 
     /**
