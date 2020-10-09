@@ -38,6 +38,11 @@
             </div>
             <div class="sidebar-brand-text mx-3">CAPS<sup><?= $capsShortVersion ?></sup></div>
         </a>
+        <div class="d-flex justify-content-center">
+            <div class="sidebar-brand-text text-white text-uppercase font-weight-bold my-2">
+                <?= $settings['cds'] ?>
+            </div>
+        </div>
 
         <?php if ($user  && !$user['admin']): ?>
 
