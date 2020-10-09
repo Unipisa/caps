@@ -74,7 +74,6 @@ $num_proposals = 0;
 
                         <table class='table'>
                             <tr><thead>
-                                <th>Corso di Laurea</th>
                                 <th>Curriculum</th>
                                 <th>Anno</th>
                                 <th>Ultima modifica</th>
@@ -111,7 +110,6 @@ $num_proposals = 0;
                                 }
                                 ?>
                                 <tr>
-                                    <td><?php echo $proposal['curriculum']['degree']['name']; ?></td>
                                     <td><?php echo $proposal['curriculum']['name']; ?></td>
                                     <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
                                     <td><?php echo $proposal['modified']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?></td>
