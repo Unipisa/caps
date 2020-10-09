@@ -184,15 +184,15 @@
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
+                    <?php if ($user): ?>
 
                     <div class="topbar-divider d-none d-sm-block"></div>
 
                     <!-- Nav Item - User Information -->
-                    <?php if ($user): ?>
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $user['name'] ?></span>
-                            <i class="fas fw fa-user"></i>
+                            <i class="fas fa-lg fa-user ml-2"></i>
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
