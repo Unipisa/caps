@@ -21,6 +21,7 @@
     <?php echo $this->Html->css('../vendor/fontawesome-free/css/all.min.css'); ?>
     <?php echo $this->Html->css('sb-admin-2.min.css'); ?>
     <?php echo $this->Html->css('caps'); ?>
+    <?php echo $this->Html->script('caps') ?>
 </head>
 
 <body id="page-top">

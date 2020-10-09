@@ -1,10 +1,24 @@
 <h1>Corsi di Laurea</h1>
 
-<div class="row">
+<div class="row my-2">
     <div class="col">
-        <div class="card shadow my-2">
+        <div class="card shadow">
             <div class="card-body">
                 <?php echo $this->Form->create('', ['id' => 'form-degree']); ?>
+
+                <div class="mb-2 d-flex">
+                <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>" class="mr-2">
+                    <button type="button" class="btn btn-sm btn-primary">
+                        Aggiungi corso di laurea
+                    </button>
+                </a>
+
+                <input class="btn btn-sm btn-danger" type="submit" name="delete"
+                       onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')"
+                       value="Elimina i corsi selezionati"/>
+                </div>
+
+
                 <table class="table">
                     <tr><thead>
                         <th></th>
@@ -45,17 +59,6 @@
                     <?php endforeach ?>
                     <?php unset($degree); ?>
                 </table>
-
-                <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>">
-                    <button type="button" class="btn btn-primary">
-                        Aggiungi corso di laurea
-                    </button>
-                </a>
-
-                <input class="btn btn-danger" type="submit" name="delete"
-                       onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')"
-                       value="Elimina i corsi selezionati"/>
-
                 <?php echo $this->Form->end(); ?>
             </div>
         </div>

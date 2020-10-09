@@ -1,35 +1,6 @@
-<h2>Piani di Studio</h2>
+<h1>Piani di Studio</h1>
 
 <?php if ($user['admin']): ?>
-
-<script>
-    function downloadCSV() {
-        /*
-         * This is a bit of a hack: we change the URL in the page to make the
-         * controller render the CSV version of the content. This will keep all
-         * the specified filters in place.
-         */
-        location.pathname += '.csv';
-    }
-
-    function caps_submitForm(action_name, action_message) {
-        if (confirm(action_message)) {
-            let el = document.getElementById('triggered-action-input');
-            el.name = action_name;
-            el.value = "true";
-
-            let form = document.getElementById('proposal-form');
-            form.submit();
-        }
-    }
-
-    function removeQueryParam(param) {
-        let url = window.location.href;
-        let rx = new RegExp(param + '=[^&]*&');
-        location.href = url.replace(rx, '');
-    }
-</script>
-
 
 <div class="row my-2">
     <div class="col-12">
@@ -94,30 +65,30 @@
                         </button>
                         <div class="dropdown-menu p-2 shadow" style="width: 450px;">
                             <button class="my-1 btn btn-success" style="width: 100%"
-                                    onclick="caps_submitForm('approve', 'Confermi di voler accettare i piani di studio selezionati?');">
+                                    onclick="Caps.submitForm('proposal-form', { 'approve': 1 }, 'Confermi di voler accettare i piani di studio selezionati?');">
                                 ✓ Approva i piani di studio selezionati
                             </button>
                             <button class="my-1 btn btn-danger" style="width: 100%"
-                                    onclick="caps_submitForm('reject', 'Confermi di voler rifiutare i piani di studio selezionati?');">
+                                    onclick="Caps.submitForm('proposal-form', { 'reject' : 1 }, 'Confermi di voler rifiutare i piani di studio selezionati?');">
                                 ✗ Rifiuta i piani di studio selezionati
                             </button>
                             <button class="my-1 btn btn-warning" style="width: 100%"
-                                    onclick="caps_submitForm('resubmit', 'Confermi di voler riportare in valutazione i piani di studio selezionati?')">
+                                    onclick="Caps.submitForm('proposal-form', { 'resubmit': 1}, 'Confermi di voler riportare in valutazione i piani di studio selezionati?')">
                                 ⎌ Riporta in valutazione i piani di studio selezionati
                             </button>
                             <button class="my-1 btn btn-warning" style="width: 100%"
-                                    onclick="caps_submitForm('redraft', 'Confermi di voler riportare in bozza i piani di studio selezionati?')">
+                                    onclick="Caps.submitForm('proposal-form', { 'redraft': 1 }, 'Confermi di voler riportare in bozza i piani di studio selezionati?')">
                                 ⎌ Riporta in bozza i piani di studio selezionati
                             </button>
                             <button class="my-1 btn btn-danger" style="width: 100%"
-                                    onclick="caps_submitForm('delete', 'Confermi di voler eliminare i piani di studio selezionati?')">
+                                    onclick="Caps.submitForm('proposal-form', { 'delete': 1 }, 'Confermi di voler eliminare i piani di studio selezionati?')">
                                 🗑 Elimina i piani di studio selezionati
                             </button>
                         </div>
                     </div>
 
                     <div class="col-auto">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="downloadCSV();">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="Caps.downloadCSV();">
                             <i class="fas fw fa-download mr-2" ></i>Esporta in CSV
                         </button>
                     </div>
@@ -126,36 +97,8 @@
                 <?php endif; ?>
 
                 <?php echo $this->Form->create('', [ 'id' => 'proposal-form' ]); ?>
-                <input id="triggered-action-input" type="hidden" name="triggered-action" value="" />
 
-                <?php
-                    $query_params = $this->request->getQueryParams();
-                    if (count($query_params ) == 0) {
-                        $query_params = [ 'state' => 'submitted' ];
-                    }
-                    if ($query_params['state'] == 'all') {
-                        unset($query_params['state']);
-                    }
-                ?>
-
-                <?php if (count($query_params) > 0): ?>
-
-                <div class="d-flex align-left my-2">
-                    <?php foreach ($query_params as $key => $value): ?>
-                        <?php if ($value != ""): ?>
-                            <a href="#" onclick="removeQueryParam('<?= $key ?>');">
-                                <span class="badge badge-secondary mr-2"><?= $key ?>: <?= $value ?> X</span>
-                            </a>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                    <a href="./proposals?state=all">
-                        <span class="badge badge-primary mr-2">
-                            Azzera filtri
-                        </span>
-                    </a>
-                </div>
-
-                <?php endif; ?>
+                <?php echo $this->element('filter_badges'); ?>
 
                 <table class="table">
                     <tr><thead>

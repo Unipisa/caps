@@ -14,7 +14,7 @@ class CurriculaController extends AppController {
     public $paginate = [
         'contain' => [ 'Degrees' ],
         'sortWhitelist' => [ 'academic_year', 'name', 'Degrees.name' ],
-        'limit' => 25,
+        'limit' => 10,
         'order' => [
             'academic_year' => 'desc'
         ]
