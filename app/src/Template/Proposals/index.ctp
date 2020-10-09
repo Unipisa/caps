@@ -9,7 +9,7 @@
          * controller render the CSV version of the content. This will keep all
          * the specified filters in place.
          */
-        location.href = location.href.replace('/proposals?', '/proposals.csv?')
+        location.href = location.href.replace('/proposals', '/proposals.csv')
     }
 
     function caps_submitForm(action_name, action_message) {
