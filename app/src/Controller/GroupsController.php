@@ -58,7 +58,21 @@ class GroupsController extends AppController {
         }
 
         $this->set('groups', $groups);
-        $this->set('_serialize', ['groups']);
+        if ($this->request->is('csv')) {
+            $data = [];
+            foreach($groups as $group) {
+                $exams = $group->exams;
+                $bare_group = $group;
+                unset($bare_group->exams); 
+                foreach($exams as $exam) {
+                    $data[] = ['group' => $bare_group, 'exam' => $exam];
+                }
+            }
+            $this->set('data', $data);
+            $this->set('_serialize', 'data');
+        } else {
+            $this->set('_serialize', ['groups']);
+        }
     }
 
     public function view ($id = null) {

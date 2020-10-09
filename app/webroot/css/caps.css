@@ -649,8 +649,17 @@ hr.caps-admin-curriculum {
 }
 
 .caps-admin-groups-name {
-    width: 75%;
+    width: 20%;
 }
+
+.caps-admin-groups-number {
+    width: 5%;
+}
+
+.caps-admin-groups-exams {
+    width: 45%;
+}
+
 
 .caps-admin-groups-actions,
 .caps-admin-degrees-action,
