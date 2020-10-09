@@ -28,14 +28,12 @@ $num_proposals = 0;
 <div class="d-sm-flex align-items-center justify-content-between">
     <h1 class="text-gray-800"><?php echo $user_entry['name']; ?>, matricola <?php echo $user_entry['number']; ?></h1>
     <?php if ($user['username'] == $user_entry['username']): ?>
-    <?php echo $this->Html->link(
-        "Nuovo piano", [
-            'controller' => 'proposals',
-            'action' => 'add'
-        ], [
-            'class' => 'd-none d-sm-inline-block btn btn-sm btn-primary shadow-sm'
-        ]);
-    ?>
+    <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'add' ]) ?>">
+        <button class="btn btn-sm btn-primary shadow-sm">
+            <i class="fw fas fa-plus"></i>
+            Nuovo piano
+        </button>
+    </a>
     <?php endif; ?>
 </div>
 
