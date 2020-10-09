@@ -11,6 +11,9 @@ if (!isset($params['escape']) || $params['escape'] !== false) {
     <div class="col-12">
         <div class="card shadow border-left-info">
             <div class="card-body">
+                <button type="button" class="close" aria-label="Close" onclick="document.getElementById('flash-element').style.display='none'">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <?= $message ?>
             </div>
         </div>
