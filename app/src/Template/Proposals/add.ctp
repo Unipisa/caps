@@ -25,11 +25,13 @@
     echo $this->Html->script('proposals/add.js?rev=4');
 ?>
 
-<h2>Nuovo piano di studio
-    <span id="loadingIcon">
-        <?php echo $this->Html->image('loading32s.gif') ?>
-    </span>
-</h2>
+<div class="d-flex align-items-center justify-content-between">
+        <h2>Nuovo piano di studio</h2>
+        <div id="loadingIcon" class="spinner-border spinner-border-sm text-primary float-right"
+             role="status" style="position: relative; top: -12px;">
+            <span class="sr-only">Loading...</span>
+        </div>
+</div>
 
 <div id="completeForm">
 <?php
