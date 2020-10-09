@@ -35,7 +35,7 @@
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
             <div class="sidebar-brand-icon">
-                <img src="/img/cherubino_white.png" class="mx-1"/>
+                <img src="<?= $this->Url->image('cherubino_white.png'); ?>" class="mx-1"/>
             </div>
             <div class="sidebar-brand-text mx-3">CAPS<sup><?= $capsShortVersion ?></sup></div>
         </a>
