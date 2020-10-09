@@ -22,6 +22,12 @@
             form.submit();
         }
     }
+
+    function removeQueryParam(param) {
+        let url = window.location.href;
+        let rx = new RegExp(param + '=[^&]*&');
+        location.href = url.replace(rx, '');
+    }
 </script>
 
 
@@ -137,7 +143,9 @@
                 <div class="d-flex align-left my-2">
                     <?php foreach ($query_params as $key => $value): ?>
                         <?php if ($value != ""): ?>
-                            <a href="#"><span class="badge badge-secondary mr-2"><?= $key ?>: <?= $value ?></span></a>
+                            <a href="#" onclick="removeQueryParam('<?= $key ?>');">
+                                <span class="badge badge-secondary mr-2"><?= $key ?>: <?= $value ?> X</span>
+                            </a>
                         <?php endif; ?>
                     <?php endforeach; ?>
                     <a href="./proposals?state=all">
