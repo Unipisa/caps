@@ -86,7 +86,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Azioni
                         </button>
-                        <div class="dropdown-menu p-2" style="width: 450px;">
+                        <div class="dropdown-menu p-2 shadow" style="width: 450px;">
                             <button class="my-1 btn btn-success" style="width: 100%"
                                     onclick="caps_submitForm('approve', 'Confermi di voler accettare i piani di studio selezionati?');">
                                 ✓ Approva i piani di studio selezionati
@@ -126,12 +126,12 @@
                 <table class="table">
                     <tr><thead>
                         <th></th>
-                        <th>Stato</th>
+                        <th><a href="#">Stato</a></th>
                         <th><?= $this->Paginator->sort('Users.surname', 'Nome'); ?></th>
                         <th><?= $this->Paginator->sort('academic_year', 'Anno'); ?></th>
                         <th><?= $this->Paginator->sort('Degress.name', 'Laurea'); ?></th>
                         <th><?= $this->Paginator->sort('Curricula.name', 'Piano di studio'); ?></th>
-                        <th>Azioni</th>
+                        <th></th>
                         </thead>
                     </tr>
                     <?php foreach ($proposals as $proposal): ?>
@@ -172,12 +172,10 @@
                                 ?>
                             </td>
                             <td>
-                                <?php
-                                echo $this->Html->link(
-                                    'Visualizza',
-                                    [ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]
-                                );
-                                ?>
+                                <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
+                                <button type="button" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye mr-2"></i>Visualizza
+                                </button></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
