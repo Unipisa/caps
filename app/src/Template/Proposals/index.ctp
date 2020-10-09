@@ -122,6 +122,25 @@
                 <?php echo $this->Form->create('', [ 'id' => 'proposal-form' ]); ?>
                 <input id="triggered-action-input" type="hidden" name="triggered-action" value="" />
 
+                <?php
+                    $query_params = $this->request->getQueryParams();
+                    if (count($query_params ) == 0) {
+                        $query_params = [ 'state' => 'submitted' ];
+                    }
+                ?>
+
+                <div class="d-flex align-left my-2">
+                    <?php foreach ($query_params as $key => $value): ?>
+                        <?php if ($value != ""): ?>
+                            <a href="#"><span class="badge badge-secondary mr-2"><?= $key ?>: <?= $value ?></span></a>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                    <a href="./proposals?state=all">
+                        <span class="badge badge-primary mr-2">
+                            Azzera filtri
+                        </span>
+                    </a>
+                </div>
 
                 <table class="table">
                     <tr><thead>
