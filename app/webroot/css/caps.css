@@ -3,6 +3,11 @@ h1 {
     font-size: 2.0rem;
 }
 
+h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 .attachment {
     list-style-type: none;
 }

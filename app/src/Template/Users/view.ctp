@@ -57,8 +57,8 @@ $num_proposals = 0;
 <div class="row py-2">
     <div class="col-12">
         <div class="card shadow">
-            <div class="card-header py-3">
-                <h6 class="font-weight-bold text-primary"><?php echo $degree['name']; ?></h6>
+            <div class="card-header py-3 bg-primary">
+                <h6 class="font-weight-bold text-white"><?php echo $degree['name']; ?></h6>
             </div>
 
             <div class="card-body">
