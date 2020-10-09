@@ -49,11 +49,29 @@ function on_curriculum_selected() {
         };
         var baseHTML = "";
         for (i = 1; i <= degree['years']; i++) {
-            baseHTML = baseHTML + "<h3 class='mt-4'>" + year_title[i] +
-                " <span></span>/60</h3><nav id=\"nav-year-" + i + "\"></nav><ul></ul>";
+            baseHTML = baseHTML + `
+            <div class="row my-2">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary">
+                            <div class="d-flex justify-content-between align-content-center">
+                                <h3 class="h5 text-white">${year_title[i]}</h3>
+                                <div class="h5 text-white">Crediti: <span class="credit-block" id="credit-block-${i}"></span>/60</div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <nav id="nav-year-${i}"></nav>
+                            <ul id="ul-year-${i}"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
         }
 
         jQuery("#proposalForm").hide();
+        jQuery('#submit-block').hide();
 
         start_loading();
 
@@ -77,6 +95,7 @@ function on_curriculum_selected() {
                 }
 
                 jQuery("#proposalForm").slideDown();
+                jQuery('#submit-block').slideDown();
 
                 jQuery("input[type=submit]").show();
                 updateCounters();
@@ -140,7 +159,7 @@ function on_curriculum_selected() {
                 }
             }
 
-            var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
+            var selector = `#ul-year-${year}`;
             var examHTML = "<div class='col-9'><select name=data[ChosenExam][" + i + "][exam_id] class='exam form-control'>" + createExamOption(exam) + "</select></div>";
             var creditsHTML = "<div class='col-3'><input class='credits form-control' name=data[ChosenExam][" +
                 i + "][credits] value=" + exam['credits'] + ' readonly></div>';
@@ -175,7 +194,7 @@ function on_curriculum_selected() {
             var groupExams = group["exams"];
             var groupName = group["name"];
 
-            var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
+            var selector = `#ul-year-${year}`;
 
             var groupHTML = "<option value='' disabled selected>Un esame a scelta nel gruppo " + groupName + "</option>"; // ATTENZIONE: groupName non viene sanificato
             var examsHTML = "";
@@ -237,7 +256,7 @@ function on_curriculum_selected() {
             var freeChoiceExam = freeChoiceExams[i];
             var year = freeChoiceExam["year"];
 
-            var selector = "#proposalForm > ul:nth-of-type(" + year + ")";
+            var selector = `#ul-year-${year}`;
             var selectHTML = "<div class='col-9'><select class=\"form-control exam\" name=data[ChosenExam][" + (i + compulsoryGroups.length + compulsoryExams.length) + "][exam_id]></div>";
             if (freeChoiceExam.group_id === null) {
                 selectHTML += "<option selected disabled>Un esame a scelta</option>";
@@ -255,7 +274,7 @@ function on_curriculum_selected() {
             }
             selectHTML += "</select>";
             var $selectHTML = jQuery(selectHTML);
-            var deleteHTML = "<div class='col-1 my-auto'><a class='delete fas fw fa-trash'></a></div>";
+            var deleteHTML = "<div class='col-1 my-auto'><a href='#' class='delete fas fw fa-trash'></a></div>";
 
             let local_i = i;
             $selectHTML.change(() => onFreeChoiceExamSelected(local_i));
@@ -342,7 +361,7 @@ function on_curriculum_selected() {
         let thisExamID = i;
         lastExamAdded++;
 
-        var deleteHTML = "<div class='col-1 my-auto'><a href=# class='delete fas fw fa-trash'></a></div>";
+        var deleteHTML = "<div class='col-1 my-auto'><a href='#' class='delete fas fw fa-trash'></a></div>";
 
         jQuery("nav#nav-year-" + year).each((j, nav) => {
             var year_input = "<input type=hidden name=data[ChosenExam][" +
@@ -350,7 +369,7 @@ function on_curriculum_selected() {
 
             deleteHTML = year_input + deleteHTML;
 
-            jQuery(nav).next("hr").next("ul").append(jQuery("<li class='row form-group'>").append($selectHTML).append(deleteHTML));
+            jQuery(`#ul-year-${year}`).append(jQuery("<li class='row form-group'>").append($selectHTML).append(deleteHTML));
         });
 
         if (chosen_exam != null) {
@@ -383,7 +402,7 @@ function on_curriculum_selected() {
 
             inputHTML = inputHTML + year_input;
 
-            jQuery(nav).next("hr").next("ul").append("<li class='form-group row'>" + inputHTML + creditsHTML + deleteHTML + "</li>");
+            jQuery(`#ul-year-${year}`).append("<li class='form-group row'>" + inputHTML + creditsHTML + deleteHTML + "</li>");
         });
 
         lastFreeChoiceExamAdded++;
@@ -438,8 +457,9 @@ function on_curriculum_selected() {
 
         jQuery("#proposalWarning").hide();
 
-        jQuery("h3 span").each(function () {
-            let thisYearCount = updateCounter(this);
+        let elems = document.getElementsByClassName('credit-block');
+        for (var i = 0; i < elems.length; i++) {
+            let thisYearCount = updateCounter(elems[i]);
 
             if (thisYearCount > 60) {
                 creditCountPerYearOk = false;
@@ -447,7 +467,7 @@ function on_curriculum_selected() {
 
             creditCount += thisYearCount;
             years += 1;
-        });
+        }
 
         creditCountOk = creditCount >= years * 60;
 
@@ -512,7 +532,8 @@ function on_curriculum_selected() {
 
         // Fetch all the elements with class credits inside
         // the current block
-        let nav_elem = jQuery(elem).parent().next('nav').next('ul')[0];
+        let year = elem.id.split("-")[2];
+        let nav_elem = document.getElementById(`ul-year-${year}`);
         let credits_elems = nav_elem.getElementsByClassName('credits');
 
         for (i = 0; i < credits_elems.length; i++) {
@@ -617,6 +638,7 @@ function on_academic_year_selected() {
     jQuery('#curriculum-id').remove();
     jQuery('#curriculum-id-label').remove();
     jQuery('#proposalForm').hide();
+    jQuery('#submit-block').hide();
 
     // Create the form for the curriculum choice
     var options = "<option value=text>Selezionare il curriculum</option>";
@@ -647,6 +669,7 @@ function on_submit_clicked(e) {
 
 jQuery(document).ready(function () {
     jQuery("input[type=submit]").hide();
+    jQuery('#submit-block').hide();
 
     // Setup a confirmation dialog for the submission
     jQuery('.submit-button').on('click', on_submit_clicked);

@@ -37,13 +37,31 @@
 <?php
 echo $this->Form->create('Proposal');
 ?>
-<div id="curriculum-select"></div>
-<div id="proposalNotes"></div>
+<div class="row my-2">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <div id="curriculum-select"></div>
+                <div id="proposalNotes"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id=proposalForm></div>
-<div id="proposalWarning"></div>
-<div class="form-group btn-group">
-    <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
-    <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza">
+
+<div class="row my-2" id="submit-block" style="display: none">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <div id="proposalWarning"></div>
+                <div class="form-group btn-group">
+                    <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
+                    <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <?php
 echo $this->Form->end();
