@@ -127,7 +127,12 @@
                     if (count($query_params ) == 0) {
                         $query_params = [ 'state' => 'submitted' ];
                     }
+                    if ($query_params['state'] == 'all') {
+                        unset($query_params['state']);
+                    }
                 ?>
+
+                <?php if (count($query_params) > 0): ?>
 
                 <div class="d-flex align-left my-2">
                     <?php foreach ($query_params as $key => $value): ?>
@@ -141,6 +146,8 @@
                         </span>
                     </a>
                 </div>
+
+                <?php endif; ?>
 
                 <table class="table">
                     <tr><thead>
