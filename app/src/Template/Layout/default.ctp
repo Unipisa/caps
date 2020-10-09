@@ -40,7 +40,7 @@
             <div class="sidebar-brand-text mx-3">CAPS<sup><?= $capsShortVersion ?></sup></div>
         </a>
 
-        <?php if ($user): ?>
+        <?php if ($user  && !$user['admin']): ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
