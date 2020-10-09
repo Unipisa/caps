@@ -47,7 +47,7 @@ return [
     // Multi-Checkbox wrapping container.
     'multicheckboxWrapper' => '<fieldset{{attrs}}>{{content}}</fieldset>',
     // Option element used in select pickers.
-    'option' => '<option class="form-control" value="{{value}}"{{attrs}}>{{text}}</option>',
+    'option' => '<option value="{{value}}"{{attrs}}>{{text}}</option>',
     // Option group element used in select pickers.
     'optgroup' => '<optgroup label="{{label}}"{{attrs}}>{{content}}</optgroup>',
     // Select element,

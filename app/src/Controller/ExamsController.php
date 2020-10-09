@@ -11,7 +11,7 @@ use App\Form\ExamsFilterForm;
 class ExamsController extends AppController {
 
     public $paginate = [
-        'limit' => 25,
+        'limit' => 15,
         'order' => [
             'Exams.name' => 'asc'
         ]

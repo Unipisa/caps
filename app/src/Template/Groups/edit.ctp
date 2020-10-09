@@ -1,22 +1,28 @@
-<?php echo $this->element('updating_navigation'); ?>
+<h1>
+    <?= $group->isNew() ? 'Aggiungi gruppo' : 'Modifica gruppo' ?>
+</h1>
 
-<?php if ($group->isNew()): ?>
-<h2>Aggiungi gruppo</h2>
-<?php else: ?>
-<h2>Modifica gruppo</h2>
-<?php endif; ?>
-<?php
-    // debug($group);
-    echo $this->Form->create($group);
-    echo $this->Form->input(
-        'name',
-        ['label' => 'Nome']
-    );
-    echo $this->Form->control('exams._ids', [ 'size' => 20 ]);
-    if ($group->isNew()):
-      echo $this->Form->submit('Salva gruppo');
-    else:
-      echo $this->Form->submit('Modifica gruppo');
-    endif;
-    echo $this->Form->end();
-?>
+<div class="row my-2">
+    <div class="col">
+        <div class="card shadow">
+            <div class="card-body">
+                <?php
+                // debug($group);
+                echo $this->Form->create($group);
+                echo $this->Form->input(
+                    'name',
+                    ['label' => 'Nome']
+                );
+                echo $this->Form->control('exams._ids', [ 'size' => 15 ]);
+                if ($group->isNew()):
+                    echo $this->Form->submit('Salva gruppo');
+                else:
+                    echo $this->Form->submit('Modifica gruppo');
+                endif;
+                echo $this->Form->end();
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+

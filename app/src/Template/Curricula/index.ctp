@@ -36,14 +36,20 @@
 
                     <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
                         <button class="btn btn-sm btn-primary mr-2">
-                            Aggiungi Curriculum
+                            Aggiungi curriculum
+                        </button>
+                    </a>
+
+                    <a href="#" >
+                        <button class="btn btn-sm btn-danger mr-2" onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i curricula selezionati?')">
+                            Elimina curriculum
                         </button>
                     </a>
 
                     <div class="flex-fill"></div>
 
                     <a><button class="btn btn-sm btn-warning mr-2"
-                            onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() }, null)">
+                            onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() })">
                         Duplica per un nuovo anno
                     </button></a>
 

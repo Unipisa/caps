@@ -13,9 +13,6 @@ class GroupsController extends AppController {
    public function initialize()
     {
         parent::initialize();
-
-        $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
     }
 
     public function beforeFilter ($event) {
@@ -63,7 +60,7 @@ class GroupsController extends AppController {
             foreach($groups as $group) {
                 $exams = $group->exams;
                 $bare_group = $group;
-                unset($bare_group->exams); 
+                unset($bare_group->exams);
                 foreach($exams as $exam) {
                     $data[] = ['group' => $bare_group, 'exam' => $exam];
                 }

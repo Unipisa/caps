@@ -1,59 +1,45 @@
-<nav class="caps-admin-navigation actions">
-    <ul>
-        <li class="caps-admin-link">
-            <?php
-                echo $this->Html->link(
-                    '↑&nbsp;Indietro',
-                    ['action' => 'index'],
-                    ['escape' => false]
-                );
-            ?>
-        </li>
-        <li class="caps-admin-link">
-            <?php
-                echo $this->Html->link(
-                    '✎&nbsp;Modifica',
-                    ['action' => 'edit', $group['id']],
-                    ['escape' => false]
-                );
-            ?>
-        </li>
-        <li class="">
-            <?php
-                echo $this->Form->postLink(
-                    '✗&nbsp;Elimina',
-                    ['action' => 'delete', $group['id']],
-                    ['escape' => false,
-                     'class' => 'action reject',
-                     'confirm' => __('Sei sicuro di voler cancellare questo gruppo?')
-                    ]
-                );
-            ?>
-        </li>
-    </ul>
-</nav>
+<h1><?php echo $group['name']; ?></h1>
 
-<h2><?php echo $group['name']; ?></h2>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex mb-2">
+                    <a href="<?= $this->Url->build(['action' => 'index']) ?>" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-primary">Indietro</button>
+                    </a>
+                    <a href="<?= $this->Url->build(['action' => 'edit', $group['id']]) ?>" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-primary">Modifica</button>
+                    </a>
+                    <a href="<?= $this->Url->build(['action' => 'delete', $group['id']]) ?>"
+                       onclick="return confirm('Sei sicuro di voler cancellare questo gruppo?')" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-danger">Elimina</button>
+                    </a>
+                </div>
 
-<table>
-    <tr>
-        <th>Id</th>
-        <th>Nome</th>
-        <th>Codice</th>
-        <th>Settore</th>
-        <th>Crediti</th>
-    </tr>
-    <?php foreach ($group['exams'] as $exam): ?>
-    <tr>
-        <td><?php echo $exam['id']; ?></td>
-        <td>
-            <?php echo $this->Html->link($exam['name'],
-                ['controller' => 'exams', 'action' => 'edit', $exam['id']]); ?>
-        </td>
-        <td><?php echo $exam['code']; ?></td>
-        <td><?php echo $exam['sector']; ?></td>
-        <td><?php echo $exam['credits']; ?></td>
-    </tr>
-    <?php endforeach ?>
-    <?php unset($exam); ?>
-</table>
+                <table class="table">
+                    <tr><thead>
+                        <th>Nome</th>
+                        <th>Codice</th>
+                        <th>Settore</th>
+                        <th>Crediti</th>
+                        </thead>
+                    </tr>
+                    <?php foreach ($group['exams'] as $exam): ?>
+                        <tr>
+                            <td>
+                                <?php echo $this->Html->link($exam['name'],
+                                    ['controller' => 'exams', 'action' => 'edit', $exam['id']]); ?>
+                            </td>
+                            <td><?php echo $exam['code']; ?></td>
+                            <td><?php echo $exam['sector']; ?></td>
+                            <td><?php echo $exam['credits']; ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                    <?php unset($exam); ?>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>

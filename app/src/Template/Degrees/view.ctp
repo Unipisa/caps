@@ -4,6 +4,19 @@
     <div class="col">
         <div class="card shadow">
             <div class="card-body">
+                <div class="d-flex mb-2">
+                    <a href="<?= $this->Url->build(['action' => 'index']) ?>" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-primary">Indietro</button>
+                    </a>
+                    <a href="<?= $this->Url->build(['action' => 'edit', $degree['id']]) ?>" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-primary">Modifica</button>
+                    </a>
+                    <a href="<?= $this->Url->build(['action' => 'delete', $degree['id']]) ?>"
+                       onclick="return confirm('Sei sicuro di voler cancellare questo corso?')" class="mr-2">
+                        <button type="button" class="btn btn-sm btn-danger">Elimina</button>
+                    </a>
+                </div>
+
                 <table class="table">
                     <tr>
                         <th>Nome</th>
@@ -19,16 +32,7 @@
                     </tr>
                 </table>
 
-                <a href="<?= $this->Url->build(['action' => 'index']) ?>">
-                    <button type="button" class="btn btn-primary">Indietro</button>
-                </a>
-                <a href="<?= $this->Url->build(['action' => 'edit', $degree['id']]) ?>">
-                    <button type="button" class="btn btn-primary">Modifica</button>
-                </a>
-                <a href="<?= $this->Url->build(['action' => 'delete', $degree['id']]) ?>"
-                        onclick="return confirm('Sei sicuro di voler cancellare questo corso?')">
-                    <button type="button" class="btn btn-danger">Elimina</button>
-                </a>
+
             </div>
         </div>
     </div>
