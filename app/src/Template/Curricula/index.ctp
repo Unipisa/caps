@@ -48,8 +48,8 @@
 
                     <div class="flex-fill"></div>
 
-                    <a><button class="btn btn-sm btn-warning mr-2"
-                            onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() })">
+                    <a><button class="btn btn-sm btn-primary mr-2"
+                            onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() }, 'Clonare i nuovi curricula per l\'anno selezionato?')">
                         Duplica per un nuovo anno
                     </button></a>
 

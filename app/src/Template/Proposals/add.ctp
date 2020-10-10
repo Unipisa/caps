@@ -13,9 +13,7 @@
         var curriculaURL = "<?php echo $this->Url->build(
             [ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json']);
                 ?>";
-        var Caps = {
-            'cds': "<?php echo $settings['cds']; ?>"
-        }
+        Caps.cds = "<?php echo $settings['cds']; ?>";
     </script>
 <?php endif; ?>
 <?php
@@ -37,32 +35,22 @@
 <?php
 echo $this->Form->create('Proposal');
 ?>
-<div class="row my-2">
-    <div class="col-12">
-        <div class="card shadow">
-            <div class="card-body">
-                <div id="curriculum-select"></div>
-                <div id="proposalNotes"></div>
-            </div>
-        </div>
-    </div>
-</div>
+
+<?php echo $this->element('card-start'); ?>
+    <div id="curriculum-select"></div>
+    <div id="proposalNotes"></div>
+<?php echo $this->element('card-end'); ?>
 
 <div id=proposalForm></div>
 
-<div class="row my-2" id="submit-block" style="display: none">
-    <div class="col-12">
-        <div class="card shadow">
-            <div class="card-body">
-                <div id="proposalWarning"></div>
-                <div class="form-group btn-group">
-                    <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
-                    <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza">
-                </div>
-            </div>
-        </div>
+<?php echo $this->element('card-start'); ?>
+    <div id="proposalWarning"></div>
+    <div class="form-group btn-group">
+        <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
+        <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza">
     </div>
-</div>
+<?php echo $this->element('card-end'); ?>
+
 <?php
 echo $this->Form->end();
 ?>
