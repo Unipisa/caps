@@ -23,6 +23,7 @@ use App\Auth;
 use App\Application;
 use Cake\I18n\FrozenTime;
 use stdClass;
+use Cake\I18n\I18n;
 
 
 
@@ -163,7 +164,7 @@ class AppController extends Controller
         $this->set('user', $this->user);
 
         // NOTE: In principle we may load the configuration only when needed,
-        // to avoid a useles query. This does not appear to hurt performance
+        // to avoid a useless query. This does not appear to hurt performance
         // in any meaningful way, though.
         $this->set('settings', $this->getSettings());
     }

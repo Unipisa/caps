@@ -213,7 +213,14 @@ jQuery(document).ready(() => {
                             </a>
                         </td>
                         <td><?= $pc['curriculum']['name'] ?></td>
-                        <td><?= $this->Time->timeAgoInWords($pc['req_date'], [ 'accuracy' => 'day'] ); ?></td>
+                        <td><?= $this->Time->timeAgoInWords($pc['req_date'], [
+                                'accuracy' => 'day',
+                                'format' => 'dd/MM/yyyy'
+                            ] );
+                            ?>
+                            <?php // $this->Time->setTimezone($pc['req_date'], $Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm')
+                            ?>
+                        </td>
                         <td><button type="button" class="btn btn-sm btn-primary">
                             <i class="fas fa-eye mr-2"></i>Visualizza
                             </button>
