@@ -81,12 +81,16 @@ function csv_validator(item, context) {
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown" onclick='csv_click()'>
-                Aggiungi esame da CSV
+                Aggiungi esami da CSV
             </button>
             <div class="dropdown-menu p-2 shadow" style="width: 800px; max-height: 500px; overflow-y: scroll;">
                 <div id="caps-admin-actions-csv" class="caps-admin-actions-csv">
                     <form>
-                    <p>Carica elenco esami da un file CSV (si potranno selezionare gli esami da caricare):</p>
+                        <h3 class="h5">Caricamento esami da CSV</h3>
+                    <p>Carica elenco di esami da un file CSV; si potranno selezionare gli esami da caricare, e quelli da ignorare
+                        prima della conferma definitiva. La struttura del file CSV deve includere 4 colonne con
+                        <strong>nome</strong>, <strong>codice</strong>, <strong>settore</strong>, e <strong>crediti</strong> (non
+                        necessariamente in questo ordine). L'intestazione è opzionale.</p>
                         <div class="form-group">
                         <input class="form-control-file" id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
                         </div>
