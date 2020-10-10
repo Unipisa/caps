@@ -1,48 +1,45 @@
-<div class="bureaucracy">
-    <div class="heading">
-        <?php echo $this->Html->image('cherubino_black.png', [ 'class' => 'left' ]) ?>
-        <h2 class="department"><?php echo $settings['department'] ?></h2>
-        <h2 class="degree"><?php echo $proposal['curriculum']['degree']['name']; ?>
-        </h2>
-        <h2 class="year"><?php
-            /* At the moment we do not have the information on the academic
-             * year inside the database,so we guess based on the deadline. */
-            $year = $proposal['modified']->year;
-            $month = $proposal['modified']->month;
-
-            if ($month <= 8)
-              $year = $year - 1;
-
-            echo "Anno Accademico " . $year . "/" . ($year + 1);
-        ?></h2>
-    </div>
-    <div class="data">
-        <h3 class="curriculum">Curriculum: <?php echo $proposal['curriculum']['name']; ?></h3>
-        <h3 class="curriculum">Anno di immatricolazione: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?></h3>
-        <h3 class="name">Nome e cognome: <?php echo $proposal['user']['name']; ?></h3>
-        <h3 class="number">Matricola: <?php echo $proposal['user']['number']; ?></h3>
-        <h3 class="email">Email: <?= $proposal['user']['email'] ?></h3>
-        <!-- h3 class="telephone">Telefono: </h3> //-->
-    </div>
-    <div class="plea">
-        <p>chiede l'approvazione del seguente Piano di Studio:</p>
-    </div>
-</div>
-
-<div class="heading--web">
-    <h2>Piano di Studi di <?php echo $proposal['user']['name']; ?></h2>
-    <h3>
-      <?= $proposal['curriculum']['degree']['name'] ?> —
-      Curriculum <?php echo $proposal['curriculum']['name']; ?>
-      (anno di immatricolazione <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?>)
-    </h3>
-</div>
+<h1>Piano di Studi di <?php echo $proposal['user']['name']; ?></h1>
 
 <?php if ($message != ""): ?>
-<div class="notice">
+<?= $this->element('card-start', [ 'border' => 'warning' ]) ?>
     <?php echo $message; ?>
-</div>
+<?= $this->element('card-end'); ?>
 <?php endif; ?>
+
+<?= $this->element('card-start'); ?>
+
+<?php if ($user['admin']): ?>
+    <!-- Toolbar per l'amministratore //-->
+    <div class="d-flex mb-2">
+        <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
+            <button type="button" class="btn btn-sm btn-success mr-2">
+                <i class="fas fa-check"></i> Accetta
+            </button>
+        </a>
+        <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
+            <button type="button" class="btn btn-sm btn-danger mr-2">
+                <i class="fas fa-times"></i> Rifiuta
+            </button>
+        </a>
+        <a href="<?= $this->Url->build([ 'action' => 'index' ]) ?>">
+        <button type="button" class="btn btn-sm btn-secondary mr-2">
+            <i class="fas fa-arrow-left"></i> Indietro
+        </button>
+        </a>
+    </div>
+<?php endif; ?>
+
+    <table class="table">
+        <tr>
+            <th>Curriculum</th>
+            <td><?= $proposal['curriculum']['degree']['name'] ?></td>
+        </tr>
+        <tr>
+            <th>Anno di immatricolazione</th>
+            <td><?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?></td>
+        </tr>
+    </table>
+<?= $this->element('card-end'); ?>
 
 <?php for ($year = 1; $year <= 3; $year++): ?>
 
@@ -57,29 +54,34 @@
         return $e['chosen_year'] == $year;
     });
 
+  $header = "";
+
     if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
     <div>
     <?php
         echo "<h3>";
         switch ($year) {
             case 1:
-                echo "Primo anno";
+                $header = "Primo anno";
                 break;
             case 2:
-                echo "Secondo anno";
+                $header = "Secondo anno";
                 break;
             case 3:
-                echo "Terzo anno";
+                $header = "Terzo anno";
                 break;
             default:
-                echo "Anno " . $year;
+                $header = "Anno " . $year;
                 break;
         }
         echo "</h3>";
         $year_credits = 0;
 ?>
 
-<table>
+<?= $this->element('card-start', [ 'header' => $header ]); ?>
+
+<table class="table">
+    <thead>
     <tr>
         <th>Codice</th>
         <th>Nome</th>
@@ -87,6 +89,7 @@
         <th>Crediti</th>
         <th>Gruppo</th>
     </tr>
+    </thead>
 <?php foreach ($this_year_exams as $chosen_exam): ?>
     <?php
         $exam = $chosen_exam['exam'];
@@ -99,7 +102,7 @@
         <td><?php echo $code ?></td>
         <td><?php echo $name ?>
         <?php if (count($exam['tags']) > 0): ?>
-            <div class="proposal-tag">
+            <div class="badge badge-secondary badge-sm">
                 <?php echo $exam->tagsToString(); ?>
             </div>
         <?php endif; ?>
@@ -144,39 +147,12 @@
 </tr>
 </table>
 </div>
+<?= $this->element('card-end'); ?>
+
 <?php endif; ?>
 <?php endfor; ?>
 
-<div class="bureaucracy">
-    <div class="left">
-        <div class="date">Data di presentazione: <?=
-            ($proposal['submitted_date'] != null) ?
-                $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non ancora presentato';
-        ?></div><br>
-        <?php if ($proposal['state'] == 'approved'): ?>
-        <div class="examined">Esaminato in data: <?=
-            ($proposal['approved_date'] != null) ?
-                $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') :
-                'data non disponibile'
-            ?></div><br>
-        <div class="result">
-            Esito: <ul>
-                <li>Approvato ☒</li>
-                <!-- <li>Rifiutato ☐</li> //-->
-            </ul>
-        </div>
-        <br>
-        <div class="confirmation"><?= $settings['approval-signature-text']; ?></div>
-        <?php endif; ?>
-    </div>
-
-    <div class="right">
-        <div class="signature"><!-- Firma dello studente //--></div>
-    </div>
-</div>
-
-<div class="attachments">
-
+<?= $this->element('card-start', [ 'header' => 'Allegati' ]) ?>
     <?php
       $secret = $this->request->getQuery('secret');
 
@@ -196,149 +172,70 @@
       $events_count = count($attachments_and_auths);
      ?>
 
-  <?php if ($events_count > 0): ?>
-    <h3>Allegati e commenti</h3>
-  <?php endif ?>
     <p>
     <ul class="attachments">
     <?php foreach ($attachments_and_auths as $att): ?>
     <?php if ($att instanceof \App\Model\Entity\Attachment): ?>
-
-            <?php
-                // Determiniamo se si tratta di commento e/o allegato
-                $obj_name = "allegato";
-                if ($att->filename == null) {
-                    $obj_name = "commento";
-                }
-            ?>
-
-          <li class="attachment">
-              <?php if ($att['comment'] != ""): ?>
-                <?= $att['comment'] ?><br><br>
-              <?php endif ?>
-
-              <?php if($att['filename'] != null): ?>
-                  <strong>Allegato</strong>:
-                  <?php
-                  echo $this->Html->link($att['filename'], [
-                      'controller' => 'attachments',
-                      'action' => 'view',
-                      $att['id']
-                  ]);
-                  ?><br><br>
-              <?php endif ?>
-              <strong><?php echo $att['user']['name'] ?></strong>
-              <?php if ($att['created'] != null) {
-                  ?>  — <?php
-                  echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
-              }
-              ?>
-
-                  <?php if ($user && $user->canDeleteAttachment($att)): ?>
-                  — [
-                  <?php
-                  echo $this->Form->postLink('Elimina questo ' . $obj_name, [
-                      'controller' => 'attachments',
-                      'action' => 'delete',
-                      $att['id'], $secret
-                  ], [
-                      'confirm' => 'Cancellare definitivamente l\'' . $obj_name . '?',
-                  ]);
-                  ?> ]
-              <?php endif ?>
-          </li>
+        <?= $this->element('attachment', [
+                'attachment' => $att,
+                'controller' => 'attachments',
+                'name' => $att->filename == null ? 'Commento' : 'Allegato'
+            ])
+        ?>
     <?php else: ?>
-        <li class="authorization">
-            Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
-                ?>  — <?php
-                echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
-            }
-            ?>
+        <li class="card border-left-warning mb-2">
+            <div class="card-body p-1">
+                Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
+                    ?>  — <?php
+                    echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+                }
+                ?>
+            </div>
         </li>
     <?php endif ?>
     <?php endforeach ?>
     </ul>
+    <?php if ($user && $user->canAddAttachment($proposal, $secret)): ?>
+    <h3>Inserisci un nuovo allegato o commento</h3>
     <?php
-        if ($user && $user->canAddAttachment($proposal, $secret)) { ?>
-            <h3>Inserisci un nuovo allegato o commento</h3>
-            <?php
-            echo $this->Form->create('Attachment', [
-                'url' => ['controller' => 'attachments', 'action' => 'add'],
-                'type' => 'file'
+    echo $this->Form->create('Attachment', [
+        'url' => ['controller' => 'attachments', 'action' => 'add'],
+        'type' => 'file'
+    ]);
+    ?>
+    <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
+    <?php echo $this->Form->hidden('secret', [ 'value' => $secret]); ?>
+
+    <div class="form-group">
+        <?php echo $this->Form->textarea('comment'); ?>
+    </div>
+    <div class="form-group">
+        <?php echo $this->Form->file('data'); ?>
+    </div>
+    <?php echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]); ?>
+    <?php echo $this->Form->submit('Aggiungi commento e/o allegato'); ?>
+    <?php echo $this->Form->end(); ?>
+    <?php endif; ?>
+<?= $this->element('card-end'); ?>
+
+<?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
+    <?= $this->element('card-start', [ 'header' => 'Richiesta parere' ]) ?>
+    <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
+        <h3>Richiesta parere</h3>
+        <?php
+            echo $this->Form->create($proposal_auth, [
+                'url' => [
+                    'controller' => 'proposals',
+                    $proposal['id'],
+                    'action' => 'share'
+                ]
             ]);
-            ?>
-            <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
-            <?php
-            echo $this->Form->hidden('secret', [ 'value' => $secret]);
-            echo $this->Form->textarea('comment');
-            echo $this->Form->file('data');
-            echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]);
-            echo $this->Form->submit('Aggiungi commento e/o allegato');
+            echo $this->Form->control(
+                'email',
+                [ 'label' => 'Email' ]);
+            echo $this->Form->submit('Richiedi parere');
             echo $this->Form->end();
-        }
-    ?></p>
-
-    <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
-        <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
-            <h3>Richiesta parere</h3>
-            <?php
-                echo $this->Form->create($proposal_auth, [
-                    'url' => [
-                        'controller' => 'proposals',
-                        $proposal['id'],
-                        'action' => 'share'
-                    ]
-                ]);
-                echo $this->Form->control(
-                    'email',
-                    [ 'label' => 'Email' ]);
-                echo $this->Form->submit('Richiedi parere');
-                echo $this->Form->end();
-            ?>
-        <?php endif ?>
+        ?>
     <?php endif ?>
-</div>
-
-<?php if ($user['admin']): ?>
-    <!-- Toolbar per l'amministratore //-->
-    <h3 class="planActions">Azioni disponibili</h3>
-    <ul class=planActions>
-        <?php if ($proposal['state'] === 'submitted'): ?>
-        <li>
-            <?php
-                echo $this->Html->link(
-                    'Accetta&nbsp;✓',
-                    ['action' => 'admin_approve',
-                        $proposal['id']],
-                    ['class' => 'accept',
-                        'escape' => false]
-                );
-            ?>
-        </li>
-        <li>
-            <?php
-                echo $this->Html->link(
-                    'Rifiuta&nbsp;✗',
-                    ['action' => 'admin_reject',
-                        $proposal['id']],
-                    ['class' => 'reject',
-                        'escape' => false]
-                );
-            ?>
-        </li>
-        <?php endif ?>
-        <li>
-            <?php
-                echo $this->Html->link(
-                    'Indietro&nbsp;↩',
-                    $this->request->referer(),
-                    ['class' => 'back',
-                        'escape' => false]
-                );
-            ?>
-        </li>
-    </ul>
-<?php endif; ?>
-
-<div id="proposal_div">
-</div>
+<?php $this->element('card-end'); ?>
+<?php endif ?>

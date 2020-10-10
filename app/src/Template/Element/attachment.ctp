@@ -15,7 +15,7 @@
     <?php endif ?>
     <div class="d-sm-flex align-items-center justify-content-between">
     <div>
-    <strong><?php echo $attachment['owner']['name'] ?></strong>
+    <strong><?php echo property_exists($attachment, 'owner') ? $attachment['owner']['name'] : $attachment['user']['name']; ?></strong>
     <?php if ($attachment['created'] != null): ?>
         — <?php echo $attachment['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
     <?php endif; ?>

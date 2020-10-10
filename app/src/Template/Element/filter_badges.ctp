@@ -8,11 +8,18 @@ $query_params = $this->request->getQueryParams();
         <?php foreach ($query_params as $key => $value): ?>
             <?php if ($value != ""): ?>
                 <a href="#" onclick="Caps.removeQueryParam('<?= $key ?>');">
-                    <span class="badge badge-secondary mr-2"><?= $key ?>: <?= $value ?> X</span>
+                    <span class="filter-badge badge badge-secondary mr-2" title="Rimuovi il filtro <?= $key ?>: <?= $value ?>"><?= $key ?>: <?= $value ?> X</span>
                 </a>
             <?php endif; ?>
         <?php endforeach; ?>
         </a>
     </div>
+
+    <script>
+        // Add Bootstrap tooltips
+        jQuery(function () {
+            jQuery('span.filter-badge').tooltip()
+        })
+    </script>
 
 <?php endif; ?>
