@@ -116,18 +116,19 @@ class ProposalsController extends AppController {
         }
 
         // Raw SQL query, as this appear to be quite hard to be done using
-        // Cake's ORM Query & co. 
+        // Cake's ORM Query & co.
         $conn = $this->Proposals->getConnection();
         $proposal_comments = $conn->execute(
-            'SELECT * FROM (SELECT proposals.id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req,
-                    proposals.user_id, curricula.id AS curriculum_id, curricula.name AS curriculum_name,
+            'SELECT * FROM (SELECT proposals.id AS id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req,
+                    proposals.user_id AS user_id, curricula.id AS curriculum_id, curricula.name AS curriculum_name,
                     users.name as user_name,
                     MAX(proposal_auths.created) AS req_date
                     FROM proposals INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
                     LEFT JOIN attachments ON proposals.id = attachments.proposal_id
                     LEFT JOIN curricula ON proposals.curriculum_id = curricula.id
                     LEFT JOIN users ON proposals.user_id = users.id
-                    GROUP BY proposals.id) WHERE att = 0 ORDER BY req_date ASC');
+                    GROUP BY proposals.id) proposals WHERE att = 0 ORDER BY req_date ASC');
+
 
         $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
     }
