@@ -1,5 +1,6 @@
 <?php
     $controllerName = $this->request->getParam('controller');
+    $actionName = $this->request->getParam('action');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -89,7 +90,7 @@
             Amministrazione
         </div>
 
-        <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
+        <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName == 'dashboard') ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'dashboard'
             ]); ?>">
@@ -98,7 +99,7 @@
             </a>
         </li>
 
-        <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
+        <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName != 'dashboard') ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'index'
             ]); ?>">
