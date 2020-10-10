@@ -201,7 +201,7 @@ jQuery(document).ready(() => {
                     <tr>
                         <th>Studente</th>
                         <th>Curriculum</th>
-                        <th>Inviata</th>
+                        <th>Richiesto</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -217,8 +217,6 @@ jQuery(document).ready(() => {
                                 'accuracy' => 'day',
                                 'format' => 'dd/MM/yyyy'
                             ] );
-                            ?>
-                            <?php // $this->Time->setTimezone($pc['req_date'], $Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm')
                             ?>
                         </td>
                         <td><button type="button" class="btn btn-sm btn-primary">
