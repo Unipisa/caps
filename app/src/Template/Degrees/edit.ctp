@@ -9,8 +9,7 @@
         echo $this->Form->control('years', ['label' => 'Anni']);
     ?>
     <div class="form-check mb-2">
-        <input id="enable-sharing" class="form-check-input" type="checkbox" name="sharing" value="<?= $degree['enable_sharing'] ?>" />
-        <label class="form-check-label" for="enable-sharing">Richiesta parere abilitata</label>
+        <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta parere abilitata']); ?>
     </div>
     <?php
         if ($degree->isNew()):
