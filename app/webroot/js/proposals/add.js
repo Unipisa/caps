@@ -62,7 +62,7 @@ function on_curriculum_selected() {
                         </div>
                         <div class="card-body">
                             <nav id="nav-year-${i}"></nav>
-                            <ul id="ul-year-${i}"></ul>
+                            <ul id="ul-year-${i}" class="p-1"></ul>
                         </div>
                     </div>
                 </div>
@@ -409,10 +409,11 @@ function on_curriculum_selected() {
     };
 
     var addButtons = function () {
-        var buttonsHTML = `<div class="btn-group">` +
-            `<a href="#" class="newMathematicsExam"><button type="button" class="btn btn-sm">Aggiungi esame di ${Caps['cds']}</button></a>` +
-            `<a href="#" class="newFreeChoiceExam"><button type="button" class="btn btn-sm">Aggiungi esame a scelta libera</button></a>` +
-            "</div>";
+        var buttonsHTML = `<div class="d-flex mb-4">
+            <div class="flex-fill"></div>
+            <a href="#" class="newMathematicsExam"><button type="button" class="btn-primary btn btn-sm mr-2">Aggiungi esame di ${Caps['cds']}</button></a>
+            <a href="#" class="newFreeChoiceExam"><button type="button" class="btn-primary btn btn-sm">Aggiungi esame a scelta libera</button></a>
+            </div>`;
 
         jQuery("#proposalForm nav").append(buttonsHTML);
 
