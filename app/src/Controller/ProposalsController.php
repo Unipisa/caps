@@ -115,15 +115,6 @@ class ProposalsController extends AppController {
                 })->count();
         }
 
-        // Proposals that need to be evaluated, we're doing this as a raw SQL
-        // query because I could not figure out how to use the ORM. LR.
-        /* $result = $this->Proposals->getConnection()->execute(
-            "select * from (select proposals.id, count(proposal_auths.id) as req, count(attachments.id) as att
-                            from proposal_auths left join proposals on proposal_auths.proposal_id = proposals.id
-                            left join attachments on proposals.id = attachments.proposal_id)
-            where req > 0 and att = 0");
-        $proposal_comments = $result->fetchAll(); */
-
         $query = $this->Proposals->find()
             ->contain([ 'Users', 'Curricula', 'Curricula.Degrees']);
         $proposal_comments = $query->select([
@@ -134,7 +125,8 @@ class ProposalsController extends AppController {
             ->innerJoinWith('ProposalAuths')
             ->leftJoinWith('Attachments')
             ->group('Proposals.id')
-            ->enableAutoFields(true);
+            ->enableAutoFields(true)
+            ->order([ 'req_date' => 'ASC' ]);
 
         $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
     }
