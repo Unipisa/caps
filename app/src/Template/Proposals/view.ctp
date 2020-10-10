@@ -227,7 +227,6 @@
 <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
     <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
     <?= $this->element('card-start', [ 'header' => 'Richiesta parere' ]) ?>
-        <h3>Richiesta parere</h3>
         <?php
             echo $this->Form->create($proposal_auth, [
                 'url' => [
