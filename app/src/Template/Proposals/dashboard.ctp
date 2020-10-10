@@ -208,20 +208,22 @@ jQuery(document).ready(() => {
                     <?php foreach ($proposal_comments as $pc): ?>
                     <tr>
                         <td>
-                            <a href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'view', $pc['user']['id'] ]) ?>">
-                            <?= $pc['user']['name'] ?>
+                            <a href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'view', $pc['user_id'] ]) ?>">
+                            <?= $pc['user_name'] ?>
                             </a>
                         </td>
-                        <td><?= $pc['curriculum']['name'] ?></td>
+                        <td><?= $pc['curriculum_name'] ?></td>
                         <td><?= $this->Time->timeAgoInWords($pc['req_date'], [
                                 'accuracy' => 'day',
                                 'format' => 'dd/MM/yyyy'
                             ] );
                             ?>
                         </td>
-                        <td><button type="button" class="btn btn-sm btn-primary">
+                        <td>
+                            <a href="<?= $this->Url->build([ 'action' => 'view', $pc['id'] ]) ?>">
+                            <button type="button" class="btn btn-sm btn-primary">
                             <i class="fas fa-eye mr-2"></i>Visualizza
-                            </button>
+                            </button></a>
                         </td>
                     </tr>
 

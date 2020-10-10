@@ -115,18 +115,19 @@ class ProposalsController extends AppController {
                 })->count();
         }
 
-        $query = $this->Proposals->find()
-            ->contain([ 'Users', 'Curricula', 'Curricula.Degrees']);
-        $proposal_comments = $query->select([
-                'req' => $query->func()->count('ProposalAuths.id'),
-                'att' => $query->func()->count('Attachments.id'),
-                'req_date' => $query->func()->max('ProposalAuths.created')
-            ])
-            ->innerJoinWith('ProposalAuths')
-            ->leftJoinWith('Attachments')
-            ->group('Proposals.id')
-            ->enableAutoFields(true)
-            ->order([ 'req_date' => 'ASC' ]);
+        // Raw SQL query, as this appear to be quite hard to be done using
+        // Cake's ORM Query & co. 
+        $conn = $this->Proposals->getConnection();
+        $proposal_comments = $conn->execute(
+            'SELECT * FROM (SELECT proposals.id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req,
+                    proposals.user_id, curricula.id AS curriculum_id, curricula.name AS curriculum_name,
+                    users.name as user_name,
+                    MAX(proposal_auths.created) AS req_date
+                    FROM proposals INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
+                    LEFT JOIN attachments ON proposals.id = attachments.proposal_id
+                    LEFT JOIN curricula ON proposals.curriculum_id = curricula.id
+                    LEFT JOIN users ON proposals.user_id = users.id
+                    GROUP BY proposals.id) WHERE att = 0 ORDER BY req_date ASC');
 
         $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
     }
@@ -321,7 +322,10 @@ class ProposalsController extends AppController {
         return $this->response
             ->withStringBody($dompdf->output())
             ->withType('application/pdf')
-            ->withDownload('prova.pdf');
+            ->withDownload('Piano_' .
+                str_replace(' ', '_', $proposal['curriculum']['name']) .
+                '_' . str_replace(' ', '_', $proposal['user']['name']) .
+                '.pdf');
     }
 
     public function view2 ($id) {

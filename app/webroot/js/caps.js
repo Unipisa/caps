@@ -17,7 +17,7 @@ const Caps = {
     // for the current table
     'removeQueryParam': function(param) {
         let url = window.location.href;
-        let rx = new RegExp(param + '=[^&]*&');
+        let rx = new RegExp(param + '=[^&]*');
         location.href = url.replace(rx, '');
     },
 
