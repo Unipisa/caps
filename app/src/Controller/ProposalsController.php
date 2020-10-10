@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
-use App\Controller\Event;
 use App\Model\Entity\ProposalAuth;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -16,6 +15,7 @@ use Cake\I18n\Time;
 use Cake\Core\Configure;
 use Cake\Utility\Security;
 use Dompdf\Dompdf;
+use Cake\Database\Expression\QueryExpression;
 
 class ProposalsController extends AppController {
 
@@ -92,6 +92,53 @@ class ProposalsController extends AppController {
         $email->send();
     }
 
+    public function dashboard() {
+        // We need to find a few stats about proposals
+        $submitted_count = $this->Proposals->find()->where([ 'state' => 'submitted' ])->count();
+
+        // Count the number of submission in the last twelve months; we do this by separate queries
+        // because it appears to be difficult to do in a database-independent way.
+        $start = Time::now();
+        $start->day(1); // Go the start of this month
+        $start = $start->addMonth(-12);
+        $end = new Time($start);
+        $end = $end->addMonth(1);
+        $submission_counts = [];
+        for ($i = 0; $i < 12; $i++) {
+            $start = $start->addMonth(1);
+            $end   = $end->addMonth(1);
+
+            $submission_counts[$i] = $this->Proposals->find()->where(
+                function(QueryExpression $exp) use($start, $end) {
+                    return $exp->lt('submitted_date', $end)
+                        ->gte('submitted_date', $start);
+                })->count();
+        }
+
+        // Proposals that need to be evaluated, we're doing this as a raw SQL
+        // query because I could not figure out how to use the ORM. LR.
+        /* $result = $this->Proposals->getConnection()->execute(
+            "select * from (select proposals.id, count(proposal_auths.id) as req, count(attachments.id) as att
+                            from proposal_auths left join proposals on proposal_auths.proposal_id = proposals.id
+                            left join attachments on proposals.id = attachments.proposal_id)
+            where req > 0 and att = 0");
+        $proposal_comments = $result->fetchAll(); */
+
+        $query = $this->Proposals->find()
+            ->contain([ 'Users', 'Curricula', 'Curricula.Degrees']);
+        $proposal_comments = $query->select([
+                'req' => $query->func()->count('ProposalAuths.id'),
+                'att' => $query->func()->count('Attachments.id'),
+                'req_date' => $query->func()->max('ProposalAuths.created')
+            ])
+            ->innerJoinWith('ProposalAuths')
+            ->leftJoinWith('Attachments')
+            ->group('Proposals.id')
+            ->enableAutoFields(true);
+
+        $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
+    }
+
     public function index()
     {
       $proposals = $this->Proposals->find()
@@ -106,12 +153,9 @@ class ProposalsController extends AppController {
 
       $filterForm = new ProposalsFilterForm($proposals);
       $filterData = $this->request->getQuery();
-      if (!key_exists('state', $filterData) || !$filterForm->validate($filterData)) {
+      if (! $filterForm->validate($filterData)) {
         // no filter form provided or data not valid: set defaults:
-        $filterData = [
-          'state' => 'submitted',
-          'surname' => ''
-        ];
+        $filterData = [];
       }
 
       $proposals = $filterForm->execute($filterData);

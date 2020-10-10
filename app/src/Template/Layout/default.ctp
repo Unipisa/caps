@@ -91,6 +91,15 @@
 
         <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
+                'controller' => 'proposals', 'action' => 'dashboard'
+            ]); ?>">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Pannello di controllo</span>
+            </a>
+        </li>
+
+        <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'index'
             ]); ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
@@ -225,9 +234,6 @@
             <div class="container-fluid">
                 <?php echo $this->Flash->render(); ?>
                 <?php echo $this->fetch('content'); ?>
-
-
-
             </div>
             <!-- /.container-fluid -->
 
@@ -281,6 +287,9 @@
 
 <!-- Core plugin JavaScript-->
 <?php echo $this->Html->script('../vendor/jquery-easing/jquery.easing.min'); ?>
+
+<!-- Charts -->
+<?php echo $this->Html->script('../vendor/chart.js/Chart.min'); ?>
 
 <!-- Custom scripts for all pages-->
 <?php echo $this->Html->script('sb-admin-2.min'); ?>
