@@ -67,7 +67,7 @@ $num_proposals = 0;
                 <th>Data di sottomissione</th>
                 <th>Data di approvazione</th>
                 <th>Stato</th>
-                <th>Azioni</th>
+                <th></th>
                 </thead>
             </tr>
             <?php
@@ -81,15 +81,19 @@ $num_proposals = 0;
                 switch ($proposal['state']) {
                     case 'draft':
                         $status = 'Bozza';
+                        $statusclass = 'secondary';
                         break;
                     case 'submitted':
                         $status = 'Sottomesso';
+                        $statusclass = 'warning';
                         break;
                     case 'approved':
                         $status = "Approvato";
+                        $statusclass = 'success';
                         break;
                     case 'rejected':
                         $status = 'Rigettato';
+                        $statusclass = 'danger';
                         break;
                     default:
                         $status = $proposal['state'];
@@ -107,13 +111,13 @@ $num_proposals = 0;
                         echo ($proposal['approved_date'] != null) ?
                             $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non approvato';
                         ?></td>
-                    <td><?php echo $status; ?></td>
+                    <td><span class="badge badge-sm badge-<?= $statusclass ?>"><?php echo $status; ?></span></td>
                     <td>
 
                         <div class="dropdown">
                             <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
                                 id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Azioni
+                                <i class="fas fa-cog"></i>
                             </a>
                             <div class="dropdown-menu">
                             <?php
