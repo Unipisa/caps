@@ -225,8 +225,8 @@
 <?= $this->element('card-end'); ?>
 
 <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
-    <?= $this->element('card-start', [ 'header' => 'Richiesta parere' ]) ?>
     <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
+    <?= $this->element('card-start', [ 'header' => 'Richiesta parere' ]) ?>
         <h3>Richiesta parere</h3>
         <?php
             echo $this->Form->create($proposal_auth, [
@@ -242,6 +242,6 @@
             echo $this->Form->submit('Richiedi parere');
             echo $this->Form->end();
         ?>
+        <?php $this->element('card-end'); ?>
     <?php endif ?>
-<?php $this->element('card-end'); ?>
 <?php endif ?>
