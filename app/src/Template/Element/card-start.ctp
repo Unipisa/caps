@@ -7,7 +7,10 @@ else {
     $border_class = "";
 }
 ?>
-<div class="row my-2">
+<div class="row my-2"
+    <?php if (isset($style)) { echo "style=\"$style\""; } ?>"
+    <?php if (isset($id)) { echo "id=\"$id\""; } ?>"
+>
     <div class="col">
         <div class="card shadow<?= $border_class ?>">
             <?php

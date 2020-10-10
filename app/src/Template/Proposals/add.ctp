@@ -43,7 +43,7 @@ echo $this->Form->create('Proposal');
 
 <div id=proposalForm></div>
 
-<?php echo $this->element('card-start'); ?>
+<?php echo $this->element('card-start', [ 'style' => 'display: none;', 'id' => 'submit-block' ]); ?>
     <div id="proposalWarning"></div>
     <div class="form-group btn-group">
         <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio">
