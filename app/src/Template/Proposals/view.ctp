@@ -8,9 +8,10 @@
 
 <?= $this->element('card-start'); ?>
 
+<div class="d-flex mb-2">
+
 <?php if ($user['admin']): ?>
     <!-- Toolbar per l'amministratore //-->
-    <div class="d-flex mb-2">
         <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
             <button type="button" class="btn btn-sm btn-success mr-2">
                 <i class="fas fa-check"></i> Accetta
@@ -26,8 +27,14 @@
             <i class="fas fa-arrow-left"></i> Indietro
         </button>
         </a>
-    </div>
 <?php endif; ?>
+    <div class="flex-fill"></div>
+    <a href="<?= $this->Url->build([ 'action' => 'pdf', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-primary">
+            <i class="fas fa-file-pdf mr-2"></i>Scarica come PDF
+        </button>
+    </a>
+</div>
 
     <table class="table">
         <tr>
@@ -59,7 +66,6 @@
     if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
     <div>
     <?php
-        echo "<h3>";
         switch ($year) {
             case 1:
                 $header = "Primo anno";
@@ -74,7 +80,6 @@
                 $header = "Anno " . $year;
                 break;
         }
-        echo "</h3>";
         $year_credits = 0;
 ?>
 
@@ -135,6 +140,7 @@
         <td></td>
         <td><?php echo $exam['credits']; ?></td>
         <?php $year_credits = $year_credits + $exam['credits']; ?>
+        <td></td>
     </tr>
 <?php endforeach; ?>
 <?php unset($exam); ?>

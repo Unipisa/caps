@@ -15,6 +15,7 @@ use Cake\Mailer\Email;
 use Cake\I18n\Time;
 use Cake\Core\Configure;
 use Cake\Utility\Security;
+use Dompdf\Dompdf;
 
 class ProposalsController extends AppController {
 
@@ -250,6 +251,41 @@ class ProposalsController extends AppController {
         $this->set('proposal_json', json_encode($proposal));
         $proposal->attachments = $save_attachments;
         $this->set('_serialize', [ 'proposal' ]);
+    }
+
+    public function pdf($id) {
+        $proposal = $this->get_proposal($id);
+        $settings = $this->getSettings();
+        $Caps = Configure::read('Caps');
+        $app_path = APP;
+
+        // authorization
+        $secret = $this->request->getQuery('secret');
+        if (!$proposal->checkSecret($secret) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
+            throw new ForbiddenException(__(''));
+        }
+
+        $builder = $this->viewBuilder();
+        $builder->setLayout(false);
+        $builder->setTemplate('Proposals/pdf');
+        $view = $builder->build(compact('proposal', 'settings', 'Caps', 'app_path'));
+
+        // Generate the PDF
+        $dompdf = new Dompdf();
+        $options = $dompdf->getOptions();
+        $options->setIsHtml5ParserEnabled(true);
+        $options->setIsRemoteEnabled(false);
+        $options->setDpi(600);
+        $dompdf->setOptions($options);
+        $dompdf->loadHtml($view->render());
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Send out the PDF
+        return $this->response
+            ->withStringBody($dompdf->output())
+            ->withType('application/pdf')
+            ->withDownload('prova.pdf');
     }
 
     public function view2 ($id) {
