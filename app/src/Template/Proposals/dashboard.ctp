@@ -197,40 +197,42 @@ jQuery(document).ready(() => {
             </div>
             <div class="card-body">
                 <div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Studente</th>
-                        <th>Curriculum</th>
-                        <th>Richiesto</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <?php foreach ($proposal_comments as $pc): ?>
-                    <tr>
-                        <td>
-                            <a href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'view', $pc['user_id'] ]) ?>">
-                            <?= $pc['user_name'] ?>
-                            </a>
-                        </td>
-                        <td><?= $pc['curriculum_name'] ?></td>
-                        <td><?= $this->Time->timeAgoInWords($pc['req_date'], [
-                                'accuracy' => 'day',
-                                'format' => 'dd/MM/yyyy'
-                            ] );
-                            ?>
-                        </td>
-                        <td>
-                            <a href="<?= $this->Url->build([ 'action' => 'view', $pc['id'] ]) ?>">
-                            <button type="button" class="btn btn-sm btn-primary">
-                            <i class="fas fa-eye mr-2"></i>Visualizza
-                            </button></a>
-                        </td>
-                    </tr>
+                    <div class="table-responsive-sm">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Studente</th>
+                                <th>Curriculum</th>
+                                <th>Richiesto</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <?php foreach ($proposal_comments as $pc): ?>
+                            <tr>
+                                <td>
+                                    <a href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'view', $pc['user_id'] ]) ?>">
+                                    <?= $pc['user_name'] ?>
+                                    </a>
+                                </td>
+                                <td><?= $pc['curriculum_name'] ?></td>
+                                <td><?= $this->Time->timeAgoInWords($pc['req_date'], [
+                                        'accuracy' => 'day',
+                                        'format' => 'dd/MM/yyyy'
+                                    ] );
+                                    ?>
+                                </td>
+                                <td>
+                                    <a href="<?= $this->Url->build([ 'action' => 'view', $pc['id'] ]) ?>">
+                                    <button type="button" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye mr-2"></i>Visualizza
+                                    </button></a>
+                                </td>
+                            </tr>
 
-                    </div>
-                <?php endforeach; ?>
-                </table>
+                            </div>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
