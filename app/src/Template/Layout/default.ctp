@@ -41,7 +41,7 @@
             <div class="sidebar-brand-text mx-3">CAPS<sup><?= $capsShortVersion ?></sup></div>
         </a>
         <div class="d-flex justify-content-center">
-            <div class="sidebar-brand-text text-white text-uppercase font-weight-bold my-2">
+            <div class="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style="font-size: 0.7rem;">
                 <?= $settings['cds'] ?>
             </div>
         </div>
@@ -87,7 +87,7 @@
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            Amministrazione
+            Gestione
         </div>
 
         <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName == 'dashboard') ? ' active' : '' ?>">

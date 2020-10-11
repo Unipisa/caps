@@ -85,6 +85,7 @@
 
 <?= $this->element('card-start', [ 'header' => $header ]); ?>
 
+<div class="table-responsive-md">
 <table class="table">
     <thead>
     <tr>
@@ -152,6 +153,7 @@
     <td></td>
 </tr>
 </table>
+</div>
 </div>
 <?= $this->element('card-end'); ?>
 

@@ -59,7 +59,7 @@ $num_proposals = 0;
             <?php echo ($state == 'drafts') ? "Bozze" : "Piani sottomessi, accettati o rigettati"; ?>
         </h6>
 
-        <div class="table-responsive-sm">
+        <div class="table-responsive-xl">
             <table class='table table'>
                 <tr><thead>
                     <th>Curriculum</th>
