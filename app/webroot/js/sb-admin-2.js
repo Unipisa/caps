@@ -14,12 +14,12 @@
 
   // Close any open menu accordions when window is resized below 768px
   $(window).resize(function() {
-    if ($(window).width() < 768 * dpi) {
+    if ($(window).width() < 850 * dpi) {
       $('.sidebar .collapse').collapse('hide');
     };
 
     // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 480 * dpi && !$(".sidebar").hasClass("toggled")) {
+    if ($(window).width() < 600 * dpi && !$(".sidebar").hasClass("toggled")) {
       $("body").addClass("sidebar-toggled");
       $(".sidebar").addClass("toggled");
       $('.sidebar .collapse').collapse('hide');
@@ -28,7 +28,7 @@
 
   // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
   $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
-    if ($(window).width() > 768 * dpi) {
+    if ($(window).width() > 850 * dpi) {
       var e0 = e.originalEvent,
         delta = e0.wheelDelta || -e0.detail;
       this.scrollTop += (delta < 0 ? 1 : -1) * 30;

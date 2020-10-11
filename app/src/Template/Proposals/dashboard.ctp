@@ -125,7 +125,8 @@ jQuery(document).ready(() => {
                             '?' => [ 'state' => 'submitted' ]
                         ], [ 'escape' => false ]) ?>">
                             <button type="button" class="btn btn-sm btn-primary">
-                                <i class="fas fa-angle-double-right mr-2"></i>Visualizza
+                                <i class="fas fa-angle-double-right mx-2"></i>
+                                <span class="d-none d-lg-inline">Visualizza</span>
                             </button>
                         </a>
                     </div>
