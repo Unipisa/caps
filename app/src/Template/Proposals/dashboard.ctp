@@ -176,7 +176,7 @@ jQuery(document).ready(() => {
 
 
 <div class="row">
-    <div class="col-xl-6 col-md-12">
+    <div class="col-xl-6 col-md-12 mb-4">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
                 <h2 class="h5 mb-0">Piani sottomessi</h2>
@@ -189,7 +189,7 @@ jQuery(document).ready(() => {
         </div>
     </div>
 
-    <div class="col-xl-6 col-md-12">
+    <div class="col-xl-6 col-md-12 mb-4">
         <div class="card shadow">
             <div class="card-header bg-warning">
                 <h2 class="h5 text-black-50 mb-0">Piani in attesa di parere</h2>
