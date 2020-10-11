@@ -33,8 +33,7 @@ class DocumentsController extends AppController
                 ->withStringBody(stream_get_contents($document['data']))
                 ->withType($document['mimetype'])
                 ->withDownload($document['filename']);
-        }
-        else {
+        } else {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
     }
@@ -58,6 +57,7 @@ class DocumentsController extends AppController
 
             if ($data['tmp_name'] == "" && $document['comment'] == "") {
                 $this->Flash->error('Selezionare un file da caricare, o inserire un commento');
+
                 return $this->redirect([
                     'controller' => 'users',
                     'action' => 'view',
@@ -70,6 +70,7 @@ class DocumentsController extends AppController
 
                 if ($document['data'] == "") {
                     $this->Flash->error('Impossibile caricare un file vuoto');
+
                     return $this->redirect([
                         'controller' => 'users',
                         'action' => 'view',
@@ -79,18 +80,15 @@ class DocumentsController extends AppController
 
                 $document['mimetype'] = $data['type'];
                 $document['filename'] = $data['name'];
-            }
-            else {
+            } else {
                 $document['filename'] = null;
             }
-
 
             // We check that the uploading user is an administrator
             if ($this->user['admin']) {
                 if ($this->Documents->save($document)) {
                     $this->Flash->success(__('Il documento è stato salvato'));
-                }
-                else {
+                } else {
                     $this->Flash->error(__('Impossibile salvare il documento'));
                 }
 
@@ -99,8 +97,7 @@ class DocumentsController extends AppController
                     'action' => 'view',
                     $document['user_id']
                 ]);
-            }
-            else {
+            } else {
                 throw new ForbiddenException("Impossibile caricare un documento per questo utente");
             }
         }
@@ -129,8 +126,7 @@ class DocumentsController extends AppController
             } else {
                 $this->Flash->error(__('Il documento non è stato eliminato.'));
             }
-        }
-        else {
+        } else {
             $this->Flash->error(__("Impossibile eliminare il documento."));
         }
 

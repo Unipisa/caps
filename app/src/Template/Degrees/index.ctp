@@ -15,6 +15,7 @@
                value="Elimina i corsi selezionati"/>
     </div>
 
+    <div class="table-responsive-sm">
     <table class="table">
         <thead>
         <tr>
@@ -56,6 +57,7 @@
         <?php endforeach ?>
         <?php unset($degree); ?>
     </table>
+    </div>
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end'); ?>
 

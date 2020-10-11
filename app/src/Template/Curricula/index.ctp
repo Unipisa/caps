@@ -63,6 +63,7 @@
 
                 <?php echo $this->Form->create(null, [ 'id' => 'curricula-form' ]); ?>
 
+                <div class="table-responsive-sm">
                 <table class="table">
                     <tr><thead>
                         <th></th>
@@ -89,7 +90,7 @@
                     <?php endforeach ?>
                     <?php unset($curriculum); ?>
                 </table>
-
+                </div>
                 <?php echo $this->element('pagination'); ?>
 
                 <?php echo $this->Form->end(); ?>

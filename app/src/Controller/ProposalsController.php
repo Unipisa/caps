@@ -17,8 +17,8 @@ use Cake\Utility\Security;
 use Dompdf\Dompdf;
 use Cake\Database\Expression\QueryExpression;
 
-class ProposalsController extends AppController {
-
+class ProposalsController extends AppController
+{
     public $paginate = [
         'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
         'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name' ],
@@ -35,27 +35,34 @@ class ProposalsController extends AppController {
         $this->loadComponent('RequestHandler');
     }
 
-    public function beforeFilter ($event) {
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    private function get_proposal($id) {
+    private function get_proposal($id)
+    {
         return $this->Proposals->findById($id)
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
                 'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
                 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
                 'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
                 'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
-    ->firstOrFail();
+        ->firstOrFail();
     }
 
-    private function createProposalEmail($proposal) {
+    private function createProposalEmail($proposal)
+    {
         $email = new Email();
 
         // Find the address that need to be notified in Cc, if any
-        $cc_addresses = array_map(function($address) { return trim($address); },
-            explode(',', $this->getSetting('notified-emails')));
+        $cc_addresses = array_map(
+            function ($address) {
+                return trim($address);
+            },
+            explode(',', $this->getSetting('notified-emails'))
+        );
         $cc_addresses = array_filter($cc_addresses, function ($address) {
             return trim($address) != "";
         });
@@ -69,9 +76,11 @@ class ProposalsController extends AppController {
         return $email;
     }
 
-    private function notifySubmission($id) {
-        if ($this->user['email'] == "" || $this->user['email'] == null)
+    private function notifySubmission($id)
+    {
+        if ($this->user['email'] == "" || $this->user['email'] == null) {
             return;
+        }
 
         $email = $this->createProposalEmail($this->get_proposal($id))
             ->setTo($this->user['email'])
@@ -80,10 +89,12 @@ class ProposalsController extends AppController {
         $email->send();
     }
 
-    private function notifyApproval($id) {
+    private function notifyApproval($id)
+    {
         $proposal = $this->get_proposal($id);
-        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null)
+        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
             return;
+        }
 
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
@@ -92,7 +103,8 @@ class ProposalsController extends AppController {
         $email->send();
     }
 
-    public function dashboard() {
+    public function dashboard()
+    {
         // We need to find a few stats about proposals
         $submitted_count = $this->Proposals->find()->where([ 'state' => 'submitted' ])->count();
 
@@ -109,10 +121,11 @@ class ProposalsController extends AppController {
             $end   = $end->addMonth(1);
 
             $submission_counts[$i] = $this->Proposals->find()->where(
-                function(QueryExpression $exp) use($start, $end) {
+                function (QueryExpression $exp) use ($start, $end) {
                     return $exp->lt('submitted_date', $end)
                         ->gte('submitted_date', $start);
-                })->count();
+                }
+            )->count();
         }
 
         // Raw SQL query, as this appear to be quite hard to be done using
@@ -132,51 +145,52 @@ class ProposalsController extends AppController {
                     LEFT JOIN curricula ON proposals.curriculum_id = curricula.id
                     LEFT JOIN users ON proposals.user_id = users.id
                     GROUP BY proposals.id) proposals WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
-                    ORDER BY req_date ASC');
-
+                    ORDER BY req_date ASC'
+        );
 
         $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
     }
 
     public function index()
     {
-      $proposals = $this->Proposals->find()
+        $proposals = $this->Proposals->find()
         ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
 
-      if ($this->user['admin']) {
-          // admin può vedere tutti i proposal
-      } else {
-          // posso vedere solo i miei proposal
-          $proposals = $proposals->where(['Users.username' => $this->user['username']]);
-      }
+        if ($this->user['admin']) {
+            // admin può vedere tutti i proposal
+        } else {
+            // posso vedere solo i miei proposal
+            $proposals = $proposals->where(['Users.username' => $this->user['username']]);
+        }
 
-      $filterForm = new ProposalsFilterForm($proposals);
-      $filterData = $this->request->getQuery();
-      if (! $filterForm->validate($filterData)) {
-        // no filter form provided or data not valid: set defaults:
-        $filterData = [];
-      }
+        $filterForm = new ProposalsFilterForm($proposals);
+        $filterData = $this->request->getQuery();
+        if (! $filterForm->validate($filterData)) {
+            // no filter form provided or data not valid: set defaults:
+            $filterData = [];
+        }
 
-      $proposals = $filterForm->execute($filterData);
+        $proposals = $filterForm->execute($filterData);
 
-      if ($this->request->is("post")) {
-          if (!$this->user['admin']) {
-              throw new ForbiddenException();
-          }
+        if ($this->request->is("post")) {
+            if (!$this->user['admin']) {
+                throw new ForbiddenException();
+            }
 
-          $action = null;
-          foreach(['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
-              if ($this->request->getData($i)) {
-                  if ($action) {
-                      $this->Flash->error(__('richiesta non valida'));
-                      return $this->redirect(['action' => 'index']);
-                  }
-                  $action = $i;
-              }
-          }
+            $action = null;
+            foreach (['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
+                if ($this->request->getData($i)) {
+                    if ($action) {
+                        $this->Flash->error(__('richiesta non valida'));
 
-          if ($action) {
-              $context = [
+                        return $this->redirect(['action' => 'index']);
+                    }
+                    $action = $i;
+                }
+            }
+
+            if ($action) {
+                $context = [
                   'approve' => [
                       'state' => 'approved',
                       'plural' => __('approvati'),
@@ -202,62 +216,65 @@ class ProposalsController extends AppController {
                       'singular' => __('eliminato')
                   ]][$action];
 
-              $selected = $this->request->getData('selection');
-              if (!$selected) {
-                  $this->Flash->error(__('nessun piano selezionato'));
-                  return $this->redirect(['action' => 'index']);
-              }
+                $selected = $this->request->getData('selection');
+                if (!$selected) {
+                    $this->Flash->error(__('nessun piano selezionato'));
 
-              $count = 0;
-              foreach($selected as $proposal_id) {
-                  $proposal = $this->Proposals->findById($proposal_id)
+                    return $this->redirect(['action' => 'index']);
+                }
+
+                $count = 0;
+                foreach ($selected as $proposal_id) {
+                    $proposal = $this->Proposals->findById($proposal_id)
                       ->firstOrFail();
-                  if ($action === 'delete') {
-                      if ($this->Proposals->delete($proposal)) {
-                          $count ++;
-                      }
-                  } else {
-                      $proposal['state'] = $context['state'];
+                    if ($action === 'delete') {
+                        if ($this->Proposals->delete($proposal)) {
+                            $count++;
+                        }
+                    } else {
+                        $proposal['state'] = $context['state'];
 
-                      switch ($context['state']) {
-                          case 'approved':
-                              $proposal['approved_date'] = Time::now();
-                              break;
-                          case 'submitted':
-                              $proposal['submitted_date'] = Time::now();
-                              break;
-                          default:
-                              break;
-                      }
+                        switch ($context['state']) {
+                            case 'approved':
+                                $proposal['approved_date'] = Time::now();
+                                break;
+                            case 'submitted':
+                                $proposal['submitted_date'] = Time::now();
+                                break;
+                            default:
+                                break;
+                        }
 
-                      if ($this->Proposals->save($proposal)) {
-                          if ($context['state'] == 'approved') {
-                              $this->notifyApproval($proposal['id']);
-                          }
+                        if ($this->Proposals->save($proposal)) {
+                            if ($context['state'] == 'approved') {
+                                $this->notifyApproval($proposal['id']);
+                            }
 
-                          $count ++;
-                      }
-                  }
-              }
-              if ($count > 1) {
-                  $this->Flash->success(__('{count} piani {what}', ['count' => $count, 'what' => $context['plural']]));
-              } else if ($count == 1) {
-                  $this->Flash->success(__('piano {what}', ['what' => $context['singular']]));
-              } else {
-                  $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
-              }
-              return $this->redirect(['action' => 'index']);
-          }
-      }
+                            $count++;
+                        }
+                    }
+                }
+                if ($count > 1) {
+                    $this->Flash->success(__('{count} piani {what}', ['count' => $count, 'what' => $context['plural']]));
+                } elseif ($count == 1) {
+                    $this->Flash->success(__('piano {what}', ['what' => $context['singular']]));
+                } else {
+                    $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
+                }
 
-      $this->set('data', $proposals);
-      $this->set('_serialize', 'data');
-      $this->set('filterForm', $filterForm);
-      $this->set('proposals', $this->paginate($proposals->cleanCopy()));
-      $this->set('selected', 'index');
+                return $this->redirect(['action' => 'index']);
+            }
+        }
+
+        $this->set('data', $proposals);
+        $this->set('_serialize', 'data');
+        $this->set('filterForm', $filterForm);
+        $this->set('proposals', $this->paginate($proposals->cleanCopy()));
+        $this->set('selected', 'index');
     }
 
-    public function view ($id) {
+    public function view($id)
+    {
         $proposal = $this->get_proposal($id);
 
         // authorization
@@ -269,12 +286,16 @@ class ProposalsController extends AppController {
         // Setup the message to show to the user
         switch ($proposal['state']) {
             case 'submitted':
-                $message = $this->getSetting('submitted-message',
-                    'Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.');
+                $message = $this->getSetting(
+                    'submitted-message',
+                    'Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.'
+                );
                 break;
             case 'approved':
-                $message = $this->getSetting('approved-message',
-                    'Il tuo piano di studi è stato approvato.');
+                $message = $this->getSetting(
+                    'approved-message',
+                    'Il tuo piano di studi è stato approvato.'
+                );
                 break;
             default:
                 $message = "";
@@ -296,7 +317,8 @@ class ProposalsController extends AppController {
         $this->set('_serialize', [ 'proposal' ]);
     }
 
-    public function pdf($id) {
+    public function pdf($id)
+    {
         $proposal = $this->get_proposal($id);
         $settings = $this->getSettings();
         $Caps = Configure::read('Caps');
@@ -334,7 +356,8 @@ class ProposalsController extends AppController {
                 '.pdf');
     }
 
-    public function view2 ($id) {
+    public function view2($id)
+    {
         $proposal = $this->get_proposal($id);
 
         // authorization
@@ -353,7 +376,8 @@ class ProposalsController extends AppController {
         $this->set('_serialize', [ 'proposal' ]);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         if (! $id) {
             throw new NotFoundException();
         }
@@ -375,17 +399,17 @@ class ProposalsController extends AppController {
 
         if ($this->Proposals->delete($proposal)) {
             $this->Flash->success('Piano eliminato');
-        }
-        else {
+        } else {
             $this->log('Errore nella cancellazione del piano con ID = ' . $proposal['id']);
-            $this->log(var_export($proposal->errors(), TRUE));
+            $this->log(var_export($proposal->errors(), true));
             $this->Flash->error('Impossibile eliminare il piano');
         }
 
         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
     }
 
-    public function duplicate($id) {
+    public function duplicate($id)
+    {
         if (! $id) {
             throw new NotFoundException();
         }
@@ -427,15 +451,16 @@ class ProposalsController extends AppController {
         // Save the proposal and redirect the user to the new plan
         if ($this->Proposals->save($newp)) {
             return $this->redirect([ 'action' => 'add', $newp['id'] ]);
-        }
-        else {
+        } else {
             $this->Flash->error('Errore nel salvataggio del piano');
-            $this->log(var_export($newp->errors(), TRUE));
+            $this->log(var_export($newp->errors(), true));
+
             return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
         }
     }
 
-    public function add ($proposal_id = null) {
+    public function add($proposal_id = null)
+    {
         $username = $this->user['username'];
 
         // Find the user in the database matching the one logged in
@@ -453,8 +478,7 @@ class ProposalsController extends AppController {
             if ($proposal['user']['id'] != $this->user['id']) {
                 throw new ForbiddenException();
             }
-        }
-        else {
+        } else {
             $proposal = $this->Proposals->newEntity();
             $proposal->user = $user;
         }
@@ -468,25 +492,26 @@ class ProposalsController extends AppController {
                 // Select the action desired by the user
                 if (array_key_exists('action-close', $this->request->getData())) {
                     $action = 'close';
-                }
-                else {
+                } else {
                     $action = 'save';
                 }
 
                 $data = $this->request->getData('data');
                 $cur_id = $this->request->getData('curriculum_id');
 
-                if ($data == null)
+                if ($data == null) {
                     $data = [];
+                }
 
                 $patch_data = [];
                 if (array_key_exists('ChosenExam', $data)) {
-                    $patch_data['chosen_exams'] = array_filter($data['ChosenExam'], function($e) {
+                    $patch_data['chosen_exams'] = array_filter($data['ChosenExam'], function ($e) {
                         return array_key_exists('exam_id', $e);
                     });
                 }
-                if (array_key_exists('ChosenFreeChoiceExam', $data))
+                if (array_key_exists('ChosenFreeChoiceExam', $data)) {
                     $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
+                }
 
                 // If the proposal was already submitted, we may have the data set in chosen_exams and
                 // chosen_free_choice_exams: we need to get rid of it to replace with the new one.
@@ -496,8 +521,9 @@ class ProposalsController extends AppController {
                 $proposal['chosen_exams'] = [];
                 $proposal['chosen_free_choice_exams'] = [];
 
-                if (! $proposal->isNew())
+                if (! $proposal->isNew()) {
                     $this->Proposals->save($proposal);
+                }
 
                 $proposal = $this->Proposals->patchEntity($proposal, $patch_data);
 
@@ -511,13 +537,11 @@ class ProposalsController extends AppController {
                     if ($previous_proposals > 0) {
                         $this->Flash->error('Non è possibile sottomettere più di un piano alla volta: il piano è stato salvato come bozza.');
                         $proposal['state'] = 'draft';
-                    }
-                    else {
+                    } else {
                         $proposal['state'] = 'submitted';
                         $proposal['submitted_date'] = Time::now();
                     }
-                }
-                else {
+                } else {
                     $proposal['state'] = 'draft';
                 }
 
@@ -526,23 +550,26 @@ class ProposalsController extends AppController {
                 if ($this->Proposals->save($proposal)) {
                     if ($proposal['state'] == 'submitted') {
                         $this->notifySubmission($proposal['id']);
+
                         return $this->redirect(['action' => 'view', $proposal['id']]);
-                    }
-                    else
+                    } else {
                         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
-                }
-                else {
-                    debug(var_export($proposal->errors(), TRUE));
+                    }
+                } else {
+                    debug(var_export($proposal->errors(), true));
                     $this->Flash->error(Utils::error_to_string($proposal->errors()));
+
                     return $this->redirect(['action' => 'add', $proposal['id']]);
                 }
             }
 
-            $this->set('curricula', $this->Proposals->Curricula
+            $this->set(
+                'curricula',
+                $this->Proposals->Curricula
                 ->find()
                 ->contain([ 'Degrees' ])
                 ->find('list', [
-                    'valueField' => function($c) {
+                    'valueField' => function ($c) {
                         return $c->toString();
                     }
                 ])
@@ -553,10 +580,11 @@ class ProposalsController extends AppController {
         }
     }
 
-    public function share ($id) {
+    public function share($id)
+    {
         $proposal = $this->get_proposal($id);
 
-        if (!$this->user['admin'] && $this->user['id']!=$proposal['user_id']) {
+        if (!$this->user['admin'] && $this->user['id'] != $proposal['user_id']) {
             throw new ForbiddenException();
         }
 
@@ -583,9 +611,8 @@ class ProposalsController extends AppController {
                 $email->viewBuilder()->setTemplate('share');
                 $email->send();
                 $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
-            }
-            else {
-                debug(var_export($proposal_auth->errors(), TRUE));
+            } else {
+                debug(var_export($proposal_auth->errors(), true));
                 $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
             }
 
@@ -594,7 +621,8 @@ class ProposalsController extends AppController {
         $this->set('proposal_auth', $proposal_auth);
     }
 
-    public function adminApprove ($id = null) {
+    public function adminApprove($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -619,7 +647,8 @@ class ProposalsController extends AppController {
         );
     }
 
-    public function adminReject ($id = null) {
+    public function adminReject($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -644,5 +673,3 @@ class ProposalsController extends AppController {
         );
     }
 }
-
-?>

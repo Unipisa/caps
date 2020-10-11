@@ -32,8 +32,10 @@ class Exam extends Entity
     ];
 
     // Get a string representation of the tags
-    public function tagsToString() {
-        return implode(", ",
+    public function tagsToString()
+    {
+        return implode(
+            ", ",
             array_map(function ($tag) {
                 return $tag['name'];
             }, $this['tags'])

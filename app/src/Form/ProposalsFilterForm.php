@@ -13,20 +13,20 @@ class ProposalsFilterForm extends FilterForm
           ->addField('surname', ['type' => 'string'])
           ->addField('academic_year', ['type' => 'string'])
           ->addField('degree', ['type' => 'string'])
-          ->addField('curriculum', ['type' => 'string'])
-          ;
+          ->addField('curriculum', ['type' => 'string']);
     }
 
-    protected function _execute(array $data) {
-      $this->setData($data);
-      if ($this->getData('state') !== 'all') {
-          $this->filterFieldEqual('Proposals.state', 'state');
-      }
-      $this->filterFieldLike('Users.surname', 'surname');
-      $this->filterFieldEqual('Curricula.academic_year', 'academic_year');
-      $this->filterFieldLike('Degrees.name', 'degree');
-      $this->filterFieldLike('Curricula.name', 'curriculum');
-      return $this->query;
+    protected function _execute(array $data)
+    {
+        $this->setData($data);
+        if ($this->getData('state') !== 'all') {
+            $this->filterFieldEqual('Proposals.state', 'state');
+        }
+        $this->filterFieldLike('Users.surname', 'surname');
+        $this->filterFieldEqual('Curricula.academic_year', 'academic_year');
+        $this->filterFieldLike('Degrees.name', 'degree');
+        $this->filterFieldLike('Curricula.name', 'curriculum');
+
+        return $this->query;
     }
 }
-?>

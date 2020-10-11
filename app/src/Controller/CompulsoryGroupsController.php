@@ -8,14 +8,16 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 
-class CompulsoryGroupsController extends AppController {
-
-    public function beforeFilter ($event) {
+class CompulsoryGroupsController extends AppController
+{
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function adminAdd () {
+    public function adminAdd()
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -26,6 +28,7 @@ class CompulsoryGroupsController extends AppController {
 
             if ($this->CompulsoryGroups->save($newgroup)) {
                 $this->Flash->success(__('Gruppo aggiunto con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -33,7 +36,8 @@ class CompulsoryGroupsController extends AppController {
         }
     }
 
-    public function delete ($id = null) {
+    public function delete($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -50,6 +54,7 @@ class CompulsoryGroupsController extends AppController {
         if ($this->request->is(['post', 'put'])) {
             if ($this->CompulsoryGroups->delete($compulsory_group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -57,11 +62,9 @@ class CompulsoryGroupsController extends AppController {
         }
 
         $this->Flash->error(Utils::error_to_string($compulsory_group->errors()));
+
         return $this->redirect(
             $this->request->referer()
         );
     }
-
 }
-
-?>

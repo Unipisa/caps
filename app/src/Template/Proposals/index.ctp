@@ -97,6 +97,7 @@
 
     <?php echo $this->element('filter_badges'); ?>
 
+    <div class="table-responsive-lg">
     <table class="table">
         <tr><thead>
             <th></th>
@@ -155,7 +156,7 @@
         <?php endforeach; ?>
         <?php unset($proposal); ?>
     </table>
-
+    </div>
     <?php echo $this->element('pagination'); ?>
     <?php echo $this->Form->end(); ?>
 

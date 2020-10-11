@@ -34,7 +34,8 @@ class Curriculum extends Entity
         'notes' => true
     ];
 
-    public function toString() {
+    public function toString()
+    {
         return $this['degree']['name'] .
             " — Curriculum " .
             $this['name'] .

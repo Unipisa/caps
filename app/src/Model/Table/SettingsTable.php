@@ -60,7 +60,8 @@ class SettingsTable extends Table
         $this->initData();
     }
 
-    public function getSettings() {
+    public function getSettings()
+    {
         if ($this->settingsInstance == null) {
             $this->settingsInstance = [];
 
@@ -73,18 +74,19 @@ class SettingsTable extends Table
         return $this->settingsInstance;
     }
 
-    public function getSetting($field, $default = null) {
+    public function getSetting($field, $default = null)
+    {
         $settings = $this->getSettings();
 
         if (array_key_exists($field, $settings)) {
             return $settings[$field];
-        }
-        else {
+        } else {
             return $default;
         }
     }
 
-    private function initData() {
+    private function initData()
+    {
         $this->settingsInstance = [];
         $settings_data = $this->find('all')->toArray();
 
@@ -92,10 +94,12 @@ class SettingsTable extends Table
             $this->settingsInstance[$s->field] = $s->value;
         }
 
-        $settings_keys = array_map(function ($s) {
+        $settings_keys = array_map(
+            function ($s) {
                 return $s['field'];
             },
-            $settings_data);
+            $settings_data
+        );
 
         foreach ($this->required_fields as $field) {
             if (! in_array($field['field'], $settings_keys)) {

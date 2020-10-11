@@ -12,17 +12,17 @@ class ExamsFilterForm extends FilterForm
           ->addField('name', ['type' => 'string'])
           ->addField('code', ['type' => 'string'])
           ->addField('sector', ['type' => 'string'])
-          ->addField('credits', ['type' => 'integer'])
-          ;
+          ->addField('credits', ['type' => 'integer']);
     }
 
-    protected function _execute(array $data) {
-      $this->setData($data);
-      $this->filterFieldLike('Exams.name', 'name');
-      $this->filterFieldEqual('Exams.code', 'code');
-      $this->filterFieldLike('Exams.sector', 'sector');
-      $this->filterFieldEqual('Exams.credits', 'credits');
-      return $this->query;
+    protected function _execute(array $data)
+    {
+        $this->setData($data);
+        $this->filterFieldLike('Exams.name', 'name');
+        $this->filterFieldEqual('Exams.code', 'code');
+        $this->filterFieldLike('Exams.sector', 'sector');
+        $this->filterFieldEqual('Exams.credits', 'credits');
+
+        return $this->query;
     }
 }
-?>

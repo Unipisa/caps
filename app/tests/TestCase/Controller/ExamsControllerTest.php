@@ -19,8 +19,8 @@ class ExamsControllerTest extends IntegrationTestCase
 
     public function setUp()
     {
-      parent::setUp();
-      $this->Exams = TableRegistry::getTableLocator()->get('Exams');
+        parent::setUp();
+        $this->Exams = TableRegistry::getTableLocator()->get('Exams');
     }
 
     public function testExamsPage()
@@ -78,7 +78,7 @@ class ExamsControllerTest extends IntegrationTestCase
 
         // add new exam
         $exam_count = $this->Exams->find()->count();
-        $this->post('/exams/edit',[
+        $this->post('/exams/edit', [
           'name' => 'Analisi Matematica',
           'code' => '1111',
           'sector' => 'AAA',

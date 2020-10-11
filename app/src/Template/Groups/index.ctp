@@ -16,6 +16,7 @@
     </div>
 
     <?php echo $this->Form->create(null, [ 'id' => 'groups-form' ]); ?>
+    <div class="table-responsive-md">
     <table class="table">
         <tr>
             <th></th>
@@ -45,6 +46,7 @@
         <?php endforeach ?>
         <?php unset($group) ?>
     </table>
+    </div>
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end') ?>
 

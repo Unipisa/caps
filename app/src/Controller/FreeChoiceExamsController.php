@@ -8,14 +8,16 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 
-class FreeChoiceExamsController extends AppController {
-
-    public function beforeFilter ($event) {
+class FreeChoiceExamsController extends AppController
+{
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function adminAdd () {
+    public function adminAdd()
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -30,6 +32,7 @@ class FreeChoiceExamsController extends AppController {
 
             if ($this->FreeChoiceExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -37,7 +40,8 @@ class FreeChoiceExamsController extends AppController {
         }
     }
 
-    public function delete ($id = null) {
+    public function delete($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -54,6 +58,7 @@ class FreeChoiceExamsController extends AppController {
         if ($this->request->is(['post', 'put'])) {
             if ($this->FreeChoiceExams->delete($free_choice_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -61,11 +66,9 @@ class FreeChoiceExamsController extends AppController {
         }
 
         $this->Flash->error(Utils::error_to_string($free_choice_exam->errors()));
+
         return $this->redirect(
             $this->request->referer()
         );
     }
-
 }
-
-?>

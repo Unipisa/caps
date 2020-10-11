@@ -42,12 +42,12 @@ class ApplicationTest extends IntegrationTestCase
         $this->assertSame('Bake', $plugins->get('Bake')->getName());
         $this->assertSame('Migrations', $plugins->get('Migrations')->getName());
 
-				// non è necessario che il server di produzione abbia il debugkit...
-				// evitiamo di controllarlo
-				if (false) {
-					$this->assertSame('DebugKit', $plugins->get('DebugKit')->getName());
-        	$this->assertCount(3, $plugins);
-				}
+                // non è necessario che il server di produzione abbia il debugkit...
+                // evitiamo di controllarlo
+        if (false) {
+            $this->assertSame('DebugKit', $plugins->get('DebugKit')->getName());
+            $this->assertCount(3, $plugins);
+        }
     }
 
     /**

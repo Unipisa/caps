@@ -16,30 +16,30 @@ use Cake\ORM\TableRegistry;
 class ProposalsControllerTest extends IntegrationTestCase
 {
     public $fixtures = [
-			'app.Users',
-			'app.Proposals',
-			'app.Curricula',
-			'app.CurriculaProposals',
-			'app.Degrees',
-			'app.Exams',
-			'app.Groups',
+            'app.Users',
+            'app.Proposals',
+            'app.Curricula',
+            'app.CurriculaProposals',
+            'app.Degrees',
+            'app.Exams',
+            'app.Groups',
                         'app.Settings',
                         'app.Tags'
-	];
+    ];
 
     public function setUp()
     {
-      parent::setUp();
-      $this->Users = TableRegistry::getTableLocator()->get('Users');
+        parent::setUp();
+        $this->Users = TableRegistry::getTableLocator()->get('Users');
     }
 
     public function testProposalPage()
     {
         // test that page requires authentication
-				foreach(['/proposals/add', '/exams.json'] as $url) {
-	        $this->get($url);
-	        $this->assertRedirect();
-				}
+        foreach (['/proposals/add', '/exams.json'] as $url) {
+            $this->get($url);
+            $this->assertRedirect();
+        }
 
         // Set session data
         $this->session([
@@ -59,13 +59,13 @@ class ProposalsControllerTest extends IntegrationTestCase
         $this->get('/proposals/add');
         $this->assertResponseOk();
 
-				$this->get('/exams.json');
-				$this->assertResponseOk();
+                $this->get('/exams.json');
+                $this->assertResponseOk();
 
-				$this->get('/groups.json');
-				$this->assertResponseOk();
+                $this->get('/groups.json');
+                $this->assertResponseOk();
 
-				$this->get('/curricula.json');
-				$this->assertResponseOk();
+                $this->get('/curricula.json');
+                $this->assertResponseOk();
     }
 }

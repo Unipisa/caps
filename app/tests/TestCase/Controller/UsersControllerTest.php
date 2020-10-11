@@ -32,14 +32,14 @@ class UsersControllerTest extends IntegrationTestCase
 
     public function setUp()
     {
-      parent::setUp();
-      $this->Users = TableRegistry::getTableLocator()->get('Users');
+        parent::setUp();
+        $this->Users = TableRegistry::getTableLocator()->get('Users');
     }
 
     public function testFixture()
     {
-      $user = $this->Users->get(1);
-      $this->assertEquals("Mario Rossi", $user->name);
+        $user = $this->Users->get(1);
+        $this->assertEquals("Mario Rossi", $user->name);
     }
 
     /**

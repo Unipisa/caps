@@ -14,6 +14,7 @@
  */
 namespace App;
 
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
@@ -22,7 +23,6 @@ use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Cake\Cache\Cache;
 
 /**
  * Application setup class.
@@ -64,8 +64,10 @@ class Application extends BaseApplication
         return $version;
     }
 
-    public static function getShortVersion() {
+    public static function getShortVersion()
+    {
         self::getVersion();
+
         return Cache::read('caps-short-version');
     }
 

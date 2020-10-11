@@ -22,8 +22,9 @@ class SettingsController extends AppController
      */
     public function index()
     {
-        if (! $this->user['admin'])
+        if (! $this->user['admin']) {
             throw new ForbiddenException('');
+        }
 
         if ($this->request->is('post')) {
             // We need to loop over the provided data, and update the relevant fields in the database.

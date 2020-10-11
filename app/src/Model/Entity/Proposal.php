@@ -56,7 +56,8 @@ class Proposal extends Entity
         }
     }
 
-    public function checkSecret($secret) {
+    public function checkSecret($secret)
+    {
         if ($secret == null) {
             return false;
         }

@@ -7,7 +7,6 @@ use Cake\ORM\Table;
 use Cake\ORM\Rule\IsUnique;
 use Cake\Validation\Validator;
 
-
 /**
  * Exams Model
  *
@@ -85,7 +84,8 @@ class ExamsTable extends Table
 
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['code']));        
+        $rules->add($rules->isUnique(['code']));
+
         return $rules;
     }
 }

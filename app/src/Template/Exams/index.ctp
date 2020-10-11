@@ -68,20 +68,20 @@ function csv_validator(item, context) {
 
         <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
             <button type="button" class="btn btn-sm btn-primary mr-2">
-                Aggiungi esame
+                <i class="fas fa-plus mr-2"></i>Aggiungi
             </button>
         </a>
 
         <button type="button" class="btn btn-sm btn-danger mr-2"
             onclick="Caps.submitForm('exams-form', { 'delete': 1 }, 'Confermi di voler rimuovere gli esami selezionati?')">
-            Elimina esami selezionati
+            <i class="fas fa-times mr-2"></i>Elimina
         </button>
 
         <div class="flex-fill"></div>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown" onclick='csv_click()'>
-                Aggiungi esami da CSV
+                Importa da CSV
             </button>
             <div class="dropdown-menu p-2 shadow" style="width: 800px; max-height: 500px; overflow-y: scroll;">
                 <div id="caps-admin-actions-csv" class="caps-admin-actions-csv">
@@ -150,6 +150,7 @@ function csv_validator(item, context) {
     <?php echo $this->element('filter_badges'); ?>
 
     <?php echo $this->Form->create(null, [ 'id' => 'exams-form' ]); ?>
+    <div class="table-responsive-md">
     <table class="table">
         <tr>
             <th></th>
@@ -178,7 +179,7 @@ function csv_validator(item, context) {
             </tr>
         <?php endforeach; ?>
     </table>
-
+    </div>
     <?php echo $this->element('pagination'); ?>
 <?= $this->element('card-end'); ?>
 

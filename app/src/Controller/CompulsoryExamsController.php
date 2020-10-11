@@ -8,14 +8,16 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 
-class CompulsoryExamsController extends AppController {
-
-    public function beforeFilter ($event) {
+class CompulsoryExamsController extends AppController
+{
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function adminAdd () {
+    public function adminAdd()
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -26,6 +28,7 @@ class CompulsoryExamsController extends AppController {
 
             if ($this->CompulsoryExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -33,7 +36,8 @@ class CompulsoryExamsController extends AppController {
         }
     }
 
-    public function delete ($id = null) {
+    public function delete($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -50,6 +54,7 @@ class CompulsoryExamsController extends AppController {
         if ($this->request->is(['post', 'put'])) {
             if ($this->CompulsoryExams->delete($compulsory_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
+
                 return $this->redirect(
                     $this->request->referer()
                 );
@@ -57,11 +62,9 @@ class CompulsoryExamsController extends AppController {
         }
 
         $this->Flash->error(Utils::error_to_string($compulsory_exam->error()));
+
         return $this->redirect(
             $this->request->referer()
         );
     }
-
 }
-
-?>

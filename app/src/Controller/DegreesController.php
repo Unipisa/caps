@@ -31,22 +31,24 @@ class DegreesController extends AppController
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
                     $this->Flash->error(__('nessun corso selezionato'));
+
                     return $this->redirect(['action' => 'index']);
                 }
 
                 $delete_count = 0;
-                foreach($selected as $degree_id) {
+                foreach ($selected as $degree_id) {
                     if ($this->deleteIfNotUsed($degree_id)) {
-                        $delete_count ++;
+                        $delete_count++;
                     }
                 }
                 if ($delete_count > 1) {
                     $this->Flash->success(__('{delete_count} corsi cancellati con successo', ['delete_count' => $delete_count]));
-                } else if ($delete_count == 1) {
+                } elseif ($delete_count == 1) {
                     $this->Flash->success(__('corso cancellato con successo'));
                 } else {
                     $this->Flash->success(__('nessun corso cancellato'));
                 }
+
                 return $this->redirect(['action' => 'index']);
             }
         }
@@ -82,9 +84,9 @@ class DegreesController extends AppController
     public function edit($id = null)
     {
         if ($id != null) {
-          $degree = $this->Degrees->get($id);
+            $degree = $this->Degrees->get($id);
         } else {
-          $degree = $this->Degrees->newEntity();
+            $degree = $this->Degrees->newEntity();
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -92,9 +94,9 @@ class DegreesController extends AppController
 
             if ($this->Degrees->save($degree)) {
                 $this->Flash->success(__('Il corso di laurea è stato salvato'));
+
                 return $this->redirect(['action' => 'index']);
-            }
-            else {
+            } else {
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }
         }
@@ -121,23 +123,29 @@ class DegreesController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-    protected function deleteIfNotUsed($degree_id) {
+    protected function deleteIfNotUsed($degree_id)
+    {
         $degree = $this->Degrees->findById($degree_id)->firstOrFail();
         $use_count = 0;
-        foreach(['Curricula'] as $related_table) {
+        foreach (['Curricula'] as $related_table) {
             $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
                 ->where(['degree_id' => $degree_id])
                 ->count();
         }
-        if ($use_count>0) {
-            $this->Flash->error(__('Il corso {name} non può essere rimosso perché viene utilizzato {count} volte',
-            ['name' => $degree['name'], 'count' => $use_count]));
-            return False;
+        if ($use_count > 0) {
+            $this->Flash->error(__(
+                'Il corso {name} non può essere rimosso perché viene utilizzato {count} volte',
+                ['name' => $degree['name'], 'count' => $use_count]
+            ));
+
+            return false;
         }
         if (!$this->Degrees->delete($degree)) {
             $this->Flash->error(__('Cancellazione non riuscita'));
-            return False;
+
+            return false;
         }
-        return True;
+
+        return true;
     }
 }

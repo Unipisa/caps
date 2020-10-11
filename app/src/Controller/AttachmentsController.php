@@ -57,6 +57,7 @@ class AttachmentsController extends AppController
 
             if ($data['tmp_name'] == "" && $attachment['comment'] == "") {
                 $this->Flash->error('Selezionare un file da caricare, o inserire un commento');
+
                 return $this->redirect([
                     'controller' => 'proposals',
                     'action' => 'view',
@@ -69,6 +70,7 @@ class AttachmentsController extends AppController
 
                 if ($attachment['data'] == "") {
                     $this->Flash->error('Impossibile caricare un file vuoto');
+
                     return $this->redirect([
                         'controller' => 'proposals',
                         'action' => 'view',
@@ -91,20 +93,19 @@ class AttachmentsController extends AppController
 
             if ($this->Attachments->save($attachment)) {
                 $this->Flash->success(__('The attachment has been saved.'));
-            }
-            else {
+            } else {
                 $this->Flash->error(__('The attachment could not be saved. Please, try again.'));
             }
 
-            return $this->redirect([
+            return $this->redirect(
+                [
                         'controller' => 'proposals',
                         'action' => 'view',
                         $attachment['proposal_id'],
                         "secret" => $secret
                     ]
-                );
-        }
-        else {
+            );
+        } else {
             throw new NotFoundException('Page not found');
         }
     }

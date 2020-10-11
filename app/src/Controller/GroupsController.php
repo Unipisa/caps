@@ -8,20 +8,22 @@ use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 
-class GroupsController extends AppController {
-
-   public function initialize()
+class GroupsController extends AppController
+{
+    public function initialize()
     {
         parent::initialize();
     }
 
-    public function beforeFilter ($event) {
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function index () {
-        $groups = $this->Groups->find('all')->contain([ 'Exams' => function($q) {
+    public function index()
+    {
+        $groups = $this->Groups->find('all')->contain([ 'Exams' => function ($q) {
             return $q->order([ 'Exams.name' => 'asc' ]);
         } ]);
 
@@ -34,22 +36,24 @@ class GroupsController extends AppController {
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
                     $this->Flash->error(__('nessun gruppo selezionato'));
+
                     return $this->redirect(['action' => 'index']);
                 }
 
                 $delete_count = 0;
-                foreach($selected as $group_id) {
+                foreach ($selected as $group_id) {
                     if ($this->deleteIfNotUsed($group_id)) {
-                        $delete_count ++;
+                        $delete_count++;
                     }
                 }
                 if ($delete_count > 1) {
                     $this->Flash->success(__('{delete_count} gruppi cancellati con successo', ['delete_count' => $delete_count]));
-                } else if ($delete_count == 1) {
+                } elseif ($delete_count == 1) {
                     $this->Flash->success(__('gruppo cancellato con successo'));
                 } else {
                     $this->Flash->success(__('nessun gruppo cancellato'));
                 }
+
                 return $this->redirect(['action' => 'index']);
             }
         }
@@ -57,11 +61,11 @@ class GroupsController extends AppController {
         $this->set('groups', $groups);
         if ($this->request->is('csv')) {
             $data = [];
-            foreach($groups as $group) {
+            foreach ($groups as $group) {
                 $exams = $group->exams;
                 $bare_group = $group;
                 unset($bare_group->exams);
-                foreach($exams as $exam) {
+                foreach ($exams as $exam) {
                     $data[] = ['group' => $bare_group, 'exam' => $exam];
                 }
             }
@@ -72,7 +76,8 @@ class GroupsController extends AppController {
         }
     }
 
-    public function view ($id = null) {
+    public function view($id = null)
+    {
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
@@ -85,7 +90,8 @@ class GroupsController extends AppController {
         $this->set('_serialize', 'group');
     }
 
-    public function edit($id = null) {
+    public function edit($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -107,6 +113,7 @@ class GroupsController extends AppController {
             $group = $this->Groups->patchEntity($group, $this->request->getData());
             if ($this->Groups->save($group)) {
                 $this->Flash->success($success_message);
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash($failure_message);
@@ -117,14 +124,15 @@ class GroupsController extends AppController {
         $this->set('group', $group);
         $this->set(
             'exams',
-             $exams_table->find(
+            $exams_table->find(
                 'list',
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
     }
 
-    public function delete ($id = null) {
+    public function delete($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -136,26 +144,29 @@ class GroupsController extends AppController {
         return $this->redirect(['action' => 'index']);
     }
 
-    protected function deleteIfNotUsed($group_id) {
+    protected function deleteIfNotUsed($group_id)
+    {
         $group = $this->Groups->findById($group_id)->firstOrFail();
         $use_count = 0;
-        foreach(['exams_groups', 'compulsory_groups'] as $related_table) {
+        foreach (['exams_groups', 'compulsory_groups'] as $related_table) {
             $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
                 ->where(['group_id' => $group_id])
                 ->count();
         }
-        if ($use_count>0) {
-            $this->Flash->error(__('Il gruppo {name} non può essere rimosso perché viene utilizzato {count} volte.',
-            ['name' => $group['name'], 'count' => $use_count]));
-            return False;
+        if ($use_count > 0) {
+            $this->Flash->error(__(
+                'Il gruppo {name} non può essere rimosso perché viene utilizzato {count} volte.',
+                ['name' => $group['name'], 'count' => $use_count]
+            ));
+
+            return false;
         }
         if (!$this->Groups->delete($group)) {
             $this->Flash->error(__('Cancellazione non riuscita'));
-            return False;
+
+            return false;
         }
-        return True;
+
+        return true;
     }
-
 }
-
-?>

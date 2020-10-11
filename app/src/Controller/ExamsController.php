@@ -8,8 +8,8 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Form\ExamsFilterForm;
 
-class ExamsController extends AppController {
-
+class ExamsController extends AppController
+{
     public $paginate = [
         'limit' => 15,
         'order' => [
@@ -30,12 +30,14 @@ class ExamsController extends AppController {
             ->order([ 'Exams.name' => 'asc' ]);
     }
 
-    public function beforeFilter ($event) {
+    public function beforeFilter($event)
+    {
         parent::beforeFilter($event);
         $this->Auth->deny();
     }
 
-    public function index () {
+    public function index()
+    {
         $exams = $this->Exams->find()
             ->order([ 'Exams.name' => 'asc' ])
             ->contain([ 'Tags']);
@@ -43,13 +45,13 @@ class ExamsController extends AppController {
         $filterForm = new ExamsFilterForm($exams);
         $filterData = $this->request->getQuery();
         if (!key_exists('name', $filterData) || !$filterForm->validate($filterData)) {
-          // no filter form provided or data not valid: set defaults:
-          $filterData = [
+            // no filter form provided or data not valid: set defaults:
+            $filterData = [
             'name' => '',
             'code' => '',
             'sector' => '',
             'credits' => null
-          ];
+            ];
         }
         $exams = $filterForm->execute($filterData);
         $this->set('filterForm', $filterForm);
@@ -62,7 +64,7 @@ class ExamsController extends AppController {
                 // csv bulk upload
                 $good_count = 0;
                 $bad_count = 0;
-                $payload = json_decode($this->request->getData()['payload'], True);
+                $payload = json_decode($this->request->getData()['payload'], true);
                 $exams = $this->Exams->newEntities($payload);
                 $result = $this->Exams->saveMany($exams);
                 if ($result) {
@@ -70,16 +72,17 @@ class ExamsController extends AppController {
                 } else {
                     // collect error messages
                     foreach ($exams as $exam) {
-                      foreach ($exam->errors() as $field => $errors) {
-                        foreach ($errors as $error) {
-                          $this->Flash->error('Errore nel campo "'.$field.'" dell\'esame "'.$exam['name'].'" '.$error);
+                        foreach ($exam->errors() as $field => $errors) {
+                            foreach ($errors as $error) {
+                                $this->Flash->error('Errore nel campo "' . $field . '" dell\'esame "' . $exam['name'] . '" ' . $error);
+                            }
                         }
-                      }
                     }
                     // debug($payload);
                     // debug($exams);
                     // debug($result);
                 }
+
                 return $this->redirect([ 'action' => 'index']);
             }
 
@@ -87,22 +90,24 @@ class ExamsController extends AppController {
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
                     $this->Flash->error(__('nessun esame selezionato'));
+
                     return $this->redirect(['action' => 'index']);
                 }
 
                 $delete_count = 0;
-                foreach($selected as $exam_id) {
+                foreach ($selected as $exam_id) {
                     if ($this->deleteIfNotUsed($exam_id)) {
-                        $delete_count ++;
+                        $delete_count++;
                     }
                 }
                 if ($delete_count > 1) {
                     $this->Flash->success(__('{delete_count} esami cancellati con successo', ['delete_count' => $delete_count]));
-                } else if ($delete_count == 1) {
+                } elseif ($delete_count == 1) {
                     $this->Flash->success(__('esame cancellato con successo'));
                 } else {
                     $this->Flash->success(__('nessun esame cancellato'));
                 }
+
                 return $this->redirect(['action' => 'index']);
             }
         }
@@ -114,7 +119,8 @@ class ExamsController extends AppController {
     /**
      * @brief Get a single exam in JSON format. URL: caps/exams/view/1.json
      */
-    public function view ($id = null) {
+    public function view($id = null)
+    {
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
@@ -127,7 +133,8 @@ class ExamsController extends AppController {
         $this->set('_serialize', [ 'exam' ]);
     }
 
-    public function edit($id = null) {
+    public function edit($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
@@ -189,35 +196,41 @@ class ExamsController extends AppController {
         $this->set('groups', $this->Exams->Groups->find('list'));
     }
 
-    public function delete ($id = null) {
+    public function delete($id = null)
+    {
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
-        if ($this->deleteIfNotUsed($id))
+        if ($this->deleteIfNotUsed($id)) {
             $this->Flash->success(__('Esame cancellato con successo.'));
+        }
+
         return $this->redirect(['action' => 'index']);
     }
 
-    protected function deleteIfNotUsed($exam_id) {
+    protected function deleteIfNotUsed($exam_id)
+    {
         $exam = $this->Exams->findById($exam_id)->firstOrFail();
         $use_count = 0;
-        foreach(['ChosenExams', 'CompulsoryExams'] as $related_table) {
+        foreach (['ChosenExams', 'CompulsoryExams'] as $related_table) {
             $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
                 ->where(['exam_id' => $exam_id])
                 ->count();
         }
-        if ($use_count>0) {
-            $this->Flash->error(__('L\'esame {code} non può essere rimosso perché viene utilizzato {count} volte',
-            ['code' => $exam['codice'], 'count' => $use_count]));
-            return False;
+        if ($use_count > 0) {
+            $this->Flash->error(__(
+                'L\'esame {code} non può essere rimosso perché viene utilizzato {count} volte',
+                ['code' => $exam['codice'], 'count' => $use_count]
+            ));
+
+            return false;
         }
         if (!$this->Exams->delete($exam)) {
             $this->Flash->error(__('Cancellazione non riuscita'));
-            return False;
+
+            return false;
         }
-        return True;
+
+        return true;
     }
-
 }
-
-?>
