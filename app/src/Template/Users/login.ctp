@@ -35,8 +35,15 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="p-5">
+                                <div class="d-flex justify-content-between mb-4">
+                                    <img src="img/cherubino_black.png" height="60" class="my-auto">
+                                    <div>
+                                        <h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v<?= $capsShortVersion ?></span></h1>
+                                        <h6>Compilazione Assistita<br>Piani di Studio</h6>
+                                    </div>
+
+                                </div>
                                 <div class="text-center">
-                                    <h1 class="h3 font-weight-bold text-gray-900 mb-4">CAPS <span class="text-muted h6">v<?= $capsShortVersion ?></span></h1>
                                 </div>
                                 <?php echo $this->Flash->render(); ?>
                                 <p>Effettua il login usando le credenziali di Ateneo.</p>
