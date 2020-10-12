@@ -28,6 +28,35 @@
         </button>
         </a>
 <?php endif; ?>
+
+<?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
+    <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
+    <div class="dropdown">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+            Richiedi parere
+        </button>
+        <div class="dropdown-menu p-3" style="min-width: 450px;">
+            <?php
+            echo $this->Form->create($proposal_auth, [
+                'url' => [
+                    'controller' => 'proposals',
+                    $proposal['id'],
+                    'action' => 'share'
+                ]
+            ]);
+            echo $this->Form->control(
+                'email',
+                [ 'label' => 'Email' ]);
+            echo $this->Form->submit('Richiedi parere');
+            echo $this->Form->end();
+            ?>
+        </div>
+    </div>
+    <?php endif ?>
+<?php endif ?>
+
+
+
     <div class="flex-fill"></div>
     <a href="<?= $this->Url->build([ 'action' => 'pdf', $proposal['id'] ]) ?>">
         <button type="button" class="btn btn-sm btn-primary">
@@ -160,7 +189,7 @@
 <?php endif; ?>
 <?php endfor; ?>
 
-<?= $this->element('card-start', [ 'header' => 'Allegati' ]) ?>
+<?= $this->element('card-start', [ 'header' => 'Allegati e commenti' ]) ?>
     <?php
       $secret = $this->request->getQuery('secret');
 
@@ -204,45 +233,31 @@
     <?php endforeach ?>
     </ul>
     <?php if ($user && $user->canAddAttachment($proposal, $secret)): ?>
-    <h3>Inserisci un nuovo allegato o commento</h3>
-    <?php
-    echo $this->Form->create('Attachment', [
-        'url' => ['controller' => 'attachments', 'action' => 'add'],
-        'type' => 'file'
-    ]);
-    ?>
-    <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
-    <?php echo $this->Form->hidden('secret', [ 'value' => $secret]); ?>
 
-    <div class="form-group">
-        <?php echo $this->Form->textarea('comment'); ?>
+    <button type="button" class="dropdown-toggle btn btn-primary btn-sm" data-toggle="collapse" data-target="#add-attachment">
+        Inserisci un nuovo allegato o commento
+    </button>
+    <div class="collapse my-3 mx-0" id="add-attachment">
+        <div class="card border-left-primary p-3">
+        <?php
+        echo $this->Form->create('Attachment', [
+            'url' => ['controller' => 'attachments', 'action' => 'add'],
+            'type' => 'file'
+        ]);
+        ?>
+        <?php echo $this->Form->hidden('secret', [ 'value' => $secret]); ?>
+
+        <div class="form-group">
+            <?php echo $this->Form->textarea('comment'); ?>
+        </div>
+        <div class="form-group">
+            <?php echo $this->Form->file('data'); ?>
+        </div>
+        <?php echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]); ?>
+        <?php echo $this->Form->submit('Aggiungi commento e/o allegato'); ?>
+        <?php echo $this->Form->end(); ?>
+        <?php endif; ?>
+        </div>
     </div>
-    <div class="form-group">
-        <?php echo $this->Form->file('data'); ?>
-    </div>
-    <?php echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]); ?>
-    <?php echo $this->Form->submit('Aggiungi commento e/o allegato'); ?>
-    <?php echo $this->Form->end(); ?>
-    <?php endif; ?>
 <?= $this->element('card-end'); ?>
 
-<?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
-    <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
-    <?= $this->element('card-start', [ 'header' => 'Richiesta parere' ]) ?>
-        <?php
-            echo $this->Form->create($proposal_auth, [
-                'url' => [
-                    'controller' => 'proposals',
-                    $proposal['id'],
-                    'action' => 'share'
-                ]
-            ]);
-            echo $this->Form->control(
-                'email',
-                [ 'label' => 'Email' ]);
-            echo $this->Form->submit('Richiedi parere');
-            echo $this->Form->end();
-        ?>
-        <?php $this->element('card-end'); ?>
-    <?php endif ?>
-<?php endif ?>
