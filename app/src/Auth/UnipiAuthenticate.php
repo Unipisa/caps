@@ -84,9 +84,12 @@ class UnipiAuthenticate extends BaseAuthenticate
             }
         }
 
-        // Terrible hack because the SSL certificate on the Unipi side is not
-        // validated by a publicy available CA.
-        putenv("LDAPTLS_REQCERT=never");
+        // If the user requested it, we do not validate the SSL certificate
+        // given from the LDAP server (if any). Since this used to be the default
+        // before the 'verify_cert' config option existed, we behave in a backward
+        // compatible way when the key is not found. 
+        if (! (array_key_exists('verify_cert', $config) && $config['verify_cert']))
+            putenv("LDAPTLS_REQCERT=never");
 
         // We need to connect to the LDAP Unipi server to authenticate the user.
         $ds = ldap_connect($config['ldap_server_uri']);

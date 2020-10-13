@@ -40,6 +40,10 @@ return [
       // LISTA DEGLI UTENTI AMMINISTRATORE
       'admins' => [],
 
+      // True if the verification of the SSL certificate of the LDAP server
+      // is enforced. The values false might be useful in development environments.
+      'verify_cert' => true,
+
       // LISTA DEGLI UTENTI "FAKE"
       'fakes' => [
         [
