@@ -1,4 +1,4 @@
-<?php echo $this->Html->script('upload_csv.js?rev=2'); ?>
+<?php echo $this->Html->script('upload_csv.js?rev=3'); ?>
 <?php echo $this->element('update_navigation'); ?>
 
 <h2>Esami</h2>
