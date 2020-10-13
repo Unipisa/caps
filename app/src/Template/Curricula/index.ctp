@@ -48,6 +48,10 @@
 
                     <div class="flex-fill"></div>
 
+                    <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
+                        <i class="fas fa-download mr-2"></i>Esporta in CSV
+                    </div>
+
                     <a><button class="btn btn-sm btn-primary mr-2"
                             onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() }, 'Clonare i nuovi curricula per l\'anno selezionato?')">
                         Duplica per un nuovo anno

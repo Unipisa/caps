@@ -13,6 +13,12 @@
             Elimina i gruppi selezionati
         </button>
 
+        <div class="flex-fill"></div>
+
+        <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
+            <i class="fas fa-download mr-2"></i>Esporta in CSV
+        </div>
+
     </div>
 
     <?php echo $this->Form->create(null, [ 'id' => 'groups-form' ]); ?>

@@ -12,7 +12,13 @@
 
         <input class="btn btn-sm btn-danger" type="submit" name="delete"
                onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')"
-               value="Elimina i corsi selezionati"/>
+               value="Elimina i corsi selezionati" />
+
+        <div class="flex-fill"></div>
+
+        <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
+            <i class="fas fa-download mr-2"></i>Esporta in CSV
+        </button>
     </div>
 
     <div class="table-responsive-sm">

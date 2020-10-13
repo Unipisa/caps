@@ -79,6 +79,10 @@ function csv_validator(item, context) {
 
         <div class="flex-fill"></div>
 
+        <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
+            <i class="fas fa-download mr-2"></i>Esporta in CSV
+        </div>
+
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown" onclick='csv_click()'>
                 Importa da CSV
