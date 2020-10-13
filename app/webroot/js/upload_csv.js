@@ -140,7 +140,7 @@ function fill_table_html() {
             for (var j=1;j<row.length-1;++j) {
                 row[j] = csv_data[i][csv_column_map[j-1]];
             }
-            row[j] = error?("<span class='red'>" + error + "</span>"):"";
+            row[j] = error?("<span class='text-danger'>" + error + "</span>"):"";
         }
         table_html += "<tr><"+delimiter+">" + row.join("</"+delimiter+"><"+delimiter+">")+"</"+delimiter+"></tr>\n";
     }
