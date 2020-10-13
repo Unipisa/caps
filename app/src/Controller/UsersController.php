@@ -8,6 +8,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
 use App\Controller\Event;
 use App\Model\Entity\User;
+use App\Form\UsersFilterForm;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 
@@ -15,10 +16,6 @@ class UsersController extends AppController {
 
     public function beforeFilter($event) {
         parent::beforeFilter($event);
-    }
-
-    public function index() {
-        return $this->redirect([ 'action' => 'view' ]);
     }
 
     public function view($id = null) {
@@ -56,6 +53,78 @@ class UsersController extends AppController {
 
         $this->set('user_entry', $user_entry);
         $this->set('proposals', $proposals);
+    }
+
+    public function index() {
+        if (!$this->user['admin']) {
+            throw new ForbiddenException();
+        }
+        $users = $this->Users->find('all');
+
+        $filterForm = new UsersFilterForm($users);
+        $filterData = $this->request->getQuery();
+        if (!key_exists('admin', $filterData) || !$filterForm->validate($filterData)) {
+          // no filter form provided or data not valid: set defaults:
+          $filterData = [
+            'admin' => 'admin'
+          ];
+        }
+  
+        $proposals = $filterForm->execute($filterData);
+        if ($this->request->is("post")) {  
+            $action = null;
+            foreach(['set_admin', 'clear_admin'] as $i) {
+                if ($this->request->getData($i)) {
+                    if ($action) {
+                        $this->Flash->error(__('richiesta non valida'));
+                        return $this->redirect(['action' => 'index']);
+                    }
+                    $action = $i;
+                }
+            }
+  
+            if ($action) {
+                // assumo sia già stato controllato se l'utente è admin...
+
+                $selected = $this->request->getData('selection');
+                if (!$selected) {
+                    $this->Flash->error(__('nessun utente selezionato'));
+                    return $this->redirect(['action' => 'index']);
+                }
+  
+                $count = 0;
+                foreach($selected as $user_id) {
+                    $user = $this->Users->findById($user_id)
+                        ->firstOrFail();
+                    if ($action === 'clear_admin') {
+                        if ($user['id'] === $this->user['id']) {
+                            $this->Flash->error(__('Non puoi rimuovere te stesso dagli amministratori'));
+                            continue;
+                        }
+                        $user['admin'] = false;
+                        if (!$this->Users->save($user)) {
+                            $this->Flash->error(__('Impossibile salvare il dato'));
+                            continue;
+                        }
+                        $this->Flash->success(__('Rimosso utente {username} dagli amministratori', ['username' => $user['username']]));
+                    } else if ($action === 'set_admin') {
+                        $user['admin'] = true;
+                        if (!$this->Users->save($user)) {
+                            $this->Flash->error(__('Impossibile salvare il dato'));
+                            continue;
+                        }
+                        $this->Flash->success(__('Aggiunto utente {username} agli amministratori', ['username' => $user['username']]));
+                    }
+                }
+                return $this->redirect(['action' => 'index']);
+            }
+        }
+  
+
+        $this->set('filterForm', $filterForm);
+        $this->set('users', $users);
+        $this->set('_serialize', [ 'users' ]);
+        $this->set('paginated_users', $this->paginate($users->cleanCopy()));
     }
 
     public function login() {
@@ -142,6 +211,14 @@ class UsersController extends AppController {
                 $this->Flash->error(__('Username o password non corretti.'));
             }
         }
+    }
+
+    public function clear_admin() {
+
+    }
+
+    public function set_admin() {
+
     }
 
     /*
