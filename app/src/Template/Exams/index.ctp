@@ -1,4 +1,4 @@
-<?php echo $this->Html->script('upload_csv.js?rev=2'); ?>
+<?php echo $this->Html->script('upload_csv.js?rev=3'); ?>
 
 <h1>Esami</h1>
 

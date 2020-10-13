@@ -45,7 +45,37 @@ function levenshteinDistance(a, b) {
   return distanceMatrix[b.length][a.length];
 }
 
+function csv_split_row(row) {
+    var result = [];
+    while(row.length>0) {
+        if (row[0]==='"' || row[0]==="'") {
+            var c = row.charAt(0);
+            var f = row.indexOf(c + csv_column_separator, 1);
+            if (f>=0) {
+                result.push(row.substring(1,f));
+                row = row.substring(f+csv_column_separator.length+1);
+                continue;
+            }
+            if (row.charAt(row.length-1) === c) {
+                result.push(row.substring(1,row.length-2));
+                break;
+            }
+        } 
+        var f = row.indexOf(csv_column_separator);
+        if (f>=0) {
+            result.push(row.substring(0,f));
+            row = row.substring(f+csv_column_separator.length);
+            continue;
+        }
+        result.push(row);
+        break;
+    }
+    return result;
+}
+
 function csv_to_array() {
+    // TODO: usare libreria dedicata, ad esempio: papaparse
+
     var lines = csv_contents.split("\n");
     csv_data = []
     csv_headers = [];
@@ -54,7 +84,8 @@ function csv_to_array() {
             continue;
         }
 
-        var row = lines[i].split(csv_column_separator)
+        // var row = lines[i].split(csv_column_separator);
+        var row = csv_split_row(lines[i]);
 
         if (i == 0 && csv_has_headers) {
             csv_headers = row;
