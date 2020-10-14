@@ -22,18 +22,27 @@
 
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">
+        <div class="nav-item my-auto">
+            <?= $this->Html->image('logo_blue_small.png'); ?>
+        </div>
+
         <?php if ($user): ?>
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle text-primary" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $user['name'] ?></span>
-                    <i class="fas fa-lg fa-user ml-2"></i>
+                    <i class="fas fa-lg fa-user mx-2"></i>
                 </a>
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <div class="dropdown-item">
+                        Collegato come <strong><?= $user['username'] ?></strong> (<?= $user['admin'] ? 'amministratore' : 'studente' ?>)
+                    </div>
+                    <div class="dropdown-divider"></div>
+
                     <?php if ($user && !$user['admin']): ?>
                         <a class="dropdown-item" href="<?= $this->Url->build(['controller' => 'users', 'action' => 'view', $user['id']])?>">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>

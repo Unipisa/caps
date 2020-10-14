@@ -87,7 +87,7 @@ class UnipiAuthenticate extends BaseAuthenticate
         // If the user requested it, we do not validate the SSL certificate
         // given from the LDAP server (if any). Since this used to be the default
         // before the 'verify_cert' config option existed, we behave in a backward
-        // compatible way when the key is not found. 
+        // compatible way when the key is not found.
         if (! (array_key_exists('verify_cert', $config) && $config['verify_cert']))
             putenv("LDAPTLS_REQCERT=never");
 
