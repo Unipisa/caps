@@ -33,7 +33,7 @@
 
 <div id="completeForm">
 <?php
-echo $this->Form->create('Proposal');
+echo $this->Form->create(null);
 ?>
 
 <?php echo $this->element('card-start'); ?>

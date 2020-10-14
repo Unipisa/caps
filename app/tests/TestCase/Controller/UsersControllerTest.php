@@ -76,9 +76,9 @@ class UsersControllerTest extends IntegrationTestCase
     public function testUsersPage()
     {
         // test that page requires authentication
-        $this->get('/users');
+        $this->get('/users/view');
         $this->assertRedirect();
-        $this->assertRedirectContains('?redirect=%2Fusers');
+        $this->assertRedirectContains('?redirect=%2Fusers%2Fview');
 
         // Set session data
         $this->session([
@@ -95,7 +95,7 @@ class UsersControllerTest extends IntegrationTestCase
                 ]
             ]
         ]);
-        $this->get('/users');
-        $this->assertRedirect();
+        $this->get('/users/view');
+        $this->assertResponseContains('matricola 123456');
     }
 }

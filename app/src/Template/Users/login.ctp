@@ -1,8 +1,8 @@
 <?php
-    $this->layout(false);
+    $this->setLayout(false);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -48,7 +48,7 @@
                                 <?php echo $this->Flash->render(); ?>
                                 <p>Effettua il login usando le credenziali di Ateneo.</p>
                                 <?php
-                                    echo $this->Form->create('', [ 'class' => 'user' ]);
+                                    echo $this->Form->create(null, [ 'class' => 'user' ]);
                                     echo $this->Form->control('username');
                                     echo $this->Form->control('password');
                                     echo $this->Form->submit('Login');
