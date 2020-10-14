@@ -174,7 +174,7 @@ class UsersController extends AppController {
                     'email' => $authuser['email'],
                     'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
                         // if the user is not found; otherwise a user might have been granted admini privileges
-                        // locally and we respect that. 
+                        // locally and we respect that.
                 ]);
 
                 if ($this->Users->save($user)) {

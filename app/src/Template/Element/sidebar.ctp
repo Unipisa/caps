@@ -19,7 +19,7 @@ $actionName = $this->request->getParam('action');
         </div>
     </div>
 
-    <?php if ($user  && !$user['admin']): ?>
+    <?php if ($user): ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
