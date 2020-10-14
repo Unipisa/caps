@@ -222,7 +222,7 @@ $num_proposals = 0;
     </ul>
 
     <?php
-        echo $this->Form->create('Documents', [
+        echo $this->Form->create(null, [
             'url' => ['controller' => 'documents', 'action' => 'add'],
             'type' => 'file'
         ]);
