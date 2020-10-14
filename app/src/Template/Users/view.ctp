@@ -79,6 +79,7 @@ $num_proposals = 0;
                     $num_proposals++;
 
                     // Compute the status
+                    $statusclass = 'secondary';
                     switch ($proposal['state']) {
                         case 'draft':
                             $status = 'Bozza';
