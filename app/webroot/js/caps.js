@@ -33,6 +33,7 @@ const Caps = {
                 let inp = document.createElement('input');
                 inp.name = key;
                 inp.value = data[key];
+                inp.style = "display: none";
                 form.appendChild(inp);
             }
 

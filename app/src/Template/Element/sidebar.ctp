@@ -128,6 +128,18 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <li class="nav-item<?= $controllerName == 'users' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build([
+                    'controller' => 'users', 'action' => 'index',
+                    '?' => [ 'admin' => 'admin' ]
+                ], [
+                    'escape' => false
+                ]); ?>">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Utenti</span>
+            </a>
+        </li>
+
     <?php endif; ?>
 
     <!-- Divider -->

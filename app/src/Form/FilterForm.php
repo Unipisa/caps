@@ -38,4 +38,8 @@ class FilterForm extends Form
             ]);
         }
     }
+
+    protected function filterFieldValue($dbfield, $value) {
+        $this->query = $this->query->where([$dbfield => $value]);
+    }
 }
