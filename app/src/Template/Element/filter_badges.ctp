@@ -6,7 +6,7 @@ $query_params = $this->request->getQueryParams();
 
     <div class="d-flex align-left my-2">
         <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($value != ""): ?>
+            <?php if ($value != "" && $key != "page"): ?>
                 <a style="cursor: pointer;" onclick="Caps.removeQueryParam('<?= $key ?>');">
                     <span class="filter-badge badge badge-secondary mr-2" title="Rimuovi il filtro <?= $key ?>: <?= $value ?>"><?= $key ?>: <?= $value ?> X</span>
                 </a>
