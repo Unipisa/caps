@@ -101,6 +101,10 @@ class UsersController extends AppController {
                             $this->Flash->error(__('Non puoi rimuovere te stesso dagli amministratori'));
                             continue;
                         }
+                        if (!$user['admin']) {
+                            $this->Flash->error(__('L\'utente {username} non è amministratore',['username' => $user['username']]));
+                            continue;
+                        }
                         $user['admin'] = false;
                         if (!$this->Users->save($user)) {
                             $this->Flash->error(__('Impossibile salvare il dato'));
@@ -108,6 +112,10 @@ class UsersController extends AppController {
                         }
                         $this->Flash->success(__('Rimosso utente {username} dagli amministratori', ['username' => $user['username']]));
                     } else if ($action === 'set_admin') {
+                        if ($user['admin']) {
+                            $this->Flash->error(__('L\'utente {username} è già amministratore', ['username' => $user['username']]));
+                            continue;
+                        }
                         $user['admin'] = true;
                         if (!$this->Users->save($user)) {
                             $this->Flash->error(__('Impossibile salvare il dato'));

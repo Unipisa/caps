@@ -43,7 +43,7 @@
         <th><?= $this->Paginator->sort('givenname', 'Nome'); ?></th>
         <th><?= $this->Paginator->sort('admin', 'Role'); ?></th>
     </tr>
-<?php foreach ($users as $user): ?>
+<?php foreach ($paginated_users as $user): ?>
     <tr>
         <td class="caps-admin-user-id"><input type=checkbox name="selection[]" value="<?php echo $user['id']; ?>"></td>
         <td class="caps-admin-user-matricola">
