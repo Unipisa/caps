@@ -6,23 +6,16 @@
         <i class="fa fa-bars"></i>
     </button>
 
-    <!-- Topbar Search, disabled for now  -->
-    <!--
-    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-        <div class="input-group">
-            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
-                    <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
-        </div>
-    </form>
-    -->
+    <?php if (trim($settings['disclaimer']) != "" ): ?>
+    <div title="<?= $settings['disclaimer'] ?>" class="rounded border-left-warning px-2 my-auto text-sm-left text-truncate">
+        <?= $settings['disclaimer'] ?>
+    </div>
+    <?php endif; ?>
 
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">
-        <div class="nav-item my-auto">
+
+        <div class="d-none d-md-block nav-item my-auto">
             <?= $this->Html->image('logo_blue_small.png'); ?>
         </div>
 
