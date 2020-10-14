@@ -42,7 +42,6 @@ class UnipiAuthenticate extends BaseAuthenticate
     public function authenticate(ServerRequest $request, Response $response)
     {
         $config = $this->getConfig();
-        //        Log::write('debug', "******". print_r($config, true));
         $data = $request->getData();
 
         $admin_usernames = [];
@@ -62,24 +61,27 @@ class UnipiAuthenticate extends BaseAuthenticate
             'email' => 'unknown@nodomain.no'
         ];
 
-        foreach ($config['fakes'] as $fake) {
-            if (is_array($fake)) {
-                // configuration contains user info
-                if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
-                    foreach ($user as $key => $val) {
-                        if (array_key_exists($key, $fake)) {
-                            $user[$key] = $fake[$key];
+        if (array_key_exists('fakes', $config))
+        {
+            foreach ($config['fakes'] as $fake) {
+                if (is_array($fake)) {
+                    // configuration contains user info
+                    if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
+                        foreach ($user as $key => $val) {
+                            if (array_key_exists($key, $fake)) {
+                                $user[$key] = $fake[$key];
+                            }
                         }
+
+                        return $user;
                     }
+                } else {
+                    // configuration only contains username
+                    if ($data['username'] == $fake && $data['password'] == $fake) {
+                        $user['username'] = $fake;
 
-                    return $user;
-                }
-            } else {
-                // configuration only contains username
-                if ($data['username'] == $fake && $data['password'] == $fake) {
-                    $user['username'] = $fake;
-
-                    return $user;
+                        return $user;
+                    }
                 }
             }
         }
@@ -127,7 +129,7 @@ class UnipiAuthenticate extends BaseAuthenticate
             'surname' => $m['sn'][0],
             'name' => $m['cn'][0],
             'number' => $user['matricola'] = array_get($m, 'unipistudentematricola', [$data['username']])[0],
-            'admin' => in_array($data['username'], $config['admins']),
+            'admin' => in_array($data['username'], $admin_usernames),
             'email' => $m['mail'][0]
         ];
     }

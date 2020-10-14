@@ -172,7 +172,9 @@ class UsersController extends AppController {
                     'surname' => $authuser['surname'],
                     'givenname' => $authuser['givenname'],
                     'email' => $authuser['email'],
-                    'admin' => $authuser['admin']
+                    'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
+                        // if the user is not found; otherwise a user might have been granted admini privileges
+                        // locally and we respect that. 
                 ]);
 
                 if ($this->Users->save($user)) {
@@ -197,7 +199,7 @@ class UsersController extends AppController {
                     return $this->redirect([ 'controller' => 'proposals', 'action' => 'dashboard' ]);
                 }
                 else {
-                    return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
+                    return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
             }
         }
