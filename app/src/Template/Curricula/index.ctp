@@ -6,7 +6,7 @@
             <div class="card-body">
                 <div class="d-flex mb-3">
                     <div class="dropdown">
-                        <button type="button" data-toggle="dropdown" class="btn btn-sm btn-secondary dropdown-toggle mr-2">
+                        <button type="button" data-toggle="dropdown" class="btn btn-sm btn-primary dropdown-toggle mr-2">
                             Filtra
                         </button>
                         <div class="dropdown-menu p-2" style="width: 350px">

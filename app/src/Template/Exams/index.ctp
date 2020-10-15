@@ -35,7 +35,7 @@ function csv_validator(item, context) {
 <?= $this->element('card-start'); ?>
     <div class="d-flex mb-2">
         <div class="dropdown mr-2">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
                 Filtra
             </button>
             <div class="dropdown-menu p-2" style="width: 350px;">

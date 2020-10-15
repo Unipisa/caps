@@ -5,7 +5,7 @@
 <?php echo $this->element('card-start') ?>
     <div class="d-flex">
         <div class="dropdown mb-2 mr-2">
-            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropDownFilter"
+            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropDownFilter"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Filtra
             </button>
@@ -148,7 +148,7 @@
                 </td>
                 <td>
                     <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
-                    <button type="button" class="btn btn-sm btn-primary">
+                    <button type="button" class="btn btn-sm btn-secondary">
                         <i class="fas fa-eye mr-2"></i>Visualizza
                     </button></a>
                 </td>
