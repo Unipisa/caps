@@ -26,7 +26,7 @@
 <div class="d-flex align-items-center justify-content-between">
         <h2>Nuovo piano di studio</h2>
         <div id="loadingIcon" class="spinner-border spinner-border-sm text-primary float-right"
-             role="status" style="position: relative; top: -12px;">
+             role="status">
             <span class="sr-only">Loading...</span>
         </div>
 </div>
