@@ -3,42 +3,16 @@
 <?= $this->element('card-start'); ?>
 
 <div class="d-flex mb-2">
-    <div class="dropdown">
-        <button type="button" class="dropdown-toggle btn btn-sm btn-secondary" data-toggle="dropdown">Filtra</button>
-        <div class="dropdown-menu p-2">
-            <div id="proposalFilterFormDiv" style="width: 350px;">
-                <?php
-                echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
-                echo $this->Form->control('admin',
-                    [
-                        'label' => __('ruolo'),
-                        'type' => 'select',
-                        'options' => [
-                            'all' => __('tutti'),
-                            'admin' => __('admin')
-                        ],
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('email',
-                    [
-                        'label' => __('email'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('surname',
-                    [
-                        'label' => __('cognome'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('givenname',
-                    [
-                        'label' => __('nome'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->end();
-                ?>
-            </div>
-        </div>
-    </div>
+    <?= $this->element('filter-button', ['items' => [
+        'admin' => [
+            'label' => __('ruolo'),
+            'type' => 'select',
+            'options' => [
+                'all' => __('tutti'),
+                'admin' => __('admin')]],
+        'email' => __('email'),
+        'surname' => __('cognome'),
+        'givenname' => __('nome')]]) ?>
 
     <button type="button" class="ml-2 btn btn-sm btn-primary" onclick="Caps.submitForm('admin-form', { 'set_admin' : 1 }, 'Confermi di voler aggiungere gli utenti selezionati agli amministratori?')">
         Aggiungi agli amministratori
