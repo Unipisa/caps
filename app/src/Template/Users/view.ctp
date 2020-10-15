@@ -26,7 +26,7 @@ $num_proposals = 0;
 
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between">
-    <h1 class="text-gray-800"><?php echo $user_entry['name']; ?>, matricola <?php echo $user_entry['number']; ?></h1>
+    <h1><?php echo $user_entry['name']; ?> <span class="text-muted h5 ml-2">matricola: <?php echo $user_entry['number']; ?></span></h1>
     <?php if ($user['username'] == $user_entry['username']): ?>
     <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'add' ]) ?>">
         <button class="btn btn-sm btn-primary shadow-sm">
