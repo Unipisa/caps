@@ -34,38 +34,11 @@ function csv_validator(item, context) {
 
 <?= $this->element('card-start'); ?>
     <div class="d-flex mb-2">
-        <div class="dropdown mr-2">
-            <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
-                Filtra
-            </button>
-            <div class="dropdown-menu p-2" style="width: 350px;">
-                <?php
-                echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
-                echo $this->Form->control('name',
-                    [
-                        'label' => __('nome'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('code',
-                    [
-                        'label' => __('codice'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('sector',
-                    [
-                        'label' => __('settore'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->control('credits',
-                    [
-                        'label' => __('crediti'),
-                        'onchange' => 'this.form.submit()'
-                    ]);
-                echo $this->Form->end();
-                ?>
-            </div>
-        </div>
-
+        <?= $this->element('filter-button', [ 'items' => [
+            'name' => __('nome'),
+            'code' => __('codice'),
+            'sector' => __('settore'),
+            'credits' => __('crediti')]]) ?>
         <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
             <button type="button" class="btn btn-sm btn-primary mr-2">
                 <i class="fas fa-plus mr-2"></i>Aggiungi

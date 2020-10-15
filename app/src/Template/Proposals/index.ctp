@@ -4,54 +4,21 @@
 
 <?php echo $this->element('card-start') ?>
     <div class="d-flex">
-        <div class="dropdown mb-2 mr-2">
-            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropDownFilter"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Filtra
-            </button>
-            <div class="dropdown-menu shadow px-2 py-2" style="min-width: 350px" aria-labelledby="dropdownMenuButton" id="proposalFilterFormDiv">
-                <div class="row">
-                    <div class="col-12">
-                        <?php echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm form']); ?>
-                        <?php echo $this->Form->control('state',
-                            [
-                                'label' => __('stato'),
-                                'type' => 'select',
-                                'options' => [
-                                    'all' => __('tutti'),
-                                    'draft' => __('bozze'),
-                                    'submitted' => __('da valutare'),
-                                    'approved' => __('approvati'),
-                                    'rejected' => __('rifiutati')
-                                ],
-                                'onchange' => 'this.form.submit()'
-                            ]);
-                        echo $this->Form->control('surname',
-                            [
-                                'label' => __('cognome'),
-                                'onchange' => 'this.form.submit()'
-                            ]);
-                        echo $this->Form->control('academic_year',
-                            [
-                                'label' => __('anno'),
-                                'onchange' => 'this.form.submit()'
-                            ]);
-                        echo $this->Form->control('degree',
-                            [
-                                'label' => __('laurea'),
-                                'onchange' => 'this.form.submit()'
-                            ]);
-                        echo $this->Form->control('curriculum',
-                            [
-                                'label' => __('piano'),
-                                'onchange' => 'this.form.submit()'
-                            ]);
-                        ?>
-                        <?php echo $this->Form->end(); ?>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?= $this->element('filter-button', ['items' => [
+                    'state' => [
+                        'label' => __('stato'),
+                        'type' => 'select',
+                        'options' => [
+                            'all' => __('tutti'),
+                            'draft' => __('bozze'),
+                            'submitted' => __('da valutare'),
+                            'approved' => __('approvati'),
+                            'rejected' => __('rifiutati')
+                        ]],
+                    'surname' => __('cognome'),
+                    'academic_year' => __('anno'),
+                    'degree' => __('laurea'),
+                    'curriculum' => __('piano')]]) ?>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"

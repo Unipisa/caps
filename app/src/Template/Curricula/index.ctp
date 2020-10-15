@@ -5,34 +5,10 @@
         <div class="card shadow">
             <div class="card-body">
                 <div class="d-flex mb-3">
-                    <div class="dropdown">
-                        <button type="button" data-toggle="dropdown" class="btn btn-sm btn-primary dropdown-toggle mr-2">
-                            Filtra
-                        </button>
-                        <div class="dropdown-menu p-2" style="width: 350px">
-                            <div id="curriculaFilterFormDiv">
-                                <?php
-                                echo $this->Form->create($filterForm, ['type' => 'GET', 'class' => 'filterForm']);
-                                echo $this->Form->control('name',
-                                    [
-                                        'label' => __('nome'),
-                                        'onchange' => 'this.form.submit()'
-                                    ]);
-                                echo $this->Form->control('academic_year',
-                                    [
-                                        'label' => __('anno'),
-                                        'onchange' => 'this.form.submit()'
-                                    ]);
-                                echo $this->Form->control('degree',
-                                    [
-                                        'label' => __('laurea'),
-                                        'onchange' => 'this.form.submit()'
-                                    ]);
-                                echo $this->Form->end();
-                                ?>
-                            </div>
-                        </div>
-                    </div>
+                    <?= $this->element('filter-button', ['items' => [
+                        'name' => __('nome'),
+                        'academic_year' => __('anno'),
+                        'degree' => __('laurea')]]) ?>
 
                     <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
                         <button class="btn btn-sm btn-primary mr-2">
