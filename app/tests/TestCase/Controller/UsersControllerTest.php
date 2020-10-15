@@ -96,6 +96,6 @@ class UsersControllerTest extends IntegrationTestCase
             ]
         ]);
         $this->get('/users/view');
-        $this->assertResponseContains('matricola 123456');
+        $this->assertResponseContains('matricola: 123456');
     }
 }
