@@ -21,6 +21,9 @@ ln -s unipi.default.ini unipi.ini # In alternativa, aggiungere degli utenti di p
                                   # oppure configurare LDAP in modo opportuno.
 composer install
 ```
+Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
+tramite una porta locale, è necessario modificare il parametro 'verifyCert' a false in 
+app.php. Ovviamente, questa configurazione non è ideale in produzione. 
 
 ## Sviluppo
 Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*
@@ -34,6 +37,14 @@ vendor/bin/phpunit --filter testLoginPage # run a single test
 tail -f logs/*.log # display error messages 
 bin/cake server & # run a development server
 ```
+
+Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
+```
+bin/cake grant-admin username
+```
+Una volta che è presente il primo amministratore, gli altri possono essere creati
+tramite interfaccia web. 
+
 
 Per importare un dump vecchio del database è necessario prima migrare ad una versione
 compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
