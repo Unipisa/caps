@@ -10,7 +10,7 @@ before_script:
   - test -f composer.json || cd app ; composer install
 
 script:
-  - test -d vendor || cd app; vendor/bin/phpunit
+  - test -d vendor || cd app; vendor/bin/phpunit --debug
 
 notifications:
   email: false

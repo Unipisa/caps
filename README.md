@@ -48,6 +48,18 @@ Per aggiungere nuove migrazioni (un esempio):
 bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
 ```
 
+## Template
+
+Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. È possibile compilarlo con i comandi:
+```
+cd html/
+npm install
+npm run deploy
+```
+Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che compilano e 
+copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
+già compilati sono inclusi nel repository. 
+
 ## Inoltro dell'LDAP in locale
 
 Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''caps.dm.unipi.it''')

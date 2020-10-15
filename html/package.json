@@ -1,0 +1,48 @@
+{
+  "name": "caps-html",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "bootstrap": "^4.1.3",
+    "jquery-easing": "0.0.1",
+    "startbootstrap-sb-admin-2": "^4.1.1"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "autoprefixer": "^10.0.1",
+    "browserify": "^17.0.0",
+    "butternut": "^0.4.6",
+    "chart.js": "^2.9.3",
+    "clean-css-cli": "^4.3.0",
+    "copyfiles": "^2.4.0",
+    "expose-loader": "^1.0.1",
+    "jquery": "^3.5.1",
+    "node-sass": "^4.14.1",
+    "popper.js": "^1.16.1",
+    "postcss": "^8.1.1",
+    "postcss-cli": "^8.1.0",
+    "stylelint": "^13.7.2",
+    "stylelint-config-recommended-scss": "^4.2.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.1.0",
+    "stylelint-scss": "^3.18.0",
+    "uglify-js": "^3.11.2",
+    "watch": "^1.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
+    "css:compile": "node-sass --output-style expanded --include-path node_modules --source-map true --source-map-contents true --precision 6 scss/main.scss css/style.css",
+    "css:prefix": "postcss --replace \"css/*.css\" \"css/!*.min.css\"",
+    "css:minify": "cleancss --level 1 --source-map --source-map-inline-sources --output css/style.min.css css/style.css",
+    "build": "npm run css && npm run js",
+    "js": "browserify src/caps.js -o js/caps.js && butternut js/caps.js > js/caps.min.js",
+    "install": "copyfiles css/style.min.css js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
+    "deploy": "npm run build && npm run install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
