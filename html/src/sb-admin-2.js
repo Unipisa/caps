@@ -1,5 +1,9 @@
+const jQuery = require('jquery');
+
 (function($) {
   "use strict"; // Start of use strict
+
+  $(document).ready(function() {
 
   var dpi = window.devicePixelRatio || 1;
 
@@ -14,6 +18,7 @@
 
   // Close any open menu accordions when window is resized below 768px
   $(window).resize(function() {
+
     if ($(window).width() < 850 * dpi) {
       $('.sidebar .collapse').collapse('hide');
     };
@@ -57,5 +62,7 @@
 
   // Just make sure to apply the policy on page load
   $(window).resize();
+
+  });
 
 })(jQuery); // End of use strict
