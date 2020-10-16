@@ -9,7 +9,7 @@
                         'label' => __('stato'),
                         'type' => 'select',
                         'options' => [
-                            'all' => __('tutti'),
+                            '' => __('tutti'),
                             'draft' => __('bozze'),
                             'submitted' => __('da valutare'),
                             'approved' => __('approvati'),

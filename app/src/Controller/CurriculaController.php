@@ -39,16 +39,7 @@ class CurriculaController extends AppController
             ->contain([ 'Degrees']);
 
         $filterForm = new CurriculaFilterForm($curricula);
-        $filterData = $this->request->getQuery();
-        if (!key_exists('academic_year', $filterData) || !$filterForm->validate($filterData)) {
-            // no filter form provided or data not valid: set defaults:
-            $filterData = [
-            'name' => '',
-            'academic_year' => '',
-            'degree' => ''
-            ];
-        }
-        $curricula = $filterForm->execute($filterData);
+        $curricula = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);
 
         $this->set('curricula', $curricula);

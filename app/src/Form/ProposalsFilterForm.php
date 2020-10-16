@@ -19,7 +19,7 @@ class ProposalsFilterForm extends FilterForm
     protected function _execute(array $data)
     {
         $this->setData($data);
-        if ($this->getData('state') !== 'all') {
+        if ($this->getData('state') !== '') {
             $this->filterFieldEqual('Proposals.state', 'state');
         }
         $this->filterFieldLike('Users.surname', 'surname');

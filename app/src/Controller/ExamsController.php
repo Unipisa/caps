@@ -43,17 +43,7 @@ class ExamsController extends AppController
             ->contain([ 'Tags']);
 
         $filterForm = new ExamsFilterForm($exams);
-        $filterData = $this->request->getQuery();
-        if (!key_exists('name', $filterData) || !$filterForm->validate($filterData)) {
-            // no filter form provided or data not valid: set defaults:
-            $filterData = [
-            'name' => '',
-            'code' => '',
-            'sector' => '',
-            'credits' => null
-            ];
-        }
-        $exams = $filterForm->execute($filterData);
+        $exams = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);
 
         if ($this->request->is("post")) {

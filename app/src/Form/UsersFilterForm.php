@@ -14,7 +14,7 @@ class UsersFilterForm extends FilterForm
           ->addField('surname', ['type' => 'string'])
           ->addField('givenname', ['type' => 'string'])
           ->addField('email', ['type' => 'string'])
-          ->addField('admin', ['type' => 'select', 'options' => ['all', 'admin']])
+          ->addField('admin', ['type' => 'select', 'options' => ['admin']])
           ;
     }
 

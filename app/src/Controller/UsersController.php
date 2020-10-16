@@ -69,13 +69,7 @@ class UsersController extends AppController {
         $users = $this->Users->find('all');
 
         $filterForm = new UsersFilterForm($users);
-        $filterData = $this->request->getQuery();
-        if (!key_exists('admin', $filterData) || !$filterForm->validate($filterData)) {
-          // no filter form provided or data not valid: set defaults:
-          $filterData = [];
-        }
-
-        $proposals = $filterForm->execute($filterData);
+        $users = $filterForm->validate_and_execute($this->request->getQuery());
         if ($this->request->is("post")) {
             $action = null;
             foreach(['set_admin', 'clear_admin'] as $i) {
@@ -97,7 +91,6 @@ class UsersController extends AppController {
                     return $this->redirect(['action' => 'index']);
                 }
 
-                $count = 0;
                 foreach($selected as $user_id) {
                     $user = $this->Users->findById($user_id)
                         ->firstOrFail();

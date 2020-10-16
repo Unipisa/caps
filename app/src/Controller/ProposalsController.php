@@ -164,13 +164,7 @@ class ProposalsController extends AppController
         }
 
         $filterForm = new ProposalsFilterForm($proposals);
-        $filterData = $this->request->getQuery();
-        if (! $filterForm->validate($filterData)) {
-            // no filter form provided or data not valid: set defaults:
-            $filterData = [];
-        }
-
-        $proposals = $filterForm->execute($filterData);
+        $proposals = $filterForm->validate_and_execute($this->request->getQuery());
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {

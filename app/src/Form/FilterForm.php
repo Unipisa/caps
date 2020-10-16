@@ -13,6 +13,14 @@ class FilterForm extends Form
         $this->query = $query;
     }
 
+    public function validate_and_execute(array $data) {
+        if ($this->validate($data)) {
+            return $this->execute($data);
+        } else {
+            return $this->query;
+        }
+    }
+ 
     public function validationDefault(Validator $validator)
     {
         // $validator->requirePresence('status')

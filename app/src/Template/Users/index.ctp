@@ -8,7 +8,7 @@
             'label' => __('ruolo'),
             'type' => 'select',
             'options' => [
-                'all' => __('tutti'),
+                '' => __('tutti'),
                 'admin' => __('admin')]],
         'email' => __('email'),
         'surname' => __('cognome'),
