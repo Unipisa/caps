@@ -3,9 +3,6 @@
 
 Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio presso il Dipartimento di Matematica, Università di Pisa.
 
-
-
-
 ## Installazione
 ```
 apt install composer
@@ -16,14 +13,12 @@ apt install sqlite3  # for development
 ## Configurazione
 ```
 cd app
-ln -s app.default.php config/app.php # Configurazione locale
-ln -s unipi.default.ini unipi.ini # In alternativa, aggiungere degli utenti di prova a scelta,
-                                  # oppure configurare LDAP in modo opportuno.
+cp config/app.default.php config/app.php # Configurazione locale, richiede di impostare i parametri per LDAP
 composer install
 ```
 Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
-tramite una porta locale, è necessario modificare il parametro 'verifyCert' a false in 
-app.php. Ovviamente, questa configurazione non è ideale in produzione. 
+tramite una porta locale, è necessario modificare il parametro ```verify_cert``` a false in 
+```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non è ideale in produzione. 
 
 ## Sviluppo
 Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*
@@ -80,11 +75,12 @@ ssh -L 1636:idm2.unipi.it:636 utente@caps.dm.unipi.it
 ```
 e poi va modificato il file '''config/app.php''' per puntare all'LDAP locale, ad esempio:
 ```
-; URI del server LDAP da interrogare
-ldap_server_uri = ldaps://127.0.0.1:1636/
-
-; Base DN dove cercare gli studenti
-base_dn = "ou=people,dc=unipi,dc=it"
+[...]
+    'UnipiAuthenticate' => [
+      'ldap_server_uri' => 'ldaps://127.0.0.1:1636/',
+      'base_dn' => "ou=people,dc=unipi,dc=it",
+      'verify_cert' => false
+[...]
 ```
 
 ## struttura dati
