@@ -6,9 +6,11 @@
 
 set -e
 
-for CAPSDIRECTORY in $(find /var/www -name unipi.ini -exec dirname {} \;); do
+# We use webroot directory as a sign of having a CakePHP installation there
+for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;); do
+  cd ${CAPSDIRECTORY}/..
+  CAPSDIRECTORY=$(pwd)
   echo "$(date): Aggiornamento di ${CAPSDIRECTORY}"
-  cd ${CAPSDIRECTORY}
 
   current_HEAD=$(git rev-parse HEAD)
   git pull > /dev/null
