@@ -15,7 +15,7 @@
 
     <!-- Custom styles for this template-->
     <?php echo $this->Html->css('style.min');  ?>
-    <?php echo $this->Html->script('caps') ?>
+    <?php echo $this->Html->script('caps.min') ?>
 </head>
 
 <body id="page-top">

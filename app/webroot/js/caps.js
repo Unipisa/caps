@@ -39915,137 +39915,133 @@ return Popper;
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],7:[function(require,module,exports){
 (function (global){(function (){
+"use strict";
+
 /* The following lines contain the includes for bundle-js; they are sorted
  * in the correct way. */
 // require 'jquery'
 // require 'jquery-easing/dist/jquery.easing.1.3.umd.min.js'
 // require 'bootstrap/dist/js/bootstrap.bundle.min.js'
 // require './sb-admin-2.js'
-
 global.jQuery = require('jquery');
 
-const jQueryEasing = require('jquery.easing');
+var jQueryEasing = require('jquery.easing');
 
-const bootstrap = require('bootstrap');
-const sbadmin = require('./sb-admin-2.js');
+var bootstrap = require('bootstrap');
+
+var sbadmin = require('./sb-admin-2.js');
 
 global.Chart = require('chart.js');
-
 /*
  * This file contains a few utility functions that are useful throughout the CAPS code base, and not linked to a
  * specific page.
  */
 
 global.Caps = {
-    /*
-     * This is a bit of a hack: we change the URL in the page to make the
-     * controller render the CSV version of the content. This will keep all
-     * the specified filters in place.
-     */
-    'downloadCSV': function() {
-        location.pathname += '.csv';
-    },
+  /*
+   * This is a bit of a hack: we change the URL in the page to make the
+   * controller render the CSV version of the content. This will keep all
+   * the specified filters in place.
+   */
+  'downloadCSV': function downloadCSV() {
+    location.pathname += '.csv';
+  },
+  // Remove the key&value pair from the URL, mainly uesd to remove some filters
+  // for the current table
+  'removeQueryParam': function removeQueryParam(param) {
+    var url = window.location.href;
+    var rx = new RegExp(param + '=[^&]*');
+    location.href = url.replace(rx, '');
+  },
+  // Submit a form by injecting the name and value of an element; this is used
+  // in several places where we allow to operate on a set of elements selected
+  // by checkboxes, even with buttons that are outside the HTML <form> tags.
+  'submitForm': function submitForm(form_id, data, action_message) {
+    if (action_message == null || confirm(action_message)) {
+      var form = document.getElementById(form_id);
 
-    // Remove the key&value pair from the URL, mainly uesd to remove some filters
-    // for the current table
-    'removeQueryParam': function(param) {
-        let url = window.location.href;
-        let rx = new RegExp(param + '=[^&]*');
-        location.href = url.replace(rx, '');
-    },
+      for (var key in data) {
+        // Insert hidden input entries in the form
+        var inp = document.createElement('input');
+        inp.name = key;
+        inp.value = data[key];
+        inp.style = "display: none";
+        form.appendChild(inp);
+      }
 
-    // Submit a form by injecting the name and value of an element; this is used
-    // in several places where we allow to operate on a set of elements selected
-    // by checkboxes, even with buttons that are outside the HTML <form> tags.
-    'submitForm': function(form_id, data, action_message) {
-        if (action_message == null || confirm(action_message)) {
-            let form = document.getElementById(form_id);
-
-            for (var key in data) {
-                // Insert hidden input entries in the form
-                let inp = document.createElement('input');
-                inp.name = key;
-                inp.value = data[key];
-                inp.style = "display: none";
-                form.appendChild(inp);
-            }
-
-            form.submit();
-        }
-    },
+      form.submit();
+    }
+  }
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./sb-admin-2.js":8,"bootstrap":1,"chart.js":2,"jquery":4,"jquery.easing":3}],8:[function(require,module,exports){
-const jQuery = require('jquery');
+"use strict";
 
-(function($) {
+var jQuery = require('jquery');
+
+(function ($) {
   "use strict"; // Start of use strict
 
-  $(document).ready(function() {
+  $(document).ready(function () {
+    var dpi = window.devicePixelRatio || 1; // Toggle the side navigation
 
-  console.log("CAPS :: Setting up sidebar");
+    $("#sidebarToggle, #sidebarToggleTop").on('click', function (e) {
+      $("body").toggleClass("sidebar-toggled");
+      $(".sidebar").toggleClass("toggled");
 
-  var dpi = window.devicePixelRatio || 1;
+      if ($(".sidebar").hasClass("toggled")) {
+        $('.sidebar .collapse').collapse('hide');
+      }
 
-  // Toggle the side navigation
-  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
-    if ($(".sidebar").hasClass("toggled")) {
-      $('.sidebar .collapse').collapse('hide');
-    };
-  });
+      ;
+    }); // Close any open menu accordions when window is resized below 768px
 
-  // Close any open menu accordions when window is resized below 768px
-  $(window).resize(function() {
+    $(window).resize(function () {
+      if ($(window).width() < 850 * dpi) {
+        $('.sidebar .collapse').collapse('hide');
+      }
 
-    if ($(window).width() < 850 * dpi) {
-      $('.sidebar .collapse').collapse('hide');
-    };
+      ; // Toggle the side navigation when window is resized below 480px
 
-    // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 600 * dpi && !$(".sidebar").hasClass("toggled")) {
-      $("body").addClass("sidebar-toggled");
-      $(".sidebar").addClass("toggled");
-      $('.sidebar .collapse').collapse('hide');
-    };
-  });
+      if ($(window).width() < 600 * dpi && !$(".sidebar").hasClass("toggled")) {
+        $("body").addClass("sidebar-toggled");
+        $(".sidebar").addClass("toggled");
+        $('.sidebar .collapse').collapse('hide');
+      }
 
-  // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
-    if ($(window).width() > 850 * dpi) {
-      var e0 = e.originalEvent,
-        delta = e0.wheelDelta || -e0.detail;
-      this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+      ;
+    }); // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
+
+    $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function (e) {
+      if ($(window).width() > 850 * dpi) {
+        var e0 = e.originalEvent,
+            delta = e0.wheelDelta || -e0.detail;
+        this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+        e.preventDefault();
+      }
+    }); // Scroll to top button appear
+
+    $(document).on('scroll', function () {
+      var scrollDistance = $(this).scrollTop();
+
+      if (scrollDistance > 100) {
+        $('.scroll-to-top').fadeIn();
+      } else {
+        $('.scroll-to-top').fadeOut();
+      }
+    }); // Smooth scrolling using jQuery easing
+
+    $(document).on('click', 'a.scroll-to-top', function (e) {
+      var $anchor = $(this);
+      $('html, body').stop().animate({
+        scrollTop: $($anchor.attr('href')).offset().top
+      }, 1000, 'easeInOutExpo');
       e.preventDefault();
-    }
+    }); // Just make sure to apply the policy on page load
+
+    $(window).resize();
   });
-
-  // Scroll to top button appear
-  $(document).on('scroll', function() {
-    var scrollDistance = $(this).scrollTop();
-    if (scrollDistance > 100) {
-      $('.scroll-to-top').fadeIn();
-    } else {
-      $('.scroll-to-top').fadeOut();
-    }
-  });
-
-  // Smooth scrolling using jQuery easing
-  $(document).on('click', 'a.scroll-to-top', function(e) {
-    var $anchor = $(this);
-    $('html, body').stop().animate({
-      scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
-    e.preventDefault();
-  });
-
-  // Just make sure to apply the policy on page load
-  $(window).resize();
-
-  });
-
 })(jQuery); // End of use strict
 
 },{"jquery":4}]},{},[7]);
