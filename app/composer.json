@@ -1,11 +1,11 @@
 {
     "name": "cakephp/app",
-    "description": "CakePHP skeleton app",
-    "homepage": "https://cakephp.org",
+    "description": "CAPS - Compilazione Assistita Piani di Studio",
+    "homepage": "https://github.com/Unipisa/caps",
     "type": "project",
-    "license": "MIT",
+    "license": "AGPL-3.0",
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.2",
         "cakephp/cakephp": "3.9.*",
         "cakephp/migrations": "^2.0.0",
         "cakephp/plugin-installer": "^1.0",
