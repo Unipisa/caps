@@ -3,7 +3,7 @@
 <?php if ($user['admin']): ?>
 
 <?php echo $this->element('card-start') ?>
-    <div class="d-flex">
+    <div class="d-flex mb-2">
         <?= $this->element('filter-button', ['items' => [
                     'state' => [
                         'label' => __('stato'),
