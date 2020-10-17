@@ -8,17 +8,18 @@ To start the container, you can run
 ```bash
 sudo docker-compose up
 ```
-For leter update, use
+For later updates, use
 ```bash
 sudo docker-compose up --build
 ```
-to regenerate the CAPS image. 
+to regenerate the CAPS image. This will copy the files from the ```app```
+folder into the image. 
 
 ## Local development
 
-An alternative ```docker-compose.yml``` file is provided that mounts some directories
+An alternative ```docker-compose-dev.yml``` file is provided that mounts some directories
 directly from the repository, to allow for automatic reloading of the PHP source files
-in the development. To use that, you can give the command
+during development. To use that, you can give the command
 ```bash
 sudo docker-compose -f docker-compose-dev.yml up
 ```
@@ -36,4 +37,4 @@ to have:
   volumes:
     - ./id_rsa:/app/id_rsa
 ```
-inside the container ```caps```. 
+inside the container named ```caps```. 
