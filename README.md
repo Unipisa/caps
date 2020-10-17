@@ -1,5 +1,5 @@
 # CAPS
-[![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master)](https://travis-ci.org/github/Unipisa/caps/) [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)](https://travis-ci.org/github/Unipisa/caps/)
+[![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master)](https://travis-ci.org/github/Unipisa/caps/) [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)](https://travis-ci.org/github/Unipisa/caps/) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio presso il Dipartimento di Matematica, Università di Pisa.
 
@@ -20,6 +20,14 @@ Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè
 tramite una porta locale, è necessario modificare il parametro ```verify_cert``` a false in 
 ```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non è ideale in produzione. 
 
+
+Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
+```bash
+bin/cake grant-admin username
+```
+Una volta che è presente il primo amministratore, gli altri possono essere creati
+tramite interfaccia web. 
+
 ## Sviluppo
 Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*
 
@@ -33,26 +41,6 @@ tail -f logs/*.log # display error messages
 bin/cake server & # run a development server
 ```
 
-Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
-```bash
-bin/cake grant-admin username
-```
-Una volta che è presente il primo amministratore, gli altri possono essere creati
-tramite interfaccia web. 
-
-
-Per importare un dump vecchio del database è necessario prima migrare ad una versione
-compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
-```bash
-bin/cake migrations migrate -t 20191217155946
-sqlite3 caps.sqlite < dump.sql
-bin/cake migrations migrate
-```
-
-Per aggiungere nuove migrazioni (un esempio):
-```bash
-bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
-```
 
 ## Inoltro dell'LDAP in locale
 
@@ -71,5 +59,17 @@ e poi va modificato il file '''config/app.php''' per puntare all'LDAP locale, ad
 ```
 I parametri opzionali ```admin``` e ```fakes``` possono essere utilizzati per forzare
 alcuni utenti ad essere amministratori, o per creare utenti fittizzi. 
+
+Questa procedura viene gestita in automatico dall'immagine [Docker](docker/README.md). 
+
+## Upgrade da CAPS < 1.0.0
+
+Per importare un dump vecchio del database (di CAPS < 1.0.0) è necessario prima migrare ad una versione
+compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
+```bash
+bin/cake migrations migrate -t 20191217155946
+sqlite3 caps.sqlite < dump.sql
+bin/cake migrations migrate
+```
 
 

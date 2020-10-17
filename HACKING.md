@@ -1,6 +1,13 @@
 # Informazioni utili per sviluppatori
 
 
+## Istruzioni per CakePHP
+
+Per aggiungere nuove migrazioni (un esempio):
+```bash
+bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
+```
+
 ## Template
 
 Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. È possibile compilarlo con i comandi:
@@ -14,7 +21,7 @@ copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per com
 già compilati sono inclusi nel repository. 
 
 
-## struttura dati
+## Struttura dati
 
     Attachment
         id
