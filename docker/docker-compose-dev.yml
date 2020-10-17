@@ -1,0 +1,28 @@
+# This is essentially the same file, but it mounts the source files
+# for CAPS into the image directly, so that develpoment can be carried
+# out without rebuilding the image. 
+version: '2.3'
+
+services:
+  caps:
+    build: ..
+    container_name: caps
+    ports:
+      - 8080:80
+    volumes:
+      # This is set anyway, in case it does not exists a folder
+      # is created, which is harmless. Otherwise, this should be
+      # a file with a private RSA key for SSH authentication
+      - "./id_rsa:/app/id_rsa"
+      - "../app/src:/app/src"
+      - "../app/webroot:/app/webroot"
+    env_file:
+      - caps.env
+      
+  caps-db:
+    image: mysql:5
+    container_name: caps-db
+    volumes: 
+      - ./database:/var/lib/mysql
+    env_file:
+      - caps.env    
