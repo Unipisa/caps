@@ -1,6 +1,20 @@
 # Informazioni utili per sviluppatori
 
 
+## Sviluppo
+Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*
+
+```bash
+cd app
+git checkout develop
+bin/cake migrations migrate # Crea o aggiorna il database
+vendor/bin/phpunit # run unit tests
+vendor/bin/phpunit --filter testLoginPage # run a single test
+tail -f logs/*.log # display error messages 
+bin/cake server & # run a development server
+```
+
+
 ## Istruzioni per CakePHP
 
 Per aggiungere nuove migrazioni (un esempio):

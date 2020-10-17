@@ -1,7 +1,10 @@
 # CAPS
 [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master)](https://travis-ci.org/github/Unipisa/caps/) [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)](https://travis-ci.org/github/Unipisa/caps/) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio presso il Dipartimento di Matematica, Università di Pisa.
+Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio
+presso il Dipartimento di Matematica, Università di Pisa.
+
+Per informazioni sullo sviluppo di CAPS, si veda [HACKING.md](HACKING.md). 
 
 ## Installazione
 ```bash
@@ -18,7 +21,8 @@ composer install
 ```
 Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
 tramite una porta locale, è necessario modificare il parametro ```verify_cert``` a false in 
-```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non è ideale in produzione. 
+```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non 
+è ideale in produzione. 
 
 
 Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
@@ -27,20 +31,6 @@ bin/cake grant-admin username
 ```
 Una volta che è presente il primo amministratore, gli altri possono essere creati
 tramite interfaccia web. 
-
-## Sviluppo
-Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*
-
-```bash
-cd app
-git checkout develop
-bin/cake migrations migrate # Crea o aggiorna il database
-vendor/bin/phpunit # run unit tests
-vendor/bin/phpunit --filter testLoginPage # run a single test
-tail -f logs/*.log # display error messages 
-bin/cake server & # run a development server
-```
-
 
 ## Inoltro dell'LDAP in locale
 
