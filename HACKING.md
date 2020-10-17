@@ -1,0 +1,137 @@
+# Informazioni utili per sviluppatori
+
+
+## Template
+
+Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. È possibile compilarlo con i comandi:
+```bash
+cd html/
+npm install
+npm run deploy
+```
+Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che compilano e 
+copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
+già compilati sono inclusi nel repository. 
+
+
+## struttura dati
+
+    Attachment
+        id
+        filename
+        user -> User
+        proposal -> Proposal
+        data
+        mimetype
+        comment
+        created
+
+    ChosenExam
+        id
+        credits
+        chosen_year
+        exam -> Exam
+        proposal -> Proposal
+        compulsory_group -> CompulsoryGroup (*) (!) 
+        compulsory_exam -> CompulsoryExams (*) (!) 
+        free_choice_exam -> FreeChoiceExam (*) (!) 
+        (*) uno solo dei tre puo' essere non null: indica la corrispondenza dell'esame nel curriculum
+        (*) se tutti e tre sono null vuol dire che l'esame non era previsto nel curriculum
+
+    ChosenFreeChoiceExam
+        id
+        name
+        credits
+        chosen_year
+        proposal -> Proposal
+        free_choice_exam -> FreeChoiceExam (*) (!)
+        (*) se non null indica la corrispondenza dell'esame nel curriculum. Ma attualmente l'utente non puo' inserirlo, infatti è sempre null!
+        (*) se null significa che e' un esame non in databse e  non previsto dal curriculum.
+
+    CompulsoryExam
+        id
+        year
+        position
+        exam -> Exam
+        curriculum -> Curriculum
+
+    CompulsoryGroup
+        id
+        year
+        position
+        group -> Group
+        curriculum -> Curriculum
+
+    Curriculum
+        id
+        name
+        academic_year
+        notes
+        degree -> Degrees (!)
+        proposals <- Proposals
+        free_choice_exams <- FreeChoiceExam
+        compulsory_exams <- CompulsoryExam
+        compulsory_groups <- CompulsoryGroup
+        <- Proposal
+
+    Exam
+        id
+        name
+        code
+        sector
+        credits
+        <-> Exam
+
+    FreeChoiceExam
+        id
+        year
+        position
+        curriculum -> Curriculum
+
+    Group
+        id
+        name
+        <-> Exam
+
+    ProposalAuth
+        id
+        email
+        secret
+        created
+        proposal -> Proposal
+
+    Proposal
+        id
+        modified
+        state
+        submitted_date
+        approved_date
+        user -> User
+        curriculum -> Curriculum
+        <- ChosenExam
+        <- ChosenFreeChoiceExam
+        <- ProposalAuth
+        <- Attachment
+
+    Settings
+        id
+        field
+        value
+        fieldtype
+
+    Tag
+        id
+        name
+        <-> Exam
+
+    User
+        id
+        username
+        name
+        number
+        givenname
+        surname
+        email
+        admin
+
+(!) nel database manca il constraint!!
