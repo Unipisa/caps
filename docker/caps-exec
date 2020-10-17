@@ -81,6 +81,10 @@ sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
 sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
 sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
 
+echo "Generating security salt"
+SALT=$(openssl rand -hex 32)
+sed -i "s|__SALT__|${SALT}|" /app/config/app.php
+
 export APACHE_PID_FILE=/var/run/apache2/apache2.pid
 export APACHE_RUN_DIR=/var/run/apache2
 export APACHE_RUN_USER=www-data

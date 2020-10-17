@@ -3,6 +3,7 @@
 use Cake\Cache\Engine\FileEngine;
 use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
+use Cake\Database\Driver\Postgres;
 use Cake\Database\Driver\Sqlite;
 use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
@@ -299,7 +300,7 @@ return [
              * decreases performance because each query needs to be traversed and
              * manipulated before being executed.
              */
-            'quoteIdentifiers' => false,
+            'quoteIdentifiers' => true,
 
             /**
              * During development, if using MySQL < 5.6, uncommenting the
