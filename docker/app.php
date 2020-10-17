@@ -26,8 +26,8 @@ return [
      */
     'Caps' => [
         'cds' => '@CAPS_CDS',
-        'disclaimer' => '@CAPS_DISCLAIMER',
-        'timezone' => '@CAPS_TIMEZONE'
+        'disclaimer' => '@CAPS_DISCLAIMER@',
+        'timezone' => '@CAPS_TIMEZONE@'
     ],
 
     'UnipiAuthenticate' => [
