@@ -62,24 +62,24 @@ function csv_validator(item, context) {
             'credits' => __('crediti')]]) ?>
         <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
             <button type="button" class="btn btn-sm btn-primary mr-2">
-                <i class="fas fa-plus mr-2"></i>Aggiungi
+                <i class="fas fa-plus"></i><span class="d-none d-md-inline ml-2">Aggiungi esame</span>
             </button>
         </a>
 
         <button type="button" class="btn btn-sm btn-danger mr-2"
             onclick="Caps.submitForm('exams-form', { 'delete': 1 }, 'Confermi di voler rimuovere gli esami selezionati?')">
-            <i class="fas fa-times mr-2"></i>Elimina
+            <i class="fas fa-times"></i><span class="ml-2 d-none d-md-inline">Elimina</span>
         </button>
 
         <div class="flex-fill"></div>
 
         <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
-            <i class="fas fa-download mr-2"></i>Esporta in CSV
+            <i class="fas fa-download"></i><span class="ml-2 d-none d-lg-inline">Esporta in CSV</span>
         </div>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown" onclick='csv_click()'>
-                Importa da CSV
+                <i class="fas fa-upload"></i><span class="ml-2 d-none d-lg-inline">Importa da CSV</span>
             </button>
             <div class="dropdown-menu p-2 shadow" style="width: 800px; max-height: 500px; overflow-y: scroll;">
                 <div id="caps-admin-actions-csv" class="caps-admin-actions-csv">

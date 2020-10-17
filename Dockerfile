@@ -18,6 +18,8 @@ COPY ./docker/app.php /app/config/app.php.template
 COPY ./docker/caps-exec /app/
 COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
+RUN chown www-data:www-data /app -R
+
 WORKDIR /app
 
 CMD './caps-exec'

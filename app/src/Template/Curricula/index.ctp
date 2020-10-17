@@ -35,30 +35,32 @@
 
                     <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
                         <button class="btn btn-sm btn-primary mr-2">
-                            Aggiungi curriculum
+                            <i class="fas fa-plus"></i><span class="ml-2 d-none d-lg-inline">Aggiungi curriculum</span>
                         </button>
                     </a>
 
                     <a href="#" >
-                        <button class="btn btn-sm btn-danger mr-2" onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i curricula selezionati?')">
-                            Elimina curriculum
+                        <button class="btn btn-sm btn-danger mr-2"
+                                onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i curricula selezionati?')">
+                            <i class="fas fa-times"></i><span class="d-none d-lg-inline ml-2">Elimina curriculum</span>
                         </button>
                     </a>
 
                     <div class="flex-fill"></div>
 
                     <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
-                        <i class="fas fa-download mr-2"></i>Esporta in CSV
+                        <i class="fas fa-download"></i><span class="ml-2 d-none d-lg-inline">Esporta in CSV</span>
                     </div>
 
                     <a><button class="btn btn-sm btn-primary mr-2"
                             onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() }, 'Clonare i nuovi curricula per l\'anno selezionato?')">
-                        Duplica per un nuovo anno
+                            <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
                     </button></a>
 
-                    <div class="form-inline">
+                    <div class="form-inline" style="width: 75px;">
                         <!-- <label for="anno" class="mr-2">Anno dei nuovi curricula: </label> //-->
-                        <input type="text" class="form-control form-control-sm" name="year" id="clone-year"/>
+                        <input type="text"  style="width: 75px;" class="form-control form-control-sm"
+                               name="year" id="clone-year" placeholder="Anno"/>
                     </div>
                 </div>
 

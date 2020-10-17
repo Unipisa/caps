@@ -23,7 +23,7 @@
 ?>
 <div class="dropdown mr-2">
     <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
-        Filtra
+        <i class="fas fa-filter"></i><span class="ml-2 d-none d-md-inline">Filtra</span>
     </button>
     <div class="dropdown-menu p-2" style="width: 350px;">
         <?php

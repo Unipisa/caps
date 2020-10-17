@@ -29,18 +29,19 @@
     <div class="mb-2 d-flex">
         <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">
-                Aggiungi corso di laurea
+                <i class="fas fa-plus"></i><span class="d-none d-md-inline ml-2">Aggiungi corso di laurea</span>
             </button>
         </a>
 
-        <input class="btn btn-sm btn-danger" type="submit" name="delete"
-               onclick="return confirm('Confermi di voler rimuovere i corsi selezionati?')"
-               value="Elimina i corsi selezionati" />
+        <button class="btn btn-sm btn-danger" type="button"
+               onclick="Caps.submitForm('form-degree', { 'delete': 1 }, 'Confermi di voler rimuovere i corsi selezionati?')">
+            <i class="fas fa-times"></i><span class="d-none d-md-inline ml-2">Elimina i corsi selezionati</span>
+        </button>
 
         <div class="flex-fill"></div>
 
         <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
-            <i class="fas fa-download mr-2"></i>Esporta in CSV
+            <i class="fas fa-download"></i><span class="ml-2 d-none d-md-inline">Esporta in CSV</span>
         </button>
     </div>
 

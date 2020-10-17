@@ -27,19 +27,19 @@
     <div class="d-flex mb-2">
         <a href="<?= $this->Url->build([ 'action' => 'edit' ]); ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">
-                Aggiungi gruppo
+                <i class="fas fa-plus"></i><span class="d-none d-md-inline ml-2">Aggiungi gruppo</span>
             </button>
         </a>
 
         <button type="button" class="btn btn-sm btn-danger"
             onclick="Caps.submitForm('groups-form', { 'delete': 1 }, 'Confermi di voler rimuovere i gruppi selezionati?')">
-            Elimina i gruppi selezionati
+            <i class="fas fa-times"></i><span class="d-none d-md-inline ml-2">Elimina i gruppi selezionati</span>
         </button>
 
         <div class="flex-fill"></div>
 
         <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
-            <i class="fas fa-download mr-2"></i>Esporta in CSV
+            <i class="fas fa-download"></i><span class="d-none d-md-inline ml-2">Esporta in CSV</span>
         </div>
 
     </div>

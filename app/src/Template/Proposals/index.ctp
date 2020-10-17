@@ -76,7 +76,7 @@
 
         <div class="col-auto">
             <button type="button" class="btn btn-sm btn-primary" onclick="Caps.downloadCSV();">
-                <i class="fas fw fa-download mr-2" ></i>Esporta in CSV
+                <i class="fas fw fa-download"></i><span class="ml-2 d-none d-md-inline">Esporta in CSV</span>
             </button>
         </div>
     </div>
