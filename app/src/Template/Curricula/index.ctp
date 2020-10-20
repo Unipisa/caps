@@ -1,3 +1,26 @@
+<?php
+/**
+ * CAPS - Compilazione Assistita Piani di Studio
+ * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This program is based on the CakePHP framework, which is released under
+ * the MIT license, and whose copyright is held by the Cake Software
+ * Foundation. See https://cakephp.org/ for further details.
+ */
+?>
 <h1>Curricula</h1>
 
 <div class="row">
@@ -12,30 +35,32 @@
 
                     <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
                         <button class="btn btn-sm btn-primary mr-2">
-                            Aggiungi curriculum
+                            <i class="fas fa-plus"></i><span class="ml-2 d-none d-lg-inline">Aggiungi curriculum</span>
                         </button>
                     </a>
 
                     <a href="#" >
-                        <button class="btn btn-sm btn-danger mr-2" onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i curricula selezionati?')">
-                            Elimina curriculum
+                        <button class="btn btn-sm btn-danger mr-2"
+                                onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i curricula selezionati?')">
+                            <i class="fas fa-times"></i><span class="d-none d-lg-inline ml-2">Elimina curriculum</span>
                         </button>
                     </a>
 
                     <div class="flex-fill"></div>
 
                     <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
-                        <i class="fas fa-download mr-2"></i>Esporta in CSV
+                        <i class="fas fa-download"></i><span class="ml-2 d-none d-lg-inline">Esporta in CSV</span>
                     </div>
 
                     <a><button class="btn btn-sm btn-primary mr-2"
                             onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': jQuery('#clone-year').val() }, 'Clonare i nuovi curricula per l\'anno selezionato?')">
-                        Duplica per un nuovo anno
+                            <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
                     </button></a>
 
-                    <div class="form-inline">
+                    <div class="form-inline" style="width: 75px;">
                         <!-- <label for="anno" class="mr-2">Anno dei nuovi curricula: </label> //-->
-                        <input type="text" class="form-control form-control-sm" name="year" id="clone-year"/>
+                        <input type="text"  style="width: 75px;" class="form-control form-control-sm"
+                               name="year" id="clone-year" placeholder="Anno"/>
                     </div>
                 </div>
 

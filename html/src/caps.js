@@ -7,10 +7,10 @@
 
 global.jQuery = require('jquery');
 
-const jQueryEasing = require('jquery.easing');
+var jQueryEasing = require('jquery.easing');
 
-const bootstrap = require('bootstrap');
-const sbadmin = require('./sb-admin-2.js');
+var bootstrap = require('bootstrap');
+var sbadmin = require('./sb-admin-2.js');
 
 global.Chart = require('chart.js');
 
@@ -32,8 +32,8 @@ global.Caps = {
     // Remove the key&value pair from the URL, mainly uesd to remove some filters
     // for the current table
     'removeQueryParam': function(param) {
-        let url = window.location.href;
-        let rx = new RegExp(param + '=[^&]*');
+        var url = window.location.href;
+        var rx = new RegExp(param + '=[^&]*');
         location.href = url.replace(rx, '');
     },
 
@@ -42,11 +42,11 @@ global.Caps = {
     // by checkboxes, even with buttons that are outside the HTML <form> tags.
     'submitForm': function(form_id, data, action_message) {
         if (action_message == null || confirm(action_message)) {
-            let form = document.getElementById(form_id);
+            var form = document.getElementById(form_id);
 
             for (var key in data) {
                 // Insert hidden input entries in the form
-                let inp = document.createElement('input');
+                var inp = document.createElement('input');
                 inp.name = key;
                 inp.value = data[key];
                 inp.style = "display: none";

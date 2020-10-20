@@ -1,4 +1,4 @@
-const jQuery = require('jquery');
+var jQuery = require('jquery');
 
 (function($) {
   "use strict"; // Start of use strict

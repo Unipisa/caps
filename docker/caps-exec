@@ -1,0 +1,110 @@
+#!/bin/bash
+
+set -e
+
+echo "Starting the CAPS Docker manager"
+
+#
+# Snippet to install composer, from https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+#
+EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)"
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+
+if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
+then
+    >&2 echo 'ERROR: Invalid installer checksum'
+    rm composer-setup.php
+    exit 1
+fi
+
+php composer-setup.php --quiet
+rm composer-setup.php
+
+echo "Installing dependencies"
+php composer.phar install
+
+# We check for MySQL twice, because it could get the temporary server sometimes,
+# and we need to make sure that the complete server is up and running before
+# doing migrations.
+
+while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+    echo "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
+    sleep 5
+done
+
+sleep 5
+
+while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+    echo "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
+    sleep 5
+done
+
+
+if [ "$CAPS_SSH_TUNNEL" != "" ]; then
+  echo "Starting the SSH tunnel"
+
+  if [ ! -f /app/id_rsa ]; then
+    echo "Please make sure to mount your public SSH key as /app/id_rsa.pub"
+    exit 2
+  fi
+
+  # Make sure we're the one to own the key
+  chown $(whoami) /app/id_rsa
+  chmod 600 /app/id_rsa
+
+  /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa ${CAPS_LDAP_URI} &
+
+  echo "We are rewriting the configuration to point to the local forward:"
+  echo ${CAPS_LDAP_URI} | grep ldaps: > /dev/null
+  if [ $? -eq 0 ]; then
+    CAPS_LDAP_URI="ldaps://localhost:1636"
+  else
+    CAPS_LDAP_URI="ldap://localhost:1636"
+  fi
+
+  echo "New CAPS_LDAP_URI: ${CAPS_LDAP_URI}"
+  echo "Disabling certificate verification, as it cannot be guaranteed in this setting"
+  CAPS_VERIFY_CERT="false"
+fi
+
+echo "Adjusting configuration file"
+cp -v /app/config/app.php.template /app/config/app.php
+sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
+sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
+sed -i "s|@CAPS_DB_PASSWORD@|${CAPS_DB_PASSWORD:-secret}|g" /app/config/app.php
+sed -i "s|@CAPS_DB_DATABASE@|${CAPS_DB_DATABASE:-caps}|g" /app/config/app.php
+sed -i "s|@CAPS_LDAP_URI@|${CAPS_LDAP_URI}|g" /app/config/app.php
+sed -i "s|@CAPS_LDAP_BASE@|${CAPS_LDAP_BASE}|g" /app/config/app.php
+sed -i "s|@CAPS_VERIFY_CERT@|${CAPS_VERIFY_CERT:-true}|g" /app/config/app.php
+sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
+sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
+sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
+
+echo "Generating security salt"
+SALT=$(openssl rand -hex 32)
+sed -i "s|__SALT__|${SALT}|" /app/config/app.php
+
+export APACHE_PID_FILE=/var/run/apache2/apache2.pid
+export APACHE_RUN_DIR=/var/run/apache2
+export APACHE_RUN_USER=www-data
+export APACHE_RUN_GROUP=www-data
+export APACHE_LOG_DIR=/var/log/apache2
+
+if [ ! -L /var/www/html ]; then
+  echo "Setting up /var/www/html as a symbolic link to /app/webroot"
+  rm -r /var/www/html
+  ln -s /app/webroot /var/www/html
+fi
+
+echo "Running migrations"
+bin/cake migrations migrate
+
+echo "Enabling mod_rewrite"
+a2enmod rewrite
+
+  
+
+echo "Starting Apache2"
+
+apache2 -DFOREGROUND

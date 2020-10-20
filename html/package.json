@@ -4,16 +4,18 @@
   "description": "",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "bootstrap": "^4.3.1",
     "jquery-easing": "0.0.1",
     "startbootstrap-sb-admin-2": "^4.1.1"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@babel/core": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
     "autoprefixer": "^10.0.1",
+    "babelify": "^10.0.0",
     "browserify": "^17.0.0",
-    "butternut": "^0.4.6",
     "chart.js": "^2.9.3",
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.4.0",
@@ -38,11 +40,11 @@
     "css:prefix": "postcss --replace \"css/*.css\" \"css/!*.min.css\"",
     "css:minify": "cleancss --level 1 --source-map --source-map-inline-sources --output css/style.min.css css/style.css",
     "build": "npm run css && npm run js",
-    "js": "browserify src/caps.js -o js/caps.js && butternut js/caps.js > js/caps.min.js",
+    "js": "browserify src/caps.js -o js/caps.js -t [ babelify --presets [ @babel/preset-env ] ] && uglifyjs js/caps.js -o js/caps.min.js -cm",
     "install": "copyfiles css/style.min.css js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
     "deploy": "npm run build && npm run install"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "AGPL-3.0-or-later"
 }
