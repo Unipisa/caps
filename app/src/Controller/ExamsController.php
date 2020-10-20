@@ -106,11 +106,20 @@ class ExamsController extends AppController
         $this->set('paginated_exams', $this->paginate($exams->cleanCopy()));
     }
 
+    private function chosen_exams($exam_id) {
+        $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
+        $chosen_exams =  $ChosenExams->find('all')
+            ->where(['exam_id' => $exam_id])
+            ->contain(['Proposals', 'Proposals.Users', 'Proposals.Curricula', 'Proposals.Curricula.Degrees']);
+        return $chosen_exams;
+    }
+
     /**
      * @brief Get a single exam in JSON format. URL: caps/exams/view/1.json
      */
     public function view($id = null)
     {
+        $query = $this->request->getQuery();
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
@@ -120,7 +129,16 @@ class ExamsController extends AppController
         ]);
 
         $this->set('exam', $exam);
-        $this->set('_serialize', [ 'exam' ]);
+        $_serialize = [ 'exam' ];
+        if ($this->user['admin']) {
+            // show list of chosen_exams
+            $this->set('chosen_exams', $this->chosen_exams($id));
+            if (array_key_exists('chosen_exams', $query)) {
+                // override $_serialize
+                $_serialize = [ 'chosen_exams' ];
+            }
+        }
+        $this->set('_serialize', $_serialize);
     }
 
     public function edit($id = null)

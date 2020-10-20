@@ -147,6 +147,12 @@ base_dn = "ou=people,dc=unipi,dc=it"
         compulsory_groups <- CompulsoryGroup
         <- Proposal
 
+    Degree
+        id
+        name
+        years
+        enable_sharing
+
     Exam
         id
         name
