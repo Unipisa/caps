@@ -119,6 +119,9 @@ fi
 msg "Running migrations"
 bin/cake migrations migrate
 
+msg "Clearing cache"
+bin/cake cache clear_all
+
 msg "Enabling mod_rewrite"
 a2enmod rewrite
 
