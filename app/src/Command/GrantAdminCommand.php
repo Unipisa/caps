@@ -41,6 +41,13 @@ class GrantAdminCommand extends Command {
         $parser->addArgument('username', [
             'help' => 'Username of the selected user'
         ]);
+
+        $parser->addOption('force', [
+            'boolean' => true,
+            'default' => false,
+            'help' => 'Create user even if not existing'
+        ]);
+
         
         return $parser;
     }
@@ -53,9 +60,24 @@ class GrantAdminCommand extends Command {
         
         if ($users->count() == 0)
         {
-            $io->error("User $username not found in the database!");
+            $io->error("User '$username' not found in the database!");
             $io->info("This may mean that the user has never logged in.");
-            $io->info("A user can be granted administrator rights only after the first login.");
+            if ($args->getOption('force')) {
+                $user = $this->Users->newEntity();
+                $user['username'] = $username;
+                $user['admin'] = true;
+                $user['name'] = '';
+                $user['givenname'] = '';
+                $user['surname'] = '';
+                $user['number'] = '';
+                if ($this->Users->save($user)) {
+                    $io->info("New user $username created");
+                } else {
+                    $io->error("Creation of new user failed");
+                }
+            } else {
+                $io->info("You can use the flag '--force' to create a new user with the given username.");
+            }
         }
         else
         {
@@ -71,4 +93,4 @@ class GrantAdminCommand extends Command {
             }
         }   
     }
-}
+} 

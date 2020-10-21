@@ -71,9 +71,7 @@
 
     <?php if ($chosen_exams): ?>
 
-    <h2>Scelte dell'esame nei piani di studio</h2>
-
-    <?= $this->element('card-start') ?>
+    <?= $this->element('card-start', ['header' => __("Scelte dell'esame nei piani di studio")]) ?>
     <div class="d-flex mb-2">
         <div class="flex-fill"></div>
 
@@ -85,9 +83,8 @@
     <table class="table">
     <tr>
         <thead>
-            <th>Studente</th>
-            <th>Anno piano</th>
-            <th>Anno curriculum</th>
+            <th>Piani approvati</th>
+            <th>Anno accademico</th>
             <th>Curriculum</th>
             <th>Laurea</th>
         </thead>
@@ -95,11 +92,10 @@
         <?php foreach($chosen_exams as $chosen_exam): ?>
         <!--?php debug($chosen_exam); ?-->
         <tr>
-            <td><?= h($chosen_exam->proposal->user->surname." ".$chosen_exam->proposal->user->givenname) ?></td>
-            <td><?= $chosen_exam->chosen_year ?></td>
-            <td><?= $chosen_exam->proposal->curriculum->academic_year ?></td>
-            <td><?= h($chosen_exam->proposal->curriculum->name) ?></td>
-            <td><?= h($chosen_exam->proposal->curriculum->degree->name) ?></td>
+            <td><?= $chosen_exam->count ?></td>
+            <td><?= $chosen_exam->academic_year ?>/<?= $chosen_exam->academic_year + 1 ?></td>
+            <td><?= h($chosen_exam->curriculum_name) ?></td>
+            <td><?= h($chosen_exam->degree_name) ?></td>
         </tr>
         <?php endforeach ?>
     </table>

@@ -129,11 +129,26 @@ class ExamsController extends AppController
 
     private function chosen_exams($exam_id) {
         $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
-        $chosen_exams =  $ChosenExams->find('all')
-            ->where(['exam_id' => $exam_id])
-            ->contain(['Proposals', 'Proposals.Users', 'Proposals.Curricula', 'Proposals.Curricula.Degrees']);
-        return $chosen_exams;
+        $query =  $ChosenExams->find();
+        $query = $query
+            ->where([
+                'exam_id' => $exam_id,
+                'Proposals.state' => 'approved'
+                ])
+            ->contain(['Proposals' => ['Users', 'Curricula' => ['Degrees']]])
+            ->select([
+                'count' => $query->func()->count('proposal_id'),
+                'curriculum_id' => 'Proposals.curriculum_id',
+                'academic_year' => 'Curricula.academic_year',
+                'curriculum_name' => 'Curricula.name',
+                'degree_name' => 'Degrees.name'
+                ])
+            ->group(['curriculum_id'])
+            ->order(['count' => 'Desc']);
+
+        return $query;
     }
+
 
     /**
      * @brief Get a single exam in JSON format. URL: caps/exams/view/1.json

@@ -139,7 +139,7 @@ già compilati sono inclusi nel repository.
     Proposal
         id
         modified
-        state
+        state in ['draft','submitted','approved','rejected']
         submitted_date
         approved_date
         user -> User
