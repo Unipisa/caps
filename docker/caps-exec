@@ -10,36 +10,12 @@ msg "Starting the CAPS Docker manager"
 
 msg "Compiling CSS and JS files..."
 cd /html
-npm install
 npm run deploy
 cd ../app
-
-msg "Getting an updated composer.phar"
-
-#
-# Snippet to install composer, from https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
-#
-EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)"
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-
-if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
-then
-    >&2 echo 'ERROR: Invalid installer checksum'
-    rm composer-setup.php
-    exit 1
-fi
-
-php composer-setup.php --quiet
-rm composer-setup.php
-
-msg "Installing dependencies"
-php composer.phar install
 
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
-
 while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5

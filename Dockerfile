@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
         ssh \
 	npm \
     && rm -rf /var/lib/apt/lists/* \
+    && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+    && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
     && docker-php-ext-install gd ldap pdo_mysql intl
 
 COPY app /app
@@ -20,7 +22,10 @@ COPY ./docker/app.php /app/config/app.php.template
 COPY ./docker/caps-exec /app/
 COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
-RUN chown www-data:www-data /app -R && rm -rf /html/node_modules && npm install npm@latest -g
+RUN rm -rf /html/node_modules && npm install npm@latest -g \
+    && cd /app && php /usr/local/bin/composer.phar install \
+    && cd /html && npm install \
+    && chown www-data:www-data /app /html -R
 
 WORKDIR /app
 
