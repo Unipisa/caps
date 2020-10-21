@@ -98,7 +98,8 @@ class ExamsTable extends Table
 
         $validator
             ->integer('credits')
-            ->notEmptyString('credits', 'Inserire un numero di crediti');
+            ->notEmptyString('credits', 'Inserire un numero di crediti')
+            ->greaterThan('credits', 0, 'Il numero di crediti deve essere positivo');
 
         return $validator;
     }
