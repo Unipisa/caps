@@ -12,7 +12,7 @@ return [
     // Widget ordering for date/time/datetime pickers.
     'dateWidget' => '{{year}}{{month}}{{day}}{{hour}}{{minute}}{{second}}{{meridian}}',
     // Error message wrapper elements.
-    'error' => '<div class="error-message">{{content}}</div>',
+    'error' => '<div class="mb-3 m-1 p-2 border-left-danger">{{content}}</div>',
     // Container for error items.
     'errorList' => '<ul>{{content}}</ul>',
     // Error item wrapper.
@@ -36,7 +36,8 @@ return [
     // Container element used by control().
     'inputContainer' => '<div class="input form-group" {{type}}{{required}}">{{content}}</div>',
     // Container element used by control() when a field has an error.
-    'inputContainerError' => '<div class="input {{type}}{{required}} error">{{content}}{{error}}</div>',
+    'inputContainerError' => '<div class="input {{type}}{{required}} pl-2">{{content}}{{error}}</div>',
+    // Generic label
     'label' => '<label{{attrs}}>{{text}}</label>',
     // Label element used for radio and multi-checkbox inputs.
     'nestingLabel' => '{{hidden}}<label{{attrs}}>{{input}}{{text}}</label>',
