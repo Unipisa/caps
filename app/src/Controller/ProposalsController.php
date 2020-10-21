@@ -24,19 +24,20 @@
 namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
-use App\Model\Entity\ProposalAuth;
-use Cake\Http\Exception\NotFoundException;
-use Cake\ORM\TableRegistry;
-use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
-use Cake\Log\Log;
 use App\Form\ProposalsFilterForm;
+use App\Model\Entity\ProposalAuth;
+use Cake\Core\Configure;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Http\Exception\NotFoundException;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\ORM\TableRegistry;
+use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\I18n\Time;
-use Cake\Core\Configure;
 use Cake\Utility\Security;
+use Cake\Validation\Validation;
 use Dompdf\Dompdf;
-use Cake\Database\Expression\QueryExpression;
 
 class ProposalsController extends AppController
 {
@@ -617,6 +618,13 @@ class ProposalsController extends AppController
             $proposal_auth['proposal_id'] = $proposal['id'];
             $proposal_auth['email'] = $this->request->getData('email');
             $proposal_auth['secret'] = base64_encode(Security::randomBytes(8));
+
+            // Validate the email
+            if (! Validation::email($proposal_auth['email']))
+            {
+                $this->Flash->error('Email non valida');
+                return $this->redirect(['action' => 'view', $proposal['id']]);
+            }
 
             if ($this->Proposals->ProposalAuths->save($proposal_auth)) {
                 $email = $this->createProposalEmail($proposal)
