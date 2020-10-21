@@ -67,6 +67,9 @@ class GrantAdminCommand extends Command {
                 $user['username'] = $username;
                 $user['admin'] = true;
                 $user['name'] = '';
+                $user['givenname'] = '';
+                $user['firstname'] = '';
+                $user['number'] = '';
                 if ($this->Users->save($user)) {
                     $io->info("New user $username created");
                 } else {
