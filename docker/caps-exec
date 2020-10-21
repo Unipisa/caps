@@ -2,7 +2,19 @@
 
 set -e
 
-echo "Starting the CAPS Docker manager"
+function msg {
+  echo -e "\033[32;1mCAPS::DOCKER\033[34;0m $* \033[0m"
+}
+
+msg "Starting the CAPS Docker manager"
+
+msg "Compiling CSS and JS files..."
+cd /html
+npm install
+npm run deploy
+cd ../app
+
+msg "Getting an updated composer.phar"
 
 #
 # Snippet to install composer, from https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
@@ -21,7 +33,7 @@ fi
 php composer-setup.php --quiet
 rm composer-setup.php
 
-echo "Installing dependencies"
+msg "Installing dependencies"
 php composer.phar install
 
 # We check for MySQL twice, because it could get the temporary server sometimes,
@@ -29,23 +41,23 @@ php composer.phar install
 # doing migrations.
 
 while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
-    echo "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
+    msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
 done
 
 sleep 5
 
 while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
-    echo "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
+    msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
 done
 
 
 if [ "$CAPS_SSH_TUNNEL" != "" ]; then
-  echo "Starting the SSH tunnel"
+  msg "Starting the SSH tunnel"
 
   if [ ! -f /app/id_rsa ]; then
-    echo "Please make sure to mount your public SSH key as /app/id_rsa.pub"
+    msg "Please make sure to mount your public SSH key as /app/id_rsa.pub"
     exit 2
   fi
 
@@ -55,20 +67,27 @@ if [ "$CAPS_SSH_TUNNEL" != "" ]; then
 
   /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa ${CAPS_LDAP_URI} &
 
-  echo "We are rewriting the configuration to point to the local forward:"
-  echo ${CAPS_LDAP_URI} | grep ldaps: > /dev/null
+  # We now create a fake host entry to point to the LDAP server:
+  LDAP_HOST=$(echo "${CAPS_LDAP_URI}" | sed "s|ldap\(s\)\?:\/\/||")
+  LDAP_HOST=$(echo ${LDAP_HOST} | cut -d ':' -f1)
+
+  # msg "Adding fake pointer ${LDAP_HOST} -> 127.0.0.1 to /etc/hosts"
+  # echo "${LDAP_HOST}\t127.0.0.1" >> /etc/hosts
+
+  msg "We are rewriting the configuration to point to the local forward:"
+  msg ${CAPS_LDAP_URI} | grep ldaps: > /dev/null
   if [ $? -eq 0 ]; then
     CAPS_LDAP_URI="ldaps://localhost:1636"
   else
     CAPS_LDAP_URI="ldap://localhost:1636"
   fi
 
-  echo "New CAPS_LDAP_URI: ${CAPS_LDAP_URI}"
-  echo "Disabling certificate verification, as it cannot be guaranteed in this setting"
+  msg "New CAPS_LDAP_URI: ${CAPS_LDAP_URI}"
+  msg "Disabling certificate verification, as it cannot be guaranteed in this setting"
   CAPS_VERIFY_CERT="false"
 fi
 
-echo "Adjusting configuration file"
+msg "Adjusting configuration file"
 cp -v /app/config/app.php.template /app/config/app.php
 sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
@@ -81,7 +100,7 @@ sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
 sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
 sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
 
-echo "Generating security salt"
+msg "Generating security salt"
 SALT=$(openssl rand -hex 32)
 sed -i "s|__SALT__|${SALT}|" /app/config/app.php
 
@@ -92,19 +111,17 @@ export APACHE_RUN_GROUP=www-data
 export APACHE_LOG_DIR=/var/log/apache2
 
 if [ ! -L /var/www/html ]; then
-  echo "Setting up /var/www/html as a symbolic link to /app/webroot"
+  msg "Setting up /var/www/html as a symbolic link to /app/webroot"
   rm -r /var/www/html
   ln -s /app/webroot /var/www/html
 fi
 
-echo "Running migrations"
+msg "Running migrations"
 bin/cake migrations migrate
 
-echo "Enabling mod_rewrite"
+msg "Enabling mod_rewrite"
 a2enmod rewrite
 
-  
-
-echo "Starting Apache2"
+msg "Starting Apache2, go to http://localhost:8080"
 
 apache2 -DFOREGROUND

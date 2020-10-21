@@ -10,15 +10,17 @@ RUN apt-get update && apt-get install -y \
         mariadb-client \
         wget \
         ssh \
+	npm \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install gd ldap pdo_mysql intl
 
 COPY app /app
+COPY html /html
 COPY ./docker/app.php /app/config/app.php.template
 COPY ./docker/caps-exec /app/
 COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
-RUN chown www-data:www-data /app -R
+RUN chown www-data:www-data /app -R && rm -rf /html/node_modules && npm install npm@latest -g
 
 WORKDIR /app
 

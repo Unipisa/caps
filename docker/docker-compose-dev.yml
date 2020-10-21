@@ -16,6 +16,8 @@ services:
       - "./id_rsa:/app/id_rsa"
       - "../app/src:/app/src"
       - "../app/webroot:/app/webroot"
+      - "../html/scss:/html/scss"
+      - "../html/src:/html/src"
     env_file:
       - caps.env
       

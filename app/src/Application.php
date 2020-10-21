@@ -40,6 +40,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Application extends BaseApplication
 {
+    public static $_CAPSVERSION = '1.1.5';
+
     /**
      * application version number
      */
@@ -49,20 +51,33 @@ class Application extends BaseApplication
         // we clean the cache on restart, so we always get fresh information
         // on the application version
         $version = Cache::read('caps-version');
-        $shortversion = Cache::read('caps-short-version');
 
         if ($version == false) {
+            // We try to run git, but we are aware that:
+            // - git may not be installed.
+            // - this build might not be inside a git repository
+            // Hence, in case of failure we fall back to the static version numbers
+            // that we have set here.
             $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
-            $version = trim(exec('git describe --tags'));
-            $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
-            $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
-            $commitDate = $commitDate->format('Y-m-d H:i:s');
-            $shortVersion = explode('-', $version)[0];
 
-            if ($branch === "master") {
-                $version = sprintf('%s [%s]', $version, $commitDate);
-            } else {
-                $version = sprintf('%s-%s [%s]', $version, $branch, $commitDate);
+            if ($branch == "")
+            {
+                $version = Application::$_CAPSVERSION;
+                $shortVersion = Application::$_CAPSVERSION;
+            }
+            else
+            {
+                $version = trim(exec('git describe --tags'));
+                $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
+                $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
+                $commitDate = $commitDate->format('Y-m-d H:i:s');
+                $shortVersion = explode('-', $version)[0];
+
+                if ($branch === "master") {
+                    $version = sprintf('%s [%s]', $version, $commitDate);
+                } else {
+                    $version = sprintf('%s-%s [%s]', $version, $branch, $commitDate);
+                }
             }
 
             Cache::write('caps-version', $version);
