@@ -66,6 +66,7 @@ class GrantAdminCommand extends Command {
                 $user = $this->Users->newEntity();
                 $user['username'] = $username;
                 $user['admin'] = true;
+                $user['name'] = '';
                 if ($this->Users->save($user)) {
                     $io->info("New user $username created");
                 } else {
