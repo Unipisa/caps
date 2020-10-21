@@ -41,7 +41,7 @@
     <?php echo $this->Html->script('caps.min') ?>
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-primary">
 
 <div class="container">
 
