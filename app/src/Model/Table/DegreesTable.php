@@ -80,7 +80,9 @@ class DegreesTable extends Table
 
         $validator
             ->scalar('years')
-            ->notEmptyString('years');
+            ->notEmptyString('years')
+            ->greaterThanOrEqual('years',1)
+            ->lessThanOrEqual('years', 5);
 
         $validator
             ->boolean('enable_sharing');
