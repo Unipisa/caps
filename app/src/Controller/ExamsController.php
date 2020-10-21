@@ -131,7 +131,10 @@ class ExamsController extends AppController
         $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
         $query =  $ChosenExams->find();
         $query = $query
-            ->where(['exam_id' => $exam_id])
+            ->where([
+                'exam_id' => $exam_id,
+                'Proposals.state' => 'approved'
+                ])
             ->contain(['Proposals' => ['Users', 'Curricula' => ['Degrees']]])
             ->select([
                 'count' => $query->func()->count('proposal_id'),

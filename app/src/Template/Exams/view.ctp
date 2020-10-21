@@ -83,8 +83,8 @@
     <table class="table">
     <tr>
         <thead>
-            <th>Conteggio</th>
-            <th>Anno curriculum</th>
+            <th>Piani approvati</th>
+            <th>Anno accademico</th>
             <th>Curriculum</th>
             <th>Laurea</th>
         </thead>
@@ -93,7 +93,7 @@
         <!--?php debug($chosen_exam); ?-->
         <tr>
             <td><?= $chosen_exam->count ?></td>
-            <td><?= $chosen_exam->academic_year ?></td>
+            <td><?= $chosen_exam->academic_year ?>/<?= $chosen_exam->academic_year + 1 ?></td>
             <td><?= $chosen_exam->curriculum_name ?></td>
             <td><?= $chosen_exam->degree_name ?></td>
         </tr>
