@@ -15,7 +15,7 @@ services:
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa"
       - "../app/src:/app/src"
-      - "../app/webroot:/app/webroot"
+      - "../app/webroot/img:/app/webroot/img"
       - "../html/scss:/html/scss"
       - "../html/src:/html/src"
     env_file:
