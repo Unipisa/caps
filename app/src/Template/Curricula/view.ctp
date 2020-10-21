@@ -43,11 +43,11 @@
                 <table class="table">
                     <tr>
                         <th>Laurea</th>
-                        <td><?php echo $curriculum['degree']['name']; ?></td>
+                        <td><?php echo h($curriculum['degree']['name']); ?></td>
                     </tr>
                     <tr>
                         <th>Nome</th>
-                        <td><?php echo $curriculum['name']; ?></td>
+                        <td><?php echo h($curriculum['name']); ?></td>
                     </tr>
                     <tr>
                         <th>Anno</th>
@@ -58,7 +58,7 @@
                 <?php if ($curriculum['notes'] != ""): ?>
                     <h3>Nota</h3>
                     <p>
-                        <?php echo $curriculum['notes']; ?>
+                        <?php echo h($curriculum['notes']); ?>
                     </p>
                 <?php endif; ?>
             </div>
@@ -82,7 +82,7 @@
                     <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) { ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
-                                <?php echo $compulsory_exam['exam']['name'] ?>
+                                <?php echo h($compulsory_exam['exam']['name']) ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year">
                                 <?php echo $compulsory_exam['year']; ?>

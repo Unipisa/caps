@@ -41,7 +41,7 @@
         <thead>
         <tr>
             <th>Nome</th>
-            <td><?php echo $degree['name']; ?></td>
+            <td><?php echo h($degree['name']); ?></td>
         </tr>
         </thead>
         <tr>

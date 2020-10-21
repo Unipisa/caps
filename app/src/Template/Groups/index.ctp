@@ -59,7 +59,7 @@
                 <td class="caps-admin-groups-name">
                     <?php
                     echo $this->Html->link(
-                        $group['name'],
+                        h($group['name']),
                         [   'action' => 'view',
                             $group['id']]
                     );
@@ -73,7 +73,6 @@
                 </td>
             </tr>
         <?php endforeach ?>
-        <?php unset($group) ?>
     </table>
     </div>
     <?php echo $this->Form->end(); ?>

@@ -124,7 +124,7 @@ $num_proposals = 0;
                     }
                     ?>
                     <tr>
-                        <td><?php echo $proposal['curriculum']['name']; ?></td>
+                        <td><?php echo h($proposal['curriculum']['name']); ?></td>
                         <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
                         <td><?php echo $proposal['modified']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?></td>
                         <td><?php echo ($proposal['submitted_date'] != null) ?

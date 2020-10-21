@@ -76,7 +76,7 @@
                                         $name = $exam['name'];
                                     }
                                 }
-                                echo $name;
+                                echo h($name);
                                 ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year"><?php echo $compulsory_exam['year']; ?></td>

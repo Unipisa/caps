@@ -164,15 +164,15 @@ function csv_validator(item, context) {
                 <td class="caps-admin-exams-name">
                     <?php
                     echo $this->Html->link(
-                        $exam['name'],
+                        h($exam['name']),
                         ['action' => 'view',
                             $exam['id']]
                     );
                     ?>
                 </td>
                 <td class="caps-admin-exams-credits"><?php echo $exam->tagsToString(); ?></td>
-                <td class="caps-admin-exams-code"><?php echo $exam['code']; ?></td>
-                <td class="caps-admin-exams-sector"><?php echo $exam['sector']; ?></td>
+                <td class="caps-admin-exams-code"><?php echo h($exam['code']); ?></td>
+                <td class="caps-admin-exams-sector"><?php echo h($exam['sector']); ?></td>
                 <td class="caps-admin-exams-credits"><?php echo $exam['credits']; ?></td>
             </tr>
         <?php endforeach; ?>

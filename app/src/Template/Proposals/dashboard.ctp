@@ -234,10 +234,10 @@ jQuery(document).ready(() => {
                             <tr>
                                 <td>
                                     <a href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'view', $pc['user_id'] ]) ?>">
-                                    <?= $pc['user_name'] ?>
+                                    <?= h($pc['user_name']) ?>
                                     </a>
                                 </td>
-                                <td><?= $pc['curriculum_name'] ?></td>
+                                <td><?= h($pc['curriculum_name']) ?></td>
                                 <td><?= $this->Time->timeAgoInWords($pc['req_date'], [
                                         'accuracy' => 'day',
                                         'format' => 'dd/MM/yyyy'

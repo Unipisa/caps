@@ -46,16 +46,16 @@
     <table class="table">
         <tr><thead>
             <th>Nome</th>
-            <td><?php echo $exam['name']; ?></td>
+            <td><?php echo h($exam['name']); ?></td>
             </thead>
         </tr>
         <tr>
             <th>Codice</th>
-            <td><?php echo $exam['code']; ?></td>
+            <td><?php echo h($exam['code']); ?></td>
         </tr>
         <tr>
             <th>Settore</th>
-            <td><?php echo $exam['sector']; ?></td>
+            <td><?php echo h($exam['sector']); ?></td>
         </tr>
         <tr>
             <th>Crediti</th>
@@ -68,7 +68,7 @@
     </table>
 
     <?= $this->element('card-end') ?>
-    
+
     <?php if ($chosen_exams): ?>
 
     <h2>Scelte dell'esame nei piani di studio</h2>
@@ -91,15 +91,15 @@
             <th>Curriculum</th>
             <th>Laurea</th>
         </thead>
-    </tr>        
+    </tr>
         <?php foreach($chosen_exams as $chosen_exam): ?>
         <!--?php debug($chosen_exam); ?-->
         <tr>
-            <td><?= $chosen_exam->proposal->user->surname." ".$chosen_exam->proposal->user->givenname ?></td>
+            <td><?= h($chosen_exam->proposal->user->surname." ".$chosen_exam->proposal->user->givenname) ?></td>
             <td><?= $chosen_exam->chosen_year ?></td>
             <td><?= $chosen_exam->proposal->curriculum->academic_year ?></td>
-            <td><?= $chosen_exam->proposal->curriculum->name ?></td>
-            <td><?= $chosen_exam->proposal->curriculum->degree->name ?></td>
+            <td><?= h($chosen_exam->proposal->curriculum->name) ?></td>
+            <td><?= h($chosen_exam->proposal->curriculum->degree->name) ?></td>
         </tr>
         <?php endforeach ?>
     </table>

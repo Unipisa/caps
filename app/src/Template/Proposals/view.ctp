@@ -91,7 +91,7 @@
     <table class="table">
         <tr>
             <th>Curriculum</th>
-            <td><?= $proposal['curriculum']['degree']['name'] ?></td>
+            <td><?= h($proposal['curriculum']['degree']['name']) ?></td>
         </tr>
         <tr>
             <th>Anno di immatricolazione</th>
@@ -157,15 +157,15 @@
         $year_credits = $year_credits + $chosen_exam['credits'];
     ?>
     <tr>
-        <td><?php echo $code ?></td>
-        <td><?php echo $name ?>
+        <td><?php echo h($code) ?></td>
+        <td><?php echo h($name) ?>
         <?php if (count($exam['tags']) > 0): ?>
             <div class="badge badge-secondary badge-sm">
-                <?php echo $exam->tagsToString(); ?>
+                <?php echo h($exam->tagsToString()) ?>
             </div>
         <?php endif; ?>
         </td>
-        <td><?php echo $sector ?></td>
+        <td><?php echo h($sector) ?></td>
         <td><?php echo $chosen_exam['credits']; ?></td>
         <td><?php
             $cg = $chosen_exam['compulsory_group'];
@@ -173,7 +173,7 @@
             $cf = $chosen_exam['free_choice_exam'];
 
             if ($cg != null) {
-                echo $cg['group']['name'];
+                echo h($cg['group']['name']);
             }
             else if ($ce != null) {
                 echo "Obbligatorio";
@@ -189,7 +189,7 @@
 <?php foreach ($this_year_free_choice_exams as $exam): ?>
     <tr>
         <td></td>
-        <td><?php echo $exam['name']; ?></td>
+        <td><?php echo h($exam['name']); ?></td>
         <td></td>
         <td><?php echo $exam['credits']; ?></td>
         <?php $year_credits = $year_credits + $exam['credits']; ?>

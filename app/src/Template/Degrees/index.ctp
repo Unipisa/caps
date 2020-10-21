@@ -63,7 +63,7 @@
                 <td>
                     <?php
                     echo $this->Html->link(
-                        $degree['name'],
+                        h($degree['name']),
                         [   'controller' => 'degrees',
                             'action' => 'view',
                             $degree['id']]
@@ -85,7 +85,6 @@
                 </td>
             </tr>
         <?php endforeach ?>
-        <?php unset($degree); ?>
     </table>
     </div>
     <?php echo $this->Form->end(); ?>

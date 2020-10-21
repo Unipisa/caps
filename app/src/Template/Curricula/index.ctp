@@ -80,7 +80,7 @@
                         <tr>
                             <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
                             <td class="caps-admin-curricula-year"><?php echo $curriculum['academic_year']; ?></td>
-                            <td class="caps-admin-curricula-degree"><?php echo $curriculum['degree']['name']; ?></td>
+                            <td class="caps-admin-curricula-degree"><?php echo h($curriculum['degree']['name']); ?></td>
                             <td class="caps-admin-curricula-name">
                                 <?php
                                 echo $this->Html->link(
@@ -93,7 +93,6 @@
                             </td>
                         </tr>
                     <?php endforeach ?>
-                    <?php unset($curriculum); ?>
                 </table>
                 </div>
                 <?php echo $this->element('pagination'); ?>

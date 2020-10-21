@@ -24,7 +24,7 @@
 <li class="card border-left-info mb-2">
     <div class="card-body p-1">
     <?php if ($attachment['comment'] != ""): ?>
-        <?= $attachment['comment'] ?><br>
+        <?= h($attachment['comment']) ?><br>
     <?php endif ?>
 
     <?php if($attachment['filename'] != null): ?>

@@ -34,7 +34,7 @@
         var curriculaURL = "<?php echo $this->Url->build(
             [ 'controller' => 'curricula', 'action' => 'index', '_ext' => 'json']);
                 ?>";
-        Caps.cds = "<?php echo $settings['cds']; ?>";
+        Caps.cds = "<?php echo h($settings['cds']); ?>";
     </script>
 <?php endif; ?>
 <?php

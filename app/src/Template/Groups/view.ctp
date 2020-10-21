@@ -48,15 +48,14 @@
         <?php foreach ($group['exams'] as $exam): ?>
             <tr>
                 <td>
-                    <?php echo $this->Html->link($exam['name'],
+                    <?php echo $this->Html->link(h($exam['name']),
                         ['controller' => 'exams', 'action' => 'edit', $exam['id']]); ?>
                 </td>
-                <td><?php echo $exam['code']; ?></td>
-                <td><?php echo $exam['sector']; ?></td>
-                <td><?php echo $exam['credits']; ?></td>
+                <td><?php echo h($exam['code']); ?></td>
+                <td><?php echo h($exam['sector']); ?></td>
+                <td><?php echo h($exam['credits']); ?></td>
             </tr>
         <?php endforeach ?>
-        <?php unset($exam); ?>
     </table>
 
 <?= $this->element('card-end') ?>

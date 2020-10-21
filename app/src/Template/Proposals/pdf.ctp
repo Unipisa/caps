@@ -103,8 +103,8 @@
                 <img src="data:image/png;base64,<?= base64_encode(file_get_contents($app_path . '../webroot/img/cherubino.png')) ?>" />
             </td>
             <td class="heading">
-                <h2 class="department"><?php echo $settings['department'] ?></h2>
-                <h2 class="degree"><?php echo $proposal['curriculum']['degree']['name']; ?></h2>
+                <h2 class="department"><?php echo h($settings['department']) ?></h2>
+                <h2 class="degree"><?php echo ($proposal['curriculum']['degree']['name']); ?></h2>
                 <h2 class="year"><?php
                     /* At the moment we do not have the information on the academic
                      * year inside the database,so we guess based on the deadline. */
@@ -123,11 +123,11 @@
 
 </div>
 <div class="data">
-    <strong>Curriculum</strong>: <?php echo $proposal['curriculum']['name']; ?><br>
+    <strong>Curriculum</strong>: <?php echo h($proposal['curriculum']['name']); ?><br>
     <strong>Anno di immatricolazione</strong>: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?><br>
-    <strong>Nome e cognome</strong>: <?php echo $proposal['user']['name']; ?></strong><br>
-    <strong>Matricola</strong>: <?php echo $proposal['user']['number']; ?><br>
-    <strong>Email</strong>: <?= $proposal['user']['email'] ?><br>
+    <strong>Nome e cognome</strong>: <?php echo h($proposal['user']['name']); ?></strong><br>
+    <strong>Matricola</strong>: <?php echo h($proposal['user']['number']); ?><br>
+    <strong>Email</strong>: <?= h($proposal['user']['email']) ?><br>
 </div>
 <div class="plea">
     <p>chiede l'approvazione del seguente Piano di Studio:</p>
@@ -187,23 +187,23 @@
                     $year_credits = $year_credits + $chosen_exam['credits'];
                     ?>
                     <tr>
-                        <td><?php echo $code ?></td>
-                        <td><?php echo $name ?>
+                        <td><?php echo h($code) ?></td>
+                        <td><?php echo h($name) ?>
                             <?php if (count($exam['tags']) > 0): ?>
                                 <div class="badge">
                                     <?php echo $exam->tagsToString(); ?>
                                 </div>
                             <?php endif; ?>
                         </td>
-                        <td><?php echo $sector ?></td>
-                        <td><?php echo $chosen_exam['credits']; ?></td>
+                        <td><?php echo h($sector) ?></td>
+                        <td><?php echo h($chosen_exam['credits']); ?></td>
                         <td><?php
                             $cg = $chosen_exam['compulsory_group'];
                             $ce = $chosen_exam['compulsory_exam'];
                             $cf = $chosen_exam['free_choice_exam'];
 
                             if ($cg != null) {
-                                echo $cg['group']['name'];
+                                echo h($cg['group']['name']);
                             }
                             else if ($ce != null) {
                                 echo "Obbligatorio";
@@ -219,7 +219,7 @@
                 <?php foreach ($this_year_free_choice_exams as $exam): ?>
                     <tr>
                         <td></td>
-                        <td><?php echo $exam['name']; ?></td>
+                        <td><?php echo h($exam['name']); ?></td>
                         <td></td>
                         <td><?php echo $exam['credits']; ?></td>
                         <?php $year_credits = $year_credits + $exam['credits']; ?>
@@ -255,7 +255,7 @@
             Esito: <strong>Approvato</strong>
         </div>
         <br>
-        <div class="confirmation"><?= $settings['approval-signature-text']; ?></div>
+        <div class="confirmation"><?= h($settings['approval-signature-text']); ?></div>
     <?php endif; ?>
 </div>
 
