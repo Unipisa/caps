@@ -29,12 +29,12 @@ for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;
     # introduced, or if new fields are added
     bin/cake cache clear_all
 
-    if [ -d html ]; then
+    if [ -d ../html ]; then
       echo "Building updated CSS and JS"
-      cd html
+      cd ../html
       npm install
       npm run -s deploy
-      cd ..
+      cd ../app
     fi
   fi
 done
