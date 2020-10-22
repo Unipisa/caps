@@ -28,5 +28,13 @@ for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;
     # Clear cache -- this helps in case new models are
     # introduced, or if new fields are added
     bin/cake cache clear_all
+
+    if [ -d html ]; then
+      echo "Building updated CSS and JS"
+      cd html
+      npm install
+      npm run -s deploy
+      cd ..
+    fi
   fi
 done
