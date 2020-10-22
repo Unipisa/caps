@@ -32,6 +32,7 @@ for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;
     if [ -d ../html ]; then
       echo "Building updated CSS and JS"
       cd ../html
+      # Make sure npm is recent enough
       npm install
       npm run -s deploy
       cd ../app
