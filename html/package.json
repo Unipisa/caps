@@ -13,13 +13,11 @@
   "devDependencies": {
     "@babel/core": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
-    "autoprefixer": "^10.0.1",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "chart.js": "^2.9.3",
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.4.0",
-    "expose-loader": "^1.0.1",
     "jquery": "^3.5.1",
     "node-sass": "^4.14.1",
     "npm-watch": "^0.7.0",
