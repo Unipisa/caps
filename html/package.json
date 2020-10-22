@@ -22,6 +22,7 @@
     "expose-loader": "^1.0.1",
     "jquery": "^3.5.1",
     "node-sass": "^4.14.1",
+    "npm-watch": "^0.7.0",
     "popper.js": "^1.16.1",
     "stylelint": "^13.7.2",
     "stylelint-config-recommended-scss": "^4.2.0",
@@ -31,6 +32,9 @@
     "uglify-js": "^3.11.2",
     "watch": "^1.0.2"
   },
+  "watch": {
+    "deploy": "{src,scss}/*"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "css": "npm run css:compile && npm run css:minify",
@@ -39,7 +43,8 @@
     "build": "npm run css && npm run js",
     "js": "browserify src/caps.js -o js/caps.js -t [ babelify --presets [ @babel/preset-env ] ] && uglifyjs js/caps.js -o js/caps.min.js -cm",
     "install": "copyfiles css/style.min.css js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
-    "deploy": "npm run build && npm run install"
+    "deploy": "npm run build && npm run install",
+    "watch": "npm-watch"
   },
   "keywords": [],
   "author": "",

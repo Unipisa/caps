@@ -1,10 +1,3 @@
-/* The following lines contain the includes for bundle-js; they are sorted
- * in the correct way. */
-// require 'jquery'
-// require 'jquery-easing/dist/jquery.easing.1.3.umd.min.js'
-// require 'bootstrap/dist/js/bootstrap.bundle.min.js'
-// require './sb-admin-2.js'
-
 global.jQuery = require('jquery');
 
 var jQueryEasing = require('jquery.easing');
