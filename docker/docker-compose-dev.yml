@@ -20,6 +20,10 @@ services:
       - "../html/src:/html/src"
     env_file:
       - caps.env
+    environment:
+      # We need this to make sure that npm run watch is run
+      # inside the container; not needed on production builds
+      CAPS_RUN_NPM_WATCH: 1
       
   caps-db:
     image: mysql:8

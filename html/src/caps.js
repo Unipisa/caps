@@ -1,17 +1,15 @@
+// These libraries need to be available as global variables
 global.jQuery = require('jquery');
+global.Chart = require('chart.js');
 
 var jQueryEasing = require('jquery.easing');
-
 var bootstrap = require('bootstrap');
 var sbadmin = require('./sb-admin-2.js');
-
-global.Chart = require('chart.js');
 
 /*
  * This file contains a few utility functions that are useful throughout the CAPS code base, and not linked to a
  * specific page.
  */
-
 global.Caps = {
     /*
      * This is a bit of a hack: we change the URL in the page to make the

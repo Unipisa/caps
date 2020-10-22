@@ -11,6 +11,12 @@ msg "Starting the CAPS Docker manager"
 msg "Compiling CSS and JS files..."
 cd /html
 npm run deploy
+
+if [ "${CAPS_RUN_NPM_WATCH}" != "" ]; then
+  msg "Starting the NPM watch daemon for detecting changes..."
+  npm run watch &
+fi
+
 cd ../app
 
 # We check for MySQL twice, because it could get the temporary server sometimes,
