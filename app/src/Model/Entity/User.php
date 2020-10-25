@@ -69,19 +69,19 @@ class User extends Entity
         return $this;
     }
 
-    public function canAddAttachment(Proposal $proposal, string $secret = null)
+    public function canAddAttachment(Proposal $proposal, $secrets = [])
     {
         return $this['admin'] ||
             $this['id'] == $proposal['user_id'] ||
-            $proposal->checkSecret($secret);
+            $proposal->checkSecrets($secrets);
     }
 
-    public function canViewAttachment(Attachment $attachment, string $secret = null)
+    public function canViewAttachment(Attachment $attachment, $secrets = [])
     {
         return $this['admin'] ||
             $this['username'] == $attachment->user['username'] ||
             ($attachment->proposal != null && $this['id'] == $attachment->proposal['user_id']) ||
-            ($attachment->proposal != null && $attachment->proposal->checkSecret($secret));
+            ($attachment->proposal != null && $attachment->proposal->checkSecrets($secrets));
     }
 
     public function canDeleteAttachment(Attachment $attachment)

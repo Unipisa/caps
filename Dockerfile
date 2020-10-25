@@ -24,7 +24,7 @@ COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
 RUN rm -rf /html/node_modules && npm install npm@latest -g \
     && cd /app && php /usr/local/bin/composer.phar install \
-    && cd /html && npm install \
+    && cd /html && npm install --unsafe-perm \
     && chown www-data:www-data /app /html -R
 
 WORKDIR /app

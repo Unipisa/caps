@@ -69,7 +69,7 @@ class ProposalsController extends AppController
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
                 'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
                 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-                'ChosenFreeChoiceExams.FreeChoiceExams', 'ChosenExams.CompulsoryGroups.Groups',
+                'ChosenExams.CompulsoryGroups.Groups',
                 'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
         ->firstOrFail();
     }
@@ -294,9 +294,9 @@ class ProposalsController extends AppController
         $proposal = $this->get_proposal($id);
 
         // authorization
-        $secret = $this->request->getQuery('secret');
-        if (!$proposal->checkSecret($secret) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
-            throw new ForbiddenException(__(''));
+        $secrets = $this->getSecrets();
+        if (!$proposal->checkSecrets($secrets) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
+            throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
         // Setup the message to show to the user
@@ -319,6 +319,7 @@ class ProposalsController extends AppController
 
         $this->set('message', $message);
         $this->set('proposal', $proposal);
+        $this->set('secrets', $secrets);
 
         // Having this is apparently the only way to enforce validation on
         // the e-mail given in the input.
@@ -341,8 +342,8 @@ class ProposalsController extends AppController
         $app_path = APP;
 
         // authorization
-        $secret = $this->request->getQuery('secret');
-        if (!$proposal->checkSecret($secret) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
+        $secrets = $this->getSecrets();
+        if (!$proposal->checkSecrets($secrets) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
         }
 
@@ -377,8 +378,8 @@ class ProposalsController extends AppController
         $proposal = $this->get_proposal($id);
 
         // authorization
-        $secret = $this->request->getQuery('secret');
-        if (!$proposal->checkSecret($secret) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
+        $secrets = $this->getSecrets();
+        if (!$proposal->checkSecret($secrets) && $proposal['user']['username'] != $this->user['username'] && !$this->user['admin']) {
             throw new ForbiddenException(__(''));
         }
 

@@ -1,0 +1,9 @@
+app/*.sqlite
+app/*.sh
+app/webroot/js
+app/webroot/node_modules
+app/vendor
+html/js
+html/css
+html/node_modules
+

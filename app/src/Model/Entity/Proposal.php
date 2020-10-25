@@ -77,7 +77,14 @@ class Proposal extends Entity
         }
     }
 
-    public function checkSecret($secret)
+    /**
+     * Checks if a user is authorized to access a proposal, using a
+     * secret token.
+     *
+     * @param string $secret The token to check
+     * @return bool
+     */
+    public function checkSecret(string $secret)
     {
         if ($secret == null) {
             return false;
@@ -91,4 +98,24 @@ class Proposal extends Entity
 
         return false;
     }
+
+    /**
+     * Checks if a user can access a proposal, based on an array of
+     * possible secret tokens. Equivalent to calling
+     * Proposal::checkSecret() in a loop.
+     *
+     * @param array $secrets The secrets to check
+     * @return bool
+     */
+    public function checkSecrets(array $secrets)
+    {
+        foreach ($secrets as $secret)
+        {
+            if ($this->checkSecret($secret))
+                return true;
+        }
+
+        return false;
+    }
+
 }
