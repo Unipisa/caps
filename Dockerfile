@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
 	npm \
 	git \
 	libzip-dev \
+	sudo \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
@@ -26,8 +27,8 @@ COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
 RUN rm -rf /html/node_modules && npm install npm@latest -g \
     && cd /app && php /usr/local/bin/composer.phar install \
-    && cd /html && npm install --unsafe-perm \
-    && chown www-data:www-data /app /html -R
+    && chown www-data:www-data /app /html /var/www -R \
+    && cd /html && sudo -u www-data npm install 
 
 WORKDIR /app
 

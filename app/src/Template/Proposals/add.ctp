@@ -41,7 +41,7 @@
     // This revision number needs to be incremented when adjusting the JS code,
     // so that the browser will be forced to drop the cache on the older versions.
     // We may want to handle this automatically at some point.
-    echo $this->Html->script('proposals/add.js?rev=4');
+    // echo $this->Html->script('proposals/add.js?rev=4');
 ?>
 
 <div class="d-flex align-items-center justify-content-between">
