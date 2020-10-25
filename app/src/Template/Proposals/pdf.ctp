@@ -38,7 +38,8 @@
     }
 
     h2 {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        font-weight: normal;
     }
 
     h3 {
@@ -47,15 +48,16 @@
 
     h4 {
         font-size: 0.9rem;
-        font-variant: small-caps;
-        margin-bottom: 6px;
-        margin-top: 6px;
+        font-weight: normal;
+        margin-bottom: 0.1cm;
+        margin-top: 0.3cm;
     }
 
     table.table {
         border-collapse: collapse;
         width: 18cm;
         margin-bottom: 12px;
+        margin-left: 0.3cm;
     }
 
     .heading {
@@ -103,9 +105,9 @@
                 <img src="data:image/png;base64,<?= base64_encode(file_get_contents($app_path . '../webroot/img/cherubino.png')) ?>" />
             </td>
             <td class="heading">
-                <h2 class="department"><?php echo h($settings['department']) ?></h2>
-                <h2 class="degree"><?php echo ($proposal['curriculum']['degree']['name']); ?></h2>
-                <h2 class="year"><?php
+                <h2><?php echo h($settings['department']) ?></h2>
+                <h2><?php echo ($proposal['curriculum']['degree']['name']); ?></h2>
+                <h2><?php
                     /* At the moment we do not have the information on the academic
                      * year inside the database,so we guess based on the deadline. */
                     $year = $proposal['modified']->year;
