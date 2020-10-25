@@ -174,8 +174,69 @@ class AppController extends Controller
         // to avoid a useless query. This does not appear to hurt performance
         // in any meaningful way, though.
         $this->set('settings', $this->getSettings());
+
+        $this->handleSecrets();
     }
 
+    /**
+     * Look for a query parameter secret=XXXX, and saves it into an array of
+     * secrets in the current session. These can be used to access proposals
+     * of other users, and are automatically generated when the user shares
+     * its proposals.
+     *
+     * For further details, see table proposal_auths, and in general the
+     * auth field of Proposal objects.
+     *
+     * The saved secrets can be accessed by calling AppController::getSecrets()
+     *
+     * @return void
+     */
+    private function handleSecrets()
+    {
+        $request = $this->getRequest();
+        $secret = $request->getQuery('secret');
+        if ($secret != null)
+        {
+            $session = $request->getSession();
+            $secrets = [ $secret ];
+
+            if ($session->check('caps_secrets'))
+            {
+                $prevSecrets = json_decode($session->read('caps_secrets'));
+                if (is_array($prevSecrets))
+                    $secrets = array_unique(array_merge($secrets, $prevSecrets));
+            }
+
+            $session->write('caps_secrets', json_encode($secrets));
+        }
+    }
+
+    /**
+     * Get all the secrets stored in the users session. These are checked against
+     * Proposal::auths for authorization purposes. Note these are also used to allow
+     * acting on related objects, such as Attachments.
+     *
+     * @return array
+     */
+    protected function getSecrets()
+    {
+        $session = $this->getRequest()->getSession();
+        if ($session->check('caps_secrets')) {
+            $secrets = json_decode($session->read('caps_secrets'));
+        }
+        else {
+            $secrets = [];
+        }
+
+        return $secrets;
+    }
+
+    /**
+     * Obtain a reference to the settings table and store into
+     * AppController::settingsTable.
+     *
+     * @return void
+     */
     private function loadSettingsTable()
     {
         if ($this->settingsTable == null) {
@@ -183,6 +244,12 @@ class AppController extends Controller
         }
     }
 
+    /**
+     * Obtain the array containing the current settings, in a
+     * key => value format.
+     *
+     * @return array
+     */
     public function getSettings()
     {
         $this->loadSettingsTable();
@@ -190,6 +257,16 @@ class AppController extends Controller
         return $this->settingsTable->getSettings();
     }
 
+    /**
+     * Obtain the value of a specific setting; this is a proxy to
+     * SettingsTable::getSetting, and return either the value of
+     * the setting, or a default value (null if not specified) if
+     * not set.
+     *
+     * @param $field The desired setting
+     * @param null $default An optional default value
+     * @return mixed
+     */
     public function getSetting($field, $default = null)
     {
         $this->loadSettingsTable();

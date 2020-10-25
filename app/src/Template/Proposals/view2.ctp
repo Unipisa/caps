@@ -93,11 +93,9 @@
 <div class="attachments">
 
     <?php
-      $secret = $this->request->getQuery('secret');
-
       $visible_attachments = array_filter(
           $proposal['attachments'],
-          function ($a) use ($user, $secret) { return $user && $user->canViewAttachment($a, $secret); }
+          function ($a) use ($user, $secrets) { return $user && $user->canViewAttachment($a, $secrets); }
       );
 
       $authorizations = $proposal->auths;
@@ -155,7 +153,7 @@
                   echo $this->Form->postLink('Elimina questo ' . $obj_name, [
                       'controller' => 'attachments',
                       'action' => 'delete',
-                      $att['id'], $secret
+                      $att['id']
                   ], [
                       'confirm' => 'Cancellare definitivamente l\'' . $obj_name . '?',
                   ]);
@@ -174,7 +172,7 @@
     <?php endforeach ?>
     </ul>
     <?php
-        if ($user && $user->canAddAttachment($proposal, $secret)) { ?>
+        if ($user && $user->canAddAttachment($proposal, $secrets)) { ?>
             <h3>Inserisci un nuovo allegato o commento</h3>
             <?php
             echo $this->Form->create('Attachment', [
@@ -184,7 +182,6 @@
             ?>
             <p>&Egrave; possibile aggiungere allegati e/o commenti a questo piano di studi.</p>
             <?php
-            echo $this->Form->hidden('secret', [ 'value' => $secret]);
             echo $this->Form->textarea('comment');
             echo $this->Form->file('data');
             echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]);

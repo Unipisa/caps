@@ -214,11 +214,9 @@
 
 <?= $this->element('card-start', [ 'header' => 'Allegati e commenti' ]) ?>
     <?php
-      $secret = $this->request->getQuery('secret');
-
       $visible_attachments = array_filter(
           $proposal['attachments'],
-          function ($a) use ($user, $secret) { return $user && $user->canViewAttachment($a, $secret); }
+          function ($a) use ($user, $secrets) { return $user && $user->canViewAttachment($a, $secrets); }
       );
 
       $authorizations = $proposal->auths;
@@ -255,7 +253,7 @@
     <?php endif ?>
     <?php endforeach ?>
     </ul>
-    <?php if ($user && $user->canAddAttachment($proposal, $secret)): ?>
+    <?php if ($user && $user->canAddAttachment($proposal, $secrets)): ?>
 
     <button type="button" class="dropdown-toggle btn btn-primary btn-sm" data-toggle="collapse" data-target="#add-attachment">
         Inserisci un nuovo allegato o commento
@@ -268,7 +266,6 @@
             'type' => 'file'
         ]);
         ?>
-        <?php echo $this->Form->hidden('secret', [ 'value' => $secret]); ?>
 
         <div class="form-group">
             <?php echo $this->Form->textarea('comment'); ?>

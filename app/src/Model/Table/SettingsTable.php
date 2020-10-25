@@ -81,6 +81,11 @@ class SettingsTable extends Table
         $this->initData();
     }
 
+    /**
+     * Obtain the array of current settings.
+     *
+     * @return array
+     */
     public function getSettings()
     {
         if ($this->settingsInstance == null) {
@@ -95,6 +100,14 @@ class SettingsTable extends Table
         return $this->settingsInstance;
     }
 
+    /**
+     * Obtain the value of a certain setting, or a default value in case
+     * it is not found (the latter defaults to null).
+     *
+     * @param $field The name of the setting to obtain
+     * @param null $default A default value if the given setting is not set
+     * @return mixed|null
+     */
     public function getSetting($field, $default = null)
     {
         $settings = $this->getSettings();
@@ -106,6 +119,12 @@ class SettingsTable extends Table
         }
     }
 
+    /**
+     * Insert the default data into the database, in case some fields
+     * are not set.
+     *
+     * @return void
+     */
     private function initData()
     {
         $this->settingsInstance = [];
