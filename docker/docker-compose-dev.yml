@@ -18,6 +18,7 @@ services:
       - "../app/webroot/img:/app/webroot/img"
       - "../html/scss:/html/scss"
       - "../html/src:/html/src"
+      - "../app/config/Migrations:/app/config/Migrations"
     env_file:
       - caps.env
     environment:

@@ -26,15 +26,77 @@
 <?= $this->element('card-start') ?>
 
     <?php echo $this->Form->create(); ?>
-    <?php foreach ($settings_data as $setting): ?>
-        <?php
-            echo $this->Form->control($setting->field, [
-                'label' => $setting->field,
-                'value' => $setting->value,
-                'type' => $setting->fieldtype
-            ]);
-        ?>
-    <?php endforeach; ?>
+
+        <div class="form-group">
+            <label for="caps-setting-cds" class="caps-setting-header">Corso di studi</label>
+            <input type="text" class="form-control" name="cds" value="<?= h($settings['cds']); ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="caps-setting-department" class="caps-setting-header">Dipartimento</label>
+            <input type="text" class="form-control" name="department" value="<?= h($settings['department']); ?>">
+        </div>
+
+        <div class="form-group">
+            <label class="caps-setting-header" for="caps-setting-user-instructions">Istruzioni per l'utente</label>
+            <div class="caps-setting-description">Queste istruzioni vengono mostrate all'utente appena dopo il login, nella pagina
+                dove sono visibili tutti i piani di studio presentati.</div>
+            <textarea id="caps-setting-user-instructions"
+              name="user-instructions" class="form-control caps-settings-html">
+                <?= $settings['user-instructions'] ?>
+            </textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="caps-setting-approved-message" class="caps-setting-header">Messaggio di approvazione</label>
+            <div class="caps-setting-description">
+                Questo messaggio viene mostrato allo studente quando visualizza un piano che è già stato
+                approvato.
+            </div>
+            <textarea id="caps-setting-approved-message"
+                      name="approved-message" class="form-control caps-settings-html">
+                <?= $settings['approved-message'] ?>
+            </textarea>        </div>
+
+        <div class="form-group">
+            <label for="caps-setting-submitted-message" class="caps-setting-header">Messaggio alla sottomissione</label>
+            <div class="caps-setting-description">
+                Questo messaggio viene mostrato allo studente quando sottomette un piano; può contenere
+                ad esempio delle
+                istruzioni da seguire dopo la sottomissione.
+            </div>
+            <textarea id="caps-setting-submitted-message"
+                      name="submitted-message" class="form-control caps-settings-html">
+                <?= $settings['submitted-message'] ?>
+            </textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="caps-setting-notified-emails" class="caps-setting-header">Notifiche e-mail</label>
+            <div class="cps-setting-description">
+                Questo campo contiene una lista di indirizzi e-mail, separati da virgole, che vengono
+                notificati ad ogni nuova sottomissione e approvazione di un piano di studio.
+            </div>
+            <input type="text" class="form-control" name="notified-emails" value="<?= h($settings['notified-emails']); ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="caps-setting-signature-text" class="caps-setting-header">Firma per i piani</label>
+            <div class="caps-setting-description">Questa firma viene apposta su ogni piano approvato, quando si
+            seleziona il pulsante "Stampa piano".</div>
+            <input type="text" class="form-control" name="approval-signature-text" value="<?= h($settings['approval-signature-text']); ?>">
+        </div>
+
+        <!--
+            approved-message
+            submitted-message
+            cds
+            disclaimer
+            department
+            notified-emails
+            approval-signature-text
+        //-->
+
     <?php
     echo $this->Form->submit('Salva impostazioni');
     ?>

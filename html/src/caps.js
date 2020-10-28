@@ -8,6 +8,7 @@ var bootstrap = require('bootstrap');
 var sbadmin = require('./sb-admin-2.js');
 
 var caps_proposals_add = require('./caps-proposals-add.js');
+var caps_settings = require('./caps-settings.js')
 
 /*
  * This file contains a few utility functions that are useful throughout the CAPS code base, and not linked to a

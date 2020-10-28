@@ -14,3 +14,9 @@ h6 {
 ul.attachments {
     padding-left: 0;
 }
+
+.caps-setting-header {
+  @extend .h5;
+  @extend .font-weight-bold;
+  margin-top: 15px;
+}

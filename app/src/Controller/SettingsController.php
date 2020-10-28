@@ -58,9 +58,5 @@ class SettingsController extends AppController
                     ->execute();
             }
         }
-
-        // This cannot be called settings because that's already used by AppController.
-        $settings_data = $this->Settings->find('all');
-        $this->set(compact('settings_data'));
     }
 }
