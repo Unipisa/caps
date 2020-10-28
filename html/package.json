@@ -10,7 +10,8 @@
     "bootstrap": "^4.3.1",
     "ckeditor5": "^23.0.0",
     "jquery-easing": "0.0.1",
-    "startbootstrap-sb-admin-2": "^4.1.1"
+    "startbootstrap-sb-admin-2": "^4.1.1",
+    "terser": "^5.3.8"
   },
   "devDependencies": {
     "@babel/core": "^7.12.1",
@@ -21,7 +22,6 @@
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.4.0",
     "jquery": "^3.5.1",
-    "minify": "^6.0.0",
     "node-sass": "^4.14.1",
     "npm-watch": "^0.7.0",
     "popper.js": "^1.16.1",
@@ -42,7 +42,9 @@
     "css:compile": "node-sass --output-style expanded --include-path node_modules --source-map true --source-map-contents true --precision 6 scss/main.scss css/style.css",
     "css:minify": "cleancss --level 1 --source-map --source-map-inline-sources --output css/style.min.css css/style.css",
     "build": "npm run css && npm run js",
-    "js": "browserify src/caps.js -o js/caps.js -t [ babelify --presets [ @babel/preset-env ] ] && minify js/caps.js > js/caps.min.js",
+    "browserify": "browserify src/caps.js -o js/caps.js -t [ babelify --presets [ @babel/preset-env ] ]",
+    "js:minify": "terser < js/caps.js > js/caps.min.js",
+    "js": "npm run browserify && npm run js:minify",
     "install": "copyfiles css/style.min.css js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
     "deploy": "npm run build && npm run install",
     "watch": "npm-watch"
