@@ -10,8 +10,7 @@
     "bootstrap": "^4.3.1",
     "ckeditor5": "^23.0.0",
     "jquery-easing": "0.0.1",
-    "startbootstrap-sb-admin-2": "^4.1.1",
-    "terser": "^5.3.8"
+    "startbootstrap-sb-admin-2": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.1",
@@ -31,10 +30,12 @@
     "stylelint-order": "^4.1.0",
     "stylelint-scss": "^3.18.0",
     "uglify-js-es6": "^2.8.9",
+    "terser": "^5.3.8",
     "watch": "^1.0.2"
   },
   "watch": {
-    "deploy": "{src,scss}/*"
+    "deploy": "{src,scss}/*",
+    "extensions": "scss,css,js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -45,8 +46,8 @@
     "browserify": "browserify src/caps.js -o js/caps.js -t [ babelify --presets [ @babel/preset-env ] ]",
     "js:minify": "terser < js/caps.js > js/caps.min.js",
     "js": "npm run browserify && npm run js:minify",
-    "install": "copyfiles css/style.min.css js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
-    "deploy": "npm run build && npm run install",
+    "install": "copyfiles css/style.min.css css/style.min.css.map js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
+    "deploy": "npm run build && npm run install && ../app/bin/cake cache clear_all",
     "watch": "npm-watch"
   },
   "keywords": [],

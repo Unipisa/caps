@@ -22,6 +22,7 @@
  */
 namespace App\Controller;
 
+use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Core\Configure;
@@ -176,6 +177,42 @@ class AppController extends Controller
         $this->set('settings', $this->getSettings());
 
         $this->handleSecrets();
+        $this->computeAssetVersioning();
+    }
+
+    /**
+     * Compute an MD5 sum of the static assets (JS and CSS) files that
+     * will be served with the applications.
+     *
+     * Since these change frequently in production, we server them with
+     * a short query string that forces a cache refresh when an update
+     * is pushed.
+     *
+     * The information is cached, so this is only computed at the first
+     * call to this function, or after the cache has been manually cleared.
+     *
+     * @return void
+     */
+    private function computeAssetVersioning()
+    {
+        $css_hash = Cache::read('css_hash');
+        $js_hash  = Cache::read('js_hash');
+
+        if ($css_hash == false)
+        {
+            $css_file = WWW_ROOT . DS . "css" . DS . "style.min.css";
+            $css_hash = file_exists($css_file) ? md5_file($css_file) : "";
+            Cache::write('css_hash', $css_hash);
+        }
+
+        if ($js_hash == false)
+        {
+            $js_file = WWW_ROOT . DS . "js" . DS . "caps.min.js";
+            $js_hash = file_exists($js_file) ? md5_file($js_file) : "";
+            Cache::write('js_hash', $js_hash);
+        }
+
+        $this->set(compact('css_hash', 'js_hash'));
     }
 
     /**

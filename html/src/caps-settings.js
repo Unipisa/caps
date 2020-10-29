@@ -4,9 +4,13 @@ var ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
 jQuery(document).ready(function () {
   jQuery('.caps-settings-html').each(function (idx, el) {
     ClassicEditor
-        .create(el)
-        .catch( error => {
-            console.error( error );
-        } );
+        .create(el, {
+          toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', 'link',
+                     'bulletedList', 'numberedList',  ]
+        })
+        .catch(error => {
+          console.log('CAPS::CKEditor Error while loading the CKEditor component:');
+          console.error(error);
+        });
   });
 });

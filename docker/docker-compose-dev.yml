@@ -18,6 +18,8 @@ services:
       - "../app/webroot/img:/app/webroot/img"
       - "../html/scss:/html/scss"
       - "../html/src:/html/src"
+      - "../html/package.json:/html/package.json"
+      - "../html/package-lock.json:/html/package-lock.json"
       - "../app/config/Migrations:/app/config/Migrations"
     env_file:
       - caps.env
