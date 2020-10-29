@@ -61,7 +61,6 @@ $num_proposals = 0;
 
 <?php if ($instructions != ""): ?>
 <?= $this->element('card-start', [ 'border' => 'primary' ]); ?>
-    <strong>Istruzioni:</strong>
     <?= $instructions ?>
 <?= $this->element('card-end'); ?>
 <?php endif; ?>
