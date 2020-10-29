@@ -10,6 +10,7 @@ msg "Starting the CAPS Docker manager"
 
 msg "Compiling CSS and JS files..."
 cd /html
+npm install
 npm run deploy
 
 if [ "${CAPS_RUN_NPM_WATCH}" != "" ]; then
