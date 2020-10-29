@@ -23,9 +23,9 @@
 ?>
 <h1>Impostazioni</h1>
 
-<?= $this->element('card-start') ?>
+<?php echo $this->Form->create(); ?>
 
-    <?php echo $this->Form->create(); ?>
+<?= $this->element('card-start', [ 'header' => 'Generali' ]) ?>
 
         <div class="form-group">
             <label for="caps-setting-cds" class="caps-setting-header">Corso di studi</label>
@@ -46,6 +46,10 @@
                 <?= $settings['user-instructions'] ?>
             </textarea>
         </div>
+
+    <?= $this->element('card-end') ?>
+
+    <?= $this->element('card-start', [ 'header' => 'Piani di studio' ]) ?>
 
         <div class="form-group">
             <label for="caps-setting-approved-message" class="caps-setting-header">Messaggio di approvazione</label>
@@ -87,18 +91,10 @@
             <input type="text" class="form-control" name="approval-signature-text" value="<?= h($settings['approval-signature-text']); ?>">
         </div>
 
-        <!--
-            approved-message
-            submitted-message
-            cds
-            disclaimer
-            department
-            notified-emails
-            approval-signature-text
-        //-->
+    <?= $this->element('card-end') ?>
 
+    <div class="mt-4"></div>
     <?php
-    echo $this->Form->submit('Salva impostazioni');
+        echo $this->Form->submit('Salva impostazioni');
     ?>
     <?php echo $this->Form->end(); ?>
-<?= $this->element('card-end') ?>
