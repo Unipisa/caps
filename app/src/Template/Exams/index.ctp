@@ -164,7 +164,7 @@ function csv_validator(item, context) {
                 <td class="caps-admin-exams-name">
                     <?php
                     echo $this->Html->link(
-                        h($exam['name']),
+                        $exam['name'],
                         ['action' => 'view',
                             $exam['id']]
                     );

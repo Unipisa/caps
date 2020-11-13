@@ -64,12 +64,12 @@
         <td class="caps-admin-user-id"><input type=checkbox name="selection[]" value="<?php echo $user['id']; ?>"></td>
         <td class="caps-admin-user-matricola">
             <?php echo $this->Html->link(
-                h($user['number']),
+                $user['number'],
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td class="caps-admin-user-username">
             <?php echo $this->Html->link(
-                h($user['username']),
+                $user['username'],
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td class="caps-admin-user-email">
@@ -77,12 +77,12 @@
         </td>
         <td class="caps-admin-user-surname">
             <?php echo $this->Html->link(
-                h($user['surname']),
+                $user['surname'],
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td class="caps-admin-user-givenname">
             <?php echo $this->Html->link(
-                h($user['givenname']),
+                $user['givenname'],
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td class="caps-admin-user-admin">

@@ -48,7 +48,7 @@
         <?php foreach ($group['exams'] as $exam): ?>
             <tr>
                 <td>
-                    <?php echo $this->Html->link(h($exam['name']),
+                    <?php echo $this->Html->link($exam['name'],
                         ['controller' => 'exams', 'action' => 'edit', $exam['id']]); ?>
                 </td>
                 <td><?php echo h($exam['code']); ?></td>
