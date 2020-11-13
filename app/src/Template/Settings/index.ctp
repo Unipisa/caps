@@ -28,6 +28,11 @@
 <?= $this->element('card-start', [ 'header' => 'Generali' ]) ?>
 
         <div class="form-group">
+            <label for="caps-setting-disclaimer" class="caps-setting-disclaimer">Disclaimer</label>
+            <input type="text" class="form-control" name="disclaimer" value="<?= h($settings['disclaimer']); ?>">
+        </div>
+
+        <div class="form-group">
             <label for="caps-setting-cds" class="caps-setting-header">Corso di studi</label>
             <input type="text" class="form-control" name="cds" value="<?= h($settings['cds']); ?>">
         </div>

@@ -57,6 +57,7 @@ class SettingsController extends AppController
                     ->where([ 'field' => $field ])
                     ->execute();
             }
+            $this->redirect(['action' => 'index']);
         }
     }
 }
