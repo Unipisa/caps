@@ -98,7 +98,7 @@ $actionName = $this->request->getParam('action');
                 'controller' => 'proposals', 'action' => 'index'
             ]); ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
-                <span>Piani di studi</span>
+                <span>Piani di studio</span>
             </a>
         </li>
 
