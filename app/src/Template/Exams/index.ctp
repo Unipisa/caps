@@ -34,7 +34,7 @@ function csv_click() {
     // $("#caps-admin-actions-csv").toggle();
     if (db_exams === null) {
         db_exams = {};
-        $.get("exams.json", function(data) {
+        jQuery.get("exams.json", function(data) {
             data.exams.forEach(function(exam) {
                 db_exams[exam.code] = exam;
             })

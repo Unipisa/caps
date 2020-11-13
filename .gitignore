@@ -1,3 +1,6 @@
 docker/id_rsa
 docker/database
 docker/caps.env
+app/webroot/css/style.min.css
+app/webroot/js/caps.js
+app/webroot/js/caps.min.js
