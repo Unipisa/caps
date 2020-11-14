@@ -63,7 +63,7 @@
                 <td>
                     <?php
                     echo $this->Html->link(
-                        h($degree['name']),
+                        $degree['name'],
                         [   'controller' => 'degrees',
                             'action' => 'view',
                             $degree['id']]

@@ -59,7 +59,7 @@
                 <td class="caps-admin-groups-name">
                     <?php
                     echo $this->Html->link(
-                        h($group['name']),
+                        $group['name'],
                         [   'action' => 'view',
                             $group['id']]
                     );

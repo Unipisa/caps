@@ -80,7 +80,7 @@ function csv_to_array() {
     csv_data = []
     csv_headers = [];
     for (var i=0; i<lines.length; i++) {
-        if ($.trim(lines[i]) === "") {
+        if (jQuery.trim(lines[i]) === "") {
             continue;
         }
 
@@ -107,8 +107,8 @@ function csv_to_array() {
         html += "<option value=" + i + ">"+ csv_headers[i]+"</option>\n";
     }
     for (var i=0;i<csv_upload_fields.length;++i) {
-        $("select[name='csv_field["+i+"]']").html(html);
-        $("select[name='csv_field["+i+"]']").val(csv_column_map[i]);
+        jQuery("select[name='csv_field["+i+"]']").html(html);
+        jQuery("select[name='csv_field["+i+"]']").val(csv_column_map[i]);
     }
 }
 
@@ -144,7 +144,7 @@ function fill_table_html() {
         }
         table_html += "<tr><"+delimiter+">" + row.join("</"+delimiter+"><"+delimiter+">")+"</"+delimiter+"></tr>\n";
     }
-    $("#input_table").html(table_html);
+    jQuery("#input_table").html(table_html);
     return table_html;
 }
 
@@ -170,14 +170,14 @@ function preparePreview() {
                 }
             }
             csv_column_map[i] = best;
-            $("select[name='csv_field["+i+"]']").val(best);
+            jQuery("select[name='csv_field["+i+"]']").val(best);
         } else {
-            var val = parseInt($("select[name='csv_field["+i+"]']").val());
+            var val = parseInt(jQuery("select[name='csv_field["+i+"]']").val());
             csv_column_map[i] = val;
         }
     }
     var html = fill_table_html();
-    $("#csv_preview_table").html(html);
+    jQuery("#csv_preview_table").html(html);
 }
 
 function csv_upload_file(f) {
@@ -186,7 +186,7 @@ function csv_upload_file(f) {
         var r = new FileReader();
         r.onload = function(e) {
             csv_contents = e.target.result;
-            $("#csv_options_div").show();
+            jQuery("#csv_options_div").show();
             preparePreview();
         }
         r.readAsText(f);
@@ -197,7 +197,7 @@ function csv_upload_file(f) {
 
 function csvSubmit() {
     var payload = csv_data.filter(function(row, i) {
-        return $("#csv_row_" + i).prop('checked');
+        return jQuery("#csv_row_" + i).prop('checked');
     }).map(function(row){
         var obj = {};
         for (var i=0;i<csv_upload_fields.length;i++){
@@ -225,26 +225,26 @@ function csvSubmit() {
     form.submit();
 }
 
-$("document").ready(function(){
-    $("#csv_file_input").change(function (evt) {
+jQuery("document").ready(function(){
+    jQuery("#csv_file_input").change(function (evt) {
         csv_upload_file(evt.target.files[0]);
     });
-    $("#csv_file_reload").click(function (evt) {
-        csv_upload_file($("#csv_file_input").files[0]);
+    jQuery("#csv_file_reload").click(function (evt) {
+        csv_upload_file(jQuery("#csv_file_input").files[0]);
     });
-    $("select[name='csv_separator']").change(function() {
-        csv_column_separator = $(this).val();
+    jQuery("select[name='csv_separator']").change(function() {
+        csv_column_separator = jQuery(this).val();
         preparePreview();
     });
-    $("select[name='csv_headers']").change(function() {
-        csv_has_headers = parseInt($(this).val());
+    jQuery("select[name='csv_headers']").change(function() {
+        csv_has_headers = parseInt(jQuery(this).val());
         preparePreview();
     })
     for (var i=0;i<csv_upload_fields.length;i++) {
-        $("select[name='csv_field["+i+"]']").change(function() {
+        jQuery("select[name='csv_field["+i+"]']").change(function() {
             csv_auto_detect_headers = 0;
             for (var k=0;k<csv_upload_fields.length;k++){
-                csv_column_map[k] = parseInt($("select[name='csv_field["+k+"]']").val());
+                csv_column_map[k] = parseInt(jQuery("select[name='csv_field["+k+"]']").val());
             }
             preparePreview();
         })

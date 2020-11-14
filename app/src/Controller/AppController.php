@@ -154,6 +154,8 @@ class AppController extends Controller
           'authError' => false
         ]);
 
+        $this->settingsTable = TableRegistry::getTableLocator()->get('Settings');
+        
         $authuser = $this->Auth->user();
 
         // Find the user in the database and set it as the user field in the controller
@@ -170,10 +172,6 @@ class AppController extends Controller
         $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', Configure::read('Caps'));
         $this->set('user', $this->user);
-
-        // NOTE: In principle we may load the configuration only when needed,
-        // to avoid a useless query. This does not appear to hurt performance
-        // in any meaningful way, though.
         $this->set('settings', $this->getSettings());
 
         $this->handleSecrets();
@@ -269,19 +267,6 @@ class AppController extends Controller
     }
 
     /**
-     * Obtain a reference to the settings table and store into
-     * AppController::settingsTable.
-     *
-     * @return void
-     */
-    private function loadSettingsTable()
-    {
-        if ($this->settingsTable == null) {
-            $this->settingsTable = TableRegistry::getTableLocator()->get('Settings');
-        }
-    }
-
-    /**
      * Obtain the array containing the current settings, in a
      * key => value format.
      *
@@ -289,8 +274,6 @@ class AppController extends Controller
      */
     public function getSettings()
     {
-        $this->loadSettingsTable();
-
         return $this->settingsTable->getSettings();
     }
 
@@ -306,8 +289,6 @@ class AppController extends Controller
      */
     public function getSetting($field, $default = null)
     {
-        $this->loadSettingsTable();
-
         return $this->settingsTable->getSetting($field, $default);
     }
 

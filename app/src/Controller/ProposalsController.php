@@ -38,6 +38,7 @@ use Cake\I18n\Time;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
 use Dompdf\Dompdf;
+use DateTime;
 
 class ProposalsController extends AppController
 {
@@ -364,13 +365,19 @@ class ProposalsController extends AppController
         $dompdf->render();
 
         // Send out the PDF
+        $filename = str_replace(' ', '-', 
+            'caps_'
+            . substr($proposal['modified']->format(DateTime::ATOM),0,10) . '_'
+            . $proposal['user']['number'] . '_'
+            . $proposal['user']['surname'] . '_'
+            . $proposal['curriculum']['name']
+            . '.pdf');
+            
         return $this->response
             ->withStringBody($dompdf->output())
             ->withType('application/pdf')
-            ->withDownload('Piano_' .
-                str_replace(' ', '_', $proposal['curriculum']['name']) .
-                '_' . str_replace(' ', '_', $proposal['user']['name']) .
-                '.pdf');
+            ->withDownload($filename);
+            
     }
 
     public function delete($id)

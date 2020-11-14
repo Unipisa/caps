@@ -112,7 +112,7 @@
                     ?></td>
                 <td class="caps-admin-proposal-name">
                     <?php echo $this->Html->link(
-                        h($proposal['user']['name']),
+                        $proposal['user']['name'],
                         ['controller' => 'users', 'action' => 'view', $proposal['user']['id']]);
                     ?></td>
                 <td class="caps-admin-proposal-year">
@@ -123,7 +123,7 @@
                 <td class="caps-admin-proposal-degree">
                     <?php
                     echo $this->Html->link(
-                        h($curriculum['degree']['name']),
+                        $curriculum['degree']['name'],
                         ['controller' => 'degrees', 'action' => 'view', $curriculum['degree']['id']]
                     );
                     ?>
@@ -131,7 +131,7 @@
                 <td class="caps-admin-proposal-pds">
                     <?php
                     echo $this->Html->link(
-                        h($curriculum['name']),
+                        $curriculum['name'],
                         ['controller' => 'curricula', 'action' => 'view', $curriculum['id'] ]
                     );
                     ?>
