@@ -40,7 +40,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Application extends BaseApplication
 {
-    public static $_CAPSVERSION = '2.0.2';
+    public static $_CAPSVERSION = '2.0.3';
 
     /**
      * application version number
