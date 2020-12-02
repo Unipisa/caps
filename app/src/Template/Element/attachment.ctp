@@ -34,7 +34,17 @@
             'action' => 'view',
             $attachment['id']
         ]);
-        ?><br>
+        ?>
+        <?php
+            $signatures = $attachment->getSignatures();
+            foreach ($signatures as $sig) {
+                echo "<div class=\"badge badge-sm badge-success ml-2\">" .
+                    "<i class='fas fa-check mx-1'></i>" .
+                    "Firmato da: " . $sig['name'] . ' il ' . $sig['date']->i18nformat('dd/MM/yyyy, HH:mm') .
+                    "</div>";
+            }
+        ?>
+        <br>
     <?php endif ?>
     <div class="d-sm-flex align-items-center justify-content-between">
     <div>

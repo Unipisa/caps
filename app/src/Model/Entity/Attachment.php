@@ -22,6 +22,7 @@
  */
 namespace App\Model\Entity;
 
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
 
@@ -57,4 +58,59 @@ class Attachment extends Entity
         'created' => true,
         'comment' => true
     ];
+
+    /**
+     * This function returns a list of signatures found in this PDF file. If the
+     * filename does end in .pdf, this list is always empty. Otherwise, the PDF
+     * is parsed and signatures are returned, but not verified.
+     *
+     * The returned array has the format:
+     *
+     * [
+     *   [ 'name' => 'John Smith', 'date' => ... ],
+     *   ...
+     * ]
+     *
+     * where 'date' is a Cake/I18n/Time object.
+     *
+     * @return array Returns a list of the signatures in the PDF file.
+     */
+    public function getSignatures() {
+        $signatures = [];
+
+        // Check if this is likely to be a PDF file. If not, avoid parsing it.
+        if (strtolower(substr($this->filename, -4)) != '.pdf') {
+            return $signatures;
+        }
+
+        $found_sig = false;
+        $signature = [];
+
+        $data = stream_get_contents($this->data);
+
+        foreach (explode("\n", $data) as $line) {
+            if ($found_sig) {
+                if (substr($line, 0, 6) == "/Name ") {
+                    $name = substr($line, 7, -1);
+                    $signature["name"] = $name;
+                }
+                if (substr($line, 0, 3) == "/M ") {
+                    $date = substr($line, 6, -8);
+                    $signature["date"] = Time::createFromFormat("YmdHis", $date);
+                }
+                if ($line == "endobj") {
+                    $found_sig = false;
+                    $signatures[] = $signature;
+                }
+            }
+            else {
+                if (substr($line, 0, 10) == '/Type /Sig') {
+                    $found_sig = true;
+                }
+                $signature = [];
+            }
+        }
+
+        return $signatures;
+    }
 }
