@@ -28,22 +28,25 @@
     <?php endif ?>
 
     <?php if($attachment['filename'] != null): ?>
+        <span
+            class="<?= $attachment->isPDF() ? 'pdf-attachment' : '' ?>"
+            data-id="<?= $attachment->id ?>"
+            data-signature-url="<?=
+              $this->Url->build([
+                  'controller' => 'attachments',
+                  'action' => 'signatures',
+                  '_ext' => 'json',
+                  $attachment->id
+              ]);
+            ?>"
+        >
         <?php
         echo $this->Html->link($attachment['filename'], [
             'controller' => $controller,
             'action' => 'view',
             $attachment['id']
         ]);
-        ?>
-        <?php
-            $signatures = $attachment->getSignatures();
-            foreach ($signatures as $sig) {
-                echo "<div class=\"badge badge-sm badge-success ml-2\">" .
-                    "<i class='fas fa-check mx-1'></i>" .
-                    "Firmato da: " . $sig['name'] . ' il ' . $sig['date']->i18nformat('dd/MM/yyyy, HH:mm') .
-                    "</div>";
-            }
-        ?>
+        ?></span>
         <br>
     <?php endif ?>
     <div class="d-sm-flex align-items-center justify-content-between">

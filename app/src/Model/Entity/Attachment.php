@@ -60,57 +60,18 @@ class Attachment extends Entity
     ];
 
     /**
-     * This function returns a list of signatures found in this PDF file. If the
-     * filename does end in .pdf, this list is always empty. Otherwise, the PDF
-     * is parsed and signatures are returned, but not verified.
+     * Check if this attachment is in PDF format.
      *
-     * The returned array has the format:
+     * This function only checks the filename (assuming this attachment actually
+     * contains any file), and not the data itself.
      *
-     * [
-     *   [ 'name' => 'John Smith', 'date' => ... ],
-     *   ...
-     * ]
-     *
-     * where 'date' is a Cake/I18n/Time object.
-     *
-     * @return array Returns a list of the signatures in the PDF file.
+     * @return bool
      */
-    public function getSignatures() {
-        $signatures = [];
-
-        // Check if this is likely to be a PDF file. If not, avoid parsing it.
-        if (strtolower(substr($this->filename, -4)) != '.pdf') {
-            return $signatures;
+    public function isPDF() {
+        if ($this->filename != null) {
+            return preg_match('/\.(?i)pdf$/', $this->filename);
         }
 
-        $found_sig = false;
-        $signature = [];
-
-        $data = stream_get_contents($this->data);
-
-        foreach (explode("\n", $data) as $line) {
-            if ($found_sig) {
-                if (substr($line, 0, 6) == "/Name ") {
-                    $name = substr($line, 7, -1);
-                    $signature["name"] = $name;
-                }
-                if (substr($line, 0, 3) == "/M ") {
-                    $date = substr($line, 6, -8);
-                    $signature["date"] = Time::createFromFormat("YmdHis", $date);
-                }
-                if ($line == "endobj") {
-                    $found_sig = false;
-                    $signatures[] = $signature;
-                }
-            }
-            else {
-                if (substr($line, 0, 10) == '/Type /Sig') {
-                    $found_sig = true;
-                }
-                $signature = [];
-            }
-        }
-
-        return $signatures;
+        return false;
     }
 }
