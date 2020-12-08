@@ -231,6 +231,9 @@
      ?>
 
     <p>
+    <?php if ($user != $proposal->user): ?>
+    Lo studente può vedere i commenti e gli allegati. <br />
+    <?php endif ?>
     <ul class="attachments">
     <?php foreach ($attachments_and_auths as $att): ?>
     <?php if ($att instanceof \App\Model\Entity\Attachment): ?>
