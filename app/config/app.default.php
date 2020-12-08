@@ -28,7 +28,10 @@ return [
     'Caps' => [
         'cds' => 'Testing',
         'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
-        'timezone' => 'Europe/Rome'
+        'timezone' => 'Europe/Rome',
+        // See:  https://github.com/robol/pdf-signature-verifier
+        // If set to '', or not set, PDF signatures verification is disabled.
+        // 'psv_api' => 'https://my-psv-server:8081/validate'
     ],
 
     'UnipiAuthenticate' => [

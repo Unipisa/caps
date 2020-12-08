@@ -365,19 +365,35 @@ class ProposalsController extends AppController
         $dompdf->render();
 
         // Send out the PDF
-        $filename = str_replace(' ', '-', 
-            'caps_'
-            . substr($proposal['modified']->format(DateTime::ATOM),0,10) . '_'
-            . $proposal['user']['number'] . '_'
-            . $proposal['user']['surname'] . '_'
-            . $proposal['curriculum']['name']
-            . '.pdf');
-            
+        $settings = $this->getSettings();
+        $filename_template = $settings['pdf-name'];
+        if ($filename_template == '') {
+            $filename = str_replace(' ', '-',
+                'caps_'
+                . substr($proposal['modified']->format(DateTime::ATOM), 0, 10) . '_'
+                . $proposal['user']['number'] . '_'
+                . $proposal['user']['surname'] . '_'
+                . $proposal['curriculum']['name']
+                . '.pdf');
+        }
+        else
+        {
+            $date = substr($proposal['modified']->format(DateTime::ATOM), 0, 10);
+            $name = $proposal['user']['givenname'];
+            $surname = $proposal['user']['surname'];
+            $curriculum = $proposal['curriculum']['name'];
+            $filename = $filename_template . '.pdf';
+            $filename = str_replace('%d', $date, $filename);
+            $filename = str_replace('%n', $name, $filename);
+            $filename = str_replace('%s', $surname, $filename);
+            $filename = str_replace('%c', $curriculum, $filename);
+        }
+
         return $this->response
             ->withStringBody($dompdf->output())
             ->withType('application/pdf')
             ->withDownload($filename);
-            
+
     }
 
     public function delete($id)

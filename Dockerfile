@@ -12,12 +12,13 @@ RUN apt-get update && apt-get install -y \
         ssh \
 	npm \
 	git \
+        libcurl4-openssl-dev \
 	libzip-dev \
 	sudo \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
-    && docker-php-ext-install gd ldap pdo_mysql intl zip 
+    && docker-php-ext-install gd ldap pdo_mysql intl zip curl
 
 COPY app /app
 COPY html /html

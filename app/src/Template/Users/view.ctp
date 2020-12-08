@@ -248,20 +248,27 @@ $num_proposals = 0;
             'type' => 'file'
         ]);
     ?>
-        <h6 class="text-info">Nuovo documento</h6>
-        <p>&Egrave; possibile allegare documenti e/o commenti a questo profilo.</p>
 
-    <div class="form-group">
-    <?php echo $this->Form->textarea('comment'); ?>
+    <button type="button" class="dropdown-toggle btn btn-primary btn-sm" data-toggle="collapse" data-target="#add-document">
+        Inserisci un nuovo documento
+    </button>
+    <div class="collapse my-3 mx-0" id="add-document">
+        <div class="card border-left-primary p-3">
+            <p>&Egrave; possibile allegare documenti e/o commenti a questo profilo.</p>
+
+            <div class="form-group">
+            <?php echo $this->Form->textarea('comment'); ?>
+            </div>
+            <div class="form-group">
+            <?php echo $this->Form->file('data'); ?>
+            </div>
+            <?php
+                echo $this->Form->hidden('user_id', ['value' => $user_entry['id']]);
+                echo $this->Form->submit('Aggiungi documento e/o commento');
+                echo $this->Form->end();
+            ?>
+        </div>
     </div>
-    <div class="form-group">
-    <?php echo $this->Form->file('data'); ?>
-    </div>
-    <?php
-    echo $this->Form->hidden('user_id', ['value' => $user_entry['id']]);
-    echo $this->Form->submit('Aggiungi documento e/o commento');
-    echo $this->Form->end();
-    ?>
 <?= $this->element('card-end'); ?>
 
 <?php endif; ?>

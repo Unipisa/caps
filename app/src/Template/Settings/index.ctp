@@ -100,6 +100,16 @@
             <input type="text" class="form-control" name="approval-signature-text" value="<?= h($settings['approval-signature-text']); ?>">
         </div>
 
+        <div class="form-group">
+            <label for="caps-setting-pdf-name" class="caps-setting-header">Nome dei file .pdf</label>
+            <div class="caps-setting-description">È possibile configurare il nome per i file .pdf che vengono
+                scaricati cliccando su "Scarica in PDF" nella pagina di un piano di studio. Le stringhe '%d', '%s',
+                '%n' e '%c' vengono sostituite con la data di ultima modifica, il cognome, il nome, e il curriculum,
+                rispettivamente. Non è necessario includere l'estensione .pdf.
+              </div>
+            <input type="text" class="form-control" name="pdf-name" value="<?= h($settings['pdf-name']); ?>">
+        </div>
+
     <?= $this->element('card-end') ?>
 
     <div class="mt-4"></div>

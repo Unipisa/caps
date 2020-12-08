@@ -393,7 +393,7 @@ function CapsProposalController() {
         var credits = "";
       }
 
-      var inputHTML = "<div class='col-9'><input class=\"form-control exam\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] required type=text placeholder='Un esame a scelta libera' value=" + name + "></input></div>";
+      var inputHTML = "<div class='col-9'><input class=\"form-control exam\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] required type=text placeholder='Un esame a scelta libera' value=\"" + name + "\"></input></div>";
       var creditsHTML = "<div class='col-2'><input class=\"form-control credits\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 required value=" + credits + "></input></div>";
       var deleteHTML = "<div class='col-1 my-auto'><a href='#' class='delete fas fw fa-trash'></a></div>";
 

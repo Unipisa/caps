@@ -22,6 +22,7 @@
  */
 namespace App\Model\Entity;
 
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
 
@@ -57,4 +58,20 @@ class Attachment extends Entity
         'created' => true,
         'comment' => true
     ];
+
+    /**
+     * Check if this attachment is in PDF format.
+     *
+     * This function only checks the filename (assuming this attachment actually
+     * contains any file), and not the data itself.
+     *
+     * @return bool
+     */
+    public function isPDF() {
+        if ($this->filename != null) {
+            return preg_match('/\.(?i)pdf$/', $this->filename);
+        }
+
+        return false;
+    }
 }
