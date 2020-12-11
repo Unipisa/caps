@@ -85,6 +85,11 @@
         <button type="button" class="btn btn-sm btn-primary">
             <i class="fas fa-file-pdf mr-2"></i>Scarica come PDF
         </button>
+    </a>&nbsp;
+    <a href="<?= $this->Url->build([ 'action' => 'pdf', 'show_comments' => True, $proposal['id']]) ?>">
+        <button type="button" class="btn btn-sm btn-primary">
+            <i class="fas fa-file-pdf mr-2"></i>PDF inclusi i commenti 
+        </button>
     </a>
 </div>
 

@@ -264,4 +264,78 @@
 <div class="right">
     <div class="signature"><!-- Firma dello studente //--></div>
 </div>
-</div>
+
+<?php if ($show_comments): ?>
+<?= $this->element('card-start', [ 'header' => 'Allegati e commenti' ]) ?>
+    <?php
+      $visible_attachments = array_filter(
+          $proposal['attachments'],
+          function ($a) use ($user, $secrets) { return $user && $user->canViewAttachment($a, $secrets); }
+      );
+
+      $authorizations = $proposal->auths;
+
+      // Construct an array with the attachments and the authorizations, and sort it
+      $attachments_and_auths = array_merge($visible_attachments, $authorizations);
+      usort($attachments_and_auths, function ($a, $b) {
+          return $a->created->getTimestamp() - $b->created->getTimestamp();
+      });
+
+      $events_count = count($attachments_and_auths);
+     ?>
+
+    <p>
+    <?php if ($user != $proposal->user && !$pdf): ?>
+    Lo studente può vedere i commenti e gli allegati. <br />
+    <?php endif ?>
+    <ul class="attachments">
+    <?php foreach ($attachments_and_auths as $att): ?>
+    <?php if ($att instanceof \App\Model\Entity\Attachment): ?>
+        <?= $this->element('attachment', [
+                'attachment' => $att,
+                'controller' => 'attachments',
+                'name' => $att->filename == null ? 'Commento' : 'Allegato'
+            ])
+        ?>
+    <?php else: ?>
+        <li class="card border-left-warning mb-2">
+            <div class="card-body p-1">
+                Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
+                    ?>  — <?php
+                    echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+                }
+                ?>
+            </div>
+        </li>
+    <?php endif ?>
+    <?php endforeach ?>
+    </ul>
+    <?php if ($user && $user->canAddAttachment($proposal, $secrets) && !$pdf): ?>
+
+    <button type="button" class="dropdown-toggle btn btn-primary btn-sm" data-toggle="collapse" data-target="#add-attachment">
+        Inserisci un nuovo allegato o commento
+    </button>
+    <div class="collapse my-3 mx-0" id="add-attachment">
+        <div class="card border-left-primary p-3">
+        <?php
+        echo $this->Form->create('Attachment', [
+            'url' => ['controller' => 'attachments', 'action' => 'add'],
+            'type' => 'file'
+        ]);
+        ?>
+
+        <div class="form-group">
+            <?php echo $this->Form->textarea('comment'); ?>
+        </div>
+        <div class="form-group">
+            <?php echo $this->Form->file('data'); ?>
+        </div>
+        <?php echo $this->Form->hidden('proposal_id', ['value' => $proposal['id']]); ?>
+        <?php echo $this->Form->submit('Aggiungi commento e/o allegato'); ?>
+        <?php echo $this->Form->end(); ?>
+        <?php endif; ?>
+        </div>
+    </div>
+<?= $this->element('card-end'); ?>
+<?php endif; ?>
+</div> 

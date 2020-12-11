@@ -44,6 +44,7 @@
         echo $this->Html->link($attachment['filename'], [
             'controller' => $controller,
             'action' => 'view',
+            '_full' => $pdf,
             $attachment['id']
         ]);
         ?></span>
@@ -56,7 +57,7 @@
         — <?php echo $attachment['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
     <?php endif; ?>
     </div>
-    <?php if ($user['admin'] || $user['id'] == $attachment['user_id']): ?>
+    <?php if (($user['admin'] || $user['id'] == $attachment['user_id']) && !$pdf): ?>
         <?php echo $this->Form->postLink('Elimina', [
             'controller' => $controller,
             'action' => 'delete',
