@@ -33,7 +33,7 @@
             data-id="<?= $attachment->id ?>"
             data-signature-url="<?=
               $this->Url->build([
-                  'controller' => 'attachments',
+                  'controller' => $attachment::$controller_name,
                   'action' => 'signatures',
                   '_ext' => 'json',
                   $attachment->id

@@ -157,4 +157,17 @@ class DocumentsController extends AppController
             $user_id
         ]);
     }
+
+    public function signatures($id = null) {
+        $document = $this->Documents->get($id);
+        /* come controllo i permessi?!?
+        if (! $this->user || ! $this->user->canViewAttachment($attachment))
+        */
+        if (!$this->user['admin']) {
+            throw new ForbiddenException('Impossibile visualizzare il file selezionato');
+        }
+        $signatures = $document->signatures();
+        $this->set('signatures', $signatures);
+        $this->set('_serialize', [ 'signatures' ]);
+    }
 }

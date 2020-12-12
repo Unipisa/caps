@@ -61,4 +61,6 @@ class Document extends DocumentBase
         'user' => true,
         'owner' => true
     ];
+
+    public static $controller_name = "documents";
 }

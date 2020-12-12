@@ -50,4 +50,6 @@ class Attachment extends DocumentBase
         'comment' => true
     ];
 
+    public static $controller_name = "attachments";
+
 }
