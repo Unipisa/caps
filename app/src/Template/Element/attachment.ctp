@@ -44,10 +44,10 @@
         echo $this->Html->link($attachment['filename'], [
             'controller' => $controller,
             'action' => 'view',
-            '_full' => $pdf,
+            '_full' => !empty($pdf),
             $attachment['id']
         ]);
-        if ($pdf) {
+        if (!empty($pdf)) { // need to load signatures syncronously
             foreach ($attachment->signatures() as $signature) {
                 if ($signature->valid) {
                     echo "<span class=\"badge badge-sm badge-success ml-2 px-2 \">";
@@ -68,7 +68,7 @@
         — <?php echo $attachment['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
     <?php endif; ?>
     </div>
-    <?php if (($user['admin'] || $user['id'] == $attachment['user_id']) && !$pdf): ?>
+    <?php if (($user['admin'] || $user['id'] == $attachment['user_id']) && empty($pdf)): ?>
         <?php echo $this->Form->postLink('Elimina', [
             'controller' => $controller,
             'action' => 'delete',

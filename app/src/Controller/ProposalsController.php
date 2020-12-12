@@ -321,7 +321,6 @@ class ProposalsController extends AppController
         $this->set('message', $message);
         $this->set('proposal', $proposal);
         $this->set('secrets', $secrets);
-        $this->set('pdf', false);
 
         // Having this is apparently the only way to enforce validation on
         // the e-mail given in the input.
