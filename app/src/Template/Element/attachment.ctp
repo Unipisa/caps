@@ -47,7 +47,18 @@
             '_full' => $pdf,
             $attachment['id']
         ]);
-        ?></span>
+        if ($pdf) {
+            foreach ($attachment->signatures() as $signature) {
+                if ($signature->valid) {
+                    echo "<span class=\"badge badge-sm badge-success ml-2 px-2 \">";
+                    echo "<i class=\"fas fa-pen-fancy mr-1\"></i>";
+                    echo $signature->name;
+                    echo "</span>";
+                  }
+            }
+        } 
+        ?>
+        </span>
         <br>
     <?php endif ?>
     <div class="d-sm-flex align-items-center justify-content-between">

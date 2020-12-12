@@ -161,39 +161,12 @@ class AttachmentsController extends AppController
     }
 
     public function signatures($id = null) {
-        // If PDF signature verification is disabled, we just make
-        // this is a NOOP.
-        $Caps = Configure::read('Caps');
-        $psv_api = $Caps['psv_api'];
-
-        if ($psv_api == null || $psv_api == "") {
-            $this->set('signatures', []);
+        $attachment = $this->Attachments->get($id);
+        if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
+            throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
-        else {
-            $attachment = $this->Attachments->get($id);
-
-            // Check if the file is a PDF; otherwise, just return an
-            // empty set.
-            if ($attachment->filename == null || !$attachment->isPDF()) {
-                $this->set('signatures', []);
-                $this->set('_serialize', ['signatures']);
-            } else {
-                $curl = curl_init($psv_api);
-                $v = array(
-                    'data' => base64_encode(stream_get_contents($attachment->data))
-                );
-
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($v));
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-                $res = curl_exec($curl);
-                curl_close($curl);
-
-                $this->set('signatures', json_decode($res));
-            }
-        }
-
+        $signatures = $attachment->signatures();
+        $this->set('signatures', $signatures);
         $this->set('_serialize', [ 'signatures' ]);
     }
 }

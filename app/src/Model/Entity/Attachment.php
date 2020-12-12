@@ -25,6 +25,8 @@ namespace App\Model\Entity;
 use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
+use Cake\Core\Configure;
+
 
 /**
  * Attachment Entity
@@ -73,5 +75,44 @@ class Attachment extends Entity
         }
 
         return false;
+    }
+
+    /**
+     * Find and validate PEF signatures 
+     * makes a remote request, might take some time
+     * 
+     * @return list of signatures
+     */
+    public function signatures() {
+        // If PDF signature verification is disabled, we just make
+        // this is a NOOP.
+        $Caps = Configure::read('Caps');
+        $psv_api = $Caps['psv_api'];
+
+        if ($psv_api == null || $psv_api == "") {
+            return [];
+        }
+        else {
+            $attachment = $this;
+
+            // Check if the file is a PDF; otherwise, just return an
+            // empty set.
+            if ($attachment->filename == null || !$attachment->isPDF()) {
+                return [];
+            }
+            $curl = curl_init($psv_api);
+            $v = array(
+                'data' => base64_encode(stream_get_contents($attachment->data))
+            );
+
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($v));
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+            $res = curl_exec($curl);
+            curl_close($curl);
+
+            return json_decode($res);
+        }
     }
 }
