@@ -4,6 +4,7 @@ global.Chart = require('chart.js');
 
 // These are only used inside this code
 var jQueryEasing = require('jquery.easing');
+var popper = require('popper.js');
 var bootstrap = require('bootstrap');
 var sbadmin = require('./sb-admin-2.js');
 

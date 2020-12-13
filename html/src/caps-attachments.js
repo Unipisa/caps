@@ -1,5 +1,6 @@
-jQuery = require('jquery');
-
+var jQuery = require('jquery');
+var popper = require('popper.js');
+var bootstrap = require('bootstrap');
 
 /**
  * The CapsAttachment is the controller for a span.pdf-attachment element, and
@@ -14,6 +15,22 @@ class CapsAttachment {
     this.loadSignatures();
   }
 
+  createTooltip(sig) {
+    var sigdate = new Date(sig.date).toLocaleDateString();
+    var signotafter = new Date(sig.notAfter).toLocaleDateString();
+
+    return `
+      <div class='text-left'>
+        <strong>Nome:</strong> ${sig.name}<br>
+        <strong>Data firma:</strong> ${sigdate}<br>
+        <strong>Firma valida fino a:</strong> ${signotafter}<br>
+        <br>
+        <small><strong>Entità firmataria:</strong> ${sig.DN}</small><br>
+        <small><strong>Entità che rilascia la firma:</strong> ${sig.issuerDN}</small>
+      </div>
+    `;
+  }
+
   loadSignatures() {
     var self = this;
 
@@ -22,12 +39,21 @@ class CapsAttachment {
       for (var i = 0; i < signatures.length; i++) {
         var sig = signatures[i];
         if (sig.valid) {
-          var signature_elem =
-            `<span class=\"badge badge-sm badge-success ml-2 px-2 \">
-              <i class="fas fa-pen-fancy mr-1"></i>
-              ${sig.name}
-            </span>`;
+          var tooltip = self.createTooltip(sig);
+
+          var signature_elem = document.createElement('span');
+          signature_elem.setAttribute('class',
+            'badge badge-sm badge-success ml-2 px-2');
+          signature_elem.setAttribute('data-toggle', 'tooltip');
+
+          signature_elem.innerHTML =
+            `<i class="fas fa-pen-fancy mr-1"></i>${sig.name}`;
+
           jQuery(self.el).append(signature_elem);
+          jQuery(signature_elem).tooltip({
+            'html': true,
+            'title': self.createTooltip(sig)
+          });
         }
       }
     })
