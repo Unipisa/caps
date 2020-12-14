@@ -83,7 +83,7 @@
 
     <?php endif; ?>
 
-    <?php echo $this->Form->create('', [ 'id' => 'proposal-form' ]); ?>
+    <?php echo $this->Form->create(null, [ 'id' => 'proposal-form' ]); ?>
 
     <?php echo $this->element('filter_badges'); ?>
 
