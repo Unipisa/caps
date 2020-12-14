@@ -155,7 +155,7 @@ class AppController extends Controller
         ]);
 
         $this->settingsTable = TableRegistry::getTableLocator()->get('Settings');
-        
+
         $authuser = $this->Auth->user();
 
         // Find the user in the database and set it as the user field in the controller

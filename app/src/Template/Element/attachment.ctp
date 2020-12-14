@@ -28,13 +28,38 @@
     <?php endif ?>
 
     <?php if($attachment['filename'] != null): ?>
+        <span
+            class="<?= $attachment->isPDF() ? 'pdf-attachment' : '' ?>"
+            data-id="<?= $attachment->id ?>"
+            data-signature-url="<?=
+              $this->Url->build([
+                  'controller' => $attachment::$controller_name,
+                  'action' => 'signatures',
+                  '_ext' => 'json',
+                  $attachment->id
+              ]);
+            ?>"
+        >
         <?php
         echo $this->Html->link($attachment['filename'], [
             'controller' => $controller,
             'action' => 'view',
+            '_full' => !empty($pdf),
             $attachment['id']
         ]);
-        ?><br>
+        if (!empty($pdf)) { // need to load signatures syncronously
+            foreach ($attachment->signatures() as $signature) {
+                if ($signature->valid) {
+                    echo "<span class=\"badge badge-sm badge-success ml-2 px-2 \">";
+                    echo "<i class=\"fas fa-pen-fancy mr-1\"></i>";
+                    echo $signature->name;
+                    echo "</span>";
+                  }
+            }
+        } 
+        ?>
+        </span>
+        <br>
     <?php endif ?>
     <div class="d-sm-flex align-items-center justify-content-between">
     <div>
@@ -43,7 +68,7 @@
         — <?php echo $attachment['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
     <?php endif; ?>
     </div>
-    <?php if ($user['admin'] || $user['id'] == $attachment['user_id']): ?>
+    <?php if (($user['admin'] || $user['id'] == $attachment['user_id']) && empty($pdf)): ?>
         <?php echo $this->Form->postLink('Elimina', [
             'controller' => $controller,
             'action' => 'delete',

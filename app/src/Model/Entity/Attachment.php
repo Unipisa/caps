@@ -22,21 +22,13 @@
  */
 namespace App\Model\Entity;
 
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
+use Cake\Core\Configure;
+use App\Model\Entity\DocumentBase;
 
-/**
- * Attachment Entity
- *
- * @property int $id
- * @property string|null $filename
- * @property int|null $user_id
- * @property int|null $proposal_id
- *
- * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\Proposal $proposal
- */
-class Attachment extends Entity
+class Attachment extends DocumentBase
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -57,4 +49,7 @@ class Attachment extends Entity
         'created' => true,
         'comment' => true
     ];
+
+    public static $controller_name = "attachments";
+
 }

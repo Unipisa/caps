@@ -23,6 +23,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use App\Model\Entity\DocumentBase;
 
 /**
  * Document Entity
@@ -38,7 +39,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\User $user
  */
-class Document extends Entity
+class Document extends DocumentBase
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -60,4 +61,6 @@ class Document extends Entity
         'user' => true,
         'owner' => true
     ];
+
+    public static $controller_name = "documents";
 }

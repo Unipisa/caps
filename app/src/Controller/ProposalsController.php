@@ -341,6 +341,7 @@ class ProposalsController extends AppController
         $settings = $this->getSettings();
         $Caps = Configure::read('Caps');
         $app_path = APP;
+        $show_comments = $this->request->getQuery('show_comments', false);
 
         // authorization
         $secrets = $this->getSecrets();
@@ -351,7 +352,9 @@ class ProposalsController extends AppController
         $builder = $this->viewBuilder();
         $builder->setLayout(false);
         $builder->setTemplate('Proposals/pdf');
-        $view = $builder->build(compact('proposal', 'settings', 'Caps', 'app_path'));
+        $user = $this->user;
+        $pdf = true;
+        $view = $builder->build(compact('proposal', 'settings', 'Caps', 'app_path', 'secrets', 'user', 'pdf', 'show_comments'));
 
         // Generate the PDF
         $dompdf = new Dompdf();

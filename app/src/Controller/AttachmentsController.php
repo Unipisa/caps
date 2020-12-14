@@ -25,6 +25,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Core\Configure;
 
 /**
  * Attachment Controller
@@ -157,5 +158,15 @@ class AttachmentsController extends AppController
             'action' => 'view',
             $proposal_id
         ]);
+    }
+
+    public function signatures($id = null) {
+        $attachment = $this->Attachments->get($id);
+        if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
+            throw new ForbiddenException('Impossibile visualizzare il file selezionato');
+        }
+        $signatures = $attachment->signatures();
+        $this->set('signatures', $signatures);
+        $this->set('_serialize', [ 'signatures' ]);
     }
 }
