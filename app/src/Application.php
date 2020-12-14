@@ -40,6 +40,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Application extends BaseApplication
 {
+    // Current CAPS version. This number is displayed in the web interface.
     public static $_CAPSVERSION = '2.1.1';
 
     /**
