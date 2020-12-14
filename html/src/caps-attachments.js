@@ -15,9 +15,17 @@ class CapsAttachment {
     this.loadSignatures();
   }
 
+  formatDate(d) {
+    return new Date(d).toLocaleDateString(undefined, {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
   createTooltip(sig) {
-    var sigdate = new Date(sig.date).toLocaleDateString();
-    var signotafter = new Date(sig.notAfter).toLocaleDateString();
+    var sigdate = this.formatDate(sig.date);
+    var signotafter = this.formatDate(sig.notAfter);
 
     return `
       <div class='text-left'>
@@ -50,9 +58,12 @@ class CapsAttachment {
             `<i class="fas fa-pen-fancy mr-1"></i>${sig.name}`;
 
           jQuery(self.el).append(signature_elem);
-          jQuery(signature_elem).tooltip({
-            'html': true,
-            'title': self.createTooltip(sig)
+          jQuery(signature_elem).popover({
+            html: true,
+            container: 'body',
+            title: 'Dettagli sulla firma',
+            content: self.createTooltip(sig),
+            trigger: 'hover'
           });
         }
       }
