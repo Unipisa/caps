@@ -177,7 +177,7 @@ class ProposalsController extends AppController
     public function index()
     {
         $proposals = $this->Proposals->find()
-        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
+            ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
 
         if ($this->user['admin']) {
             // admin può vedere tutti i proposal
@@ -188,6 +188,12 @@ class ProposalsController extends AppController
 
         $filterForm = new ProposalsFilterForm($proposals);
         $proposals = $filterForm->validate_and_execute($this->request->getQuery());
+
+        // Save the query for when we'll be back on this page
+        $this->request->getSession()->write(
+            'Caps.ProposalQuery',
+            json_encode($this->request->getQuery())
+        );
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
@@ -200,7 +206,7 @@ class ProposalsController extends AppController
                     if ($action) {
                         $this->Flash->error(__('richiesta non valida'));
 
-                        return $this->redirect(['action' => 'index']);
+                        return $this->redirectToIndex();
                     }
                     $action = $i;
                 }
@@ -237,7 +243,7 @@ class ProposalsController extends AppController
                 if (!$selected) {
                     $this->Flash->error(__('nessun piano selezionato'));
 
-                    return $this->redirect(['action' => 'index']);
+                    return $this->redirectToIndex();
                 }
 
                 $count = 0;
@@ -279,7 +285,7 @@ class ProposalsController extends AppController
                     $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirectToIndex();
             }
         }
 
@@ -288,6 +294,32 @@ class ProposalsController extends AppController
         $this->set('filterForm', $filterForm);
         $this->set('proposals', $this->paginate($proposals->cleanCopy()));
         $this->set('selected', 'index');
+    }
+
+    // A utility function that redirect to the last index we visisted
+    public function back() {
+        return $this->redirectToIndex();
+    }
+
+    private function redirectToIndex()
+    {
+        $query = $this->request->getSession()->read(
+            'Caps.ProposalQuery'
+        );
+
+        try {
+            $query = json_decode($query);
+        }
+        catch (\Exception $e) {
+            $query = null;
+        }
+
+        if ($query == null) {
+            return $this->redirect([ 'action' => 'index' ]);
+        }
+        else {
+            return $this->redirect([ 'action' => 'index', '?' => $query ]);
+        }
     }
 
     public function view($id)
@@ -671,10 +703,7 @@ class ProposalsController extends AppController
         $this->Proposals->save($proposal);
         $this->notifyApproval($proposal['id']);
 
-        return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'index']
-        );
+        return $this->redirectToIndex();
     }
 
     public function adminReject($id = null)
@@ -697,9 +726,6 @@ class ProposalsController extends AppController
         $proposal['state'] = 'rejected';
         $this->Proposals->save($proposal);
 
-        return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'index']
-        );
+        return $this->redirectToIndex();
     }
 }

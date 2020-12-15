@@ -95,7 +95,7 @@ $actionName = $this->request->getParam('action');
 
         <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName != 'dashboard') ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
-                'controller' => 'proposals', 'action' => 'index'
+                'controller' => 'proposals', 'action' => 'back'
             ]); ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
                 <span>Piani di studio</span>
