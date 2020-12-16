@@ -5,7 +5,7 @@ services:
     build: ..
     container_name: caps
     ports:
-      - 8080:80
+      - 80:80
     volumes:
       # This is set anyway, in case it does not exists a folder
       # is created, which is harmless. Otherwise, this should be
