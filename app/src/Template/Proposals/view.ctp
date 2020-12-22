@@ -34,12 +34,7 @@
 <div class="d-flex mb-2">
 
 <?php if ($user['admin'] && $proposal['state'] != 'draft'): ?>
-    <!-- Toolbar per l'amministratore //-->
-    <a href="#" onclick="Caps.loadProposals();">
-        <button type="button" class="btn btn-sm btn-secondary mr-2">
-            <i class="fas fa-arrow-left"></i> Indietro
-        </button>
-    </a>
+    <!-- Toolbar per l'amministratore -->
     <?php if ($proposal['state'] == 'submitted'): ?>
     <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
         <button type="button" class="btn btn-sm btn-danger mr-2">
