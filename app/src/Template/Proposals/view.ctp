@@ -33,20 +33,18 @@
 
 <div class="d-flex mb-2">
 
-<?php if ($user['admin'] && $proposal['state'] != 'draft'): ?>
+<?php if ($user['admin'] && $proposal['state'] == 'submitted'): ?>
     <!-- Toolbar per l'amministratore -->
-    <?php if ($proposal['state'] == 'submitted'): ?>
-    <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
-        <button type="button" class="btn btn-sm btn-danger mr-2">
-            <i class="fas fa-times"></i> Rifiuta
-        </button>
-    </a>
     <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
         <button type="button" class="btn btn-sm btn-success mr-2">
             <i class="fas fa-check"></i> Accetta
         </button>
     </a>
-    <?php endif; ?>
+    <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-danger mr-2">
+            <i class="fas fa-times"></i> Rifiuta
+        </button>
+    </a>
 <?php endif; ?>
 
 <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
