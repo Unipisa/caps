@@ -5,6 +5,10 @@
 
 class CapsController {
 
+  constructor(root = "/") {
+    this.root = root;
+  }
+
   downloadCSV() {
     location.pathname += '.csv';
   }
@@ -15,10 +19,9 @@ class CapsController {
 
   loadProposals() {
       const f = JSON.parse(sessionStorage.getItem('proposals-filter'));
-      console.log(f);
 
       if (f == null) {
-          location.pathname = '/proposals';
+          location.pathname = this.root + 'proposals';
       }
       else {
           // We selectively read some query parameters from the saved ones, as
@@ -30,7 +33,7 @@ class CapsController {
               `&degree=${f.degree ? f.degree : ''}` +
               `&curriculum=${f.curriculum ? f.curriculum : ''}` +
               `&page=${f.page ? f.page : '1' }`;
-          location.href = '/proposals' + query_string;
+          location.href = this.root + 'proposals' + query_string;
       }
   }
 
@@ -64,6 +67,4 @@ class CapsController {
 
 }
 
-const Caps = new CapsController();
-
-module.exports = Caps;
+module.exports = CapsController;
