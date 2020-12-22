@@ -35,21 +35,23 @@
 
 <?php if ($user['admin'] && $proposal['state'] != 'draft'): ?>
     <!-- Toolbar per l'amministratore //-->
-        <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
-            <button type="button" class="btn btn-sm btn-success mr-2">
-                <i class="fas fa-check"></i> Accetta
-            </button>
-        </a>
-        <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
-            <button type="button" class="btn btn-sm btn-danger mr-2">
-                <i class="fas fa-times"></i> Rifiuta
-            </button>
-        </a>
-        <a href="<?= $this->Url->build([ 'action' => 'back' ]) ?>">
+    <a href="#" onclick="Caps.loadProposals();">
         <button type="button" class="btn btn-sm btn-secondary mr-2">
             <i class="fas fa-arrow-left"></i> Indietro
         </button>
-        </a>
+    </a>
+    <?php if ($proposal['state'] == 'submitted'): ?>
+    <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-danger mr-2">
+            <i class="fas fa-times"></i> Rifiuta
+        </button>
+    </a>
+    <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-success mr-2">
+            <i class="fas fa-check"></i> Accetta
+        </button>
+    </a>
+    <?php endif; ?>
 <?php endif; ?>
 
 <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>

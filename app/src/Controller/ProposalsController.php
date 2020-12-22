@@ -189,12 +189,6 @@ class ProposalsController extends AppController
         $filterForm = new ProposalsFilterForm($proposals);
         $proposals = $filterForm->validate_and_execute($this->request->getQuery());
 
-        // Save the query for when we'll be back on this page
-        $this->request->getSession()->write(
-            'Caps.ProposalQuery',
-            json_encode($this->request->getQuery())
-        );
-
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
                 throw new ForbiddenException();
@@ -204,9 +198,8 @@ class ProposalsController extends AppController
             foreach (['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
                 if ($this->request->getData($i)) {
                     if ($action) {
-                        $this->Flash->error(__('richiesta non valida'));
-
-                        return $this->redirectToIndex();
+                        $this->Flash->error(__('Richiesta non valida'));
+                        return $this->redirect($this->referer());
                     }
                     $action = $i;
                 }
@@ -241,9 +234,8 @@ class ProposalsController extends AppController
 
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
-                    $this->Flash->error(__('nessun piano selezionato'));
-
-                    return $this->redirectToIndex();
+                    $this->Flash->error(__('Nessun piano selezionato'));
+                    return $this->redirect($this->referer());
                 }
 
                 $count = 0;
@@ -280,12 +272,12 @@ class ProposalsController extends AppController
                 if ($count > 1) {
                     $this->Flash->success(__('{count} piani {what}', ['count' => $count, 'what' => $context['plural']]));
                 } elseif ($count == 1) {
-                    $this->Flash->success(__('piano {what}', ['what' => $context['singular']]));
+                    $this->Flash->success(__('Piano {what}', ['what' => $context['singular']]));
                 } else {
-                    $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
+                    $this->Flash->success(__('Nessun piano {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirectToIndex();
+                return $this->redirect($this->referer());
             }
         }
 
@@ -294,32 +286,6 @@ class ProposalsController extends AppController
         $this->set('filterForm', $filterForm);
         $this->set('proposals', $this->paginate($proposals->cleanCopy()));
         $this->set('selected', 'index');
-    }
-
-    // A utility function that redirect to the last index we visisted
-    public function back() {
-        return $this->redirectToIndex();
-    }
-
-    private function redirectToIndex()
-    {
-        $query = $this->request->getSession()->read(
-            'Caps.ProposalQuery'
-        );
-
-        try {
-            $query = json_decode($query);
-        }
-        catch (\Exception $e) {
-            $query = null;
-        }
-
-        if ($query == null) {
-            return $this->redirect([ 'action' => 'index' ]);
-        }
-        else {
-            return $this->redirect([ 'action' => 'index', '?' => $query ]);
-        }
     }
 
     public function view($id)
@@ -703,7 +669,9 @@ class ProposalsController extends AppController
         $this->Proposals->save($proposal);
         $this->notifyApproval($proposal['id']);
 
-        return $this->redirectToIndex();
+        return $this->redirect(
+            [ 'controller' => 'proposals', 'action' => 'view', $id ]
+        );
     }
 
     public function adminReject($id = null)
@@ -726,6 +694,8 @@ class ProposalsController extends AppController
         $proposal['state'] = 'rejected';
         $this->Proposals->save($proposal);
 
-        return $this->redirectToIndex();
+        return $this->redirect(
+            [ 'controller' => 'proposals', 'action' => 'view', $id ]
+        );
     }
 }
