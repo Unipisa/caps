@@ -1,5 +1,9 @@
 var jQuery = require('jquery');
 
+// We keep track of the manual opening of the sidebar, to avoid hiding in those
+// cases, as it might be unexpected from the user side.
+var sidebarToggled = false;
+
 (function($) {
   "use strict"; // Start of use strict
 
@@ -13,18 +17,22 @@ var jQuery = require('jquery');
     $(".sidebar").toggleClass("toggled");
     if ($(".sidebar").hasClass("toggled")) {
       $('.sidebar .collapse').collapse('hide');
-    };
+      sidebarToggled = false;
+    }
+    else {
+      sidebarToggled = true;
+    }
   });
 
-  // Close any open menu accordions when window is resized below 768px
+  // Close any open menu accordions when window is resized below 850px
   $(window).resize(function() {
 
     if ($(window).width() < 850 * dpi) {
       $('.sidebar .collapse').collapse('hide');
     };
 
-    // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 600 * dpi && !$(".sidebar").hasClass("toggled")) {
+    // Toggle the side navigation when window is resized below 600px
+    if ($(window).width() < 600 * dpi && !$(".sidebar").hasClass("toggled") && !sidebarToggled) {
       $("body").addClass("sidebar-toggled");
       $(".sidebar").addClass("toggled");
       $('.sidebar .collapse').collapse('hide');
@@ -33,7 +41,7 @@ var jQuery = require('jquery');
 
   // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
   $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
-    if ($(window).width() > 850 * dpi) {
+    if ($(window).width() >= 850 * dpi) {
       var e0 = e.originalEvent,
         delta = e0.wheelDelta || -e0.detail;
       this.scrollTop += (delta < 0 ? 1 : -1) * 30;
