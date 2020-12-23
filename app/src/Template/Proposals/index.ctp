@@ -23,6 +23,12 @@
 ?>
 <h1>Piani di Studio</h1>
 
+<script>
+    Caps.saveProposalsFilter(JSON.stringify(<?=
+        json_encode($this->getRequest()->getQueryParams())
+    ?>));
+</script>
+
 <?php if ($user['admin']): ?>
 
 <?php echo $this->element('card-start') ?>
@@ -83,7 +89,7 @@
 
     <?php endif; ?>
 
-    <?php echo $this->Form->create('', [ 'id' => 'proposal-form' ]); ?>
+    <?php echo $this->Form->create(null, [ 'id' => 'proposal-form' ]); ?>
 
     <?php echo $this->element('filter_badges'); ?>
 

@@ -94,9 +94,10 @@ $actionName = $this->request->getParam('action');
         </li>
 
         <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName != 'dashboard') ? ' active' : '' ?>">
-            <a class="nav-link" href="<?= $this->Url->build([
-                'controller' => 'proposals', 'action' => 'index'
-            ]); ?>">
+            <a class="nav-link caps-proposal-link" href="<?= $this->Url->build([
+                'controller' => 'proposals',
+                'action' => 'index'
+            ]) ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
                 <span>Piani di studio</span>
             </a>

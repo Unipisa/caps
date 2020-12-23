@@ -33,23 +33,18 @@
 
 <div class="d-flex mb-2">
 
-<?php if ($user['admin'] && $proposal['state'] != 'draft'): ?>
-    <!-- Toolbar per l'amministratore //-->
-        <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
-            <button type="button" class="btn btn-sm btn-success mr-2">
-                <i class="fas fa-check"></i> Accetta
-            </button>
-        </a>
-        <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
-            <button type="button" class="btn btn-sm btn-danger mr-2">
-                <i class="fas fa-times"></i> Rifiuta
-            </button>
-        </a>
-        <a href="<?= $this->Url->build([ 'action' => 'index' ]) ?>">
-        <button type="button" class="btn btn-sm btn-secondary mr-2">
-            <i class="fas fa-arrow-left"></i> Indietro
+<?php if ($user['admin'] && $proposal['state'] == 'submitted'): ?>
+    <!-- Toolbar per l'amministratore -->
+    <a href="<?= $this->Url->build([ 'action' => 'admin_approve', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-success mr-2">
+            <i class="fas fa-check"></i> <span class="d-none d-md-inline">Accetta</span>
         </button>
-        </a>
+    </a>
+    <a href="<?= $this->Url->build([ 'action' => 'admin_reject', $proposal['id'] ]) ?>">
+        <button type="button" class="btn btn-sm btn-danger mr-2">
+            <i class="fas fa-times"></i> <span class="d-none d-md-inline">Rifiuta</span>
+        </button>
+    </a>
 <?php endif; ?>
 
 <?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
@@ -78,19 +73,36 @@
     <?php endif ?>
 <?php endif ?>
 
-
-
     <div class="flex-fill"></div>
-    <a href="<?= $this->Url->build([ 'action' => 'pdf', $proposal['id'] ]) ?>">
+
+    <!-- The following PDF actions are repeated twice: one rendering is for screen md or larger,
+         whereas the other handles small screens, and is packed into a dropdown. -->
+    <a class="d-none d-md-inline"
+       href="<?= $this->Url->build([ 'action' => 'pdf', $proposal['id'] ]) ?>">
         <button type="button" class="btn btn-sm btn-primary mr-2">
-            <i class="fas fa-file-pdf mr-2"></i>Scarica come PDF
+            <i class="fas fa-file-pdf"></i> Scarica come PDF
         </button>
     </a>
-    <a href="<?= $this->Url->build([ 'action' => 'pdf', 'show_comments' => True, $proposal['id']]) ?>">
+    <a class="d-none d-md-inline"
+       href="<?= $this->Url->build([ 'action' => 'pdf', 'show_comments' => True, $proposal['id']]) ?>">
         <button type="button" class="btn btn-sm btn-primary">
-            <i class="fas fa-file-pdf mr-2"></i>PDF inclusi i commenti 
+            <i class="fas fa-file-pdf mr-2"></i>PDF inclusi i commenti
         </button>
     </a>
+
+    <div class="dropdown d-md-none">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+        <div class="dropdown-menu p-3">
+            <a class="dropdown-item" href="<?= $this->Url->build([ 'action' => 'pdf', $proposal['id'] ]) ?>">
+                <i class="fas fa-file-pdf"></i> Scarica come PDF
+            </a>
+            <a class="dropdown-item" href="<?= $this->Url->build([ 'action' => 'pdf', 'show_comments' => True, $proposal['id']]) ?>">
+                <i class="fas fa-file-pdf"></i> PDF inclusi i commenti
+            </a>
+        </div>
+    </div>
 </div>
 
     <table class="table">

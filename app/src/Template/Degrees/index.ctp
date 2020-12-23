@@ -24,7 +24,7 @@
 <h1>Corsi di Laurea</h1>
 
 <?= $this->element('card-start'); ?>
-    <?php echo $this->Form->create('', ['id' => 'form-degree']); ?>
+    <?php echo $this->Form->create(null, ['id' => 'form-degree']); ?>
 
     <div class="mb-2 d-flex">
         <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>" class="mr-2">

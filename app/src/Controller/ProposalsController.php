@@ -177,7 +177,7 @@ class ProposalsController extends AppController
     public function index()
     {
         $proposals = $this->Proposals->find()
-        ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
+            ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
 
         if ($this->user['admin']) {
             // admin può vedere tutti i proposal
@@ -198,9 +198,8 @@ class ProposalsController extends AppController
             foreach (['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
                 if ($this->request->getData($i)) {
                     if ($action) {
-                        $this->Flash->error(__('richiesta non valida'));
-
-                        return $this->redirect(['action' => 'index']);
+                        $this->Flash->error(__('Richiesta non valida'));
+                        return $this->redirect($this->referer());
                     }
                     $action = $i;
                 }
@@ -235,9 +234,8 @@ class ProposalsController extends AppController
 
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
-                    $this->Flash->error(__('nessun piano selezionato'));
-
-                    return $this->redirect(['action' => 'index']);
+                    $this->Flash->error(__('Nessun piano selezionato'));
+                    return $this->redirect($this->referer());
                 }
 
                 $count = 0;
@@ -274,12 +272,12 @@ class ProposalsController extends AppController
                 if ($count > 1) {
                     $this->Flash->success(__('{count} piani {what}', ['count' => $count, 'what' => $context['plural']]));
                 } elseif ($count == 1) {
-                    $this->Flash->success(__('piano {what}', ['what' => $context['singular']]));
+                    $this->Flash->success(__('Piano {what}', ['what' => $context['singular']]));
                 } else {
-                    $this->Flash->success(__('nessun piano {what}', ['what' => $context['singular']]));
+                    $this->Flash->success(__('Nessun piano {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect($this->referer());
             }
         }
 
@@ -672,8 +670,7 @@ class ProposalsController extends AppController
         $this->notifyApproval($proposal['id']);
 
         return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'index']
+            [ 'controller' => 'proposals', 'action' => 'view', $id ]
         );
     }
 
@@ -698,8 +695,7 @@ class ProposalsController extends AppController
         $this->Proposals->save($proposal);
 
         return $this->redirect(
-            ['controller' => 'proposals',
-                'action' => 'index']
+            [ 'controller' => 'proposals', 'action' => 'view', $id ]
         );
     }
 }
