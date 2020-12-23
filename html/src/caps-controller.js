@@ -1,27 +1,44 @@
 //
 // This class implements all the handler needed by the elements in CAPS.
 //
+jQuery = require('jquery');
+
 'use strict'
 
 class CapsController {
 
   constructor(root = "/") {
     this.root = root;
+
+    jQuery(document).ready(() => {
+        this.updateProposalsURL();
+    });
   }
 
   downloadCSV() {
     location.pathname += '.csv';
   }
 
+  // This function is automatically called on proposals/view, to save the
+  // current state of the filters.
   saveProposalsFilter(filter) {
       sessionStorage.setItem('proposals-filter', filter);
   }
 
-  loadProposals() {
+  // Replace all href attributes of a.caps-proposal-link tags, to ensure that
+  // they point to the proposals page with the filters set at the last visit.
+  updateProposalsURL() {
+      let url = this.getProposalsURL();
+      jQuery('a.caps-proposal-link').each((idx, el) => {
+          jQuery(el).attr('href', url);
+      });
+  }
+
+  getProposalsURL() {
       const f = JSON.parse(sessionStorage.getItem('proposals-filter'));
 
       if (f == null) {
-          location.pathname = this.root + 'proposals';
+          return this.root + 'proposals';
       }
       else {
           // We selectively read some query parameters from the saved ones, as
@@ -33,7 +50,7 @@ class CapsController {
               `&degree=${f.degree ? f.degree : ''}` +
               `&curriculum=${f.curriculum ? f.curriculum : ''}` +
               `&page=${f.page ? f.page : '1' }`;
-          location.href = this.root + 'proposals' + query_string;
+          return this.root + 'proposals' + query_string;
       }
   }
 
