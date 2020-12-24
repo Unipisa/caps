@@ -162,7 +162,7 @@ class AttachmentsController extends AppController
 
     public function signatures($id = null) {
         $attachment = $this->Attachments->get($id, [
-            'contain' => [ 'Users' ]
+            'contain' => [ 'Users', 'Proposals', 'Proposals.Users' ]
         ]);
 
         if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
