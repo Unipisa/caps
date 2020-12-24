@@ -161,10 +161,14 @@ class AttachmentsController extends AppController
     }
 
     public function signatures($id = null) {
-        $attachment = $this->Attachments->get($id);
+        $attachment = $this->Attachments->get($id, [
+            'contain' => [ 'Users' ]
+        ]);
+
         if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
+
         $signatures = $attachment->signatures();
         $this->set('signatures', $signatures);
         $this->set('_serialize', [ 'signatures' ]);

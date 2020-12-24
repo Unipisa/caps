@@ -48,9 +48,9 @@ class DocumentBase extends Entity
     }
 
     /**
-     * Find and validate PEF signatures 
+     * Find and validate PEF signatures
      * makes a remote request, might take some time
-     * 
+     *
      * @return list of signatures
      */
     public function signatures() {
@@ -82,7 +82,16 @@ class DocumentBase extends Entity
             $res = curl_exec($curl);
             curl_close($curl);
 
-            return json_decode($res);
+            $response = json_decode($res);
+
+            // In case the API is broken or not available, we return an empty array which
+            // means no signatures were detected. Note that in case we implement caching
+            // for this remote API, this is one case where the result should not be stored.
+            if (! is_array($response)) {
+                $response = [];
+            }
+
+            return $response;
         }
     }
 }
