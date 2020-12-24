@@ -48,10 +48,12 @@ class DocumentBase extends Entity
     }
 
     /**
-     * Find and validate PEF signatures
-     * makes a remote request, might take some time
+     * Find and validate PEF signatures makes a remote request, might take some time.
      *
-     * @return list of signatures
+     * The function returns an array of signatures, with the format specified by the
+     * PDF Signature Verifier API, see https://github.com/robol/pdf-signature-verifier.
+     *
+     * @return array
      */
     public function signatures() {
         // If PDF signature verification is disabled, we just make
