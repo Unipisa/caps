@@ -56,8 +56,7 @@ class DocumentBase extends Entity
      * @return array
      */
     public function signatures() {
-        // If PDF signature verification is disabled, we just make
-        // this is a NOOP.
+        // If PDF signature verification is disabled, we just make this a NOOP.
         $Caps = Configure::read('Caps');
         $psv_api = $Caps['psv_api'];
 
