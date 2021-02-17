@@ -43,14 +43,16 @@ class CapsController {
       else {
           // We selectively read some query parameters from the saved ones, as
           // these are the only "officially supported ones".
-          const query_string =
-              `?state=${f.state ? f.state : ''}` +
-              `&surname=${f.surname ? f.surname : ''}` +
-              `&academic_year=${f.academic_year ? f.academic_year : ''}` +
-              `&degree=${f.degree ? f.degree : ''}` +
-              `&curriculum=${f.curriculum ? f.curriculum : ''}` +
-              `&page=${f.page ? f.page : '1' }`;
-          return this.root + 'proposals' + query_string;
+          const supported_fields = [
+              'state', 'surname', 'academic_year', 'degree', 
+              'curriculum', 'exam_name', 'free_exam_name', 
+              'page'];
+          if (!f.page) f.page = '1';
+          const query_string = supported_fields.map(
+              function(field) {
+                  return field + '=' + encodeURI(f['field']) || ''
+              }).join('&');
+          return this.root + 'proposals?' + query_string;
       }
   }
 
