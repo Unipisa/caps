@@ -171,6 +171,7 @@ class AppController extends Controller
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', Configure::read('Caps'));
+        $this->set('debug', Configure::read('debug'));
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
 
