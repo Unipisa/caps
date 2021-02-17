@@ -35,12 +35,31 @@ class ProposalsFilterForm extends FilterForm
           ->addField('academic_year', ['type' => 'string'])
           ->addField('degree', ['type' => 'string'])
           ->addField('curriculum', ['type' => 'string'])
-          ->addField('exam_name', ['type' => 'string']);
+          ->addField('exam_name', ['type' => 'string'])
+          ->addField('free_exam_name', ['type' => 'string']);
     }
 
     protected function _execute(array $data)
     {
         $this->setData($data);
+
+        $exam_name = $this->getData('exam_name');
+        if (!empty($exam_name)) {
+            // potrebbe essere più efficiente usare "innerJoinWith" invece che "matching"
+            $this->query = $this->query->matching('ChosenFreeChoiceExams', 
+                function ($q) use($exam_name) {
+                    return $q->where(['ChosenFreeChoiceExams.name LIKE' => '%' . $exam_name .'%']);
+                });
+        }
+
+        $exam_name = $this->getData('free_exam_name');
+        if (!empty($exam_name)) {
+            $this->query = $this->query->matching('ChosenExams.Exams', 
+                function ($q) use($exam_name) {
+                    return $q->where(['Exams.name LIKE' => '%' . $exam_name .'%']);
+                });
+        }
+
         if ($this->getData('state') !== '') {
             $this->filterFieldEqual('Proposals.state', 'state');
         }
@@ -49,13 +68,6 @@ class ProposalsFilterForm extends FilterForm
         $this->filterFieldLike('Degrees.name', 'degree');
         $this->filterFieldLike('Curricula.name', 'curriculum');
 
-        $exam_name = $this->getData('exam_name');
-        if (!empty($exam_name)) {
-            $this->query = $this->query->matching('ChosenFreeChoiceExams', 
-                function ($q) use($exam_name) {
-                    return $q->where(['ChosenFreeChoiceExams.name LIKE' => '%' . $exam_name .'%']);
-                });
-        }
 
         return $this->query;
     }

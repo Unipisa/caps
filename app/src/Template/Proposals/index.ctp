@@ -48,7 +48,8 @@
                     'academic_year' => __('anno'),
                     'degree' => __('laurea'),
                     'curriculum' => __('piano'),
-                    'exam_name' => __('nome esame') ]]) ?>
+                    'exam_name' => __('nome esame'),
+                    'free_exam_name' => __('nome esame libero') ]]) ?>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
