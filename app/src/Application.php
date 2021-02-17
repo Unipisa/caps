@@ -52,8 +52,11 @@ class Application extends BaseApplication
         // we clean the cache on restart, so we always get fresh information
         // on the application version
         $version = Cache::read('caps-version');
+        $shortVersion = Cache::read('caps-short-version');
 
-        if ($version == false) {
+        if ($shortVersion != Application::$_CAPSVERSION) {
+            // either cache is empty or hard coded version has changed
+
             // We try to run git, but we are aware that:
             // - git may not be installed.
             // - this build might not be inside a git repository
@@ -73,6 +76,9 @@ class Application extends BaseApplication
                 $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
                 $commitDate = $commitDate->format('Y-m-d H:i:s');
                 $shortVersion = explode('-', $version)[0];
+                if ($shortVersion != Application::$_CAPSVERSION) {
+                    $version .= sprintf(" [version mismatch: %s]", Application::$_CAPSVERSION);
+                }
 
                 if ($branch === "master") {
                     $version = sprintf('%s [%s]', $version, $commitDate);
