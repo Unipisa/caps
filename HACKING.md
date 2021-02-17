@@ -109,15 +109,6 @@ già compilati sono inclusi nel repository.
         credits
         <-> Exam
 
-
-    Exam
-        id
-        name
-        code
-        sector
-        credits
-        <-> Exam
-
     FreeChoiceExam
         id
         year

@@ -34,7 +34,8 @@ class ProposalsFilterForm extends FilterForm
           ->addField('surname', ['type' => 'string'])
           ->addField('academic_year', ['type' => 'string'])
           ->addField('degree', ['type' => 'string'])
-          ->addField('curriculum', ['type' => 'string']);
+          ->addField('curriculum', ['type' => 'string'])
+          ->addField('exam_name', ['type' => 'string']);
     }
 
     protected function _execute(array $data)
@@ -47,6 +48,14 @@ class ProposalsFilterForm extends FilterForm
         $this->filterFieldEqual('Curricula.academic_year', 'academic_year');
         $this->filterFieldLike('Degrees.name', 'degree');
         $this->filterFieldLike('Curricula.name', 'curriculum');
+
+        $exam_name = $this->getData('exam_name');
+        if (!empty($exam_name)) {
+            $this->query = $this->query->matching('ChosenFreeChoiceExams', 
+                function ($q) use($exam_name) {
+                    return $q->where(['ChosenFreeChoiceExams.name LIKE' => '%' . $exam_name .'%']);
+                });
+        }
 
         return $this->query;
     }

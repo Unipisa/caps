@@ -47,7 +47,8 @@
                     'surname' => __('cognome'),
                     'academic_year' => __('anno'),
                     'degree' => __('laurea'),
-                    'curriculum' => __('piano')]]) ?>
+                    'curriculum' => __('piano'),
+                    'exam_name' => __('nome esame') ]]) ?>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
