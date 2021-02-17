@@ -10,8 +10,8 @@ class CapsController {
   constructor(root = "/") {
     this.root = root;
 
-    jQuery(document).ready(() => {
-        this.updateProposalsURL();
+    jQuery(() => {
+      this.updateProposalsURL();
     });
   }
 
@@ -48,10 +48,12 @@ class CapsController {
               'curriculum', 'exam_name', 'free_exam_name', 
               'page'];
           if (!f.page) f.page = '1';
+
           const query_string = supported_fields.map(
               function(field) {
-                  return field + '=' + encodeURI(f['field']) || ''
+                  return field + '=' + encodeURI(f[field] == undefined ? '' : f[field])
               }).join('&');
+              
           return this.root + 'proposals?' + query_string;
       }
   }
@@ -60,7 +62,7 @@ class CapsController {
   // for the current table
   removeQueryParam(param) {
       var url = location.search;
-      var rx = new RegExp(param + '=[^&]*');
+      var rx = new RegExp('[&?]' + param + '=[^&]*');
       location.search = url.replace(rx, '');
   }
 

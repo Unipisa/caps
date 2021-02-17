@@ -38,14 +38,13 @@
 
     <!-- Custom styles for this template-->
     <link rel="stylesheet" href="<?= $this->Url->assetUrl('css/style.min.css') . '?v=' . $css_hash ?>" type="text/css">
-    <?php if ($debug):?> 
-    <!-- DEBUG -->
-    <script type="text/javascript" src="<?= $this->Url->assetUrl('js/caps.min.js') . '?v=' . $js_hash ?>"></script>
-    <?php else: ?>
-    <!-- PRODUCTION -->
-S    <script type="text/javascript" src="<?= $this->Url->assetUrl('js/caps.min.js') . '?v=' . $js_hash ?>"></script>
-    <?php endif; ?>
-    <!--FINE-->
+
+    <?php
+      // The following script loads all the JS compiled; it is loaded in minified form when in production, 
+      // and in not minified form when in development. 
+    ?>
+    <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
+
     <script>
         var Caps = new CapsController('<?= $this->Url->build('/') ?>');
     </script>
