@@ -43,7 +43,7 @@ class ProposalsFilterForm extends FilterForm
     {
         $this->setData($data);
 
-        $exam_name = $this->getData('exam_name');
+        $exam_name = $this->getData('free_exam_name');
         if (!empty($exam_name)) {
             // potrebbe essere più efficiente usare "innerJoinWith" invece che "matching"
             $this->query = $this->query->matching('ChosenFreeChoiceExams', 
@@ -52,7 +52,7 @@ class ProposalsFilterForm extends FilterForm
                 });
         }
 
-        $exam_name = $this->getData('free_exam_name');
+        $exam_name = $this->getData('exam_name');
         if (!empty($exam_name)) {
             $this->query = $this->query->matching('ChosenExams.Exams', 
                 function ($q) use($exam_name) {
