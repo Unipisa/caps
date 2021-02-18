@@ -13,13 +13,10 @@ services:
       # This is set anyway, in case it does not exists a folder
       # is created, which is harmless. Otherwise, this should be
       # a file with a private RSA key for SSH authentication
-      - "./id_rsa:/app/id_rsa"
-      - "../app/src:/app/src"
-      - "../app/webroot/img:/app/webroot/img"
-      - "../html/scss:/html/scss"
-      - "../html/src:/html/src"
-      - "../html/package.json:/html/package.json"
-      - "../html/package-lock.json:/html/package-lock.json"
+      - "./id_rsa:/app/id_rsa:ro"
+      - "../app/src:/app/src:ro"
+      - "../app/webroot/img:/app/webroot/img:ro"
+      - "../html:/tmp/html"
       - "../app/config/Migrations:/app/config/Migrations"
     env_file:
       - caps.env
@@ -27,6 +24,14 @@ services:
       # We need this to make sure that npm run watch is run
       # inside the container; not needed on production builds
       CAPS_RUN_NPM_WATCH: 1
+      DEBUG: "true"
+    security_opt:
+      - apparmor:unconfined
+      - seccomp:unconfined
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN # For fuse
       
   caps-db:
     image: mysql:8

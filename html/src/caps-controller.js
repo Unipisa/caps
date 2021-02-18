@@ -22,7 +22,7 @@ class CapsController {
   // This function is automatically called on proposals/view, to save the
   // current state of the filters.
   saveProposalsFilter(filter) {
-      sessionStorage.setItem('proposals-filter', filter);
+    sessionStorage.setItem('proposals-filter', filter);
   }
 
   // Replace all href attributes of a.caps-proposal-link tags, to ensure that

@@ -8,6 +8,19 @@ function msg {
 
 msg "Starting the CAPS Docker manager"
 
+if [ -d /tmp/html ]; then
+  msg "Making a local bind mount of html for interactive development"
+  uid=$(stat -c %u /tmp/html/package.json)
+  gid=$(stat -c %g /tmp/html/package.json)
+  msg "New files will belong to user ${uid}:${gid}"
+  for folder in scss src; do
+    bindfs -ononempty --force-user=www-data --create-for-user=${uid} \
+           --force-group=www-data --create-for-group=${gid} /tmp/html/${folder} /html/${folder}
+  done
+  cp /tmp/html/package-lock.json /html/package-lock.json
+  cp /tmp/html/package.json /html/package.json
+fi
+
 msg "Compiling CSS and JS files..."
 cd /html
 npm install
@@ -45,10 +58,11 @@ if [ "$CAPS_SSH_TUNNEL" != "" ]; then
   fi
 
   # Make sure we're the one to own the key
-  chown $(whoami) /app/id_rsa
-  chmod 600 /app/id_rsa
+  cp /app/id_rsa /app/id_rsa.key
+  chown $(whoami) /app/id_rsa.key
+  chmod 600 /app/id_rsa.key
 
-  /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa ${CAPS_LDAP_URI} &
+  /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa.key ${CAPS_LDAP_URI} &
 
   # We now create a fake host entry to point to the LDAP server:
   LDAP_HOST=$(echo "${CAPS_LDAP_URI}" | sed "s|ldap\(s\)\?:\/\/||")
@@ -109,6 +123,11 @@ bin/cake cache clear_all
 msg "Enabling mod_rewrite"
 a2enmod rewrite
 
-msg "Starting Apache2, go to http://localhost:8080"
+if [ "$DEBUG" != "" ]; then
+  msg "CAPS is starting in debug mode"
+  PORT=":8765"
+fi
+
+msg "Starting Apache2, go to http://localhost${PORT}/"
 
 apache2 -DFOREGROUND

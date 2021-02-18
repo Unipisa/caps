@@ -38,7 +38,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/style.min.css" rel="stylesheet">
-    <?php echo $this->Html->script('caps.min') ?>
+    <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
 </head>
 
 <body class="bg-primary">

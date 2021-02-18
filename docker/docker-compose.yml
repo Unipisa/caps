@@ -13,6 +13,8 @@ services:
       - "./id_rsa:/app/id_rsa"
     env_file:
       - caps.env
+    environment:
+      DEBUG: "false"
       
   caps-db:
     image: mysql:8
