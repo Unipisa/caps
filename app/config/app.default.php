@@ -49,35 +49,21 @@ return [
       'verify_cert' => true,
 
       // LISTA DEGLI UTENTI "FAKE"
+      // utile per accedere al server durante lo sviluppo
+      // senza dover configurare LDAP
+      // per dare i privilegi di amministratore dare il comando:
+      // bin/cake grant_admin <username>
       'fakes' => [
+        /*
         [
-            'user' => 'my-fake-user',
-            'password' => 'my-fake-user',
-            'ldap_dn' => '',
-            'name' => 'Utente Finto',
+            'user' => 'rossi',
+            'password' => 'cambiami',
+            'name' => 'Mario Rossi',
             'number' => '000000',
-            'admin' => false,
-            'surname' => 'Finto',
-            'givenname' => 'Utente'
+            'surname' => 'Rossi',
+            'givenname' => 'Mario'
         ],
-        [
-            'user' => 'other-fake-user',
-            'password' => 'other-fake-user',
-            'ldap_dn' => '',
-            'name' => 'Altro Utente',
-            'number' => '000111',
-            'admin' => false,
-            'surname' => 'Altro',
-            'givenname' => 'Utente'
-        ],
-        [
-          'user' => 'my-admin-user',
-          'password' => 'my-admin-user',
-          'name' => 'Amministratore',
-          'admin' => true,
-          'surname' => 'Tore',
-          'givenname' => 'Amministra'
-        ]
+        */
       ]
     ],
 

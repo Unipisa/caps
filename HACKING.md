@@ -34,6 +34,15 @@ Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che c
 copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
 già compilati sono inclusi nel repository. 
 
+## Upgrade da CAPS < 1.0.0
+
+Per importare un dump vecchio del database (di CAPS < 1.0.0) è necessario prima migrare ad una versione
+compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
+```bash
+bin/cake migrations migrate -t 20191217155946
+sqlite3 caps.sqlite < dump.sql
+bin/cake migrations migrate
+```
 
 ## Struttura dati
 
