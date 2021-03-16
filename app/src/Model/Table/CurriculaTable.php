@@ -57,10 +57,20 @@ class CurriculaTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('Proposals')->setProperty('proposals');
-        $this->hasMany('FreeChoiceExams')->setProperty('free_choice_exams');
-        $this->hasMany('CompulsoryExams')->setProperty('compulsory_exams');
-        $this->hasMany('CompulsoryGroups')->setProperty('compulsory_groups');
+        $this->hasMany('Proposals')
+          ->setProperty('proposals');
+
+        $this->hasMany('FreeChoiceExams')
+          ->setProperty('free_choice_exams')
+          ->setDependent(true);
+
+        $this->hasMany('CompulsoryExams')
+          ->setProperty('compulsory_exams')
+          ->setDependent(true);
+
+        $this->hasMany('CompulsoryGroups')
+          ->setProperty('compulsory_groups')
+          ->setDependent(true);
 
         $this->belongsTo('Degrees');
     }

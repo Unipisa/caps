@@ -58,11 +58,13 @@ class FreeChoiceExamsTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Curricula', [
-            'foreignKey' => 'curriculum_id'
+            'foreignKey' => 'curriculum_id',
+            'dependent' => true
         ]);
 
         $this->belongsTo('Groups', [
-            'foreignKey' => 'group_id'
+            'foreignKey' => 'group_id',
+            'dependent' => true
         ]);
     }
 
