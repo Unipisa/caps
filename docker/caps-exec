@@ -6,6 +6,8 @@ function msg {
   echo -e "\033[32;1mCAPS::DOCKER\033[34;0m $* \033[0m"
 }
 
+export HOME=/var/www
+
 msg "Starting the CAPS Docker manager"
 
 if [ -d /tmp/html ]; then
