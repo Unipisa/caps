@@ -126,6 +126,21 @@ class ProposalsController extends AppController
         $email->send();
     }
 
+    private function notifyRejection($id)
+    {
+        $proposal = $this->get_proposal($id);
+
+        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
+            return;
+        }
+
+        $email = $this->createProposalEmail($proposal)
+            ->setTo($proposal['user']['email'])
+            ->setSubject('Piano di studi rigettato');
+        $email->viewBuilder()->setTemplate('rejection');
+        $email->send();
+    }
+
     public function dashboard()
     {
         // We need to find a few stats about proposals
@@ -215,7 +230,7 @@ class ProposalsController extends AppController
                   'reject' => [
                       'state' => 'rejected',
                       'plural' => __('rifiutati'),
-                      'singular' => __('approvati')
+                      'singular' => __('rifiutato')
                   ],
                   'resubmit' => [
                       'state' => 'submitted',
@@ -256,6 +271,9 @@ class ProposalsController extends AppController
                             case 'submitted':
                                 $proposal['submitted_date'] = Time::now();
                                 break;
+                            case 'rejected':
+                                $proposal['approved_date'] = null;
+                                break;
                             default:
                                 break;
                         }
@@ -263,6 +281,9 @@ class ProposalsController extends AppController
                         if ($this->Proposals->save($proposal)) {
                             if ($context['state'] == 'approved') {
                                 $this->notifyApproval($proposal['id']);
+                            }
+                            if ($context['state'] == 'rejected') {
+                                $this->notifyRejection($proposal['id']);
                             }
 
                             $count++;
@@ -692,7 +713,9 @@ class ProposalsController extends AppController
         }
 
         $proposal['state'] = 'rejected';
+        $proposal['approved_date'] = null;
         $this->Proposals->save($proposal);
+        $this->notifyRejection($proposal['id']);
 
         return $this->redirect(
             [ 'controller' => 'proposals', 'action' => 'view', $id ]
