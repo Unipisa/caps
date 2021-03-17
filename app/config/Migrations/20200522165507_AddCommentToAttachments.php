@@ -42,8 +42,8 @@ class AddCommentToAttachments extends AbstractMigration
 
         $table->update();
 
-	// Set all the old created fields to now
-	$this->execute('update attachments set created = (select modified from proposals where proposals.id = attachments.proposal_id);');
+        // Set all the old created fields to now
+        $this->execute('update attachments set created = (select modified from proposals where proposals.id = attachments.proposal_id);');
     }
 
     public function down() {

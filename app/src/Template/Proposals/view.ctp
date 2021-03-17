@@ -23,11 +23,14 @@
 ?>
 <h1>Piano di Studi di <?php echo $proposal['user']['name']; ?></h1>
 
-<?php if ($message != ""): ?>
-<?= $this->element('card-start', [ 'border' => 'warning' ]) ?>
-    <?php echo $message; ?>
-<?= $this->element('card-end'); ?>
-<?php endif; ?>
+<?php 
+$message = $this->Caps->proposalMessage($proposal);
+if ($message != "") {
+    echo $this->element('card-start', [ 'border' => $this->Caps->proposalColor($proposal) ]);
+    echo $message;
+    echo $this->element('card-end'); 
+} 
+?>
 
 <?= $this->element('card-start'); ?>
 
@@ -106,6 +109,10 @@
 </div>
 
     <table class="table">
+        <tr>
+            <th>Stato</th>
+            <td><?= $this->Caps->badge($proposal); ?></td>
+        </tr>
         <tr>
             <th>Curriculum</th>
             <td><?= h($proposal['curriculum']['degree']['name']) ?></td>

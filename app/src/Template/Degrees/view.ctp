@@ -38,12 +38,10 @@
     </div>
 
     <table class="table">
-        <thead>
         <tr>
             <th>Nome</th>
             <td><?php echo h($degree['name']); ?></td>
         </tr>
-        </thead>
         <tr>
             <th>Anni</th>
             <td><?php echo $degree['years']; ?></td>
@@ -53,5 +51,56 @@
             <td><?= $degree['enable_sharing'] ? 'Abilitata' : 'Non abilitata' ?></td>
         </tr>
     </table>
+
 <?= $this->element('card-end'); ?>
+
+<?= $this->element('card-start', [
+    'header' => 'Messaggi'
+]); ?>
+
+    <p>Questi messaggi vengono mostrati allo studente che visualizza il piano.
+    Possono essere personalizzati per indicare le procedure da seguire nei vari casi. 
+    </p>
+      
+
+    <table class="table">
+        <tr>
+            <th>Accettazione</th>
+            <td><?= $degree['approval_message'] ?></td>
+        </tr>
+        <tr>
+            <th>Sottomissione</th>
+            <td><?= $degree['submission_message'] ?></td>
+        </tr>
+        <tr>
+            <th>Rifiuto</th>
+            <td><?= $degree['rejection_message'] ?></td>
+        </tr>
+    </table>
+<?= $this->element('card-end'); ?>
+
+<?= $this->element('card-start', [ 'header' => 'E-mail' ]) ?>
+  <p>L'accettazione, sottomissione, e rifiuto di un piano di studi possono essere comuncati 
+    via e-mail allo studente e agli indirizzi specificati nelle 
+    <?= $this->Html->link('impostazioni', [ 'controller' => 'settings', 'action' => 'index' ]) ?>.
+    Questo avviene 
+    solo per gli eventi selezionati qui. 
+    </p>
+      
+    <table class="table">
+        <tr>
+            <th>Accettazione</th>
+            <td><?= $degree['approval_confirmation'] ? 'E-mail abilitata' : 'E-mail disabilitata' ?></td>
+        </tr>
+        <tr>
+            <th>Sottomissione</th>
+            <td><?= $degree['submission_confirmation'] ? 'E-mail abilitata' : 'E-mail disabilitata' ?></td>
+        </tr>
+        <tr>
+            <th>Rifiuto</th>
+            <td><?= $degree['rejection_confirmation'] ? 'E-mail abilitata' : 'E-mail disabilitata' ?></td>
+        </tr>
+    </table>
+<?= $this->element('card-end'); ?>
+
 
