@@ -23,7 +23,8 @@ Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè
 tramite una porta locale, è necessario modificare il parametro ```verify_cert``` a false in 
 ```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non 
 è ideale in produzione. 
-
+Per lo sviluppo in locale, se non si vuole configurare LDAP, è possibile 
+inserire le credenziali degli utenti direttamente nel file di configurazione.
 
 Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
 ```bash
@@ -52,14 +53,20 @@ alcuni utenti ad essere amministratori, o per creare utenti fittizzi.
 
 Questa procedura viene gestita in automatico dall'immagine [Docker](docker/README.md). 
 
-## Upgrade da CAPS < 1.0.0
+## Creazione files HTML e JS
 
-Per importare un dump vecchio del database (di CAPS < 1.0.0) è necessario prima migrare ad una versione
-compatibile, e poi effettuare il resto delle migrazioni. Ad esempio:
 ```bash
-bin/cake migrations migrate -t 20191217155946
-sqlite3 caps.sqlite < dump.sql
-bin/cake migrations migrate
+cd html/
+npm install
+npm run deploy
+```
+
+## Esecuzione
+```bash
+cd app
+bin/cake migrations/migrate # applica eventuali migrazioni al database
+vendor/bin/phpunit # run unit tests
+bin/cake server & # run a development server
 ```
 
 
