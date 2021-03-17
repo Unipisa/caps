@@ -155,11 +155,6 @@ $num_proposals = 0;
                                                 'class' => 'dropdown-item'
                                             ]);
                                         }
-                                        echo $this->Html->link('Visualizza', [
-                                                'controller' => 'proposals', 'action' => 'view', $proposal['id']
-                                            ], [
-                                                'class' => 'dropdown-item'
-                                            ]);
                                         break;
                                     case "submitted":
                                     case "approved":
