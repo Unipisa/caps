@@ -53,8 +53,6 @@ class SettingsTable extends Table
     // Additional fields are still displayed and shown to the user, for compatibility.
     private $required_fields = [
         [ 'field' => 'user-instructions', 'value' => '', 'fieldtype' => 'textarea' ],
-        [ 'field' => 'approved-message',  'value' => '', 'fieldtype' => 'text' ],
-        [ 'field' => 'submitted-message', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'cds', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'department', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ],
