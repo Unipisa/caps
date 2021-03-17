@@ -41,17 +41,14 @@ class AddConfirmationsToDegree extends AbstractMigration
       ]);
 
       $table->addColumn('approval_message', 'text', [
-        'default' => '',
         'null' => false
       ]);
 
       $table->addColumn('rejection_message', 'text', [
-        'default' => '',
         'null' => false
       ]);
 
       $table->addColumn('submission_message', 'text', [
-        'default' => '',
         'null' => false
       ]);
 
@@ -86,6 +83,7 @@ class AddConfirmationsToDegree extends AbstractMigration
           ->execute();
       }
 
+      $this->execute('UPDATE degrees SET rejection_confirmation = 0');
       $this->execute('DELETE from settings where field="approved-message"');
       $this->execute('DELETE from settings where field="submitted-message"');
     }

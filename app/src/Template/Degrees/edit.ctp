@@ -25,22 +25,62 @@
     <?= $degree->isNew() ? "Aggiungi corso di Laurea" : "Modifica corso di Laurea" ?>
 </h1>
 
+<?= $this->Form->create($degree); ?>
+
+
 <?= $this->element('card-start'); ?>
     <?php
-        echo $this->Form->create($degree);
         echo $this->Form->control('name', ['label' => 'Nome']);
         echo $this->Form->control('years', ['label' => 'Anni']);
     ?>
     <div class="form-check mb-2">
         <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta parere abilitata']); ?>
     </div>
+
+    <div class="form-group">
+        <label for="caps-setting-approved-message" class="caps-setting-header">Messaggio di approvazione</label>
+        <div class="caps-setting-description">
+            Questo messaggio viene mostrato allo studente quando visualizza un piano che è già stato
+            approvato.
+        </div>
+        <textarea id="caps-setting-approved-message"
+                    name="approval_message" class="form-control caps-settings-html">
+            <?= $degree['approval_message'] ?>
+        </textarea>        </div>
+
+    <div class="form-group">
+        <label for="caps-setting-submitted-message" class="caps-setting-header">Messaggio alla sottomissione</label>
+        <div class="caps-setting-description">
+            Questo messaggio viene mostrato allo studente quando sottomette un piano; può contenere
+            ad esempio delle
+            istruzioni da seguire dopo la sottomissione.
+        </div>
+        <textarea id="caps-setting-submitted-message"
+                    name="submission_message" class="form-control caps-settings-html">
+            <?= $degree['submission_message'] ?>
+        </textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="caps-setting-rejected-message" class="caps-setting-header">Messaggio per piani rigettati</label>
+        <div class="caps-setting-description">
+            Questo messaggio viene mostrato allo studente quando visualizza un piano che è stato rigettato.
+        </div>
+        <textarea id="caps-setting-rejected-message"
+                    name="rejection_message" class="form-control caps-settings-html">
+            <?= $degree['rejection_message'] ?>
+        </textarea>
+    </div>
+
     <?php
         if ($degree->isNew()):
             echo $this->Form->submit('Salva corso di laurea');
         else:
             echo $this->Form->submit('Aggiorna');
         endif;
-        echo $this->Form->end();
     ?>
 <?= $this->element('card-end') ?>
+
+<?= $this->Form->end(); ?>
+
 
