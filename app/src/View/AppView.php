@@ -53,5 +53,7 @@ class AppView extends View
         $this->loadHelper('Paginator', [
             'templates' => 'caps_paginator'
         ]);
+
+        $this->loadHelper('Caps');
     }
 }

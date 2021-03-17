@@ -105,7 +105,12 @@ class ProposalsController extends AppController
             return;
         }
 
-        $email = $this->createProposalEmail($this->get_proposal($id))
+        $proposal = $this->get_proposal($id);
+
+        if (! $proposal['curriculum']['degree']['submission_confirmation'])
+            return;
+
+        $email = $this->createProposalEmail($proposal)
             ->setTo($this->user['email'])
             ->setSubject('Piano di studi sottomesso');
         $email->viewBuilder()->setTemplate('submission');
@@ -118,6 +123,9 @@ class ProposalsController extends AppController
         if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
             return;
         }
+
+        if (! $proposal['curriculum']['degree']['approval_confirmation'])
+            return;
 
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
@@ -133,6 +141,9 @@ class ProposalsController extends AppController
         if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
             return;
         }
+        
+        if (! $proposal['curriculum']['degree']['rejection_confirmation'])
+            return;
 
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
@@ -319,25 +330,6 @@ class ProposalsController extends AppController
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
-        // Setup the message to show to the user
-        switch ($proposal['state']) {
-            case 'submitted':
-                $message = $this->getSetting(
-                    'submitted-message',
-                    'Stampa il tuo Piano di Studi, firmalo e consegnalo in Segreteria Studenti.'
-                );
-                break;
-            case 'approved':
-                $message = $this->getSetting(
-                    'approved-message',
-                    'Il tuo piano di studi è stato approvato.'
-                );
-                break;
-            default:
-                $message = "";
-        }
-
-        $this->set('message', $message);
         $this->set('proposal', $proposal);
         $this->set('secrets', $secrets);
 

@@ -92,36 +92,12 @@ $num_proposals = 0;
                     </thead>
                 </tr>
                 <?php
+                    foreach ($proposals_view[$degree_id][$state] as $proposal) {
+                        // We keep track of the number of proposals, since $proposals is not an array
+                        // but an opaque query object, and does not report the number of results beforehand.
+                        $num_proposals++;
+                ?>
 
-                foreach ($proposals_view[$degree_id][$state] as $proposal) {
-                    // We keep track of the number of proposals, since $proposals is not an array
-                    // but an opaque query object, and does not report the number of results beforehand.
-                    $num_proposals++;
-
-                    // Compute the status
-                    $statusclass = 'secondary';
-                    switch ($proposal['state']) {
-                        case 'draft':
-                            $status = 'Bozza';
-                            $statusclass = 'secondary';
-                            break;
-                        case 'submitted':
-                            $status = 'Sottomesso';
-                            $statusclass = 'warning';
-                            break;
-                        case 'approved':
-                            $status = "Approvato";
-                            $statusclass = 'success';
-                            break;
-                        case 'rejected':
-                            $status = 'Rigettato';
-                            $statusclass = 'danger';
-                            break;
-                        default:
-                            $status = $proposal['state'];
-                            break;
-                    }
-                    ?>
                     <tr>
                         <td><?php echo h($proposal['curriculum']['name']); ?></td>
                         <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
@@ -133,7 +109,9 @@ $num_proposals = 0;
                             echo ($proposal['approved_date'] != null) ?
                                 $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non approvato';
                             ?></td>
-                        <td><span class="badge badge-sm badge-<?= $statusclass ?>"><?php echo $status; ?></span></td>
+                        <td>
+                            <?= $this->Caps->badge($proposal); ?>
+                        </td>
                         <td>
 
                             <div class="dropdown">
