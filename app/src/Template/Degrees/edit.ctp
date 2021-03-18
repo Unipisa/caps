@@ -30,7 +30,7 @@
 
 <?= $this->element('card-start'); ?>
     <?php
-        echo $this->Form->control('name', ['label' => 'Nome']);
+        echo $this->Form->control('name', ['label' => 'Nome', 'type' => 'text' ]);
         echo $this->Form->control('years', ['label' => 'Anni']);
     ?>
 
