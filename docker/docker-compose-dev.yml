@@ -15,15 +15,12 @@ services:
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa:ro"
       - "../app/src:/app/src:ro"
-      - "../app/webroot/img:/app/webroot/img:ro"
-      - "../html:/tmp/html"
+      - "../app/webroot:/app/webroot:ro"
       - "../app/config/Migrations:/app/config/Migrations"
     env_file:
       - caps.env
     environment:
-      # We need this to make sure that npm run watch is run
-      # inside the container; not needed on production builds
-      CAPS_RUN_NPM_WATCH: 1
+      # Enable DebugKit on the development server
       DEBUG: "true"
     security_opt:
       - apparmor:unconfined
@@ -42,3 +39,10 @@ services:
       - caps.env    
     cap_add:
       - SYS_NICE  # CAP_SYS_NICE to avoid mbind messages in the log. 
+
+  ldap-server:
+    image: osixia/openldap:1.5.0
+    container_name: ldap-server
+    command: [ '--copy-service' ]
+    volumes:
+      - ./ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom

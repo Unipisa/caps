@@ -1,10 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 #
 
+function shutdown {
+    kill ${watch_pid}
+    sudo kill ${docker_pid}
+}
+
+trap shutdown INT
+
+
 if [ ! -r docker/caps.env ]; then
-  echo "Please configure the development environment by copying "
-  echo "docker/caps.env.template into docker/caps.env, and setting"
-  echo "the correct values"
+  echo "Using the default configuration for CAPS, spawning a test LDAP server."
+  echo "You may want to configure docker/caps.env based on your setup."
+  cp docker/caps.env.template docker/caps.env
 fi
 
 # Check if docker is installed
@@ -21,5 +29,11 @@ if [ $? -ne 0 ]; then
   DOCKER="sudo docker"
 fi
 
-# Start the development server
-sudo docker-compose -f docker/docker-compose-dev.yml up
+(cd html && npm run watch )&
+watch_pid=$!
+
+# Start the development server. If needed, build the image
+sudo docker-compose -f docker/docker-compose-dev.yml up --build &
+docker_pid=$!
+
+wait
