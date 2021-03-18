@@ -272,7 +272,7 @@ if ($message != "") {
             <div class="card-body p-1">
                 Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
                     ?>  — <?php
-                    echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+                    echo $this->Caps->formatDate($att['created']);
                 }
                 ?>
             </div>

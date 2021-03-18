@@ -1,7 +1,9 @@
 <?php
 
 namespace App\View\Helper;
+use Cake\Core\Configure;
 use Cake\View\Helper;
+
 
 class CapsHelper extends Helper {
 
@@ -67,6 +69,17 @@ class CapsHelper extends Helper {
                 return "";
                 break;
         }
+    }
+
+    // Format a date according the standard in Caps; if the data is null, just 
+    // return the alternative string provided. 
+    public function formatDate($d, $fallback = "nessuna data") {
+      $Caps = Configure::read('Caps');
+
+      if ($d != null)
+        return $d->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+      else
+        return $fallback;
     }
 
 }

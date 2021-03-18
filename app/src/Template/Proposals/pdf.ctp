@@ -243,16 +243,10 @@
 
 <div class="bottom">
 <div class="left">
-    <div class="date">Data di presentazione: <?=
-        ($proposal['submitted_date'] != null) ?
-            $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non ancora presentato';
-        ?></div>
+    <div class="date">Data di presentazione: <?= $this->Caps->formatDate($proposal['submitted_date'], 'non ancora presentato'); ?></div>
     <?php if ($proposal['state'] == 'approved'): ?>
         <div class="examined">Esaminato in data: <?=
-            ($proposal['approved_date'] != null) ?
-                $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') :
-                'data non disponibile'
-            ?></div>
+          $this->Caps->formatDate($proposal['approved_date'], 'data non disponibile'); ?></div>
         <div class="result">
             Esito: <strong>Approvato</strong>
         </div>
@@ -302,7 +296,7 @@
             <div class="card-body p-1">
                 Richiesta di parere inviata a <strong><?= $att['email'] ?></strong> <?php if ($att['created'] != null) {
                     ?>  — <?php
-                    echo $att['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
+                    echo $this->Caps->formatDate($att['created']);
                 }
                 ?>
             </div>

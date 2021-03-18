@@ -44,10 +44,10 @@ class ProposalsController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
-        'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name' ],
+        'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
         'limit' => 10,
         'order' => [
-            'Users.surname' => 'asc'
+            'modified' => 'desc'
         ]
     ];
 
