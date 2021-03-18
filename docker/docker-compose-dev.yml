@@ -46,3 +46,5 @@ services:
     command: [ '--copy-service' ]
     volumes:
       - ./ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    environment:
+      LDAP_LOG_LEVEL: "0"

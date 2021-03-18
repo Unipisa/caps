@@ -3,7 +3,7 @@
 
 function shutdown {
     kill ${watch_pid}
-    sudo kill ${docker_pid}
+    # kill ${docker_pid}
 }
 
 trap shutdown INT
@@ -24,6 +24,7 @@ fi
 
 # Check if we can run docker without root privileges
 DOCKER=docker
+DOCKERCOMPOSE="sudo docker-compose"
 ${DOCKER} ps 2> /dev/null > /dev/null
 if [ $? -ne 0 ]; then
   DOCKER="sudo docker"
@@ -33,7 +34,7 @@ fi
 watch_pid=$!
 
 # Start the development server. If needed, build the image
-sudo docker-compose -f docker/docker-compose-dev.yml up --build &
+${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up --build &
 docker_pid=$!
 
 wait
