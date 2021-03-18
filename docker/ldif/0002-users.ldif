@@ -1,0 +1,23 @@
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: users
+
+dn: uid=user,ou=users,dc=example,dc=org
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: inetOrgPerson
+cn: Example
+mail: me@example.com
+givenname: Example
+sn: User
+uid: user
+uidNumber: 10001
+gidNumber: 100
+homeDirectory: /home/user
+loginShell: /bin/bash
+gecos: Example User
+userPassword: {SSHA}+/XlWfKbYjl/a0Yg8y7ivdeznFnWXizY
+shadowLastChange: 0
+shadowMax: 0
+shadowWarning: 0

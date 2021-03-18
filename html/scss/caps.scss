@@ -21,7 +21,6 @@ ul.attachments {
   margin-top: 15px;
 }
 
-.card-body > p, dl, ul, ol {
-    margin-top: .5rem;
-    margin-bottom: .5rem;
+div > p:last-child, dl:last-child, ul:last-child, ol:last-child {
+    margin-bottom: 0px;
 }
