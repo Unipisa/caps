@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y \
         libcurl4-openssl-dev \
 	libzip-dev \
 	sudo \
-	bindfs \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
@@ -31,7 +30,7 @@ RUN rm -rf /html/node_modules /app/webroot/css/* /app/webroot/js/* \
     && npm install npm@latest -g \
     && cd /app && php /usr/local/bin/composer.phar install \
     && chown www-data:www-data /app /html /var/www -R \
-    && cd /html && sudo -u www-data npm install 
+    && cd /html && sudo -u www-data npm install && sudo -u www-data npm run deploy
 
 WORKDIR /app
 
