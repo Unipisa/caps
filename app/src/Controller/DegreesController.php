@@ -108,6 +108,13 @@ class DegreesController extends AppController
             $degree = $this->Degrees->get($id);
         } else {
             $degree = $this->Degrees->newEntity();
+            // For new entities we set some reasonable default values in the text fields, to
+            // give an indication to the user of what would be sensible to put there.
+            if ($degree->isNew()) {
+              $degree['approval_message'] = "Il piano di studi è stato approvato.";
+              $degree['rejection_message'] = "Il piano di studi è stato rigettato.";
+              $degree['submission_message'] = "Il piano di studi è stato correttamente sottomesso.";
+            }
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -120,6 +127,7 @@ class DegreesController extends AppController
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }
         }
+
         $this->set(compact('degree'));
     }
 
