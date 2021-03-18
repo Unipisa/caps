@@ -220,6 +220,7 @@ jQuery(document).ready(() => {
             </div>
             <div class="card-body">
                 <div>
+                  <?php if (count($proposal_comments) > 0): ?>
                     <div class="table-responsive-sm">
                         <table class="table">
                             <thead>
@@ -255,6 +256,9 @@ jQuery(document).ready(() => {
                             </div>
                         <?php endforeach; ?>
                     </table>
+                  <?php else: ?>
+                    <p>Non ci sono piani in attesa di parere.</p>
+                  <?php endif; // End of if (count($proposal_comments) > 0) ?>
                 </div>
             </div>
         </div>
