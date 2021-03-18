@@ -20,25 +20,14 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-// We first organize proposals into a tree structure coherent with the display strategy, i.e.,
-// we want them subdivided by degree, and then further subdivided in drafts and non-drafts
-$proposals_view = [];
+
+// We form the list of degrees, to split the proposals according the degree they belong to. 
 $degrees = [];
 foreach ($proposals as $p) {
     $degree_id = $p['curriculum']['degree']['id'];
 
     if (! array_key_exists($degree_id, $degrees)) {
         $degrees[$degree_id] = $p['curriculum']['degree'];
-        $proposals_view[$degree_id] = [
-            'drafts' => [], 'others' => []
-        ];
-    }
-
-    if ($p['state'] == 'draft') {
-        $proposals_view[$degree_id]['drafts'][] = $p;
-    }
-    else {
-        $proposals_view[$degree_id]['others'][] = $p;
     }
 }
 
@@ -69,15 +58,6 @@ $num_proposals = 0;
 <?php foreach ($degrees as $degree_id => $degree): ?>
 
 <?= $this->element('card-start', [ 'header' => $degree['name'] ]); ?>
-    <?php foreach ([ 'drafts', 'others' ] as $state): ?>
-        <?php
-        if (count($proposals_view[$degree_id][$state]) == 0)
-            continue;
-        ?>
-
-        <h6 class="text-info">
-            <?php echo ($state == 'drafts') ? "Bozze" : "Piani sottomessi, accettati o rigettati"; ?>
-        </h6>
 
         <div class="table-responsive-xl">
             <table class='table table'>
@@ -92,7 +72,10 @@ $num_proposals = 0;
                     </thead>
                 </tr>
                 <?php
-                    foreach ($proposals_view[$degree_id][$state] as $proposal) {
+                    foreach ($proposals as $proposal) {
+                        if ($proposal['curriculum']['degree']['name'] != $degree['name'])
+                          continue;
+
                         // We keep track of the number of proposals, since $proposals is not an array
                         // but an opaque query object, and does not report the number of results beforehand.
                         $num_proposals++;
@@ -174,7 +157,6 @@ $num_proposals = 0;
                 ?>
             </table>
         </div>
-    <?php endforeach; ?>
 <?= $this->element('card-end'); ?>
 
 <?php endforeach; ?>
