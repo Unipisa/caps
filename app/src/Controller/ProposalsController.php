@@ -152,30 +152,39 @@ class ProposalsController extends AppController
         $email->send();
     }
 
-    public function dashboard()
-    {
-        // We need to find a few stats about proposals
-        $submitted_count = $this->Proposals->find()->where([ 'state' => 'submitted' ])->count();
-
-        // Count the number of submission in the last twelve months; we do this by separate queries
-        // because it appears to be difficult to do in a database-independent way.
+    /** 
+     * Get the number of submissions groups per month, in the last 12 months, 
+     * including the current one. 
+     */
+    private function get_submission_counts($date_field) {
+        // we do this by separate queries because it appears to be
+        // difficult to do in a database-independent way.
         $start = Time::now();
         $start->day(1); // Go the start of this month
         $start = $start->addMonth(-12);
         $end = new Time($start);
         $end = $end->addMonth(1);
         $submission_counts = [];
+
         for ($i = 0; $i < 12; $i++) {
             $start = $start->addMonth(1);
             $end   = $end->addMonth(1);
 
             $submission_counts[$i] = $this->Proposals->find()->where(
-                function (QueryExpression $exp) use ($start, $end) {
-                    return $exp->lt('submitted_date', $end)
-                        ->gte('submitted_date', $start);
+                function (QueryExpression $exp) use ($start, $end, $date_field) {
+                    return $exp->lt($date_field, $end)
+                        ->gte($date_field, $start);
                 }
             )->count();
         }
+
+        return $submission_counts;
+    }
+
+    public function dashboard()
+    {
+        // We need to find a few stats about proposals
+        $submitted_count = $this->Proposals->find()->where([ 'state' => 'submitted' ])->count();
 
         // Raw SQL query, as this appear to be quite hard to be done using
         // Cake's ORM Query & co. This query selects all the proposals where there is
@@ -197,7 +206,22 @@ class ProposalsController extends AppController
                     ORDER BY req_date ASC'
         );
 
-        $this->set(compact('submitted_count', 'submission_counts', 'proposal_comments'));
+        $this->set(compact('submitted_count', 'proposal_comments'));
+    }
+
+    /**
+     * Some data in the dashboard is loaded asynchronously through JS. 
+     * 
+     * This function provides an interface for that data.
+     */
+    public function dashboardData() {
+        $submission_counts = $this->get_submission_counts('submitted_date');
+        $approval_counts = $this->get_submission_counts('approved_date');
+
+        $this->set(compact('submission_counts', 'approval_counts'));
+        $this->set('_serialize', [
+            'submission_counts', 'approval_counts'
+        ]);
     }
 
     public function index()
