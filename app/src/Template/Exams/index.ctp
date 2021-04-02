@@ -91,10 +91,7 @@ function csv_validator(item, context) {
                         <strong>nome</strong>, <strong>codice</strong>, <strong>settore</strong>, e <strong>crediti</strong> (non
                         necessariamente in questo ordine). L'intestazione è opzionale.</p>
                         <div class="form-group">
-                        <input class="form-control-file" id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
-                        </div>
-                        <div class="form-group">
-                        <input class="btn btn-primary" id="csv_file_reload" value="ricarica">
+                        <input class="form-control-file" id="csv_file_input" name="csv_file" type="file" value="scegli file CSV" onclick="this.value=null;">
                         </div>
                     <div style="display:none" id="csv_options_div">
                         <div class="form-group">
