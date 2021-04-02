@@ -113,7 +113,7 @@ function csv_to_array() {
 }
 
 function fill_table_html() {
-    table_html = "";
+    var table_html = "";
     let validation_context = {};
     for (var i=-1; i<csv_data.length; i++) {
         var row = Array(csv_upload_fields.length+2);
@@ -126,7 +126,7 @@ function fill_table_html() {
             }
             row[j] = "validazione";
         } else {
-            delimiter = "td";
+            var delimiter = "td";
             var error = null;
             if (csv_validator) {
                 var obj = {};
@@ -181,7 +181,6 @@ function preparePreview() {
 }
 
 function csv_upload_file(f) {
-//    var f = evt.target.files[0];
     if (f) {
         var r = new FileReader();
         r.onload = function(e) {
@@ -225,7 +224,10 @@ function csvSubmit() {
     form.submit();
 }
 
-jQuery("document").ready(function(){
+jQuery(function(){
+  // This code is only executed if the csv_upload_fields variable is defined 
+  // in the page, which only happens in the Exams page, at the moment. 
+  if (typeof csv_upload_fields !== "undefined") {
     jQuery("#csv_file_input").change(function (evt) {
         csv_upload_file(evt.target.files[0]);
     });
@@ -233,20 +235,24 @@ jQuery("document").ready(function(){
         csv_upload_file(jQuery("#csv_file_input")[0].files[0]);
     });
     jQuery("select[name='csv_separator']").change(function() {
-        csv_column_separator = jQuery(this).val();
+        var csv_column_separator = jQuery(this).val();
         preparePreview();
     });
     jQuery("select[name='csv_headers']").change(function() {
-        csv_has_headers = parseInt(jQuery(this).val());
+        var csv_has_headers = parseInt(jQuery(this).val());
         preparePreview();
     })
     for (var i=0;i<csv_upload_fields.length;i++) {
         jQuery("select[name='csv_field["+i+"]']").change(function() {
-            csv_auto_detect_headers = 0;
+            var csv_auto_detect_headers = 0;
             for (var k=0;k<csv_upload_fields.length;k++){
                 csv_column_map[k] = parseInt(jQuery("select[name='csv_field["+k+"]']").val());
             }
             preparePreview();
         })
     }
+
+    // Setup the callbacks for the buttons
+    jQuery('#csvSubmitButton').on('click', csvSubmit);
+  }
 });

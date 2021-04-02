@@ -93,7 +93,9 @@
 
     <?php echo $this->Form->create(null, [ 'id' => 'proposal-form' ]); ?>
 
-    <?php echo $this->element('filter_badges'); ?>
+    <?php echo $this->element('filter_badges', [
+      'fields' => [ 'state', 'surname', 'academic_year', 'degree', 'curriculum', 'exam_name', 'free_exam_name' ]
+    ]); ?>
 
     <div class="table-responsive-lg">
     <table class="table">
@@ -104,6 +106,7 @@
             <th><?= $this->Paginator->sort('academic_year', 'Anno'); ?></th>
             <th><?= $this->Paginator->sort('Degress.name', 'Laurea'); ?></th>
             <th><?= $this->Paginator->sort('Curricula.name', 'Piano di studio'); ?></th>
+            <th><?= $this->Paginator->sort('modified', 'Ultima modifica'); ?></th>
             <th></th>
             </thead>
         </tr>
@@ -114,10 +117,10 @@
             <tr>
                 <td class="caps-admin-proposal-id"><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
                 <td class="caps-admin-proposal-state">
-                    <?php echo $this->Html->link(
-                        $proposal->getStateString(),
-                        ['action' => 'view', $proposal['id']]);
-                    ?></td>
+                    <?php
+                      echo $this->Caps->badge($proposal);
+                    ?>
+                    </td>
                 <td class="caps-admin-proposal-name">
                     <?php echo $this->Html->link(
                         $proposal['user']['name'],
@@ -143,6 +146,9 @@
                         ['controller' => 'curricula', 'action' => 'view', $curriculum['id'] ]
                     );
                     ?>
+                </td>
+                <td>
+                  <?= $this->Caps->formatDate($proposal['modified']); ?>
                 </td>
                 <td>
                     <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">

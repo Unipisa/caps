@@ -1,0 +1,43 @@
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: users
+
+dn: uid=user1,ou=users,dc=example,dc=org
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: inetOrgPerson
+cn: Example
+mail: user1@example.com
+givenname: Example
+sn: User 1
+uid: user1
+uidNumber: 10001
+gidNumber: 100
+homeDirectory: /home/user1
+loginShell: /bin/bash
+gecos: Example User 1
+userPassword: {SSHA}ZlTPIPIfh3F/yUx6KrxFyDlW1prJtDpx
+shadowLastChange: 0
+shadowMax: 0
+shadowWarning: 0
+
+dn: uid=user2,ou=users,dc=example,dc=org
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: inetOrgPerson
+cn: Example
+mail: user2@example.com
+givenname: Example
+sn: User 2
+uid: user2
+uidNumber: 10002
+gidNumber: 100
+homeDirectory: /home/user2
+loginShell: /bin/bash
+gecos: Example User 2
+userPassword: {SSHA}3Ryxa/FMWZJDrl5WmbllpWkR7+TeVHZ0
+shadowLastChange: 0
+shadowMax: 0
+shadowWarning: 0

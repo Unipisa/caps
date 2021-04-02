@@ -19,7 +19,8 @@
  * This program is based on the CakePHP framework, which is released under
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
- */ echo $this->Html->script('upload_csv.js?rev=3'); ?>
+ */ 
+?>
 
 <h1>Esami</h1>
 
@@ -131,7 +132,7 @@ function csv_validator(item, context) {
                             <select class="form-control" name="csv_field[3]"></select>
                         </div>
                         <div class="mb-2">
-                            <button type="button" class="btn btn-sm btn-primary" onclick='csvSubmit()'>
+                            <button type="button" class="btn btn-sm btn-primary" id="csvSubmitButton">
                                 Aggiungi tutti gli esami selezionati di seguito
                             </button>
                         </div>
@@ -145,7 +146,7 @@ function csv_validator(item, context) {
 
     </div>
 
-    <?php echo $this->element('filter_badges'); ?>
+    <?php echo $this->element('filter_badges', [ 'fields' => [ 'name', 'code', 'credits' ] ]); ?>
 
     <?php echo $this->Form->create(null, [ 'id' => 'exams-form' ]); ?>
     <div class="table-responsive-md">

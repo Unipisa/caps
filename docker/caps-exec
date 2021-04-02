@@ -10,31 +10,6 @@ export HOME=/var/www
 
 msg "Starting the CAPS Docker manager"
 
-if [ -d /tmp/html ]; then
-  msg "Making a local bind mount of html for interactive development"
-  uid=$(stat -c %u /tmp/html/package.json)
-  gid=$(stat -c %g /tmp/html/package.json)
-  msg "New files will belong to user ${uid}:${gid}"
-  for folder in scss src; do
-    bindfs -ononempty --force-user=www-data --create-for-user=${uid} \
-           --force-group=www-data --create-for-group=${gid} /tmp/html/${folder} /html/${folder}
-  done
-  cp /tmp/html/package-lock.json /html/package-lock.json
-  cp /tmp/html/package.json /html/package.json
-fi
-
-msg "Compiling CSS and JS files..."
-cd /html
-npm install
-npm run deploy
-
-if [ "${CAPS_RUN_NPM_WATCH}" != "" ]; then
-  msg "Starting the NPM watch daemon for detecting changes..."
-  npm run watch &
-fi
-
-cd ../app
-
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
@@ -131,5 +106,14 @@ if [ "$DEBUG" != "" ]; then
 fi
 
 msg "Starting Apache2, go to http://localhost${PORT}/"
+
+if [ "$DEBUG" != "" ]; then
+  msg ""
+  msg "If you started the development server with the default caps.env, "
+  msg "you may login using user1 / user1 or user2 / user2 as credentials."
+  msg ""
+  msg "Run sudo docker exec -it caps /app/bin/cake grant-admin user1 to make"
+  msg "user1 an administrator"
+fi
 
 apache2 -DFOREGROUND

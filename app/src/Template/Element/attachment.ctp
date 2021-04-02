@@ -65,7 +65,7 @@
     <div>
     <strong><?php echo property_exists($attachment, 'owner') ? $attachment['owner']['name'] : $attachment['user']['name']; ?></strong>
     <?php if ($attachment['created'] != null): ?>
-        — <?php echo $attachment['created']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?>
+        — <?php echo $this->Caps->formatDate($attachment['created']); ?>
     <?php endif; ?>
     </div>
     <?php if (($user['admin'] || $user['id'] == $attachment['user_id']) && empty($pdf)): ?>

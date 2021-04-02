@@ -61,30 +61,6 @@
     <?= $this->element('card-start', [ 'header' => 'Piani di studio' ]) ?>
 
         <div class="form-group">
-            <label for="caps-setting-approved-message" class="caps-setting-header">Messaggio di approvazione</label>
-            <div class="caps-setting-description">
-                Questo messaggio viene mostrato allo studente quando visualizza un piano che è già stato
-                approvato.
-            </div>
-            <textarea id="caps-setting-approved-message"
-                      name="approved-message" class="form-control caps-settings-html">
-                <?= $settings['approved-message'] ?>
-            </textarea>        </div>
-
-        <div class="form-group">
-            <label for="caps-setting-submitted-message" class="caps-setting-header">Messaggio alla sottomissione</label>
-            <div class="caps-setting-description">
-                Questo messaggio viene mostrato allo studente quando sottomette un piano; può contenere
-                ad esempio delle
-                istruzioni da seguire dopo la sottomissione.
-            </div>
-            <textarea id="caps-setting-submitted-message"
-                      name="submitted-message" class="form-control caps-settings-html">
-                <?= $settings['submitted-message'] ?>
-            </textarea>
-        </div>
-
-        <div class="form-group">
             <label for="caps-setting-notified-emails" class="caps-setting-header">Notifiche e-mail</label>
             <div class="cps-setting-description">
                 Questo campo contiene una lista di indirizzi e-mail, separati da virgole, che vengono

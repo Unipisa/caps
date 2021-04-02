@@ -20,25 +20,14 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-// We first organize proposals into a tree structure coherent with the display strategy, i.e.,
-// we want them subdivided by degree, and then further subdivided in drafts and non-drafts
-$proposals_view = [];
+
+// We form the list of degrees, to split the proposals according the degree they belong to. 
 $degrees = [];
 foreach ($proposals as $p) {
     $degree_id = $p['curriculum']['degree']['id'];
 
     if (! array_key_exists($degree_id, $degrees)) {
         $degrees[$degree_id] = $p['curriculum']['degree'];
-        $proposals_view[$degree_id] = [
-            'drafts' => [], 'others' => []
-        ];
-    }
-
-    if ($p['state'] == 'draft') {
-        $proposals_view[$degree_id]['drafts'][] = $p;
-    }
-    else {
-        $proposals_view[$degree_id]['others'][] = $p;
     }
 }
 
@@ -69,15 +58,6 @@ $num_proposals = 0;
 <?php foreach ($degrees as $degree_id => $degree): ?>
 
 <?= $this->element('card-start', [ 'header' => $degree['name'] ]); ?>
-    <?php foreach ([ 'drafts', 'others' ] as $state): ?>
-        <?php
-        if (count($proposals_view[$degree_id][$state]) == 0)
-            continue;
-        ?>
-
-        <h6 class="text-info">
-            <?php echo ($state == 'drafts') ? "Bozze" : "Piani sottomessi, accettati o rigettati"; ?>
-        </h6>
 
         <div class="table-responsive-xl">
             <table class='table table'>
@@ -92,48 +72,24 @@ $num_proposals = 0;
                     </thead>
                 </tr>
                 <?php
+                    foreach ($proposals as $proposal) {
+                        if ($proposal['curriculum']['degree']['name'] != $degree['name'])
+                          continue;
 
-                foreach ($proposals_view[$degree_id][$state] as $proposal) {
-                    // We keep track of the number of proposals, since $proposals is not an array
-                    // but an opaque query object, and does not report the number of results beforehand.
-                    $num_proposals++;
+                        // We keep track of the number of proposals, since $proposals is not an array
+                        // but an opaque query object, and does not report the number of results beforehand.
+                        $num_proposals++;
+                ?>
 
-                    // Compute the status
-                    $statusclass = 'secondary';
-                    switch ($proposal['state']) {
-                        case 'draft':
-                            $status = 'Bozza';
-                            $statusclass = 'secondary';
-                            break;
-                        case 'submitted':
-                            $status = 'Sottomesso';
-                            $statusclass = 'warning';
-                            break;
-                        case 'approved':
-                            $status = "Approvato";
-                            $statusclass = 'success';
-                            break;
-                        case 'rejected':
-                            $status = 'Rigettato';
-                            $statusclass = 'danger';
-                            break;
-                        default:
-                            $status = $proposal['state'];
-                            break;
-                    }
-                    ?>
                     <tr>
                         <td><?php echo h($proposal['curriculum']['name']); ?></td>
                         <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
-                        <td><?php echo $proposal['modified']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm'); ?></td>
-                        <td><?php echo ($proposal['submitted_date'] != null) ?
-                                $proposal['submitted_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non sottomesso';
-                            ?></td>
-                        <td><?php
-                            echo ($proposal['approved_date'] != null) ?
-                                $proposal['approved_date']->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm') : 'non approvato';
-                            ?></td>
-                        <td><span class="badge badge-sm badge-<?= $statusclass ?>"><?php echo $status; ?></span></td>
+                        <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
+                        <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
+                        <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
+                        <td>
+                            <?= $this->Caps->badge($proposal); ?>
+                        </td>
                         <td>
 
                             <div class="dropdown">
@@ -155,11 +111,6 @@ $num_proposals = 0;
                                                 'class' => 'dropdown-item'
                                             ]);
                                         }
-                                        echo $this->Html->link('Visualizza', [
-                                                'controller' => 'proposals', 'action' => 'view', $proposal['id']
-                                            ], [
-                                                'class' => 'dropdown-item'
-                                            ]);
                                         break;
                                     case "submitted":
                                     case "approved":
@@ -206,7 +157,6 @@ $num_proposals = 0;
                 ?>
             </table>
         </div>
-    <?php endforeach; ?>
 <?= $this->element('card-end'); ?>
 
 <?php endforeach; ?>

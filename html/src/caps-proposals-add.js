@@ -699,7 +699,7 @@ function CapsProposalController() {
 
     } // End of function CapsProposalController
 
-    jQuery(document).ready(function() {
+    jQuery(function() {
       var form = document.getElementById('completeForm');
       if (form != undefined) {
         CapsProposalController();

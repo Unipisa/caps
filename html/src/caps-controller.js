@@ -1,17 +1,24 @@
 //
 // This class implements all the handler needed by the elements in CAPS.
-//
+
 jQuery = require('jquery');
+const { loadDashboardData } = require('./caps-dashboard');
 
 'use strict'
 
 class CapsController {
 
-  constructor(root = "/") {
+  constructor(root = "/", controller = "Proposals", action = "index") {
     this.root = root;
+    this.controller = controller;
+    this.action = action;
 
     jQuery(() => {
       this.updateProposalsURL();
+
+      if (this.controller == "Proposals" && this.action == "dashboard") {
+          loadDashboardData();
+      }
     });
   }
 
