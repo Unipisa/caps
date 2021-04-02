@@ -230,7 +230,7 @@ jQuery("document").ready(function(){
         csv_upload_file(evt.target.files[0]);
     });
     jQuery("#csv_file_reload").click(function (evt) {
-        csv_upload_file(jQuery("#csv_file_input").files[0]);
+        csv_upload_file(jQuery("#csv_file_input")[0].files[0]);
     });
     jQuery("select[name='csv_separator']").change(function() {
         csv_column_separator = jQuery(this).val();

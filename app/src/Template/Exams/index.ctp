@@ -93,7 +93,7 @@ function csv_validator(item, context) {
                         <input class="form-control-file" id="csv_file_input" name="csv_file" type="file" value="scegli file CSV">
                         </div>
                         <div class="form-group">
-                        <input class="btn btn-sm btn-primary" type="submit" id="csv_file_reload" value="ricarica">
+                        <input class="btn btn-primary" id="csv_file_reload" value="ricarica">
                         </div>
                     <div style="display:none" id="csv_options_div">
                         <div class="form-group">
