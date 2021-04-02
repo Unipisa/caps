@@ -5,3 +5,4 @@ app/webroot/css/style.min.css
 app/webroot/js/caps.js
 app/webroot/js/caps.min.js
 app/webroot/css/style.min.css.map
+caps.sqlite
