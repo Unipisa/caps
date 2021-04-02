@@ -146,7 +146,7 @@ function csv_validator(item, context) {
 
     </div>
 
-    <?php echo $this->element('filter_badges'); ?>
+    <?php echo $this->element('filter_badges', [ 'fields' => [ 'name', 'code', 'credits' ] ]); ?>
 
     <?php echo $this->Form->create(null, [ 'id' => 'exams-form' ]); ?>
     <div class="table-responsive-md">
