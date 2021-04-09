@@ -29,8 +29,6 @@ class AddCreditsPerYearToCurricula extends AbstractMigration
             $id = $record['id'];
             $years = intval($record['years']);
 
-            var_dump(implode(',', array_fill(1, $years, "60")));
-
             $builder = $this->getQueryBuilder();
             $builder->update('curricula')
                 ->set('credits_per_year', implode(',', array_fill(1, $years, "60")))
