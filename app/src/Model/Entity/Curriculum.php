@@ -52,7 +52,8 @@ class Curriculum extends Entity
         'free_choice_exams' => true,
         'academic_year' => true,
         'degree_id' => true,
-        'notes' => true
+        'notes' => true,
+        'credits_per_year' => true
     ];
 
     public function toString()

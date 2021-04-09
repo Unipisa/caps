@@ -190,7 +190,10 @@ class CurriculaController extends AppController
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->getData());
+            $data = $this->request->getData();
+            $data['credits_per_year'] = implode(',', $data['credits_per_year']);
+
+            $curriculum = $this->Curricula->patchEntity($curriculum, $data);
             if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success($success_message);
 

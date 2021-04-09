@@ -51,12 +51,22 @@
                     </tr>
                     <tr>
                         <th>Anno</th>
-                        <td><?php echo $curriculum['academic_year']; ?></td>
+                        <td><?= $curriculum['academic_year'] ?>/<?= $curriculum['academic_year']+1 ?></td>
                     </tr>
                 </table>
 
+                <h4>Crediti per anno</h4>
+                <table class="table">
+                <?php foreach (explode(",", $curriculum['credits_per_year']) as $i => $cpy): ?>
+                    <tr>
+                        <td>Anno <?= $i+1 ?></td>
+                        <td><?= $cpy ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </table>
+
                 <?php if ($curriculum['notes'] != ""): ?>
-                    <h3>Nota</h3>
+                    <h4>Nota</h4>
                     <p>
                         <?php echo h($curriculum['notes']); ?>
                     </p>
