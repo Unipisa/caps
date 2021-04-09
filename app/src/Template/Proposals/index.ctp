@@ -93,7 +93,9 @@
 
     <?php echo $this->Form->create(null, [ 'id' => 'proposal-form' ]); ?>
 
-    <?php echo $this->element('filter_badges'); ?>
+    <?php echo $this->element('filter_badges', [
+      'fields' => [ 'state', 'surname', 'academic_year', 'degree', 'curriculum', 'exam_name', 'free_exam_name' ]
+    ]); ?>
 
     <div class="table-responsive-lg">
     <table class="table">
