@@ -191,6 +191,7 @@ class CurriculaController extends AppController
 
         if ($this->request->is(['post', 'put'])) {
             $curriculum = $this->Curricula->patchEntity($curriculum, $this->request->getData());
+
             if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success($success_message);
 

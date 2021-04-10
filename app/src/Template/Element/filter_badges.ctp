@@ -21,6 +21,14 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 $query_params = $this->request->getQueryParams();
+
+// If given, we filter the parameters based on a whitelist
+if (isset($fields)) {
+  $query_params = array_filter($query_params, function ($x) use ($fields) {
+    return in_array($x, $fields);
+  }, ARRAY_FILTER_USE_KEY);
+}
+
 ?>
 
 <?php if (count($query_params) > 0): ?>

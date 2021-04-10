@@ -9,6 +9,7 @@ var popper = require('popper.js');
 var bootstrap = require('bootstrap');
 var sbadmin = require('./sb-admin-2.js');
 
-var caps_proposals_add = require('./caps-proposals-add.js');
-var caps_settings = require('./caps-settings.js');
-var caps_attachments = require('./caps-attachments.js');
+require('./caps-proposals-add.js');
+require('./caps-settings.js');
+require('./caps-attachments.js');
+require('./caps-upload-csv.js');

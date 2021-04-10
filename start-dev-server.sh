@@ -8,6 +8,8 @@ function shutdown {
 
 trap shutdown INT
 
+# To cache credentials for later
+sudo true
 
 if [ ! -r docker/caps.env ]; then
   echo "Using the default configuration for CAPS, spawning a test LDAP server."
@@ -30,7 +32,9 @@ if [ $? -ne 0 ]; then
   DOCKER="sudo docker"
 fi
 
-(cd html && npm run watch )&
+( cd app && composer -n install && cd .. )
+
+(cd html && npm install && npm run watch )&
 watch_pid=$!
 
 # Start the development server. If needed, build the image

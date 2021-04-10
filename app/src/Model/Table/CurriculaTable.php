@@ -22,9 +22,13 @@
  */
 namespace App\Model\Table;
 
+use ArrayObject;
+use Cake\Event\Event;
+use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -96,5 +100,28 @@ class CurriculaTable extends Table
             ->naturalNumber('academic_year');
 
         return $validator;
+    }
+
+    private function transformCreditsPerYear($obj) {
+      if (is_array($obj['credits_per_year'])) {
+        $obj['credits_per_year'] = implode(",", $obj['credits_per_year']);
+      }
+    }
+
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
+      if (array_key_exists('credits_per_year', $data)) {
+        $this->transformCreditsPerYear($data);
+      }
+    }
+
+    public function beforeSave(Event $event, Entity $entity) {
+      if (!$entity->has('credits_per_year') || $entity['credits_per_year'] == null) {
+        $degrees = TableRegistry::getTableLocator()->get('Degrees');
+        $degree = $degrees->get($entity['degree_id']);
+        $entity['credits_per_year'] = implode(",", array_fill(1, $degree['years'], 60));
+      }
+      else {
+        $this->transformCreditsPerYear($entity);
+      }
     }
 }

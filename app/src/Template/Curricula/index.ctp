@@ -64,7 +64,9 @@
                     </div>
                 </div>
 
-                <?php echo $this->element('filter_badges'); ?>
+                <?php echo $this->element('filter_badges', [
+                  'fields' => [ 'name', 'academic_year', 'degree' ]
+                ]); ?>
 
                 <?php echo $this->Form->create(null, [ 'id' => 'curricula-form' ]); ?>
 
