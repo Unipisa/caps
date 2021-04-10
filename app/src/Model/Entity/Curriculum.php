@@ -23,6 +23,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Event\Event;
 
 /**
  * Curricula Entity
@@ -56,6 +57,8 @@ class Curriculum extends Entity
         'credits_per_year' => true
     ];
 
+    protected $_virtual = ['credits'];
+
     public function toString()
     {
         return $this['degree']['name'] .
@@ -65,5 +68,17 @@ class Curriculum extends Entity
             $this['academic_year'] .
             "/" .
             ($this['academic_year'] + 1);
+    }
+
+    // Curriculum has a virtual field 'credits' that is the array 
+    // version of 'credits_per_year', which is stored in the database 
+    // as a comma separated list of values. 
+    //
+    // Assignment of arrays to credits_per_year are still converted to 
+    // the right format by the Model.beforeMarshal event, which is run 
+    // when using patchEntity(), and Model.beforeSave(), which is run 
+    // before persisting data to the database. 
+    public function _getCredits() {
+      return explode(",", $this->credits_per_year);
     }
 }

@@ -57,7 +57,7 @@
 
                 <h4>Crediti per anno</h4>
                 <table class="table">
-                <?php foreach (explode(",", $curriculum['credits_per_year']) as $i => $cpy): ?>
+                <?php foreach ($curriculum['credits'] as $i => $cpy): ?>
                     <tr>
                         <td>Anno <?= $i+1 ?></td>
                         <td><?= $cpy ?></td>

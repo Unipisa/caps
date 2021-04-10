@@ -64,7 +64,7 @@ function CapsProposalController() {
         compulsoryExams = response["compulsory_exams"];
         compulsoryGroups = response["compulsory_groups"];
         freeChoiceExams = response["free_choice_exams"];
-        credits_per_year = response.credits_per_year.split(',');
+        credits_per_year = response.credits;
 
         for (var i = 1; i <= degree['years']; i++) {
           baseHTML = baseHTML + `
