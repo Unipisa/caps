@@ -15,6 +15,7 @@ function CapsProposalController() {
   var lastFreeChoiceExamAdded = 0;
 
   var loadingCount = 0;
+  var credits_per_year = [];
 
   var load_data_promise = Promise.all([
     jQuery.get(examsURL, (response) => {
@@ -52,27 +53,6 @@ function CapsProposalController() {
       3: 'Terzo anno'
     };
     var baseHTML = "";
-    for (var i = 1; i <= degree['years']; i++) {
-      baseHTML = baseHTML + `
-      <div class="row my-2">
-        <div class="col-12">
-          <div class="card shadow">
-            <div class="card-header bg-primary">
-              <div class="d-flex justify-content-between align-content-center">
-                <h3 class="h5 text-white">${year_title[i]}</h3>
-                 <div class="h5 text-white">Crediti: <span class="credit-block" id="credit-block-${i}"></span>/60</div>
-                 </div>
-
-              </div>
-            <div class="card-body">
-              <nav id="nav-year-${i}"></nav>
-                <ul id="ul-year-${i}" class="p-1"></ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      `;
-    }
 
     jQuery("#proposalForm").hide();
     jQuery('#submit-block').hide();
@@ -84,6 +64,29 @@ function CapsProposalController() {
         compulsoryExams = response["compulsory_exams"];
         compulsoryGroups = response["compulsory_groups"];
         freeChoiceExams = response["free_choice_exams"];
+        credits_per_year = response.credits_per_year.split(',');
+
+        for (var i = 1; i <= degree['years']; i++) {
+          baseHTML = baseHTML + `
+          <div class="row my-2">
+            <div class="col-12">
+              <div class="card shadow">
+                <div class="card-header bg-primary">
+                  <div class="d-flex justify-content-between align-content-center">
+                    <h3 class="h5 text-white">${year_title[i]}</h3>
+                     <div class="h5 text-white">Crediti: <span class="credit-block" id="credit-block-${i}"></span>/${credits_per_year[i-1]}</div>
+                     </div>
+    
+                  </div>
+                <div class="card-body">
+                  <nav id="nav-year-${i}"></nav>
+                    <ul id="ul-year-${i}" class="p-1"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          `;
+        }
 
         jQuery("#proposalForm").html(baseHTML);
 
@@ -443,10 +446,6 @@ function CapsProposalController() {
     };
 
     var updateCounters = function () {
-      // This checks if each year in the plan has at most 60 credits. If one year
-      // has strictly more than 60 credits, then a warning will be displayed.
-      var creditCountPerYearOk = true;
-
       // This variable checks if the number of credits is enough to enable closing
       // the proposal, and submitting.
       var creditCountOk = false;
@@ -465,16 +464,11 @@ function CapsProposalController() {
       var elems = document.getElementsByClassName('credit-block');
       for (var i = 0; i < elems.length; i++) {
         var thisYearCount = updateCounter(elems[i]);
-
-        if (thisYearCount > 60) {
-          creditCountPerYearOk = false;
-        }
-
         creditCount += thisYearCount;
         years += 1;
       }
 
-      creditCountOk = creditCount >= years * 60;
+      creditCountOk = creditCount >= credits_per_year.reduce((a,b) => a + b); // years * 60;
 
       var exams_ids = [];
 
@@ -496,14 +490,6 @@ function CapsProposalController() {
       });
 
       var text = "";
-
-      if (! creditCountPerYearOk) {
-        text = text + "<strong>Attenzione: </strong> il numero di crediti per anno è "
-        + "superiore a 60. È comunque possibile chiudere il piano "
-        + "di studi se si raggiunge il totale di crediti necessari, "
-        + "ma si consiglia di ricontrollarlo attentamente "
-        + "prima di procedere.<br><br>";
-      }
 
       if (! doubleExamsOk) {
         text = text
@@ -551,11 +537,10 @@ function CapsProposalController() {
       jQuery(elem).removeClass("text-danger");
       jQuery(elem).removeClass("text-warning");
 
-      if (result < 60) {
+      if (result < credits_per_year[year-1]) {
         jQuery(elem).addClass("text-danger");
-      } else if (result > 60) {
+      } else if (result > credits_per_year[year-1]) {
         jQuery(elem).addClass("text-warning");
-
 
         jQuery("#proposalWarning").show();
       }

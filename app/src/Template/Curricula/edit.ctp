@@ -43,6 +43,18 @@
                 echo $this->Form->control(
                     'notes'
                 );
+                ?>
+                <h4>Crediti per anno</h4>
+                <?php 
+                  $credits_per_year = explode(",", $curriculum['credits_per_year']);
+                ?>
+                <?php for ($i = 0; $i < $curriculum['degree']['years']; $i++): ?>
+                    <div class="input form-group">
+                    <label for="credits_per_year[<?= $i ?>]">Anno <?= $i+1 ?></label>
+                    <input class="form-control" id="credits_per_year[<?= $i ?>]" name="credits_per_year[<?= $i ?>]" value="<?= $credits_per_year[$i] ?>">
+                    </div>
+                <?php endfor; ?>
+                <?php
                 echo $this->Form->submit($curriculum->isNew() ? 'Crea' : 'Aggiorna');
                 echo $this->Form->end();
                 ?>
