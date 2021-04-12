@@ -79,6 +79,10 @@ class Curriculum extends Entity
     // when using patchEntity(), and Model.beforeSave(), which is run 
     // before persisting data to the database. 
     public function _getCredits() {
-      return explode(",", $this->credits_per_year);
+        return array_map(function($x) {
+                return intval($x);
+            },
+            explode(",", $this->credits_per_year)
+        );
     }
 }
