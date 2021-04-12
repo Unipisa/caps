@@ -3,13 +3,9 @@
 
 function shutdown {
     kill ${watch_pid}
-    # kill ${docker_pid}
 }
 
 trap shutdown INT
-
-# To cache credentials for later
-sudo true
 
 if [ ! -r docker/caps.env ]; then
   echo "Using the default configuration for CAPS, spawning a test LDAP server."
@@ -25,12 +21,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if we can run docker without root privileges
-DOCKER=docker
+DOCKER="sudo docker"
 DOCKERCOMPOSE="sudo docker-compose"
-${DOCKER} ps 2> /dev/null > /dev/null
-if [ $? -ne 0 ]; then
-  DOCKER="sudo docker"
-fi
 
 ( cd app && composer -n install && cd .. )
 
