@@ -28,7 +28,7 @@ an LDAP server with users ```user1``` and ```user2``` with their username as
 passwords is created. In that case, you may wish to make one of the two an
 administrator by running 
 ```bash
-$ sudo docker exec -it caps /app/bin/cake grant-admin user1\
+$ sudo docker exec -it caps /app/bin/cake grant-admin user1
 ```
 once the Docker containers are running. 
 
