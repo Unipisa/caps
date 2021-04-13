@@ -73,16 +73,14 @@ class ExamsController extends AppController
             }
             if ($this->request->getData('payload')) {
                 // csv bulk upload
-                $good_count = 0;
-                $bad_count = 0;
                 $payload = json_decode($this->request->getData()['payload'], true);
-                $exams = $this->Exams->newEntities($payload);
-                $result = $this->Exams->saveMany($exams);
+                $new_exams = $this->Exams->newEntities($payload);
+                $result = $this->Exams->saveMany($new_exams);
                 if ($result) {
                     $this->Flash->success('Inseriti ' . count($result) . ' esami.');
                 } else {
                     // collect error messages
-                    foreach ($exams as $exam) {
+                    foreach ($new_exams as $exam) {
                         foreach ($exam->errors() as $field => $errors) {
                             foreach ($errors as $error) {
                                 $this->Flash->error('Errore nel campo "' . $field . '" dell\'esame "' . $exam['name'] . '" ' . $error);
@@ -90,7 +88,7 @@ class ExamsController extends AppController
                         }
                     }
                     // debug($payload);
-                    // debug($exams);
+                    // debug($new_exams);
                     // debug($result);
                 }
 

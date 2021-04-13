@@ -76,7 +76,7 @@ function csv_split_row(row) {
 function csv_to_array() {
     // TODO: usare libreria dedicata, ad esempio: papaparse
 
-    var lines = csv_contents.split("\n");
+    var lines = csv_contents.split(/\r?\n/);
     csv_data = []
     csv_headers = [];
     for (var i=0; i<lines.length; i++) {
