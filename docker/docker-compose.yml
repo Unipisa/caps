@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   caps:
-    build: ..
+    image: getcaps/caps:master
     container_name: caps
     ports:
       - 80:80

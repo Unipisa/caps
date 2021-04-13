@@ -100,14 +100,14 @@ bin/cake cache clear_all
 msg "Enabling mod_rewrite"
 a2enmod rewrite
 
-if [ "$DEBUG" != "" ]; then
+if [ "$DEBUG" = "true" ]; then
   msg "CAPS is starting in debug mode"
   PORT=":8765"
 fi
 
 msg "Starting Apache2, go to http://localhost${PORT}/"
 
-if [ "$DEBUG" != "" ]; then
+if [ "$DEBUG" = "true" ]; then
   msg ""
   msg "If you started the development server with the default caps.env, "
   msg "you may login using user1 / user1 or user2 / user2 as credentials."
