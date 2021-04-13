@@ -20,17 +20,49 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Check if composer is installed
+type composer 2> /dev/null > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Composer not found, please install it, go to https://getcomposer.org/"
+  echo "or run sudo apt-get install composer (on Ubuntu)"
+  exit 2
+fi
+
+# Check if composer is installed
+type npm 2> /dev/null > /dev/null
+if [ $? -ne 0 ]; then
+  echo "NPM not found, please install it, go to https://www.npmjs.com/"
+  echo "or run sudo apt-get install npm (on Ubuntu)"
+  exit 2
+fi
+
 # Check if we can run docker without root privileges
-DOCKER="sudo docker"
-DOCKERCOMPOSE="sudo docker-compose"
+if [ -z	$DOCKER ]; then
+  DOCKER="sudo docker"
+fi
+echo "Configuration: DOCKER = ${DOCKER}"
 
-( cd app && composer -n install && cd .. )
+if [ =z $DOCKERCOMPOSE ]; then
+  DOCKERCOMPOSE="sudo docker-compose"
+fi
+echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 
-(cd html && npm install && npm run watch )&
-watch_pid=$!
+# From now on, all command should succeed
+set -ex
+
+cd app
+composer -n install
+cd ..
+
+cd html
+npm install
+cd ..
 
 # Start the development server. If needed, build the image
-${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up --build &
-docker_pid=$!
+${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
+${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
+
+(cd html && npm run watch )&
+watch_pid=$!
 
 wait

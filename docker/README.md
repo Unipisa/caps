@@ -19,7 +19,21 @@ folder into the image.
 
 An alternative ```docker-compose-dev.yml``` file is provided that mounts some directories
 directly from the repository, to allow for automatic reloading of the PHP source files
-during development. To use that, you can give the command
+during development. 
+
+A script that automatically builds the image and run the container together with 
+automatic regeneration of JS and CSS files is provided as ```start-dev-server.sh```.
+If you wish to customize the configuration, you can edit ```docker/caps.env```. Otherwise, 
+an LDAP server with users ```user1``` and ```user2``` with their username as
+passwords is created. In that case, you may wish to make one of the two an
+administrator by running 
+```bash
+$ sudo docker exec -it caps /app/bin/cake grant-admin user1\
+```
+once the Docker containers are running. 
+
+The configuration can also be used manually 
+running
 ```bash
 sudo docker-compose -f docker-compose-dev.yml up
 ```
