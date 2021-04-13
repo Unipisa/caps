@@ -63,10 +63,8 @@ class CsvUpload {
                 if (f>=0) {
                     result.push(row.substring(1,f));
                     row = row.substring(f+this.column_separator.length+1);
-                    continue;
-                }
-                if (row.charAt(row.length-1) === c) {
-                    result.push(row.substring(1,row.length-2));
+                } else if (row.charAt(row.length-1) === c) {
+                    result.push(row.substring(1,row.length-1));
                     break;
                 }
             } 
