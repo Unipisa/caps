@@ -44,7 +44,6 @@ class CsvUpload {
         this.upload_fields_db = options.upload_fields_db;
         this.validator = options.validator;
         this.csrf_token = options.csrf_token;
-        this.contents = "";
         this.data = [];
         this.column_separator = ",";
         this.has_headers = 1;
@@ -83,10 +82,10 @@ class CsvUpload {
         return result;
     }
 
-    to_array() {
+    to_array(contents) {
         // TODO: usare libreria dedicata, ad esempio: papaparse
 
-        var lines = this.contents.split(/\r?\n/);
+        var lines = contents.split(/\r?\n/);
         this.data = []
         this.headers = [];
         for (var i=0; i<lines.length; i++) {
@@ -159,8 +158,8 @@ class CsvUpload {
         return table_html;
     }
 
-    preparePreview() {
-        this.to_array();
+    preparePreview(contents) {
+        this.to_array(contents);
         if (this.column_map.length != this.upload_fields.length) {
             this.column_map = Array(this.upload_fields.length);
             for (var i=0;i<this.upload_fields.length;i++) {
@@ -196,9 +195,8 @@ class CsvUpload {
         if (f) {
             var r = new FileReader();
             r.onload = function(e) {
-                csv.contents = e.target.result;
                 jQuery("#csv_options_div").show();
-                csv.preparePreview();
+                csv.preparePreview(e.target.result);
             }
             r.readAsText(f);
         } else {
