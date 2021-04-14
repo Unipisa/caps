@@ -10,12 +10,12 @@ jobs:
       - name: PHP tests
         run: |
           cd app/
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php composer-setup.php
-          php -r "unlink('composer-setup.php');"
+          php7.4 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php7.4 composer-setup.php
+          php7.4 -r "unlink('composer-setup.php');"
           sudo apt-get -y install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
-          php composer.phar -n install
-          vendor/bin/phpunit --debug
+          php7.4 composer.phar -n install
+          php7.4 vendor/bin/phpunit --debug
       - name: JS tests
         run: |
           cd html/
