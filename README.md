@@ -1,5 +1,5 @@
 # CAPS
-[![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/master?label=master)](https://travis-ci.org/github/Unipisa/caps/) [![Travis (.org) branch](https://img.shields.io/travis/unipisa/caps/develop?label=develop)](https://travis-ci.org/github/Unipisa/caps/) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Docker image](https://github.com/Unipisa/caps/actions/workflows/docker.yml/badge.svg?branch=develop)](https://github.com/Unipisa/caps/actions/workflows/docker.yml) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Questo repository contiene CAPS, il portale utilizzato per sottomettere ed approvare i piani di studio
 presso il Dipartimento di Matematica, Università di Pisa.
