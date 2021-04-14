@@ -68,14 +68,18 @@ class CsvUpload {
                     break;
                 }
             } 
-            var f = row.indexOf(this.column_separator);
-            if (f>=0) {
-                result.push(row.substring(0,f));
-                row = row.substring(f+this.column_separator.length);
-                continue;
+            else {
+                var f = row.indexOf(this.column_separator);
+                if (f>=0) {
+                    result.push(row.substring(0,f));
+                    row = row.substring(f+this.column_separator.length);
+                    continue;
+                }
+                else {
+                    result.push(row);
+                    break;
+                }
             }
-            result.push(row);
-            break;
         }
         return result;
     }
