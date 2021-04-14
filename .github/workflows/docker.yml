@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: PHP tests
         run: |
-          sudo apt-get -y install composer
+          sudo apt-get -y install composer php7.4-cli php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
           cd app/
           composer -n install
           vendor/bin/phpunit --debug
