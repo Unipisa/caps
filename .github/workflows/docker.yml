@@ -7,17 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: JS tests
-        run: |
-          cd html/
-          npm install
-          npm run test
       - name: PHP tests
         run: |
           sudo apt-get -y install composer
           cd app/
           composer -n install
           vendor/bin/phpunit --debug
+      - name: JS tests
+        run: |
+          cd html/
+          npm install
+          npm run test
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Docker meta
