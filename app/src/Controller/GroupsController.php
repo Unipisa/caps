@@ -169,7 +169,7 @@ class GroupsController extends AppController
     {
         $group = $this->Groups->findById($group_id)->firstOrFail();
         $use_count = 0;
-        foreach (['exams_groups', 'compulsory_groups'] as $related_table) {
+        foreach (['compulsory_groups'] as $related_table) {
             $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
                 ->where(['group_id' => $group_id])
                 ->count();
