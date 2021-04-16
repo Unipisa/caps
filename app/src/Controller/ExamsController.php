@@ -73,25 +73,20 @@ class ExamsController extends AppController
             }
             if ($this->request->getData('payload')) {
                 // csv bulk upload
-                $good_count = 0;
-                $bad_count = 0;
                 $payload = json_decode($this->request->getData()['payload'], true);
-                $exams = $this->Exams->newEntities($payload);
-                $result = $this->Exams->saveMany($exams);
+                $new_exams = $this->Exams->newEntities($payload);
+                $result = $this->Exams->saveMany($new_exams);
                 if ($result) {
                     $this->Flash->success('Inseriti ' . count($result) . ' esami.');
                 } else {
                     // collect error messages
-                    foreach ($exams as $exam) {
+                    foreach ($new_exams as $exam) {
                         foreach ($exam->errors() as $field => $errors) {
                             foreach ($errors as $error) {
                                 $this->Flash->error('Errore nel campo "' . $field . '" dell\'esame "' . $exam['name'] . '" ' . $error);
                             }
                         }
                     }
-                    // debug($payload);
-                    // debug($exams);
-                    // debug($result);
                 }
 
                 return $this->redirect([ 'action' => 'index']);
@@ -192,12 +187,10 @@ class ExamsController extends AppController
             }
             $success_message = __('Esame aggiornato con successo.');
             $failure_message = __('Errore: esame non aggiornato.');
-            $then = 'index';
         } else { // new
             $exam = $this->Exams->newEntity();
             $success_message = __('Esame aggiunto con successo.');
             $failure_message = __('Errore: esame non aggiunto.');
-            $then = 'edit'; // questionabile: forse meglio 'index'
         }
 
         if ($this->request->is(['post', 'put'])) {
@@ -230,7 +223,7 @@ class ExamsController extends AppController
                     }
                 }
 
-                return $this->redirect(['action' => $then]);
+                return $this->redirect(['action' => 'view', $exam->id]);
             }
             $this->Flash->error($failure_message);
         }

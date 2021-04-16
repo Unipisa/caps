@@ -1,25 +1,29 @@
-name: Docker image
+name: tests
 
-on: 
-  push:
-    branches:
-      - 'master'
-      - 'develop'
-    tags:
-      - '*'
+on: push
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
+      - uses: actions/checkout@v2
+      - name: PHP tests
+        run: |
+          cd app/
+          php7.4 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php7.4 composer-setup.php
+          php7.4 -r "unlink('composer-setup.php');"
+          sudo apt-get -y install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
+          php7.4 composer.phar -n install
+          php7.4 vendor/bin/phpunit --debug
+      - name: JS tests
+        run: |
+          cd html/
+          npm install
+          npm run test
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Docker meta
+      - name: Docker meta
         id: meta
         uses: crazy-max/ghaction-docker-meta@v2
         with:
@@ -28,14 +32,12 @@ jobs:
             type=ref,event=tag
             type=ref,event=branch
             type=semver,pattern={{version}}
-      -
-        name: Login to DockerHub
+      - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:

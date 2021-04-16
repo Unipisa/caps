@@ -60,6 +60,7 @@ Per compilare i file JS e CSS è necessario entrare nella cartella ```html``` ed
 ```bash
 cd html/
 npm install
+npm run test # run js unit tests
 npm run deploy
 ```
 
@@ -75,7 +76,7 @@ i file JS e CSS.
 ```bash
 cd app
 bin/cake migrations/migrate # applica eventuali migrazioni al database
-vendor/bin/phpunit # run unit tests
+vendor/bin/phpunit # run php unit tests
 bin/cake server & # run a development server
 ```
 

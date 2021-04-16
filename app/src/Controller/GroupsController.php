@@ -132,10 +132,10 @@ class GroupsController extends AppController
 
         if ($this->request->is(['post', 'put'])) {
             $group = $this->Groups->patchEntity($group, $this->request->getData());
-            if ($this->Groups->save($group)) {
+            if ($group = $this->Groups->save($group)) {
                 $this->Flash->success($success_message);
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', $group->id]);
             }
             $this->Flash($failure_message);
         }
@@ -169,7 +169,7 @@ class GroupsController extends AppController
     {
         $group = $this->Groups->findById($group_id)->firstOrFail();
         $use_count = 0;
-        foreach (['exams_groups', 'compulsory_groups'] as $related_table) {
+        foreach (['compulsory_groups'] as $related_table) {
             $use_count += TableRegistry::getTableLocator()->get($related_table)->find('all')
                 ->where(['group_id' => $group_id])
                 ->count();

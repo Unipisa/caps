@@ -20,56 +20,51 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php echo $this->Html->charset(); ?>
-	<title>
-		<?php echo $cakeDescription ?>:
-		<?php echo $title_for_layout; ?>
-	</title>
-	<?php
-		echo $this->Html->meta('icon');
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-		echo $this->Html->css('cake.generic');
+    <title>CAPS</title>
 
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
-		echo $this->fetch('script');
-	?>
+    <!-- Custom fonts for this template-->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/style.min.css" rel="stylesheet">
+    <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
 </head>
-<body>
-	<div id="container">
-		<div id="header">
-				<h1>
-						<?php
-								echo $this->Html->link(
-										'Compilazione Assistita<br/>'
-										.'Piani di Studio<br/>'
-										. $settings['cds'],
-										'/',
-										array(
-												'escape' => false
-										)
-								);
-						?>
-				</h1>
-		</div>
-		<div id="content">
-            <?php echo $this->Flash->render(); ?>
-			<?php echo $this->fetch('content'); ?>
-		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false)
-				);
-			?>
-		</div>
-	</div>
+
+<body class="bg-primary">
+
+<div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+            <div class="card shadow-lg my-5">
+				<div class="card-header br-secondary text-primary">
+					<div class="d-flex justify-content-between">
+                        <img src="img/cherubino_black.png" height="60" class="my-auto">
+						<div>
+							<h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v2.1.9</span></h1>
+							<h6>Compilazione Assistita<br>Piani di Studio</h6>
+						</div>
+					</div>
+				</div>
+                <div class="card-body p-3">
+					<?php echo $this->Flash->render(); ?>
+					<?php echo $this->fetch('content'); ?>
+                </div>
+            </div>
+    </div>
+
+</div>
+
 </body>
+
 </html>

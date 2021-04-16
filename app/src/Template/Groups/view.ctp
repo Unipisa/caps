@@ -26,7 +26,7 @@
 <?= $this->element('card-start') ?>
     <div class="d-flex mb-2">
         <a href="<?= $this->Url->build(['action' => 'index']) ?>" class="mr-2">
-            <button type="button" class="btn btn-sm btn-primary">Indietro</button>
+            <button type="button" class="btn btn-sm btn-primary"><i class="fas fa-arrow-left mr-2"></i>Tutti i gruppi</button>
         </a>
         <a href="<?= $this->Url->build(['action' => 'edit', $group['id']]) ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">Modifica</button>
