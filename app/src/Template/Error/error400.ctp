@@ -52,23 +52,24 @@ endif;
 $this->end();
 endif;
 ?>
-<h2><?= h($message) ?></h2>
-<p class="error">
+<h2>400 <?= h($message) ?></h2>
+<p>
     <strong><?= __d('cake', 'Pagina non trovata') ?>: </strong>
     <?= __d('cake', 'La risorsa richiesta non è presente su questo server.', "<strong>'{$url}'</strong>") ?>
 </p>
 
 <h3>Informazioni aggiuntive</h3>
-    <ul style="font-size: 1.2em; line-height: 1.8em;">
-    <li>La pagina cercata potrebbe essere collegata ad un esame, piano di studio, curriculum che è stato 
-    <strong>recentemente eliminato</strong>, oppure si potrebbe aver sbagliato a digitare l'indirizzo nel browser. 
-    <li>Nel caso questo errore sia invece inaspettato, si consiglia di riportare una segnalazione
-      tramite la piattaforma Github, all'indirizzo <a href="https://github.com/Unipisa/caps/issues">
-        https://github.com/Unipisa/caps/issues</a>. 
-    </li>
-
-  <br>
-  <hr>
+    <ul>
+        <li>
+            La pagina cercata potrebbe essere collegata ad un esame, piano di studio, curriculum che è stato 
+            <strong>recentemente eliminato</strong>, oppure si potrebbe aver sbagliato a digitare l'indirizzo nel browser. 
+        </li>
+        <li>
+            Nel caso questo errore sia invece inaspettato, si consiglia di riportare una segnalazione
+            tramite la piattaforma Github, all'indirizzo <a href="https://github.com/Unipisa/caps/issues">
+            https://github.com/Unipisa/caps/issues</a>. 
+        </li>
+    </ul>
   <br>
 
   Cliccare <?php echo 

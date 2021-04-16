@@ -25,33 +25,37 @@
 <h1>Esami</h1>
 
 <script>
-// per upload_csv
-csv_upload_fields = ['nome','codice','settore','crediti'];
-csv_upload_fields_db = ['name','code','sector','credits'];
-csrf_token = "<?php echo ($this->request->getParam('_csrfToken')); ?>";
-db_exams = null; // codice -> exam
-
-function csv_click() {
-    // $("#caps-admin-actions-csv").toggle();
-    if (db_exams === null) {
-        db_exams = {};
-        jQuery.get("exams.json", function(data) {
-            data.exams.forEach(function(exam) {
-                db_exams[exam.code] = exam;
-            })
-        });
+    // per validazione upload_csv
+    var db_exams = null; // codice -> exam
+    
+    function csv_click() {
+        // $("#caps-admin-actions-csv").toggle();
+        if (db_exams === null) {
+            db_exams = {};
+            jQuery.get("exams.json", function(data) {
+                data.exams.forEach(function(exam) {
+                    db_exams[exam.code] = exam;
+                })
+            });
+        }
     }
-}
-
-function csv_validator(item, context) {
-    if (!context.used_codes) context.used_codes = {};
-    if (item.name === "") return "nome vuoto";
-    if (item.code === "") return "codice vuoto";
-    if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
-    if (context.used_codes.hasOwnProperty(item.code)) return "codice già utilizzato";
-    context.used_codes[item.code] = true;
-    return null;
-}
+    
+    jQuery(function(){
+        var csv = new CsvUpload({
+            upload_fields: ['nome','codice','settore','crediti'], 
+            upload_fields_db: ['name','code','sector','credits'], 
+            validator: function (item, context) {
+                if (!context.used_codes) context.used_codes = {};
+                if (item.name === "") return "nome vuoto";
+                if (item.code === "") return "codice vuoto";
+                if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
+                if (context.used_codes.hasOwnProperty(item.code)) return "codice già utilizzato";
+                context.used_codes[item.code] = true;
+                return null;
+            },
+            csrf_token: "<?php echo ($this->request->getParam('_csrfToken')); ?>"
+        });
+    });
 </script>
 
 <?= $this->element('card-start'); ?>

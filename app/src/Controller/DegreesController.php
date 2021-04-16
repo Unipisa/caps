@@ -122,7 +122,7 @@ class DegreesController extends AppController
 
             if ($this->Degrees->save($degree)) {
                 $this->Flash->success(__('Il corso di laurea è stato salvato'));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', $degree->id]);
             } else {
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }

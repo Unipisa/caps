@@ -57,8 +57,13 @@ if (Configure::read('debug')) :
     $this->end();
 endif;
 ?>
-<h2><?= __d('cake', 'An Internal Error Has Occurred') ?></h2>
-<p class="error">
-    <strong><?= __d('cake', 'Error') ?>: </strong>
+<h2>500 <?= __d('cake', 'Errore interno') ?></h2>
+<p>
+    <strong><?= __d('cake', 'Errore') ?>: </strong>
     <?= h($message) ?>
 </p>
+
+<h3>Informazioni aggiuntive</h3>
+    Si è verificato un errore mentre CAPS elaborava dei dati; probabilmente si tratta di un bug. 
+      Se possibile, è consigliabile riportare il malfunzionamento  all'indirizzo <a href="https://github.com/Unipisa/caps/issues">
+        https://github.com/Unipisa/caps/issues</a>, includendo il maggior numero di informazioni possibili su come si è verificato. 
