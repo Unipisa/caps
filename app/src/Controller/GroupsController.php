@@ -132,10 +132,10 @@ class GroupsController extends AppController
 
         if ($this->request->is(['post', 'put'])) {
             $group = $this->Groups->patchEntity($group, $this->request->getData());
-            if ($this->Groups->save($group)) {
+            if ($group = $this->Groups->save($group)) {
                 $this->Flash->success($success_message);
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', $group->id]);
             }
             $this->Flash($failure_message);
         }

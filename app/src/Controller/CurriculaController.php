@@ -195,7 +195,7 @@ class CurriculaController extends AppController
             if ($this->Curricula->save($curriculum)) {
                 $this->Flash->success($success_message);
 
-                return $this->redirect(['action' => 'edit', $curriculum['id']]);
+                return $this->redirect(['action' => 'view', $curriculum['id']]);
             } else {
                 $this->Flash->error(__('Errore: curriculum non aggiornato.'));
                 $this->Flash->error(Utils::error_to_string($curriculum->errors()));

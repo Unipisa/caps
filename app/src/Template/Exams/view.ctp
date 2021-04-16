@@ -26,7 +26,7 @@
 <?= $this->element('card-start') ?>
     <div class="d-flex mb-2">
         <a href="<?= $this->Url->build(['action' => 'index']) ?>">
-            <button type="button" class="btn btn-sm mr-2 btn-primary">Indietro</button>
+            <button type="button" class="btn btn-sm mr-2 btn-primary"><i class="fas fa-arrow-left mr-2"></i>Tutti gli esami</button>
         </a>
         <a href="<?= $this->Url->build(['action' => 'edit', $exam['id']]) ?>">
             <button type="button" class="btn btn-sm mr-2 btn-primary">Modifica</button>
