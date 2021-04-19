@@ -1,6 +1,6 @@
-jQuery = require('jquery');
+const jQuery = require('jquery');
 
-function CapsProposalController() {
+function caps_proposals_add() {
 
   var exams = undefined;
   var groups = undefined;
@@ -682,11 +682,6 @@ function CapsProposalController() {
         stop_loading();
       });
 
-    } // End of function CapsProposalController
+    } // End of function cpas_proposals_add
 
-    jQuery(function() {
-      var form = document.getElementById('completeForm');
-      if (form != undefined) {
-        CapsProposalController();
-      }
-    })
+module.exports = caps_proposals_add;

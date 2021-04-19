@@ -47,7 +47,16 @@
     <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
 
     <script>
-      var Caps = new CapsController('<?= $this->Url->build('/') ?>', '<?= $this->request->getParam('controller') ?>', '<?= $this->request->getParam('action') ?>');
+        const Caps = new CapsController(
+          '<?= $this->Url->build('/') ?>', 
+          '<?= $this->request->getParam('controller') ?>', 
+          '<?= $this->request->getParam('action') ?>',
+          <?= json_encode([
+              '_csrfToken' => $this->request->getParam('_csrfToken'),
+              'pass' => $this->request->getParam('pass'),
+              "?" => $this->request->getQueryParams('?')
+            ]) 
+          ?>);
     </script>
 </head>
 

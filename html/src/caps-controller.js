@@ -1,76 +1,55 @@
-//
 // This class implements all the handler needed by the elements in CAPS.
+const jQuery = require('jquery');
 
-jQuery = require('jquery');
-const { loadDashboardData } = require('./caps-dashboard');
+const CapsProposalController = require('./controllers/proposal-controller');
+const CapsSettingsController = require('./controllers/settings-controller');
+const CapsExamsController = require('./controllers/exams-controller');
 
 'use strict'
 
+/* 
+ * We maintain a dictionary of the classes that should be instantiated for 
+ * particular controllers; these classes are passed as argument the action 
+ * that is being rendered. 
+ */
+const routes = {
+  "Proposals": CapsProposalController,
+  "Settings": CapsSettingsController,
+  "Exams": CapsExamsController
+}
+
+/**
+ * The CapsController classes has two roles:
+ * 
+ *  - It is available as a globally defined CapsController object, so we use it 
+ *    as a bridge with CakePHP, to store some data and pass request variables, 
+ *    see for instance the saveProposalsFilter below; 
+ * 
+ *  - It instantiates JS classes based on the current controller, and if those 
+ *    have a method whose name matches the current action this is automatically 
+ *    called as well. The query parameters are passed as an array. 
+ */
 class CapsController {
 
-  constructor(root = "/", controller = "Proposals", action = "index") {
+  constructor(root, controller, action, params = []) {
     this.root = root;
     this.controller = controller;
     this.action = action;
 
     jQuery(() => {
-      this.updateProposalsURL();
+      if (routes.hasOwnProperty(this.controller)) {
+          const controller = new routes[this.controller](root);
 
-      if (this.controller == "Proposals" && this.action == "dashboard") {
-          loadDashboardData();
+          if (controller[action] !== undefined) {
+              controller[action](params);
+          }
       }
     });
   }
 
+  // Trigger a CSV download using Javascript. 
   downloadCSV() {
     location.pathname += '.csv';
-  }
-
-  // This function is automatically called on proposals/view, to save the
-  // current state of the filters.
-  saveProposalsFilter(filter) {
-    sessionStorage.setItem('proposals-filter', filter);
-  }
-
-  // Replace all href attributes of a.caps-proposal-link tags, to ensure that
-  // they point to the proposals page with the filters set at the last visit.
-  updateProposalsURL() {
-      let url = this.getProposalsURL();
-      jQuery('a.caps-proposal-link').each((idx, el) => {
-          jQuery(el).attr('href', url);
-      });
-  }
-
-  getProposalsURL() {
-      const f = JSON.parse(sessionStorage.getItem('proposals-filter'));
-
-      if (f == null) {
-          return this.root + 'proposals';
-      }
-      else {
-          // We selectively read some query parameters from the saved ones, as
-          // these are the only "officially supported ones".
-          const supported_fields = [
-              'state', 'surname', 'academic_year', 'degree', 
-              'curriculum', 'exam_name', 'free_exam_name', 
-              'page'];
-          if (!f.page) f.page = '1';
-
-          const query_string = supported_fields.map(
-              function(field) {
-                  return field + '=' + encodeURI(f[field] == undefined ? '' : f[field])
-              }).join('&');
-              
-          return this.root + 'proposals?' + query_string;
-      }
-  }
-
-  // Remove the key&value pair from the URL, mainly uesd to remove some filters
-  // for the current table
-  removeQueryParam(param) {
-      var url = location.search;
-      var rx = new RegExp('[&?]' + param + '=[^&]*');
-      location.search = url.replace(rx, '');
   }
 
   // Submit a form by injecting the name and value of an element; this is used

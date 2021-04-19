@@ -1,6 +1,6 @@
-var jQuery = require('jquery');
-var popper = require('popper.js');
-var bootstrap = require('bootstrap');
+//const jQuery = require('jquery');
+const popper = require('popper.js');
+const bootstrap = require('bootstrap');
 
 /**
  * The CapsAttachment is the controller for a span.pdf-attachment element, and
@@ -72,8 +72,4 @@ class CapsAttachment {
 
 }
 
-jQuery(document).ready(function() {
-  jQuery('.pdf-attachment').each(function (idx, el) {
-    new CapsAttachment(el);
-  })
-});
+module.exports = CapsAttachment;

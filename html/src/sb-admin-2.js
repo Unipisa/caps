@@ -1,4 +1,4 @@
-var jQuery = require('jquery');
+const jQuery = require('jquery');
 
 // We keep track of the manual opening of the sidebar, to avoid hiding in those
 // cases, as it might be unexpected from the user side.
@@ -69,7 +69,7 @@ var sidebarToggled = false;
   });
 
   // Just make sure to apply the policy on page load
-  $(window).resize();
+  $(window).trigger('resize');
 
   });
 

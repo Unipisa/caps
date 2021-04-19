@@ -23,12 +23,6 @@
 ?>
 <h1>Piani di Studio</h1>
 
-<script>
-    Caps.saveProposalsFilter(JSON.stringify(<?=
-        json_encode($this->getRequest()->getQueryParams())
-    ?>));
-</script>
-
 <?php if ($user['admin']): ?>
 
 <?php echo $this->element('card-start') ?>

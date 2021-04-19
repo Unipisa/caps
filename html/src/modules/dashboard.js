@@ -1,6 +1,7 @@
-jQuery = require('jquery');
-Chart = require('chart.js');
 require("regenerator-runtime/runtime");
+
+const jQuery = require('jquery');
+const Chart = require('chart.js');
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 

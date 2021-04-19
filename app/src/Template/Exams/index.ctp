@@ -24,40 +24,6 @@
 
 <h1>Esami</h1>
 
-<script>
-    // per validazione upload_csv
-    var db_exams = null; // codice -> exam
-    
-    function csv_click() {
-        // $("#caps-admin-actions-csv").toggle();
-        if (db_exams === null) {
-            db_exams = {};
-            jQuery.get("exams.json", function(data) {
-                data.exams.forEach(function(exam) {
-                    db_exams[exam.code] = exam;
-                })
-            });
-        }
-    }
-    
-    jQuery(function(){
-        var csv = new CsvUpload({
-            upload_fields: ['nome','codice','settore','crediti'], 
-            upload_fields_db: ['name','code','sector','credits'], 
-            validator: function (item, context) {
-                if (!context.used_codes) context.used_codes = {};
-                if (item.name === "") return "nome vuoto";
-                if (item.code === "") return "codice vuoto";
-                if (db_exams.hasOwnProperty(item.code)) return "codice già presente in database";
-                if (context.used_codes.hasOwnProperty(item.code)) return "codice già utilizzato";
-                context.used_codes[item.code] = true;
-                return null;
-            },
-            csrf_token: "<?php echo ($this->request->getParam('_csrfToken')); ?>"
-        });
-    });
-</script>
-
 <?= $this->element('card-start'); ?>
     <div class="d-flex mb-2">
         <?= $this->element('filter-button', [ 'items' => [
@@ -83,7 +49,7 @@
         </div>
 
         <div class="dropdown">
-            <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown" onclick='csv_click()'>
+            <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown">
                 <i class="fas fa-upload"></i><span class="ml-2 d-none d-lg-inline">Importa da CSV</span>
             </button>
             <div class="dropdown-menu p-2 shadow" style="width: 800px; max-height: 500px; overflow-y: scroll;">

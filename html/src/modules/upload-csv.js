@@ -1,3 +1,4 @@
+const jQuery = require('jquery');
 
 // https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/string/levenshtein-distance
 /**
