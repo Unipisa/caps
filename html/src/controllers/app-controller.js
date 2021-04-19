@@ -60,11 +60,9 @@ class CapsAppController {
     }
 
     enhanceAttachments() {
-        jQuery(function() {
-            jQuery('.pdf-attachment').each(function (idx, el) {
-              new CapsAttachment(el);
-            })
-        });
+        jQuery('.pdf-attachment').each(function (idx, el) {
+            new CapsAttachment(el);
+        })
     }
 }
 
