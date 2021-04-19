@@ -1,5 +1,5 @@
 const CapsAppController = require("./app-controller");
-//const jQuery = require('jquery');
+const jQuery = require('jquery');
 const ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
 
 class CapsSettingsController extends CapsAppController {

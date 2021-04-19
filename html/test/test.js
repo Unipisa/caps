@@ -2,8 +2,8 @@ var assert = require('assert');
 
 describe('caps-upload-csv', function() {
     var jsdom = require('jsdom');
-    global.jQuery = require('jquery')(new jsdom.JSDOM().window);    
-    var CsvUpload = require("../src/caps-upload-csv.js");
+    global.window = new jsdom.JSDOM().window;
+    var CsvUpload = require("../src/modules/upload-csv.js");
     const headers = ['nome','codice','settore','crediti'];
     const line = ["giorgio", "XY", "MAT", "6"];
     var csv = new CsvUpload({
