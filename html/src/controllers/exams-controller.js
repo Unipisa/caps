@@ -28,6 +28,24 @@ class CapsExamsController extends CapsAppController {
         });
     }
 
+    edit(params) {
+        // If the user changes the value of the exam code, assuming this is not a new 
+        // exam, then we show a warning that says that this is dangerous. 
+        if (params.pass.length > 0 && params.pass.id != 0) {
+            const el = document.getElementById('code');
+            const previous_code = el.value;
+            const warning_note = document.getElementById('code-warning-note');
+            el.addEventListener('input', () => {
+                if (el.value != previous_code) {
+                    warning_note.classList.remove('d-none');
+                }
+                else {
+                    warning_note.classList.add('d-none');
+                }
+            })
+        }
+    }
+
 }
 
 module.exports = CapsExamsController;

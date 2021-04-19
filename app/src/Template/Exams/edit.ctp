@@ -28,12 +28,22 @@
 <?= $this->element('card-start') ?>
     <?php
     echo $this->Form->create($exam);
+    ?>
+    
+    <div class="input form-group">
+        <label for="code">Codice<span class="text-primary d-none" id="code-warning-note">
+            <br>
+            <small class="mark">
+                <strong>Attenzione</strong>: modificare il codice dell'esame cambierà i codice in tutti i piani presentati!
+                </small>
+            </span>
+        </label>
+        <input class="form-control" type="text" name="code" maxlength="5" id="code" value="<?= $exam['code'] ?>">
+    </div>
+    <?php 
     echo $this->Form->control(
         'id',
         ['type' => 'hidden']);
-    echo $this->Form->control(
-        'code',
-        ['label' => 'Codice']);
     echo $this->Form->control(
         'name',
         ['label' => 'Nome']);
