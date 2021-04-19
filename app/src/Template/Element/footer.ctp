@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
         <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Dipartimento di Matematica &mdash; Università di Pisa &mdash; 2020</span>
+            <span>Copyright &copy; Dipartimento di Matematica &mdash; Università di Pisa &mdash; 2021</span>
             <div class="mx-4 d-inline"></div>
             <span>CAPS version <?= $capsVersion ?></span>
         </div>
