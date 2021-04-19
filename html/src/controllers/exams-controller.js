@@ -38,9 +38,11 @@ class CapsExamsController extends CapsAppController {
             el.addEventListener('input', () => {
                 if (el.value != previous_code) {
                     warning_note.classList.remove('d-none');
+                    el.classList.add('is-invalid');
                 }
                 else {
                     warning_note.classList.add('d-none');
+                    el.classList.remove('is-invalid');
                 }
             })
         }
