@@ -30,7 +30,7 @@
     </button>
 
     <?php if (trim($settings['disclaimer']) != "" ): ?>
-    <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-truncate">
+    <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
         <?= $settings['disclaimer'] ?>
     </div>
     <?php endif; ?>
