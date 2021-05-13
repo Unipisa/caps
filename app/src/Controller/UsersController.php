@@ -229,6 +229,13 @@ class UsersController extends AppController {
                 return $this->oauth2Login();
             }
         }
+
+        $this->set('oauth2_enabled', $this->isOAuth2Enabled());
+    }
+
+    private function isOAuth2Enabled() {
+        return Configure::read('UnipiAuthenticate.microsoft_oauth2_appid') != "" && 
+               Configure::read('UnipiAuthenticate.microsoft_oauth2_client_secret') != "";
     }
 
     private function getOAuth2Client() {
