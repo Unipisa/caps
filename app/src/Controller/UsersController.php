@@ -33,6 +33,8 @@ use App\Form\UsersFilterForm;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
+use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 
@@ -246,7 +248,7 @@ class UsersController extends AppController {
             return null;
         }
 
-        return new \League\OAuth2\Client\Provider\GenericProvider([
+        return new GenericProvider([
             'clientId'                => $appid,
             'clientSecret'            => $client_secret,
             'redirectUri'             => Router::url([ 'controller' => 'users', 'action' => 'oauth2Callback' ], true),
@@ -266,11 +268,10 @@ class UsersController extends AppController {
         }
     
         $authUrl = $client->getAuthorizationUrl();
-    
-        // Save client state so we can validate in callback
-        $this->getRequest()->getSession()->write('oauth-state', $client->getState());
-    
-        // Redirect to AD signin page
+        $this->getRequest()
+            ->getSession()
+            ->write('oauth-state', $client->getState());
+
         return $this->redirect($authUrl);
     }
 
@@ -284,7 +285,7 @@ class UsersController extends AppController {
         }
 
         if ($providedState == null || $providedState != $expectedState) {
-            $this->Flash->error('Mismatch in states during OAuth2: ' . $providedState . ' != ' . $expectedState);
+            $this->Flash->error('Mismatch in states during OAuth2');
             return $this->redirect([ 'controller' => 'users', 'action' => 'login' ]);
         }
 
@@ -292,7 +293,6 @@ class UsersController extends AppController {
         $client = $this->getOAuth2Client();
 
         try {
-            // Make the token request
             $accessToken = $client->getAccessToken('authorization_code', [
               'code' => $authCode
             ]);
@@ -325,7 +325,7 @@ class UsersController extends AppController {
     
             return  $this->redirect($this->Auth->redirectUrl());
         }
-        catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+        catch (IdentityProviderException $e) {
             $this->Flash->error('Error requesting the Access Token: ' . $e->getMessage());
             return $this->redirect([ 'action' => 'login' ]);
         }
