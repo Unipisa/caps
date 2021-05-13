@@ -56,7 +56,7 @@
                         <div class="col-lg-12">
                             <div class="p-5">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <img src="img/cherubino_black.png" height="60" class="my-auto">
+                                    <img src="<?= $this->Url->assetUrl('img/cherubino_black.png') ?>" height="60" class="my-auto">
                                     <div>
                                         <h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v<?= $capsShortVersion ?></span></h1>
                                         <h6>Compilazione Assistita<br>Piani di Studio</h6>
@@ -71,9 +71,19 @@
                                     echo $this->Form->create(null, [ 'class' => 'user' ]);
                                     echo $this->Form->control('username');
                                     echo $this->Form->control('password');
-                                    echo $this->Form->submit('Login');
+                                ?>
+                                <div class="d-flex flex-row">
+                                <?php
+                                    echo $this->Form->submit('Login', [ 'class' => 'mr-auto' ]);    
+                                ?>
+                                <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
+                                    Login Unipi
+                                </a>
+                                </div>
+                                <?php
                                     echo $this->Form->end();
                                 ?>
+                                
                             </div>
                         </div>
                     </div>
