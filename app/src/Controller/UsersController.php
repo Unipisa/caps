@@ -32,6 +32,9 @@ use App\Model\Entity\User;
 use App\Form\UsersFilterForm;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
+use Microsoft\Graph\Graph;
+use Microsoft\Graph\Model;
 
 class UsersController extends AppController {
 
@@ -44,6 +47,9 @@ class UsersController extends AppController {
 
     public function beforeFilter($event) {
         parent::beforeFilter($event);
+        $this->Auth->allow('oauth2Login');
+        $this->Auth->allow('oauth2Callback');
+        $this->Auth->allow('login');
     }
 
     public function view($id = null) {
@@ -154,6 +160,42 @@ class UsersController extends AppController {
         $this->set('paginated_users', $this->paginate($users->cleanCopy()));
     }
 
+    private function login_user($authuser) {
+        $this->Auth->setUser($authuser);
+
+        // Try to find the user in the database
+        $user = $this->Users->find()
+            ->where([ 'username' => $authuser['username'] ])
+            ->first();
+
+        if (! $user) {
+            // ... otherwise create a new user
+            $user = $this->Users->newEntity();
+        }
+
+        // We save the user data no matter what, just in case it has changed
+        // since the last update.
+        $user = $this->Users->patchEntity($user, [
+            'name' => ucwords(strtolower($authuser['name'])),
+            'username' => $authuser['username'],
+            'number' => $authuser['number'],
+            'surname' => $authuser['surname'],
+            'givenname' => $authuser['givenname'],
+            'email' => $authuser['email'],
+            'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
+                // if the user is not found; otherwise a user might have been granted admin privileges
+                // locally and we respect that.
+        ]);
+
+        if ($this->Users->save($user)) {
+            Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
+        }
+        else {
+            Log::write('error',
+                'Error adding user ' . $authuser['username'] . ' to the database');
+        }
+    }
+
     public function login() {
         if ($this->request->is('post')) {
             $authuser = $this->Auth->identify();
@@ -165,44 +207,12 @@ class UsersController extends AppController {
                 );
             }
             else {
-                $this->Auth->setUser($authuser);
-
-                // Try to find the user in the database
-                $user = $this->Users->find()
-                    ->where([ 'username' => $authuser['username'] ])
-                    ->first();
-
-                if (! $user) {
-                    // ... otherwise create a new user
-                    $user = $this->Users->newEntity();
-                }
-
-                // We save the user data no matter what, just in case it has changed
-                // since the last update.
-                $user = $this->Users->patchEntity($user, [
-                    'name' => ucwords(strtolower($authuser['name'])),
-                    'username' => $authuser['username'],
-                    'number' => $authuser['number'],
-                    'surname' => $authuser['surname'],
-                    'givenname' => $authuser['givenname'],
-                    'email' => $authuser['email'],
-                    'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
-                        // if the user is not found; otherwise a user might have been granted admini privileges
-                        // locally and we respect that.
-                ]);
-
-                if ($this->Users->save($user)) {
-                    Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
-                }
-                else {
-                    Log::write('error',
-                        'Error adding user ' . $authuser['username'] . ' to the database');
-                }
+                $this->login_user($authuser);           
 
                 // We redirect the user to the redirectUrl, if any. Otherwise, the user will be redirected again to
                 // this page with a valid session, which will send him/her to the index or admin/index depending on
                 // their status.
-                return  $this->redirect($this->Auth->redirectUrl());
+                return $this->redirect($this->Auth->redirectUrl());
             }
         }
         else {
@@ -214,45 +224,113 @@ class UsersController extends AppController {
                     return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
             }
-        }
-    }
-
-    public function admin_login() {
-        if ($this->request->is('post')) {
-            if ($this->Auth->login()) {
-                $user = AuthComponent::user();
-
-                // If the user is an admin, show the administration panel...
-                if ($user['admin']) {
-                    return $this->redirect(
-                        $this->Auth->redirectUrl(
-                            ['admin' => true,
-                                'controller' => 'proposals',
-                                'action' => 'index']
-                        )
-                    );
-                }
-
-                throw new NotFoundException();
-            } else {
-                $this->Flash->error(__('Username o password non corretti.'));
+            
+            if ($this->request->getQuery('oauth2') == '1') {
+                return $this->oauth2Login();
             }
         }
     }
 
-    public function clear_admin() {
+    private function getOAuth2Client() {
+        $appid = Configure::read('UnipiAuthenticate.microsoft_oauth2_appid');
+        $client_secret = Configure::read('UnipiAuthenticate.microsoft_oauth2_client_secret');
 
+        if ($appid == "" || $client_secret == "") {
+            return null;
+        }
+
+        return new \League\OAuth2\Client\Provider\GenericProvider([
+            'clientId'                => $appid,
+            'clientSecret'            => $client_secret,
+            'redirectUri'             => Router::url([ 'controller' => 'users', 'action' => 'oauth2Callback' ], true),
+            'urlAuthorize'            => 'https://login.microsoftonline.com/c7456b31-a220-47f5-be52-473828670aa1/oauth2/v2.0/authorize',
+            'urlAccessToken'          => 'https://login.microsoftonline.com/c7456b31-a220-47f5-be52-473828670aa1/oauth2/v2.0/token',
+            'urlResourceOwnerDetails' => '',
+            'scopes'                  => 'User.read'
+        ]);
     }
 
-    public function set_admin() {
+    public function oauth2Login() {
+        $client = $this->getOAuth2Client();
 
+        if (!$client) {
+            $this->Flash->error('OAuth2 authentication is disabled');
+            return $this->redirect([ 'action' => 'login' ]);
+        }
+    
+        $authUrl = $client->getAuthorizationUrl();
+    
+        // Save client state so we can validate in callback
+        $this->getRequest()->getSession()->write('oauth-state', $client->getState());
+    
+        // Redirect to AD signin page
+        return $this->redirect($authUrl);
     }
 
-    /*
-    public function login() {
-        $this->Flash->info(__('CAPS è attualmente in manutenzione.'));
+    public function oauth2Callback() {
+        $session = $this->getRequest()->getSession();
+        $expectedState = $session->read('oauth-state');
+        $providedState = $this->request->getQuery('state');
+
+        if (! $session->check('oauth-state')) {
+            return $this->redirect([ 'controller' => 'users', 'action' => 'login' ]);
+        }
+
+        if ($providedState == null || $providedState != $expectedState) {
+            $this->Flash->error('Mismatch in states during OAuth2: ' . $providedState . ' != ' . $expectedState);
+            return $this->redirect([ 'controller' => 'users', 'action' => 'login' ]);
+        }
+
+        $authCode = $this->request->getQuery('code');
+        $client = $this->getOAuth2Client();
+
+        try {
+            // Make the token request
+            $accessToken = $client->getAccessToken('authorization_code', [
+              'code' => $authCode
+            ]);
+            
+            $graph = new Graph();
+            $graph->setAccessToken($accessToken->getToken());
+            
+            $user = $graph->createRequest('GET', '/me?$select=displayName,mail,employeeId,onPremisesImmutableId,givenName,surname')
+                ->setReturnType(Model\User::class)
+                ->execute();
+
+            $username = $user->getOnPremisesImmutableId();
+            $mail = $user->getMail();
+            $displayname = $user->getDisplayName();
+            $givenname = $user->getGivenName();
+            $surname = $user->getSurname();
+            $number = $user->getEmployeeId();
+
+            if ($number == "") {
+                $number = $username;
+            }
+
+            $authuser = [ 
+                'username' => $username,
+                'givenname' => $givenname,
+                'surname' => $surname,
+                'name' => $displayname,
+                'number' => $number,
+                'admin' => false,
+                'email' => $mail
+            ];
+
+            $this->login_user($authuser);
+    
+            // TEMPORARY FOR TESTING!
+            return  $this->redirect($this->Auth->redirectUrl());
+        }
+        catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+            $this->Flash->error('Error requesting the Access Token: ' . $e->getMessage());
+            return $this->redirect([ 'action' => 'login' ]);
+        }
+
+        $this->Flash->error('You are not authorized to access this page directly');
+        return $this->redirect([ 'action' => 'login' ]);
     }
-    */
 
     public function logout() {
         return $this->redirect($this->Auth->logout());

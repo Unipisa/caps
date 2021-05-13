@@ -74,6 +74,8 @@ sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
 sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
 sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
 sed -i "s|@CAPS_PSV_API@|${CAPS_PSV_API:-}|g" /app/config/app.php
+sed -i "s|@MICROSOFT_OAUTH2_APPID@|${MICROSOFT_OAUTH2_APPID:-}|g" /app/config/app.php
+sed -i "s|@MICROSOFT_OAUTH2_CLIENT_SECRET@|${MICROSOFT_OAUTH2_CLIENT_SECRET:-}|g" /app/config/app.php
 
 msg "Generating security salt"
 SALT=$(openssl rand -hex 32)

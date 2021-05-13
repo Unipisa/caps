@@ -295,6 +295,8 @@ class AppController extends Controller
 
     public function beforeRender(Event $event)
     {
+        parent::beforeRender($event);
+
         if ($this->request->is('csv')) {
             $_serialize = $this->viewVars['_serialize'];
             if (!is_array($_serialize)) {
@@ -306,7 +308,5 @@ class AppController extends Controller
                 $this->set($var, $data);
             }
         }
-
-        return null;
     }
 }

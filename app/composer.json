@@ -11,6 +11,8 @@
         "cakephp/plugin-installer": "^1.0",
         "dompdf/dompdf": "^0.8.6",
         "friendsofcake/cakephp-csvview": "3.4.1",
+        "league/oauth2-client": "^2.6",
+        "microsoft/microsoft-graph": "^1.29",
         "mobiledetect/mobiledetectlib": "2.*"
     },
     "require-dev": {

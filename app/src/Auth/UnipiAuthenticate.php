@@ -154,4 +154,13 @@ class UnipiAuthenticate extends BaseAuthenticate
             'email' => $m['mail'][0]
         ];
     }
+
+    public function unauthenticated($request, $response) {
+        $controller = $request->getParam('controller');
+        $action = $request->getParam('action');
+
+        if ($controller == 'users' && $action == 'oauth2Login') {
+
+        }
+    }
 }

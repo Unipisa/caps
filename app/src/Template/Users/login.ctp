@@ -37,7 +37,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= $this->Url->assetUrl('css/style.min.css') . '?v=' . $css_hash ?>" type="text/css">
     <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
 </head>
 
@@ -57,7 +57,7 @@
                         <div class="col-lg-12">
                             <div class="p-5">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <img src="img/cherubino_black.png" height="60" class="my-auto">
+                                    <img src="<?= $this->Url->assetUrl('img/cherubino_black.png') ?>" height="60" class="my-auto">
                                     <div>
                                         <h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v<?= $capsShortVersion ?></span></h1>
                                         <h6>Compilazione Assistita<br>Piani di Studio</h6>
@@ -72,9 +72,19 @@
                                     echo $this->Form->create(null, [ 'class' => 'user' ]);
                                     echo $this->Form->control('username');
                                     echo $this->Form->control('password');
-                                    echo $this->Form->submit('Login');
+                                ?>
+                                <div class="d-flex flex-row">
+                                <?php
+                                    echo $this->Form->submit('Login', [ 'class' => 'mr-auto' ]);    
+                                ?>
+                                    <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
+                                    Login Unipi
+                                    </a>
+                                </div>
+                                <?php
                                     echo $this->Form->end();
                                 ?>
+                                
                             </div>
                         </div>
                     </div>

@@ -33,6 +33,8 @@ return [
     ],
 
     'UnipiAuthenticate' => [
+      'microsoft_oauth2_appid' => '@MICROSOFT_OAUTH2_APPID@',
+      'microsoft_oauth2_client_secret' => '@MICROSOFT_OAUTH2_CLIENT_SECRET@',
       'ldap_server_uri' => '@CAPS_LDAP_URI@',
       'base_dn' => "@CAPS_LDAP_BASE@",
       'verify_cert' => @CAPS_VERIFY_CERT@,
