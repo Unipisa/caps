@@ -314,10 +314,6 @@ class UsersController extends AppController {
                 ->execute();
 
             $username = $user->getOnPremisesImmutableId();
-            $mail = $user->getMail();
-            $displayname = $user->getDisplayName();
-            $givenname = $user->getGivenName();
-            $surname = $user->getSurname();
             $number = $user->getEmployeeId();
 
             if ($number == "") {
@@ -326,17 +322,16 @@ class UsersController extends AppController {
 
             $authuser = [ 
                 'username' => $username,
-                'givenname' => $givenname,
-                'surname' => $surname,
-                'name' => $displayname,
-                'number' => $number,
+                'givenname' => $user->getGivenName(),
+                'surname' => $user->getSurname(),
+                'name' => $user->getDisplayName(),
+                'number' => $number, // FIXME: This is not the right number, currently
                 'admin' => false,
-                'email' => $mail
+                'email' => $user->getMail()
             ];
 
             $this->login_user($authuser);
     
-            // TEMPORARY FOR TESTING!
             return  $this->redirect($this->Auth->redirectUrl());
         }
         catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
