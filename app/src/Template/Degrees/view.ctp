@@ -76,6 +76,10 @@
             <th>Rifiuto</th>
             <td><?= $degree['rejection_message'] ?></td>
         </tr>
+        <tr>
+            <th>Esami a scelta</th>
+            <td><?= $degree['free_choice_message'] ?></td>
+        </tr>
     </table>
 <?= $this->element('card-end'); ?>
 

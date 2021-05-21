@@ -10,6 +10,7 @@ function caps_proposals_add() {
   var compulsoryExams = undefined;
   var compulsoryGroups = undefined;
   var freeChoiceExams = undefined;
+  var freeChoiceMessage = "";
 
   var lastExamAdded = 0;
   var lastFreeChoiceExamAdded = 0;
@@ -64,6 +65,7 @@ function caps_proposals_add() {
         compulsoryExams = response["compulsory_exams"];
         compulsoryGroups = response["compulsory_groups"];
         freeChoiceExams = response["free_choice_exams"];
+        freeChoiceMessage = response["degree"]["free_choice_message"];
         credits_per_year = response.credits;
 
         for (var i = 1; i <= degree['years']; i++) {
@@ -396,7 +398,9 @@ function caps_proposals_add() {
         var credits = "";
       }
 
-      var inputHTML = "<div class='col-9'><input class=\"form-control exam\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] required type=text placeholder='Un esame a scelta libera' value=\"" + name + "\"></input></div>";
+      var inputHTML = "<div class='col-9'>" + 
+        "<input class=\"form-control exam\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][name] required type=text placeholder='Un esame a scelta libera' value=\"" + name + "\"></input>" + 
+        "</div>";
       var creditsHTML = "<div class='col-2'><input class=\"form-control credits\" name=data[ChosenFreeChoiceExam][" + lastFreeChoiceExamAdded + "][credits] type=number min=1 required value=" + credits + "></input></div>";
       var deleteHTML = "<div class='col-1 my-auto'><a href='#' class='delete fas fw fa-trash'></a></div>";
 
@@ -409,7 +413,16 @@ function caps_proposals_add() {
 
         inputHTML = inputHTML + year_input;
 
-        jQuery(`#ul-year-${year}`).append("<li class='form-group row'>" + inputHTML + creditsHTML + deleteHTML + "</li>");
+        var fc_msg = "";
+        if (freeChoiceMessage !== undefined && freeChoiceMessage != "") {
+          fc_msg = "<div class=\"col-9 mt-1 small text-muted\">" + 
+            freeChoiceMessage + 
+          "</div>"
+        }
+
+        jQuery(`#ul-year-${year}`).append("<li class='form-group row'>" + 
+          inputHTML + creditsHTML + deleteHTML + fc_msg +
+          "</li>");
       });
 
       lastFreeChoiceExamAdded++;
@@ -653,7 +666,7 @@ function caps_proposals_add() {
         'Una volta sottomesso il piano, non sarà più possibile modificarlo, ' +
         'nè sottometterne di nuovi fino ad avvenuta approvazione.\n\n' +
         'Sottomettere definitivamente il piano?')) {
-          e.preventDefault();
+            e.preventDefault();
         }
       }
 
@@ -661,7 +674,7 @@ function caps_proposals_add() {
       jQuery('#submit-block').hide();
 
       // Setup a confirmation dialog for the submission
-      jQuery('.submit-button').on('click', on_submit_clicked);
+      jQuery('#submit-button').on('click', on_submit_clicked);
 
       start_loading();
 
@@ -682,6 +695,6 @@ function caps_proposals_add() {
         stop_loading();
       });
 
-    } // End of function cpas_proposals_add
+    } // End of function caps_proposals_add
 
 module.exports = caps_proposals_add;

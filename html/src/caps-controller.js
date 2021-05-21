@@ -1,9 +1,11 @@
 // This class implements all the handler needed by the elements in CAPS.
 const jQuery = require('jquery');
+const CapsAppController = require('./controllers/app-controller');
 
+const CapsDegreesController = require('./controllers/degrees-controller');
+const CapsExamsController = require('./controllers/exams-controller');
 const CapsProposalController = require('./controllers/proposal-controller');
 const CapsSettingsController = require('./controllers/settings-controller');
-const CapsExamsController = require('./controllers/exams-controller');
 
 'use strict'
 
@@ -15,7 +17,8 @@ const CapsExamsController = require('./controllers/exams-controller');
 const routes = {
   "Proposals": CapsProposalController,
   "Settings": CapsSettingsController,
-  "Exams": CapsExamsController
+  "Exams": CapsExamsController,
+  "Degrees": CapsDegreesController
 }
 
 /**
@@ -43,6 +46,11 @@ class CapsController {
           if (controller[action] !== undefined) {
               controller[action](params);
           }
+      }
+      else {
+          // In case the controller for this particular page has not been 
+          // overloaded we call the default one. 
+          const controller = new CapsAppController(root);
       }
     });
   }
