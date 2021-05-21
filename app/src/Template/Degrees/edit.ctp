@@ -76,6 +76,19 @@
         </textarea>
     </div>
 
+    <div class="form-group">
+        <label for="caps-setting-free-choice-message" class="caps-setting-header">Messaggio per esami a scelta</label>
+        <div class="caps-setting-description">
+            Questo messaggio viene mostrato allo studente quando seleziona un esame a scelta libera (modificando
+            la struttura del piano). Può contenere indicazioni su come riportare esami di altre istituzioni, e/o 
+            che dettagli sia necessario inserire. 
+        </div>
+        <textarea id="caps-setting-free-choice-message"
+                    name="free_choice_message" class="form-control caps-settings-html">
+            <?= $degree['free_choice_message'] ?>
+        </textarea>
+    </div>
+
     <div class="form-group mt-4">
         <div class="caps-setting-header">Notifiche e-mail</div>
         <div class="form-check mb-2" id="caps-degree-submission-confirmation">

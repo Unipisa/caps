@@ -1,3 +1,5 @@
+require("regenerator-runtime/runtime");
+
 // These libraries need to be available as global variables
 global.CapsController = require('./caps-controller.js');
 

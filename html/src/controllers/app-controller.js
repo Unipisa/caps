@@ -1,5 +1,6 @@
 const jQuery = require('jquery');
 const CapsAttachment = require('../modules/attachment');
+const ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
 
 class CapsAppController {
 
@@ -8,6 +9,22 @@ class CapsAppController {
         this.updateProposalsURL();
         this.enhanceAttachments();
         this.setupBadges();
+        this.setupCKEditor();
+    }
+
+    setupCKEditor() {
+
+        for (const el of document.getElementsByClassName('caps-settings-html')) {
+            ClassicEditor
+                .create(el, {
+                    toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', 'link',
+                                'bulletedList', 'numberedList',  ]
+                })
+                .catch(error => {
+                    console.log('CAPS::CKEditor Error while loading the CKEditor component:');
+                    console.error(error);
+                });
+        }
     }
 
     // Add tooltips to badge, and setup onclick handlers 

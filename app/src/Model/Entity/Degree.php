@@ -53,6 +53,7 @@ class Degree extends Entity
         'rejection_message' => true,
         'acceptance_confirmation' => true,
         'submission_confirmation' => true,
-        'rejection_confirmation' => true
+        'rejection_confirmation' => true,
+        'free_choice_message' => true,
     ];
 }

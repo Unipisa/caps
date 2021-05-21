@@ -1,5 +1,3 @@
-require("regenerator-runtime/runtime");
-
 const jQuery = require('jquery');
 const Chart = require('chart.js');
 
