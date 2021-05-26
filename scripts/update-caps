@@ -37,5 +37,9 @@ for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;
       npm run -s deploy
       cd ../app
     fi
+
+    # Clear cache again, this is necessary to regenerate the
+    # hashes for the JS files.
+    bin/cake cache clear_all
   fi
 done
