@@ -414,7 +414,7 @@ function caps_proposals_add() {
         inputHTML = inputHTML + year_input;
 
         var fc_msg = "";
-        if (freeChoiceMessage !== undefined && freeChoiceMessage != "") {
+        if (freeChoiceMessage !== undefined && freeChoiceMessage != null && freeChoiceMessage != "") {
           fc_msg = "<div class=\"col-9 mt-1 small text-muted\">" + 
             freeChoiceMessage + 
           "</div>"
