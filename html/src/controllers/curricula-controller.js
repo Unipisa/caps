@@ -5,7 +5,7 @@ class CapsCurriculaController extends CapsAppController {
     index() {
         document
             .getElementById('caps-duplicate-btn')
-            .addEventListener('click', this.onDuplicateBtnClicked.apply);
+            .addEventListener('click', this.onDuplicateBtnClicked);
     }
 
     onDuplicateBtnClicked(evt) {
