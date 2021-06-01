@@ -2,6 +2,7 @@
 const jQuery = require('jquery');
 const CapsAppController = require('./controllers/app-controller');
 
+const CapsCurriculaController = require('./controllers/curricula-controller');
 const CapsDegreesController = require('./controllers/degrees-controller');
 const CapsExamsController = require('./controllers/exams-controller');
 const CapsProposalController = require('./controllers/proposal-controller');
@@ -15,6 +16,7 @@ const CapsSettingsController = require('./controllers/settings-controller');
  * that is being rendered. 
  */
 const routes = {
+  "Curricula": CapsCurriculaController,
   "Proposals": CapsProposalController,
   "Settings": CapsSettingsController,
   "Exams": CapsExamsController,

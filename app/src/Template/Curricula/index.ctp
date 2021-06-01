@@ -53,7 +53,7 @@
                     </div>
 
                     <a><button class="btn btn-sm btn-primary mr-2"
-                            onclick="Caps.submitForm('curricula-form', { 'clone': 1, 'year': document.getElementById('clone-year').value }, 'Clonare i nuovi curricula per l\'anno selezionato?')">
+                            id="caps-duplicate-btn">
                             <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
                     </button></a>
 
