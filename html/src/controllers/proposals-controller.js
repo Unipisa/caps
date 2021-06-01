@@ -2,7 +2,7 @@ const CapsAppController = require('./app-controller');
 const { loadDashboardData } = require('../modules/dashboard');
 const caps_proposals_add = require('../modules/proposals-add');
 
-class CapsProposalController extends CapsAppController {
+class CapsProposalsController extends CapsAppController {
 
     dashboard() {
         loadDashboardData();
@@ -34,4 +34,4 @@ class CapsProposalController extends CapsAppController {
 
 }
 
-module.exports = CapsProposalController;
+module.exports = CapsProposalsController;
