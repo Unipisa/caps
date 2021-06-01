@@ -3,12 +3,9 @@ const CapsAppController = require('./app-controller');
 class CapsCurriculaController extends CapsAppController {
 
     index() {
-        const self = this;
-
-        document.getElementById('caps-duplicate-btn')
-            .addEventListener('click', 
-                (evt) => this.onDuplicateBtnClicked.apply(self, evt)
-            );
+        document
+            .getElementById('caps-duplicate-btn')
+            .addEventListener('click', this.onDuplicateBtnClicked.apply);
     }
 
     onDuplicateBtnClicked(evt) {
