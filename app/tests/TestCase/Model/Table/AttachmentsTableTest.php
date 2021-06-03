@@ -33,7 +33,7 @@ class AttachmentsTableTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $config = TableRegistry::getTableLocator()->exists('Attachment') ? [] : ['className' => AttachmentsTable::class];
@@ -45,7 +45,7 @@ class AttachmentsTableTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->Attachment);
 

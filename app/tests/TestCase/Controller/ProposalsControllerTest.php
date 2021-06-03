@@ -27,7 +27,7 @@ class ProposalsControllerTest extends IntegrationTestCase
                         'app.Tags'
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->Users = TableRegistry::getTableLocator()->get('Users');

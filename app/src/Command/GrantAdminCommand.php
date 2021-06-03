@@ -30,13 +30,13 @@ use Cake\Console\ConsoleOptionParser;
 
 class GrantAdminCommand extends Command {
 
-    public function initialize()
+    public function initialize() : void
     {
         parent::initialize();
         $this->loadModel('Users');
     }
 
-    protected function buildOptionParser(ConsoleOptionParser $parser)
+    protected function buildOptionParser(ConsoleOptionParser $parser) : ConsoleOptionParser
     {
         $parser->addArgument('username', [
             'help' => 'Username of the selected user'

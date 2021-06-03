@@ -27,7 +27,7 @@ use App\Form\FilterForm;
 
 class UsersFilterForm extends FilterForm
 {
-    protected function _buildSchema(Schema $schema)
+    protected function _buildSchema(Schema $schema): \Cake\Form\Schema
     {
         return $schema        
           ->addField('number', ['type' => 'string'])
@@ -39,7 +39,7 @@ class UsersFilterForm extends FilterForm
           ;
     }
 
-    protected function _execute(array $data) {
+    protected function _execute(array $data) : bool {
       $this->setData($data);
       if ($this->getData('admin') === 'admin') {
           $this->filterFieldValue('Users.admin', true);
@@ -48,7 +48,7 @@ class UsersFilterForm extends FilterForm
       $this->filterFieldLike('Users.surname', 'surname');
       $this->filterFieldLike('Users.givenname', 'givenname');
       $this->filterFieldLike('Users.email', 'email');
-      return $this->query;
+      return true;
     }
 }
 ?>

@@ -27,7 +27,7 @@ use App\Form\FilterForm;
 
 class ExamsFilterForm extends FilterForm
 {
-    protected function _buildSchema(Schema $schema)
+    protected function _buildSchema(Schema $schema): \Cake\Form\Schema
     {
         return $schema
           ->addField('name', ['type' => 'string'])
@@ -36,7 +36,7 @@ class ExamsFilterForm extends FilterForm
           ->addField('credits', ['type' => 'integer']);
     }
 
-    protected function _execute(array $data)
+    protected function _execute(array $data) : bool
     {
         $this->setData($data);
         $this->filterFieldLike('Exams.name', 'name');
@@ -44,6 +44,6 @@ class ExamsFilterForm extends FilterForm
         $this->filterFieldLike('Exams.sector', 'sector');
         $this->filterFieldEqual('Exams.credits', 'credits');
 
-        return $this->query;
+        return true;
     }
 }

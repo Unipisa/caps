@@ -26,17 +26,18 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use App\Model\Entity\Group;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 
 class GroupsController extends AppController
 {
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -125,7 +126,7 @@ class GroupsController extends AppController
             $success_message = __('Gruppo aggiornato con successo.');
             $failure_message = __('Errore: gruppo non aggiornato.');
         } else {
-            $group = $this->Groups->newEntity();
+            $group = new Group();
             $success_message = __('Gruppo creato con successo.');
             $failure_message = __('Errore: gruppo non creato.');
         }

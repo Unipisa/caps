@@ -25,13 +25,14 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use App\Model\Entity\CompulsoryExam;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 
 class CompulsoryExamsController extends AppController
 {
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -44,7 +45,7 @@ class CompulsoryExamsController extends AppController
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $newexam = $this->CompulsoryExams->newEntity();
+            $newexam = new CompulsoryExam();
             $newexam = $this->CompulsoryExams->patchEntity($newexam, $this->request->getData());
 
             if ($this->CompulsoryExams->save($newexam)) {

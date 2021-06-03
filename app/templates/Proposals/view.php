@@ -288,7 +288,7 @@ if ($message != "") {
     <div class="collapse my-3 mx-0" id="add-attachment">
         <div class="card border-left-primary p-3">
         <?php
-        echo $this->Form->create('Attachment', [
+        echo $this->Form->create(null, [
             'url' => ['controller' => 'attachments', 'action' => 'add'],
             'type' => 'file'
         ]);

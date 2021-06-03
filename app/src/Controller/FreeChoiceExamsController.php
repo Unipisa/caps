@@ -25,13 +25,14 @@ namespace App\Controller;
 
 use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
+use App\Model\Entity\FreeChoiceExam;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 
 class FreeChoiceExamsController extends AppController
 {
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -44,7 +45,7 @@ class FreeChoiceExamsController extends AppController
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $newexam = $this->FreeChoiceExams->newEntity();
+            $newexam = new FreeChoiceExam();
             error_log("***" . json_encode($newexam));
             error_log("***" . json_encode($this->request->data));
             $newexam = $this->FreeChoiceExams->patchEntity($newexam, $this->request->data);

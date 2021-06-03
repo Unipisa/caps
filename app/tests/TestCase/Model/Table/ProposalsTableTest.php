@@ -32,7 +32,7 @@ class ProposalsTableTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $config = TableRegistry::getTableLocator()->exists('Proposals') ? [] : ['className' => ProposalsTable::class];
@@ -44,7 +44,7 @@ class ProposalsTableTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->Proposals);
 

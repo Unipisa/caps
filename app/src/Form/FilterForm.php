@@ -36,13 +36,13 @@ class FilterForm extends Form
 
     public function validate_and_execute(array $data) {
         if ($this->validate($data)) {
-            return $this->execute($data);
-        } else {
-            return $this->query;
+            $this->execute($data);
         }
+
+        return $this->query;
     }
  
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator) : Validator
     {
         // $validator->requirePresence('status')
         // ->requirePresence('surname');

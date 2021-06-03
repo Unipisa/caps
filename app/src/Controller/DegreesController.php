@@ -23,6 +23,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Degree;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -107,7 +108,7 @@ class DegreesController extends AppController
         if ($id != null) {
             $degree = $this->Degrees->get($id);
         } else {
-            $degree = $this->Degrees->newEntity();
+            $degree = new Degree();
             // For new entities we set some reasonable default values in the text fields, to
             // give an indication to the user of what would be sensible to put there.
             if ($degree->isNew()) {
