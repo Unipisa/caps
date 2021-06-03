@@ -230,7 +230,7 @@ class ProposalsController extends AppController
         $approval_counts = $this->get_submission_counts('approved_date');
 
         $this->set(compact('submission_counts', 'approval_counts'));
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'submission_counts', 'approval_counts'
         ]);
     }
@@ -349,7 +349,7 @@ class ProposalsController extends AppController
         }
 
         $this->set('data', $proposals);
-        $this->set('_serialize', 'data');
+        $this->viewBuilder()->setOption('serialize', 'data');
         $this->set('filterForm', $filterForm);
         $this->set('proposals', $this->paginate($proposals->cleanCopy()));
         $this->set('selected', 'index');
@@ -378,7 +378,7 @@ class ProposalsController extends AppController
         $proposal->attachments = null;
         $this->set('proposal_json', json_encode($proposal));
         $proposal->attachments = $save_attachments;
-        $this->set('_serialize', 'proposal');
+        $this->viewBuilder()->setOption('serialize', 'proposal');
     }
 
     public function pdf($id)

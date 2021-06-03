@@ -171,6 +171,6 @@ class AttachmentsController extends AppController
 
         $signatures = $attachment->signatures();
         $this->set('signatures', $signatures);
-        $this->set('_serialize', [ 'signatures' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'signatures' ]);
     }
 }

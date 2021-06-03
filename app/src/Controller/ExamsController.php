@@ -121,7 +121,7 @@ class ExamsController extends AppController
             }
         }
         $this->set('exams', $exams);
-        $this->set('_serialize', [ 'exams' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'exams' ]);
         $this->set('paginated_exams', $this->paginate($exams->cleanCopy()));
     }
 

@@ -144,7 +144,7 @@ class UsersController extends AppController {
 
         $this->set('filterForm', $filterForm);
         $this->set('users', $users);
-        $this->set('_serialize', [ 'users' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'users' ]);
         $this->set('paginated_users', $this->paginate($users->cleanCopy()));
     }
 

@@ -50,6 +50,7 @@
             "time": "2021-02-10T13:53:07+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "cakephp/authentication",
             "version": "2.6.1",
             "source": {
@@ -118,6 +119,8 @@
             "time": "2021-04-23T14:31:23+00:00"
         },
         {
+=======
+>>>>>>> Fixes to the tests, plus various minor tweaks.
             "name": "cakephp/bake",
             "version": "2.5.1",
             "source": {

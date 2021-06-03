@@ -115,6 +115,22 @@ class GroupsController extends AppController
             }
         }
 
+        $this->set('groups', $groups);
+        if ($this->request->is('csv')) {
+            $data = [];
+            foreach ($groups as $group) {
+                $exams = $group->exams;
+                $bare_group = $group;
+                unset($bare_group->exams);
+                foreach ($exams as $exam) {
+                    $data[] = ['group' => $bare_group, 'exam' => $exam];
+                }
+            }
+            $this->set('data', $data);
+            $this->viewBuilder()->setOption('serialize', 'data');
+        } else {
+            $this->viewBuilder()->setOption('serialize', ['groups']);
+        }
     }
 
     public function view($id = null)
@@ -128,7 +144,7 @@ class GroupsController extends AppController
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
         $this->set('group', $group);
-        $this->set('_serialize', 'group');
+        $this->viewBuilder()->setOption('serialize', 'group');
     }
 
     public function edit($id = null)

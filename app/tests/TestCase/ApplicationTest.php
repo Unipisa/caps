@@ -87,9 +87,11 @@ class ApplicationTest extends IntegrationTestCase
 
         $middleware = $app->middleware($middleware);
 
-        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->get(0));
-        $this->assertInstanceOf(AssetMiddleware::class, $middleware->get(1));
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->get(2));
+        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
+        $middleware->next();
+        $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
+        $middleware->next();
+        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
     }
 
     public function testGetVersion()
