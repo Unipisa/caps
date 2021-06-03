@@ -119,7 +119,7 @@
                 for($y = 1; $y <= $curriculum['degree']['years']; $y++) $years[$y] = $y;
 
                 echo $this->Form->create(
-                    'CompulsoryExams', [
+                    null, [
                         'url' => [
                             'controller' => 'CompulsoryExams',
                             'action' => 'admin-add'
@@ -209,7 +209,7 @@
                 </table>
                 <?php
                     echo $this->Form->create(
-                        'CompulsoryGroup', [
+                        null, [
                             'url' => [
                                 'controller' => 'CompulsoryGroups',
                                 'action' => 'admin-add'
@@ -289,7 +289,7 @@
                 </table>
                 <?php
                     echo $this->Form->create(
-                        'FreeChoiceExam',[
+                        null,[
                             'url' => [
                                 'controller' => 'FreeChoiceExams',
                                 'action' => 'admin-add'

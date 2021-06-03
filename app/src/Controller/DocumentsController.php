@@ -23,6 +23,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Document;
 use Cake\Http\Exception\ForbiddenException;
 
 /**
@@ -66,7 +67,7 @@ class DocumentsController extends AppController
      */
     public function add()
     {
-        $document = $this->Documents->newEntity();
+        $document = new Document();
 
         if ($this->request->is('post')) {
             // We make sure that the owner is set correctly, and we do not trust any input
@@ -76,7 +77,7 @@ class DocumentsController extends AppController
             $document['comment'] = $this->request->getData('comment');
             $data = $this->request->getData('data');
 
-            if ($data['tmp_name'] == "" && $document['comment'] == "") {
+            if ($data->getClientFilename() == "" && $document['comment'] == "") {
                 $this->Flash->error('Selezionare un file da caricare, o inserire un commento');
 
                 return $this->redirect([
@@ -86,8 +87,8 @@ class DocumentsController extends AppController
                 ]);
             }
 
-            if ($data['tmp_name'] != "") {
-                $document['data'] = fopen($data['tmp_name'], 'r');
+            if ($data->getClientFilename() != "") {
+                $document['data'] = $data->getStream()->getContents();
 
                 if ($document['data'] == "") {
                     $this->Flash->error('Impossibile caricare un file vuoto');
@@ -99,8 +100,8 @@ class DocumentsController extends AppController
                     ]);
                 }
 
-                $document['mimetype'] = $data['type'];
-                $document['filename'] = $data['name'];
+                $document['mimetype'] = $data->getClientMediaType();
+                $document['filename'] = $data->getClientFilename();
             } else {
                 $document['filename'] = null;
             }

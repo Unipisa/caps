@@ -25,6 +25,7 @@ namespace App\Controller;
 
 use App\Caps\Utils;
 use App\Form\ProposalsFilterForm;
+use App\Model\Entity\Proposal;
 use App\Model\Entity\ProposalAuth;
 use Cake\Core\Configure;
 use Cake\Database\Expression\QueryExpression;
@@ -48,14 +49,14 @@ class ProposalsController extends AppController
         ]
     ];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->loadComponent('Paginator');
         $this->loadComponent('RequestHandler');
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -494,7 +495,7 @@ class ProposalsController extends AppController
         }
 
         // Create a copy of the proposal, and set the corresponding data
-        $newp = $this->Proposals->newEntity($proposal->toArray());
+        $newp = new Proposal($proposal->toArray());
 
         // Set the user to NULL so that it won't be saved
         $newp->user = null;
@@ -547,7 +548,7 @@ class ProposalsController extends AppController
                 throw new ForbiddenException();
             }
         } else {
-            $proposal = $this->Proposals->newEntity();
+            $proposal = new Proposal();
             $proposal->user = $user;
         }
 
@@ -583,8 +584,10 @@ class ProposalsController extends AppController
 
                 // If the proposal was already submitted, we may have the data set in chosen_exams and
                 // chosen_free_choice_exams: we need to get rid of it to replace with the new one.
-                $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
-                $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                if ($proposal['id'] != null) {
+                    $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                    $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                }
 
                 $proposal['chosen_exams'] = [];
                 $proposal['chosen_free_choice_exams'] = [];
@@ -664,7 +667,7 @@ class ProposalsController extends AppController
             throw new ForbiddenException('Richiesta parere disabilitata per questo corso di Laurea');
         }
 
-        $proposal_auth = $this->Proposals->ProposalAuths->newEntity();
+        $proposal_auth = new ProposalAuth();
 
         if ($this->request->is('post')) {
             $proposal_auth['proposal_id'] = $proposal['id'];

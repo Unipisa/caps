@@ -11,7 +11,7 @@ class ExamsControllerTest extends MyIntegrationTestCase
 {
     public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->Exams = TableRegistry::getTableLocator()->get('Exams');

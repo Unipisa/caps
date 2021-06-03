@@ -33,7 +33,7 @@ class UsersControllerTest extends TestCase
     
     public $fixtures = ['app.Users', 'app.Proposals', 'app.Curricula', 'app.CurriculaProposals'];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->Users = TableRegistry::getTableLocator()->get('Users');

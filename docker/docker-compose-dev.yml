@@ -15,6 +15,7 @@ services:
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa:ro"
       - "../app/src:/app/src:ro"
+      - "../app/templates:/app/templates:ro"
       - "../app/webroot:/app/webroot:ro"
       - "../app/config/Migrations:/app/config/Migrations"
       - "./logs:/app/logs"

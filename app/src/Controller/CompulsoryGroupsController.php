@@ -23,13 +23,18 @@
 
 namespace App\Controller;
 
+
+use App\Auth\UnipiAuthenticate;
+use App\Controller\Event;
+use App\Model\Entity\CompulsoryGroup;
+use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use Cake\Http\Exception\NotFoundException;
 
 class CompulsoryGroupsController extends AppController
 {
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -42,7 +47,7 @@ class CompulsoryGroupsController extends AppController
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $newgroup = $this->CompulsoryGroups->newEntity();
+            $newgroup = new CompulsoryGroup();
             $newgroup = $this->CompulsoryGroups->patchEntity($newgroup, $this->request->getData());
 
             if ($this->CompulsoryGroups->save($newgroup)) {

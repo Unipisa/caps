@@ -36,7 +36,7 @@ class UsersController extends AppController {
         ]
     ];
 
-    public function beforeFilter($event) {
+    public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
     }
 
@@ -149,6 +149,8 @@ class UsersController extends AppController {
     }
 
     public function login() {
+        $this->viewBuilder()->disableAutoLayout();
+
         if ($this->request->is('post')) {
             $authuser = $this->Auth->identify();
 
@@ -168,7 +170,7 @@ class UsersController extends AppController {
 
                 if (! $user) {
                     // ... otherwise create a new user
-                    $user = $this->Users->newEntity();
+                    $user = new User();
                 }
 
                 // We save the user data no matter what, just in case it has changed

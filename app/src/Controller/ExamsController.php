@@ -23,6 +23,10 @@
 
 namespace App\Controller;
 
+use App\Auth\UnipiAuthenticate;
+use App\Controller\Event;
+use App\Model\Entity\Exam;
+use App\Model\Entity\Tag;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Form\ExamsFilterForm;
@@ -37,7 +41,7 @@ class ExamsController extends AppController
         ]
     ];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->loadComponent('Paginator');
@@ -50,7 +54,7 @@ class ExamsController extends AppController
             ->order([ 'Exams.name' => 'asc' ]);
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Auth->deny();
@@ -187,7 +191,7 @@ class ExamsController extends AppController
             $success_message = __('Esame aggiornato con successo.');
             $failure_message = __('Errore: esame non aggiornato.');
         } else { // new
-            $exam = $this->Exams->newEntity();
+            $exam = new Exam();
             $success_message = __('Esame aggiunto con successo.');
             $failure_message = __('Errore: esame non aggiunto.');
         }
@@ -199,7 +203,7 @@ class ExamsController extends AppController
             foreach (explode(',', $this->request->getData('new-tags')) as $tag) {
                 $tag = trim($tag);
                 if ($tag != "") {
-                    $t = $this->Exams->Tags->newEntity();
+                    $t = new Tag();
                     $t['name'] = $tag;
                     $exam['tags'][] = $t;
                 }

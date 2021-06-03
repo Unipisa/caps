@@ -136,7 +136,7 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
 
@@ -275,15 +275,15 @@ class AppController extends Controller
         return $this->settingsTable->getSetting($field, $default);
     }
 
-    public function beforeRender(Event $event)
+    public function beforeRender(\Cake\Event\EventInterface $event)
     {
         if ($this->request->is('csv')) {
-            $_serialize = $this->viewVars['_serialize'];
+            $_serialize = $this->viewBuilder()->getVar("_serialize");
             if (!is_array($_serialize)) {
                 $_serialize = [ $_serialize ];
             }
             foreach ($_serialize as $var) {
-                $data = $this->viewVars[$var];
+                $data = $this->viewBuilder()->getVar($var);
                 $data = flatten($data);
                 $this->set($var, $data);
             }

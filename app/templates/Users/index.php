@@ -48,7 +48,7 @@
 
 <?php echo $this->element('filter_badges'); ?>
 
-<?php echo $this->Form->create('', [ 'id' => 'admin-form' ]); ?>
+<?php echo $this->Form->create(null, [ 'id' => 'admin-form' ]); ?>
 <table class="table">
     <tr>
         <th></th>
