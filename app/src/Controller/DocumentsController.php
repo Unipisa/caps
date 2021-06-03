@@ -169,6 +169,6 @@ class DocumentsController extends AppController
         }
         $signatures = $document->signatures();
         $this->set('signatures', $signatures);
-        $this->set('_serialize', [ 'signatures' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'signatures' ]);
     }
 }

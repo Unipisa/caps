@@ -35,7 +35,7 @@ class CurriculaController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'academic_year', 'name', 'Degrees.name' ],
+        'sortableFields' => [ 'academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
             'academic_year' => 'desc'
@@ -65,7 +65,7 @@ class CurriculaController extends AppController
         $this->set('filterForm', $filterForm);
 
         $this->set('curricula', $curricula);
-        $this->set('_serialize', [ 'curricula' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'curricula' ]);
         $this->set('paginated_curricula', $this->paginate($curricula->cleanCopy()));
 
         if ($this->request->is(['post', 'put'])) {
@@ -164,7 +164,7 @@ class CurriculaController extends AppController
         }
 
         $this->set('curriculum', $curriculum);
-        $this->set('_serialize', 'curriculum');
+        $this->viewBuilder()->setOption('serialize', 'curriculum');
     }
 
     public function edit($id = null)

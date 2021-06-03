@@ -77,7 +77,7 @@ class DegreesController extends AppController
 
         $paginated_degrees = $this->paginate($degrees->cleanCopy());
         $this->set(compact('degrees', 'paginated_degrees'));
-        $this->set('_serialize', [ 'degrees' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'degrees' ]);
     }
 
     /**

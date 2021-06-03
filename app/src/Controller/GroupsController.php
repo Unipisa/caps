@@ -92,9 +92,9 @@ class GroupsController extends AppController
                 }
             }
             $this->set('data', $data);
-            $this->set('_serialize', 'data');
+            $this->viewBuilder()->setOption('serialize', 'data');
         } else {
-            $this->set('_serialize', ['groups']);
+            $this->viewBuilder()->setOption('serialize', ['groups']);
         }
     }
 
@@ -109,7 +109,7 @@ class GroupsController extends AppController
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
         $this->set('group', $group);
-        $this->set('_serialize', 'group');
+        $this->viewBuilder()->setOption('serialize', 'group');
     }
 
     public function edit($id = null)
