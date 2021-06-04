@@ -274,7 +274,7 @@ return [
     'Datasources' => [
         'default' => [
             'className' => Connection::class,
-            'driver' => Mysql::class,
+            'driver' => @CAPS_DB_DRIVER@::class,
             'persistent' => false,
             'host' => '@CAPS_DB_HOST@',
             /*

@@ -202,17 +202,22 @@ class ProposalsController extends AppController
         // is older than the most recent request.
         $conn = $this->Proposals->getConnection();
         $proposal_comments = $conn->execute(
-            'SELECT * FROM (SELECT proposals.id AS id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req,
-                    proposals.user_id AS user_id, curricula.id AS curriculum_id, curricula.name AS curriculum_name,
-                    users.name as user_name,
+            'SELECT proposals.id AS id, 
+                    users.name AS user_name, 
+                    users.id AS user_id,
+                    req_date,
+                    curricula.name AS curriculum_name 
+                    FROM (SELECT proposals.id AS id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req, 
                     MAX(proposal_auths.created) AS req_date,
-                    MAX(attachments.created) AS att_date,
-                    proposals.state AS state
-                    FROM proposals INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
+                    MAX(attachments.created) AS att_date 
+                    FROM proposals 
+                    INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
                     LEFT JOIN attachments ON proposals.id = attachments.proposal_id
+                    GROUP BY proposals.id) proposals_counts
+                    LEFT JOIN proposals ON proposals_counts.id = proposals.id
                     LEFT JOIN curricula ON proposals.curriculum_id = curricula.id
                     LEFT JOIN users ON proposals.user_id = users.id
-                    GROUP BY proposals.id) proposals WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
+                    WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
                     ORDER BY req_date ASC'
         );
 

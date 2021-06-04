@@ -106,7 +106,7 @@ class CurriculaTable extends Table
     }
 
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
-      if (array_key_exists('credits_per_year', $data)) {
+      if (array_key_exists('credits_per_year', $data->getArrayCopy())) {
         $this->transformCreditsPerYear($data);
       }
     }

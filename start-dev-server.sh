@@ -90,6 +90,11 @@ cd html
 npm install
 cd ..
 
+VARIANT="$1"
+if [ "$VARIANT" = "" ]; then
+  VARIANT="dev"
+fi
+
 # Start the development server. If needed, build the image
 echo ""
 echo "== IMAGE REGENERATION =="
@@ -104,7 +109,7 @@ sudo true
 if [ "$ANS" = "y" ]; then
   ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps
 fi
-${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
+${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 echo "Node Configuration"
 echo "  > Using NodeJS $(node --version)"
