@@ -40,7 +40,6 @@ class GroupsController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->deny();
     }
 
     public function index()

@@ -1,34 +1,15 @@
 <?php
-/**
- * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * This program is based on the CakePHP framework, which is released under
- * the MIT license, and whose copyright is held by the Cake Software
- * Foundation. See https://cakephp.org/ for further details.
- */
 
+namespace App\Authentication\Identifier;
 
-// namespace App\Controller\Component\Auth;
-namespace App\Auth;
-
+use App\Model\Entity\User;
+use Authentication\Identifier\AbstractIdentifier;
 use Cake\Auth\BaseAuthenticate;
+use Cake\Core\InstanceConfigTrait;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
 
 function array_get($array, $key, $default = null)
 {
@@ -39,8 +20,9 @@ function array_get($array, $key, $default = null)
     return $default;
 }
 
-class UnipiAuthenticate extends BaseAuthenticate
-{
+class UnipiAuthenticate extends AbstractIdentifier {
+    use InstanceConfigTrait;
+
     protected $_defaultConfig  = [
         'fields' => [
             'username' => 'username',
@@ -60,10 +42,53 @@ class UnipiAuthenticate extends BaseAuthenticate
         }
     }
 
-    public function authenticate(ServerRequest $request, Response $response)
+    public function identify(array $data)
+    {
+        $user = $this->ldapIdentify($data);
+
+        if ($user) {
+            $users_table = TableRegistry::getTableLocator()->get('Users');
+
+            $identity = $users_table
+                ->find()
+                ->where(['username' => $user['username']])
+                ->first();
+
+            if (! $identity) {
+                $identity = new User();
+            }
+
+            $identity = $users_table->patchEntity($identity, [
+                'name' => ucwords(strtolower($user['name'])),
+                'username' => $user['username'],
+                'number' => $user['number'],
+                'surname' => $user['surname'],
+                'givenname' => $user['givenname'],
+                'email' => $user['email'],
+                // We only use the database admin flag if the user is
+                // not found; otherwise a user might have been granted 
+                // admin privileges locally and we respect that.
+                'admin' => $identity['admin'] || $user['admin'] 
+            ]);
+
+            if ($users_table->save($identity)) {
+                Log::write('debug', 'Added user ' . $identity['username'] . ' to the database');
+            }
+            else {
+                Log::write('error',
+                    'Error adding user ' . $identity['username'] . ' to the database');
+            }
+        }
+        else {
+            $identity = false;
+        }
+
+        return $identity;
+    }
+
+    public function ldapIdentify(array $data)
     {
         $config = $this->getConfig();
-        $data = $request->getData();
 
         $admin_usernames = [];
         if (array_key_exists('admins', $config)) {
@@ -154,4 +179,7 @@ class UnipiAuthenticate extends BaseAuthenticate
             'email' => $m['mail'][0]
         ];
     }
+
 }
+
+?>

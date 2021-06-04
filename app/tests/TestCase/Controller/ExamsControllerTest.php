@@ -35,38 +35,16 @@ class ExamsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('?redirect=%2Fexams%2Findex');
 
         // test that students are not allowed to access
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 1,
-                    'username' => 'mario.rossi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'MARIO ROSSI',
-                    'number' => '123456',
-                    'admin' => false,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
+        $user = TableRegistry::getTableLocator()->get('Users')->get(1);
+        $this->session([ 'Auth' => $user ]);
+
         $this->post('/exams/index');
         $this->assertResponseError(); // ma dovrebbe essere ResponseFailure?
 
         // test that admin can access
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 2,
-                    'username' => 'alice.verdi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'ALICE VERDI',
-                    'number' => '24680',
-                    'admin' => true,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
+        $user = TableRegistry::getTableLocator()->get('Users')->get(2);
+        $this->session([ 'Auth' => $user ]);
+
         $this->get('/exams/index');
         $this->assertResponseOk();
 

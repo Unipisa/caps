@@ -62,7 +62,6 @@ class ProposalsController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->deny();
     }
 
     private function get_proposal($id)
