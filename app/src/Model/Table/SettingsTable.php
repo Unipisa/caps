@@ -85,7 +85,7 @@ class SettingsTable extends Table
      *
      * @return array
      */
-    public function getSettings()
+    public function getSettings() : array
     {
         if ($this->settingsInstance == null) {
             $this->settingsInstance = [];
@@ -107,7 +107,7 @@ class SettingsTable extends Table
      * @param null $default A default value if the given setting is not set
      * @return mixed|null
      */
-    public function getSetting($field, $default = null)
+    public function getSetting(string $field, $default = null) : string
     {
         $settings = $this->getSettings();
 
@@ -124,7 +124,7 @@ class SettingsTable extends Table
      *
      * @return void
      */
-    private function initData()
+    private function initData() : void
     {
         $this->settingsInstance = [];
         $settings_data = $this->find('all')->toArray();

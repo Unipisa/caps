@@ -45,20 +45,9 @@ class ProposalsControllerTest extends TestCase
         }
 
         // Set session data
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 1,
-                    'username' => 'mario.rossi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'MARIO ROSSI',
-                    'number' => '123456',
-                    'admin' => false,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
+        $user = TableRegistry::getTableLocator()->get('Users')->get(1);
+        $this->session([ 'Auth' => $user ]);
+
         $this->get('/proposals/add');
         $this->assertResponseOk();
 

@@ -33,11 +33,13 @@ class ExamsControllerTest extends MyIntegrationTestCase
 
         // test that students are not allowed to POST
         $this->studentSession();
+
         $this->post('/exams/index');
         $this->assertResponseForbidden(); 
 
         // test that admin can access (but also students can!)
         $this->adminSession();
+
         $this->get('/exams/index');
         $this->assertResponseOk();
 

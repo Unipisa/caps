@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8-apache
 
 ENV NODE_VERSION=14.18.0
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"

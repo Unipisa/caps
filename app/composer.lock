@@ -51,6 +51,9 @@
         },
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Switch from AuthComponent to Authenticate plugin.
             "name": "cakephp/authentication",
             "version": "2.6.1",
             "source": {
@@ -119,8 +122,11 @@
             "time": "2021-04-23T14:31:23+00:00"
         },
         {
+<<<<<<< HEAD
 =======
 >>>>>>> Fixes to the tests, plus various minor tweaks.
+=======
+>>>>>>> Switch from AuthComponent to Authenticate plugin.
             "name": "cakephp/bake",
             "version": "2.5.1",
             "source": {

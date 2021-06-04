@@ -38,11 +38,10 @@ class UsersController extends AppController {
 
     public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
+        $this->Authentication->allowUnauthenticated([ 'login' ]);
     }
 
     public function view($id = null) {
-        $this->Auth->deny();
-
         $user = $this->Users->find()
             ->contain([ 'Documents', 'Documents.Users', 'Documents.Owners' ])
             ->where([ 'username' => $this->user['username'] ])
@@ -152,7 +151,7 @@ class UsersController extends AppController {
         $this->viewBuilder()->disableAutoLayout();
 
         if ($this->request->is('post')) {
-            $authuser = $this->Auth->identify();
+            $authuser = $this->Authentication->getIdentity();
 
             if (! $authuser) {
                 $this->Flash->error('Username o password non corretti');
@@ -161,48 +160,14 @@ class UsersController extends AppController {
                 );
             }
             else {
-                $this->Auth->setUser($authuser);
-
-                // Try to find the user in the database
-                $user = $this->Users->find()
-                    ->where([ 'username' => $authuser['username'] ])
-                    ->first();
-
-                if (! $user) {
-                    // ... otherwise create a new user
-                    $user = new User();
-                }
-
-                // We save the user data no matter what, just in case it has changed
-                // since the last update.
-                $user = $this->Users->patchEntity($user, [
-                    'name' => ucwords(strtolower($authuser['name'])),
-                    'username' => $authuser['username'],
-                    'number' => $authuser['number'],
-                    'surname' => $authuser['surname'],
-                    'givenname' => $authuser['givenname'],
-                    'email' => $authuser['email'],
-                    'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
-                        // if the user is not found; otherwise a user might have been granted admini privileges
-                        // locally and we respect that.
-                ]);
-
-                if ($this->Users->save($user)) {
-                    Log::write('debug', 'User ' . $authuser['username'] . ' logged in and has been updated in the database');
-                }
-                else {
-                    Log::write('error',
-                        'Error updating user ' . $authuser['username'] . ' to the database');
-                }
-
                 // We redirect the user to the redirectUrl, if any. Otherwise, the user will be redirected again to
                 // this page with a valid session, which will send him/her to the index or admin/index depending on
                 // their status.
-                return  $this->redirect($this->Auth->redirectUrl());
+                return $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
             }
         }
         else {
-            if ($this->Auth->user()) {
+            if ($this->Authentication->getIdentity()) {
                 if ($this->user['admin']) {
                     return $this->redirect([ 'controller' => 'proposals', 'action' => 'dashboard' ]);
                 }
@@ -214,7 +179,10 @@ class UsersController extends AppController {
     }
 
     public function logout() {
-        return $this->redirect($this->Auth->logout());
+        $this->Authentication->logout();
+        return $this->redirect(
+            [ 'controller' => 'users', 'action' => 'login' ]
+        );
     }
 
 }

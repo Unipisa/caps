@@ -84,20 +84,9 @@ class UsersControllerTest extends TestCase
         $this->assertRedirectContains('?redirect=%2Fusers%2Fview');
 
         // Set session data
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 1,
-                    'username' => 'mario.rossi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'MARIO ROSSI',
-                    'number' => '123456',
-                    'admin' => false,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
+        $user = TableRegistry::getTableLocator()->get('Users')->get(1);
+        $this->session([ 'Auth' => $user ]);
+
         $this->get('/users/view');
         $this->assertResponseContains('matricola: 123456');
     }
