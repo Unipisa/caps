@@ -21,7 +21,7 @@ class AddEnableSharingToDegrees extends AbstractMigration
 
         $table->update();
 
-        $this->execute('update degrees set enable_sharing = 1');
+        $this->execute('update degrees set enable_sharing = true');
     }
 
     public function down() {

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 	libldap2-dev \
 	libsasl2-dev \
         libicu-dev \
+        libpq-dev \
         mariadb-client \
         wget \
         ssh \
@@ -14,11 +15,12 @@ RUN apt-get update && apt-get install -y \
 	git \
         libcurl4-openssl-dev \
 	libzip-dev \
+        postgresql-client \
 	sudo \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
-    && docker-php-ext-install gd ldap pdo_mysql intl zip curl
+    && docker-php-ext-install gd ldap pdo_mysql intl zip curl pdo_pgsql
 
 COPY app /app
 COPY html /html

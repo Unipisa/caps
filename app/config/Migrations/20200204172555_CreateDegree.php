@@ -47,6 +47,12 @@ class CreateDegree extends AbstractMigration
             'name' => 'Laurea Magistrale in Matematica'
         ])->save();
 
+        // We do not try to migrate old data anymore, as there are no more active 
+        // "CAPS 1.0" installations to be compatible with, since the following code
+        // does not work with the latest changes to the models. It is only left 
+        // for historical reasons. 
+        return;
+
         // We need to migrate the old data to the new format
         $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('curricula');
         foreach ($tbl->find('all')->contain(['CompulsoryExams', 'CompulsoryGroups', 'FreeChoiceExams']) as $curriculum) {

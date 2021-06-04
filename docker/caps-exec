@@ -13,17 +13,25 @@ msg "Starting the CAPS Docker manager"
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
-while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+if [ "${CAPS_DB_DRIVER}" = "Mysql" ]; then
+  while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
-done
+  done
 
-sleep 5
+  sleep 5
 
-while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+  while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
-done
+  done
+else
+  # Wait for Postgres instead
+  while ! pg_isready --host ${CAPS_DB_HOST} --dbname ${CAPS_DB_DATABASE}; do
+    msg "Waiting for Postgres server ${CAPS_DB_HOST} to be ready ..."
+    sleep 2
+  done
+fi
 
 
 if [ "$CAPS_SSH_TUNNEL" != "" ]; then
@@ -63,6 +71,7 @@ fi
 
 msg "Adjusting configuration file"
 cp -v /app/config/app.php.template /app/config/app.php
+sed -i "s|@CAPS_DB_DRIVER@|${CAPS_DB_DRIVER:-Mysql}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_PASSWORD@|${CAPS_DB_PASSWORD:-secret}|g" /app/config/app.php

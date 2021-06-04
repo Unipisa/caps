@@ -58,9 +58,14 @@ cd html
 npm install
 cd ..
 
+VARIANT="$1"
+if [ "$VARIANT" = "" ]; then
+  VARIANT="dev"
+fi
+
 # Start the development server. If needed, build the image
-${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
-${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
+${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml build
+${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 (cd html && npm run watch )&
 watch_pid=$!

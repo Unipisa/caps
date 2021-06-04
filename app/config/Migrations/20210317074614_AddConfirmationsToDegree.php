@@ -41,24 +41,24 @@ class AddConfirmationsToDegree extends AbstractMigration
       ]);
 
       $table->addColumn('approval_message', 'text', [
-        'null' => false
+        'null' => true
       ]);
 
       $table->addColumn('rejection_message', 'text', [
-        'null' => false
+        'null' => true
       ]);
 
       $table->addColumn('submission_message', 'text', [
-        'null' => false
+        'null' => true
       ]);
 
       $table->update();
 
       // We now copy the message included in the settings table, if any; we do this 
       // for approved and submission messages, which were the only one previous present 
-      // in the database. 
+      // in the database.
       $q = $this
-        ->query('select value from settings where field="approved-message"')
+        ->query('select value from settings where field=\'approved-message\'')
         ->fetchAll();
       if (count($q) > 0) 
       {
@@ -71,7 +71,7 @@ class AddConfirmationsToDegree extends AbstractMigration
       }
 
       $q = $this
-        ->query('select value from settings where field="submitted-message"')
+        ->query('select value from settings where field=\'submitted-message\'')
         ->fetchAll();
       if (count($q) > 0) 
       {
@@ -83,9 +83,9 @@ class AddConfirmationsToDegree extends AbstractMigration
           ->execute();
       }
 
-      $this->execute('UPDATE degrees SET rejection_confirmation = 0');
-      $this->execute('DELETE from settings where field="approved-message"');
-      $this->execute('DELETE from settings where field="submitted-message"');
+      $this->execute('UPDATE degrees SET rejection_confirmation = false');
+      $this->execute('DELETE from settings where field=\'approved-message\'');
+      $this->execute('DELETE from settings where field=\'submitted-message\'');
     }
 
     /**

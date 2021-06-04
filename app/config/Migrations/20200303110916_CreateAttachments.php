@@ -29,11 +29,19 @@ class CreateAttachments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        $table->addColumn('data', 'blob', [
-            'default' => null,
-            'null' => false,
-            'limit' => MysqlAdapter::BLOB_LONG
-        ]);
+        if ($this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql") {
+            $table->addColumn('data', 'blob', [
+                'default' => null,
+                'null' => false,
+                'limit' => MysqlAdapter::BLOB_LONG
+            ]);
+        }
+        else {
+            $table->addColumn('data', 'blob', [
+                'default' => null,
+                'null' => false,
+            ]);
+        }
         $table->addColumn('mimetype', 'string', [
             'default' => null,
             'limit' => 255,

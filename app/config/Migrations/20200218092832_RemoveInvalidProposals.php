@@ -14,7 +14,6 @@ class RemoveInvalidProposals extends AbstractMigration
     {
       // Migrate the current data
         $db = $this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
-        echo "Database: " . $db;
         if ($db == 'mysql') {
             $this->execute('delete proposals from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null;');
         }
