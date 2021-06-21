@@ -42,7 +42,7 @@ class ProposalsController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
-        'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
+        'sortableFields' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
         'limit' => 10,
         'order' => [
             'modified' => 'desc'
@@ -400,7 +400,7 @@ class ProposalsController extends AppController
         }
 
         $builder = $this->viewBuilder();
-        $builder->setLayout(false);
+        $builder->disableAutoLayout();
         $builder->setTemplate('Proposals/pdf');
         $user = $this->user;
         $pdf = true;

@@ -12,7 +12,7 @@
         "cakephp/debug_kit": "^4.4",
         "cakephp/migrations": "^3.1",
         "cakephp/plugin-installer": "^1.0",
-        "dompdf/dompdf": "^0.8.6",
+        "dompdf/dompdf": "^1.0",
         "friendsofcake/cakephp-csvview": "^4.0",
         "mobiledetect/mobiledetectlib": "2.*"
     },
