@@ -19,9 +19,17 @@ class CapsAppController {
         // We enable enriched JS selects on all "multiple"
         // selects, which would be almost unusable otherwise.
         jQuery('select.form-control[multiple]').selectpicker({
-            selectedTextFormat: 'count > 8',
+            selectedTextFormat: 'count > 7',
             countSelectedText: "{0} elementi selezionati",
+            noneSelectedText: "Nessuna selezione",
             liveSearch: true
+        });
+
+        Array.from(document.getElementsByClassName('bootstrap-select')).forEach(el => {
+            Array.from(el.getElementsByTagName('button')).forEach(el => {
+                // We apply a gray-400 border to match the bootstrap theme
+                el.style.border = '1px solid #d3e2e4';
+            });
         });
     }
 
