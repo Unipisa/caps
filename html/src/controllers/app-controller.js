@@ -18,7 +18,11 @@ class CapsAppController {
     setupSelect() {
         // We enable enriched JS selects on all "multiple"
         // selects, which would be almost unusable otherwise.
-        jQuery('select.form-control[multiple]').selectpicker();
+        jQuery('select.form-control[multiple]').selectpicker({
+            selectedTextFormat: 'count > 8',
+            countSelectedText: "{0} elementi selezionati",
+            liveSearch: true
+        });
     }
 
     setupCKEditor() {
