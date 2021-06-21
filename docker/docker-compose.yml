@@ -19,6 +19,7 @@ services:
   caps-db:
     image: mysql:8
     container_name: caps-db
+    command: --default-authentication-plugin=mysql_native_password
     volumes: 
       - ./database:/var/lib/mysql
     env_file:
