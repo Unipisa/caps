@@ -16,6 +16,8 @@ class CapsAppController {
     }
 
     setupSelect() {
+        jQuery.fn.selectpicker.Constructor.BootstrapVersion = '4';
+
         // We enable enriched JS selects on all "multiple"
         // selects, which would be almost unusable otherwise.
         jQuery('select.form-control[multiple]').selectpicker({
