@@ -8,6 +8,7 @@
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "bootstrap": "^4.6.0",
+    "bootstrap-select": "^1.13.18",
     "ckeditor5": "^23.1.0",
     "jquery-easing": "0.0.1",
     "regenerator-runtime": "^0.13.7",

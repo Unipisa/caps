@@ -2,6 +2,8 @@ const jQuery = require('jquery');
 const CapsAttachment = require('../modules/attachment');
 const ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
 
+require('bootstrap-select');
+
 class CapsAppController {
 
     constructor(root = "/") {
@@ -10,6 +12,13 @@ class CapsAppController {
         this.enhanceAttachments();
         this.setupBadges();
         this.setupCKEditor();
+        this.setupSelect();
+    }
+
+    setupSelect() {
+        // We enable enriched JS selects on all "multiple"
+        // selects, which would be almost unusable otherwise.
+        jQuery('select.form-control[multiple]').selectpicker();
     }
 
     setupCKEditor() {
