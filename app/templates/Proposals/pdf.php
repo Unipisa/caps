@@ -93,7 +93,7 @@
         font-weight: bold;
         margin-left: 4px;
         border: 1px solid black;
-        border-left: ;: 1px solid black;
+        border-left: 1px solid black;
     }
 
 </style>
