@@ -33,7 +33,7 @@
         'name',
         ['label' => 'Nome']
     );
-    echo $this->Form->control('exams._ids', [ 'size' => 15 ]);
+    echo $this->Form->control('exams._ids', [ 'label' => 'Esami', 'size' => 15 ]);
     if ($group->isNew()):
         echo $this->Form->submit('Salva gruppo');
     else:
