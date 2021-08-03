@@ -13,7 +13,7 @@ class AddAcademicYearToDegree extends AbstractMigration
     public function up()
     {
         $table = $this->table('degrees');
-        $table->addColumn('year', 'integer', [
+        $table->addColumn('academic_year', 'integer', [
             'default' => 0,
             'limit' => 11,
             'null' => false,

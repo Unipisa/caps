@@ -15,8 +15,7 @@ class DuplicateDegrees extends AbstractMigration
     {
         $this->getAdapter()->commitTransaction(); ## workaround cakephp bug: https://github.com/cakephp/migrations/issues/370
         $q = $this
-            ->query('select degrees.id as id, degrees.name as name, degrees.years as years, degrees.enable_sharing as enable_sharing from degrees')
-            ->fetchAll();
+            ->fetchAll('select degrees.id as id, degrees.name as name, degrees.years as years, degrees.enable_sharing as enable_sharing from degrees');
         $old_degrees = [];
         foreach($q as $record) {
             $record['id'] = intval($record['id']);
@@ -27,8 +26,7 @@ class DuplicateDegrees extends AbstractMigration
         }
         debug($old_degrees);
         $q = $this
-            ->query('select curricula.id as curricula_id, curricula.academic_year as academic_year, curricula.degree_id as degree_id from curricula')
-            ->fetchAll();
+            ->fetchAll('select curricula.id as curricula_id, curricula.academic_year as academic_year, curricula.degree_id as degree_id from curricula');
         $new_degrees = []; // old_degree_id -> academic_year -> new_degree_id 
 
         $DegreesTable = TableRegistry::get('Degrees');
@@ -42,14 +40,18 @@ class DuplicateDegrees extends AbstractMigration
                     // degree for given academic_year already exists!
                 } else {
                     // devo clonare il vecchio degree per questo nuovo anno
-                    $degree = $DegreesTable->newEntity();
-                    $degree->name = $old_degrees[$record['degree_id']]['name'];
-                    $degree->years = $old_degrees[$record['degree_id']]['years'];
-                    $degree->enable_sharing = $old_degrees[$record['degree_id']]['enable_sharing'];
-                    $degree->academic_year = $record['academic_year'];
-                    $result = $DegreesTable->save($degree);
-                    $new_degrees[$record['degree_id']][$record['academic_year']] = $result->id;
+                    $row = [
+                        'name' => $old_degrees[$record['degree_id']]['name'],
+                        'years' => $old_degrees[$record['degree_id']]['years'],
+                        'enable_sharing' => $old_degrees[$record['degree_id']]['enable_sharing'],
+                        'academic_year' => $record['academic_year']
+                    ];
+                    $table = $this->table("degrees");
+                    $table->insert($row);
+                    $table->saveData();
+                    $result_id = $this->getAdapter()->getConnection()->lastInsertId();
 
+                    $new_degrees[$record['degree_id']][$record['academic_year']] = $result_id;
                     array_push($old_degrees[$record['degree_id']]['academic_years'], $record['academic_year']);
                 }
             } else {
@@ -62,6 +64,20 @@ class DuplicateDegrees extends AbstractMigration
             }
             debug($new_degrees);
         }
+
+        foreach($new_degrees as $old_degree_id => $map) {
+            foreach ($map as $academic_year => $new_degree_id) {
+                $builder = $this->getQueryBuilder();
+                $builder->update('curricula')
+                    ->set('degree_id', $new_degree_id)
+                    ->where([ 
+                        'degree_id' => $old_degree_id,
+                        'academic_year' => $academic_year
+                     ])
+                    ->execute();
+            }
+        }
+
         $this->getAdapter()->beginTransaction();
     }
 
