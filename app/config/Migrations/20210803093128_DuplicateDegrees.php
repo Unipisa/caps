@@ -13,10 +13,9 @@ class DuplicateDegrees extends AbstractMigration
      */
     public function up()
     {
-        $this->getAdapter()->commitTransaction(); ## workaround cakephp bug: https://github.com/cakephp/migrations/issues/370
         $q = $this
             ->fetchAll('select degrees.id as id, degrees.name as name, degrees.years as years, degrees.enable_sharing as enable_sharing from degrees');
-        $old_degrees = [];
+        $old_degrees = []; // degree_id -> degree
         foreach($q as $record) {
             $record['id'] = intval($record['id']);
             $record['years'] = intval($record['years']);
@@ -27,6 +26,7 @@ class DuplicateDegrees extends AbstractMigration
         debug($old_degrees);
         $q = $this
             ->fetchAll('select curricula.id as curricula_id, curricula.academic_year as academic_year, curricula.degree_id as degree_id from curricula');
+        
         $new_degrees = []; // old_degree_id -> academic_year -> new_degree_id 
 
         $DegreesTable = TableRegistry::get('Degrees');
@@ -68,7 +68,8 @@ class DuplicateDegrees extends AbstractMigration
         foreach($new_degrees as $old_degree_id => $map) {
             foreach ($map as $academic_year => $new_degree_id) {
                 $builder = $this->getQueryBuilder();
-                $builder->update('curricula')
+                $builder
+                    ->update('curricula')
                     ->set('degree_id', $new_degree_id)
                     ->where([ 
                         'degree_id' => $old_degree_id,
@@ -78,7 +79,74 @@ class DuplicateDegrees extends AbstractMigration
             }
         }
 
-        $this->getAdapter()->beginTransaction();
+        $new_groups = []; // old_group_id -> academic_year -> new_group_id
+
+        foreach($this->fetchAll(
+            'SELECT compulsory_groups.group_id as group_id, '
+            . 'compulsory_groups.curriculum_id as curriculum_id, '
+            . 'curricula.academic_year as academic_year, '
+            . 'groups.name as name, '
+            . 'curricula.degree_id as degree_id '
+            . 'from compulsory_groups, curricula, groups '
+            . 'where compulsory_groups.curriculum_id = curricula.id AND '
+            . 'groups.id = compulsory_groups.group_id'
+            ) as $row) {
+            $row['group_id'] = intval($row['group_id']);
+            $row['curriculum_id'] = intval($row['curriculum_id']);
+            $row['academic_year'] = intval($row['academic_year']);
+            $row['degree_id'] = intval($row['degree_id']);
+            debug($row);
+            if (array_key_exists($row['group_id'], $new_groups)) {
+                if (array_key_exists($row['academic_year'], $new_groups[$row['group_id']])) {
+                    // pass
+                } else {
+                    // duplicate group
+                    $new_group_id = $this->create_group($row['name'], $row['degree_id']);
+                    $new_groups[$row['group_id']][$row['academic_year']] = $new_group_id;
+                }
+            } else {
+                // reuse group
+                $new_groups[$row['group_id']] = [
+                    $row['academic_year'] => $row['group_id']
+                ];
+            }
+            debug($new_groups);
+        }
+
+        // duplicate exams_groups
+        $table = $this->table("exams_groups");
+        foreach($this->fetchAll('SELECT * from groups') as $group) {
+            $group['id'] = intval($group['id']);
+            if (array_key_exists($group['id'], $new_groups)) {
+                foreach($this->fetchAll('SELECT * from exams_groups WHERE group_id = '.$group['id']) as $row) {
+                    $row['exam_id'] = intval($row['exam_id']);
+                    debug($row);
+                    foreach($new_groups[$group['id']] as $academic_year => $new_group_id) {
+                        if ($new_group_id != $group['id']) {
+                            $table->insert([
+                                'group_id' => $new_group_id,
+                                'exam_id' => $row['exam_id']
+                                ]);
+                            $table->saveData();
+                        }
+                    }    
+                }
+            } else {
+                print "gruppo " . $group['id'] . " inutilizzato... lo rimuovo!";
+                $this->execute('DELETE FROM exams_groups WHERE group_id = ' . $group['id']);
+                $this->execute('DELETE FROM exams WHERE id = ' . $group['id']);                
+            }
+        }
+    }
+
+    function create_group($name, $degree_id) {
+        $table = $this->table("groups");
+        $table->insert([
+            'name' => $name,
+            'degree_id' => $degree_id
+        ]);
+        $table->saveData();
+        return $this->getAdapter()->getConnection()->lastInsertId();
     }
 
     public function down() 

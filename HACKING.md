@@ -75,7 +75,7 @@ i file JS e CSS.
 
 ```bash
 cd app
-bin/cake migrations/migrate # applica eventuali migrazioni al database
+bin/cake migrations migrate # applica eventuali migrazioni al database
 vendor/bin/phpunit # run php unit tests
 bin/cake server & # run a development server
 ```
@@ -185,6 +185,7 @@ bin/cake migrations migrate
     Degree
         id
         name
+        academic_year # added
         years
         enable_sharing
 
