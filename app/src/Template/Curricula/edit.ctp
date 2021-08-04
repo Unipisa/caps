@@ -39,7 +39,6 @@
                 echo $this->Form->create($curriculum);
                 echo $this->Form->control('degree_id', [ 'label' => 'Corso di Laurea' ]);
                 echo $this->Form->control('name', [ 'label' => 'Nome' ]);
-                echo $this->Form->control('academic_year', [ 'label' => 'Anno Accademico' ]);
                 echo $this->Form->control(
                     'notes'
                 );

@@ -21,7 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<h1>Curriculum</h1>
+<h1>Curriculum <?= $curriculum['name']?> <?= $curriculum['degree']['name'] ?> <?= $curriculum['degree']->academic_years() ?></h1>
 
 <div class="row my-2">
     <div class="col">
@@ -43,15 +43,11 @@
                 <table class="table">
                     <tr>
                         <th>Laurea</th>
-                        <td><?php echo h($curriculum['degree']['name']); ?></td>
+                        <td><?php echo h($curriculum['degree']['name'] . " " . $curriculum['degree']->academic_years()); ?></td>
                     </tr>
                     <tr>
                         <th>Nome</th>
                         <td><?php echo h($curriculum['name']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Anno</th>
-                        <td><?= $curriculum['academic_year'] ?>/<?= $curriculum['academic_year']+1 ?></td>
                     </tr>
                 </table>
 

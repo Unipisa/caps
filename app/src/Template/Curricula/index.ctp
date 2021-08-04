@@ -51,17 +51,6 @@
                     <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
                         <i class="fas fa-download"></i><span class="ml-2 d-none d-lg-inline">Esporta in CSV</span>
                     </div>
-
-                    <a><button class="btn btn-sm btn-primary mr-2"
-                            id="caps-duplicate-btn">
-                            <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
-                    </button></a>
-
-                    <div class="form-inline" style="width: 75px;">
-                        <!-- <label for="anno" class="mr-2">Anno dei nuovi curricula: </label> //-->
-                        <input type="text"  style="width: 75px;" class="form-control form-control-sm"
-                               name="year" id="clone-year" placeholder="Anno"/>
-                    </div>
                 </div>
 
                 <?php echo $this->element('filter_badges', [
@@ -74,14 +63,14 @@
                 <table class="table">
                     <tr><thead>
                         <th></th>
-                        <th><?= $this->Paginator->sort('academic_year', 'Anno'); ?></th>
+                        <th><?= $this->Paginator->sort('Degrees.academic_year', 'Anno'); ?></th>
                         <th><?= $this->Paginator->sort('Degrees.name', 'Laurea'); ?></th>
                         <th><?= $this->Paginator->sort('name', 'Nome'); ?></th>
                     </thead></tr>
                     <?php foreach ($paginated_curricula as $curriculum): ?>
                         <tr>
                             <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
-                            <td class="caps-admin-curricula-year"><?php echo $curriculum['academic_year']; ?></td>
+                            <td class="caps-admin-curricula-year"><?php echo $curriculum['degree']['academic_year']; ?></td>
                             <td class="caps-admin-curricula-degree"><?php echo h($curriculum['degree']['name']); ?></td>
                             <td class="caps-admin-curricula-name">
                                 <?php

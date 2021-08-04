@@ -46,6 +46,18 @@
         <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
             <i class="fas fa-download"></i><span class="ml-2 d-none d-md-inline">Esporta in CSV</span>
         </button>
+
+        <a><button class="btn btn-sm btn-primary mr-2"
+                id="caps-duplicate-btn">
+                <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
+            </button></a>
+
+        <div class="form-inline" style="width: 75px;">
+            <!-- <label for="anno" class="mr-2">Anno dei nuovi degree: </label> //-->
+            <input type="text"  style="width: 75px;" class="form-control form-control-sm"
+                    name="year" id="clone-year" placeholder="Anno"/>
+        </div>
+
     </div>
 
     <?php echo $this->element('filter_badges', [

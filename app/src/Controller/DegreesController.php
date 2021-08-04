@@ -58,15 +58,15 @@ class DegreesController extends AppController
             if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
+            
+            $selected = $this->request->getData('selection');
+            if (!$selected) {
+                $this->Flash->error(__('nessun corso selezionato'));
+
+                return $this->redirect(['action' => 'index']);
+            }
 
             if ($this->request->getData('delete')) {
-                $selected = $this->request->getData('selection');
-                if (!$selected) {
-                    $this->Flash->error(__('nessun corso selezionato'));
-
-                    return $this->redirect(['action' => 'index']);
-                }
-
                 $delete_count = 0;
                 foreach ($selected as $degree_id) {
                     if ($this->deleteIfNotUsed($degree_id)) {
@@ -80,6 +80,60 @@ class DegreesController extends AppController
                 } else {
                     $this->Flash->success(__('nessun corso cancellato'));
                 }
+
+                return $this->redirect(['action' => 'index']);
+            } else if ($this->request->getData('clone')) {
+                $year = intval($this->request->getData('year'));
+
+                if ($year <= 0) {
+                    $this->Flash->error('Anno non valido specificato');
+                    return;
+                }
+
+                foreach ($selected as $degree_id) {
+                    $degree = $this->Degrees
+                        ->findById($degree_id)
+                        ->contain([
+                            'Curricula' => ['CompulsoryGroups', 'CompulsoryExams', 'FreeChoiceExams'],
+                            'Groups' => ['Exams']])
+                        ->firstOrFail();
+                    // We set the id and the id of all the children entities to null, so that a call to save will
+                    // automatically create new entities.
+                    $degree['id'] = null;
+                    $degree['academic_year'] = $year;
+                    $degree->isNew(true);
+
+                    foreach ($degree['curricula'] as $curriculum) {   
+                        $curriculum['id'] = null;
+                        $curriculum->isNew(true);
+
+                        foreach ($curriculum['compulsory_groups'] as $cg) {
+                            $cg['id'] = null;
+                            $cg->isNew(true);
+                        }
+                        foreach ($curriculum['compulsory_exams'] as $ce) {
+                            $ce['id'] = null;
+                            $ce->isNew(true);
+                        }
+                        foreach ($curriculum['free_choice_exams'] as $fce) {
+                            $fce['id'] = null;
+                            $fce->isNew(true);
+                        }
+
+                    }
+
+                    foreach($degree['groups'] as $group) {
+                        $group['id'] = null;
+                        $group->isNew(true);
+                    }
+                }
+                if (! $this->Degrees->save($degree)) {
+                    $this->Flash->error('Impossibile duplicare il corso: ' + $degree['name']);
+                    return $this->redirect([ 'action' => 'index' ]);
+                }
+
+                // debug($selected);
+                $this->Flash->success('Corsi duplicati correttamente');
 
                 return $this->redirect(['action' => 'index']);
             }
