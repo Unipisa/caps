@@ -75,6 +75,9 @@ class DegreesTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
+            ->integer('academic_year');
+
+        $validator
             ->scalar('name')
             ->notEmptyString('name');
 

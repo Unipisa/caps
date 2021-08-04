@@ -24,6 +24,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
+use Cake\Http\Exception\ForbiddenException;
+use App\Form\DegreesFilterForm;
 
 /**
  * Degrees Controller
@@ -42,6 +44,15 @@ class DegreesController extends AppController
     public function index()
     {
         $degrees = $this->Degrees->find();
+
+        $filterForm = new DegreesFilterForm($degrees);
+        $degrees = $filterForm->validate_and_execute($this->request->getQuery());
+        $this->set('filterForm', $filterForm);
+
+        $this->set('data', $degrees);  // obsolete... can be removed?
+        $this->set('degrees', $degrees);
+        $this->set('_serialize', 'data'); // TODO: dovrebbe essere: $this->set('_serialize', [ 'data' ]); 
+        $this->set('paginated_degrees', $this->paginate($degrees->cleanCopy()));
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
@@ -73,10 +84,6 @@ class DegreesController extends AppController
                 return $this->redirect(['action' => 'index']);
             }
         }
-
-        $paginated_degrees = $this->paginate($degrees->cleanCopy());
-        $this->set(compact('degrees', 'paginated_degrees'));
-        $this->set('_serialize', [ 'degrees' ]);
     }
 
     /**

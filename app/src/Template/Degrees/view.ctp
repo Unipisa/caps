@@ -21,7 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<h1><?= $degree['name'] ?></h1>
+<h1><?= $degree->academic_years() . ": " . $degree['name'] ?></h1>
 
 <?= $this->element('card-start'); ?>
     <div class="d-flex mb-2">
@@ -41,6 +41,10 @@
         <tr>
             <th>Nome</th>
             <td><?php echo h($degree['name']); ?></td>
+        </tr>
+        <tr>
+            <th>Anno accademico</th>
+            <td><?php echo $degree->academic_years(); ?></td>
         </tr>
         <tr>
             <th>Anni</th>

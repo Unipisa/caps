@@ -29,6 +29,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use App\Form\CurriculaFilterForm;
+use Cake\Http\Exception\NotFoundException;
 
 class CurriculaController extends AppController
 {
