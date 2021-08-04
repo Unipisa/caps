@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class AddAcademicYearToDegree extends AbstractMigration
+class AddAcademicYearToDegrees extends AbstractMigration
 {
     /**
      * Change Method.
