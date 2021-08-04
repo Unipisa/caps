@@ -62,6 +62,9 @@ class DuplicateDegrees extends AbstractMigration
                 }
             } else {
                 // e' il primo curriculum con questo degree, riutilizza il vecchio record:
+
+                $this->execute("UPDATE degrees SET academic_year = " . $record['academic_year'] . 
+                    " WHERE id = " . $record['degree_id']);
                 $new_degrees[$record['degree_id']] = [
                     $record['academic_year'] => $record['degree_id']
                 ];
