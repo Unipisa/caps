@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class AddDegreeIdToGroups extends AbstractMigration
+class NotNullDegreeInGroups extends AbstractMigration
 {
     /**
      * Change Method.
@@ -13,11 +13,9 @@ class AddDegreeIdToGroups extends AbstractMigration
     public function change()
     {
         $table = $this->table('groups');
-        $table
-            ->addColumn('degree_id', 'integer', ['null' => true])
-            ->addForeignKey('degree_id', 'degrees', 'id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
-            ->save();
-        // NULL=true because we need to populate the field
+        $table->changeColumn('degree_id', 'integer', [
+            'null' => false
+        ]);
         $table->update();
     }
 }

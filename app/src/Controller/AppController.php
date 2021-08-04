@@ -164,6 +164,8 @@ class AppController extends Controller
                 ->find()
                 ->where(['username' => $authuser['username']])
                 ->firstOrFail();
+            // can fail if the user has a valid authentication cookie but has been removed from the database 
+            // TODO: should logout instead of failing...
         } else {
             $this->user = null;
         }

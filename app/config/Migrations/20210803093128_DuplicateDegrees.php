@@ -14,7 +14,7 @@ class DuplicateDegrees extends AbstractMigration
     public function up()
     {
        $q = $this
-            ->fetchAll('select degrees.id as id, degrees.name as name, degrees.years as years, degrees.enable_sharing as enable_sharing from degrees');
+            ->fetchAll('select * from degrees');
         $old_degrees = []; // degree_id -> degree
         foreach($q as $record) {
             foreach(['id', 'years', 'enable_sharing', 
@@ -25,7 +25,7 @@ class DuplicateDegrees extends AbstractMigration
             $record['academic_years'] = [];
             $old_degrees[$record['id']] = $record;
         }
-        debug($old_degrees);
+        // debug($old_degrees);
         $q = $this
             ->fetchAll('select curricula.id as curricula_id, curricula.academic_year as academic_year, curricula.degree_id as degree_id from curricula');
         
@@ -37,7 +37,7 @@ class DuplicateDegrees extends AbstractMigration
             $record['curricula_id'] = intval($record['curricula_id']);
             $record['academic_year'] = intval($record['academic_year']);
             $record['degree_id'] = intval($record['degree_id']);
-            debug($record);
+            // debug($record);
             if (array_key_exists($record['degree_id'], $new_degrees)) {
                 if (array_key_exists($record['academic_year'], $new_degrees[$record['degree_id']])) {
                     // degree for given academic_year already exists!
@@ -55,7 +55,7 @@ class DuplicateDegrees extends AbstractMigration
                     $table = $this->table("degrees");
                     $table->insert($row);
                     $table->saveData();
-                    $result_id = $this->getAdapter()->getConnection()->lastInsertId();
+                    $result_id = intval($this->getAdapter()->getConnection()->lastInsertId());
 
                     $new_degrees[$record['degree_id']][$record['academic_year']] = $result_id;
                     array_push($old_degrees[$record['degree_id']]['academic_years'], $record['academic_year']);
@@ -68,8 +68,15 @@ class DuplicateDegrees extends AbstractMigration
 
                 array_push($old_degrees[$record['degree_id']]['academic_years'], $record['academic_year']);
             }
-            debug($new_degrees);
         }
+        
+        print "DUPLICATING DEGREES:\n";
+        foreach($new_degrees as $old_degree_id => $map) {
+            foreach($map as $academic_year => $new_degree_id) {
+                print $old_degree_id . ", " . $academic_year . " => " . $new_degree_id . "\n";
+            }
+        }
+        echo "\n";
 
         foreach($new_degrees as $old_degree_id => $map) {
             foreach ($map as $academic_year => $new_degree_id) {
@@ -84,6 +91,13 @@ class DuplicateDegrees extends AbstractMigration
                     ->execute();
             }
         }
+
+        $old_groups = [];
+        foreach($this->fetchAll('SELECT id from groups') as $row) {
+            array_push($old_groups, intval($row['id']));
+        }
+        
+        // debug($old_groups);
 
         $new_groups = []; // old_group_id -> academic_year -> new_group_id
 
@@ -101,7 +115,7 @@ class DuplicateDegrees extends AbstractMigration
             $row['curriculum_id'] = intval($row['curriculum_id']);
             $row['academic_year'] = intval($row['academic_year']);
             $row['degree_id'] = intval($row['degree_id']);
-            debug($row);
+            // debug($row);
             if (array_key_exists($row['group_id'], $new_groups)) {
                 if (array_key_exists($row['academic_year'], $new_groups[$row['group_id']])) {
                     // pass
@@ -112,23 +126,31 @@ class DuplicateDegrees extends AbstractMigration
                 }
             } else {
                 // reuse group
+                $this->execute('UPDATE groups set degree_id = ' . $row['degree_id'] . ' where id = ' . $row['group_id']);
                 $new_groups[$row['group_id']] = [
                     $row['academic_year'] => $row['group_id']
                 ];
             }
-            debug($new_groups);
         }
 
+        print "DUPLICATING GROUPS:\n";
+        foreach($new_groups as $old_group_id => $map) {
+            foreach($map as $academic_year => $new_group_id) {
+                print $old_group_id . ", " . $academic_year . " => " . $new_group_id . "\n";
+            }
+        }
+        print "\n";
+
+        $removed_groups = [];
         // duplicate exams_groups
         $table = $this->table("exams_groups");
-        foreach($this->fetchAll('SELECT * from groups') as $group) {
-            $group['id'] = intval($group['id']);
-            if (array_key_exists($group['id'], $new_groups)) {
-                foreach($this->fetchAll('SELECT * from exams_groups WHERE group_id = '.$group['id']) as $row) {
+        foreach($old_groups as $group_id) {
+            if (array_key_exists($group_id, $new_groups)) {
+                foreach($this->fetchAll('SELECT * from exams_groups WHERE group_id = '.$group_id) as $row) {
                     $row['exam_id'] = intval($row['exam_id']);
-                    debug($row);
-                    foreach($new_groups[$group['id']] as $academic_year => $new_group_id) {
-                        if ($new_group_id != $group['id']) {
+                    // debug($row);
+                    foreach($new_groups[$group_id] as $academic_year => $new_group_id) {
+                        if ($new_group_id != $group_id) {
                             $table->insert([
                                 'group_id' => $new_group_id,
                                 'exam_id' => $row['exam_id']
@@ -138,11 +160,18 @@ class DuplicateDegrees extends AbstractMigration
                     }    
                 }
             } else {
-                print "gruppo " . $group['id'] . " inutilizzato... lo rimuovo!";
-                $this->execute('DELETE FROM exams_groups WHERE group_id = ' . $group['id']);
-                $this->execute('DELETE FROM exams WHERE id = ' . $group['id']);                
+                // print "gruppo " . $group_id . " inutilizzato... lo rimuovo!\n";
+                $this->execute('DELETE FROM exams_groups WHERE group_id = ' . $group_id);
+                $this->execute('DELETE FROM groups WHERE id = ' . $group_id);
+                array_push($removed_groups, $group_id);
             }
         }
+
+        print "GRUPPI RIMOSSI:\n";
+        foreach ($removed_groups as $group_id) {
+            print $group_id . "\n";
+        }
+        print "\n";
     }
 
     function create_group($name, $degree_id) {
@@ -152,7 +181,7 @@ class DuplicateDegrees extends AbstractMigration
             'degree_id' => $degree_id
         ]);
         $table->saveData();
-        return $this->getAdapter()->getConnection()->lastInsertId();
+        return intval($this->getAdapter()->getConnection()->lastInsertId());
     }
 
     public function down() 
