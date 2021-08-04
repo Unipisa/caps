@@ -13,13 +13,15 @@ class DuplicateDegrees extends AbstractMigration
      */
     public function up()
     {
-        $q = $this
+       $q = $this
             ->fetchAll('select degrees.id as id, degrees.name as name, degrees.years as years, degrees.enable_sharing as enable_sharing from degrees');
         $old_degrees = []; // degree_id -> degree
         foreach($q as $record) {
-            $record['id'] = intval($record['id']);
-            $record['years'] = intval($record['years']);
-            $record['enable_sharing'] = intval($record['enable_sharing']);
+            foreach(['id', 'years', 'enable_sharing', 
+                'approval_confirmation', 'rejection_confirmation', 
+                'submission_confirmation'] as $field) {
+                    $record[$field] = intval($record[$field]);
+                }
             $record['academic_years'] = [];
             $old_degrees[$record['id']] = $record;
         }
@@ -35,17 +37,21 @@ class DuplicateDegrees extends AbstractMigration
             $record['curricula_id'] = intval($record['curricula_id']);
             $record['academic_year'] = intval($record['academic_year']);
             $record['degree_id'] = intval($record['degree_id']);
+            debug($record);
             if (array_key_exists($record['degree_id'], $new_degrees)) {
                 if (array_key_exists($record['academic_year'], $new_degrees[$record['degree_id']])) {
                     // degree for given academic_year already exists!
                 } else {
                     // devo clonare il vecchio degree per questo nuovo anno
-                    $row = [
-                        'name' => $old_degrees[$record['degree_id']]['name'],
-                        'years' => $old_degrees[$record['degree_id']]['years'],
-                        'enable_sharing' => $old_degrees[$record['degree_id']]['enable_sharing'],
-                        'academic_year' => $record['academic_year']
-                    ];
+                    $row = ['academic_year' => $record['academic_year']];
+                    foreach([
+                        'name', 'years', 'enable_sharing', 
+                        'approval_confirmation', 'rejection_confirmation',
+                        'submission_confirmation', 'approval_message',
+                        'rejection_message', 'submission_message', 'free_choice_message'] 
+                        as $field) {
+                            $row[$field] = $old_degrees[$record['degree_id']][$field];
+                        }
                     $table = $this->table("degrees");
                     $table->insert($row);
                     $table->saveData();
