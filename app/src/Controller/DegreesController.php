@@ -159,7 +159,7 @@ class DegreesController extends AppController
     public function view($id = null)
     {
         $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula', 'Degrees']
+            'contain' => ['Curricula']
         ]);
 
         $this->set('degree', $degree);

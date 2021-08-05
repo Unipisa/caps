@@ -96,7 +96,7 @@ class DuplicateDegrees extends AbstractMigration
         }
 
         $old_groups = [];
-        foreach($this->fetchAll('SELECT id from groups') as $row) {
+        foreach($this->fetchAll('SELECT id from `groups`') as $row) {
             array_push($old_groups, intval($row['id']));
         }
         
@@ -110,7 +110,7 @@ class DuplicateDegrees extends AbstractMigration
             . 'curricula.academic_year as academic_year, '
             . 'groups.name as name, '
             . 'curricula.degree_id as degree_id '
-            . 'from compulsory_groups, curricula, groups '
+            . 'from compulsory_groups, curricula, `groups` '
             . 'where compulsory_groups.curriculum_id = curricula.id AND '
             . 'groups.id = compulsory_groups.group_id'
             ) as $row) {
@@ -129,7 +129,7 @@ class DuplicateDegrees extends AbstractMigration
                 }
             } else {
                 // reuse group
-                $this->execute('UPDATE groups set degree_id = ' . $row['degree_id'] . ' where id = ' . $row['group_id']);
+                $this->execute('UPDATE `groups` set degree_id = ' . $row['degree_id'] . ' where id = ' . $row['group_id']);
                 $new_groups[$row['group_id']] = [
                     $row['academic_year'] => $row['group_id']
                 ];
@@ -165,7 +165,7 @@ class DuplicateDegrees extends AbstractMigration
             } else {
                 // print "gruppo " . $group_id . " inutilizzato... lo rimuovo!\n";
                 $this->execute('DELETE FROM exams_groups WHERE group_id = ' . $group_id);
-                $this->execute('DELETE FROM groups WHERE id = ' . $group_id);
+                $this->execute('DELETE FROM `groups` WHERE id = ' . $group_id);
                 array_push($removed_groups, $group_id);
             }
         }
