@@ -47,7 +47,6 @@ class Curriculum extends Entity
     protected $_accessible = [
         'name' => true,
         'proposals' => true,
-        'degree' => true,
         'compulsory_exams' => true,
         'compulsory_groups' => true,
         'free_choice_exams' => true,

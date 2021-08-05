@@ -55,7 +55,7 @@ class GroupsTable extends Table
         parent::initialize($config);
 
         $this->setTable('groups');
-        $this->setDisplayField('name');
+        $this->setDisplayField(['name','degree']);
         $this->setPrimaryKey('id');
 
         $this->belongsToMany('Exams', [
@@ -63,6 +63,8 @@ class GroupsTable extends Table
             'targetForeignKey' => 'exam_id',
             'joinTable' => 'exams_groups'
         ]);
+
+        $this->belongsTo('Degrees');
     }
 
     /**

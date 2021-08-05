@@ -46,7 +46,8 @@ class Group extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'exams' => true
+        'exams' => true,
+        'degree_id' => true
     ];
 
     public function shortExamList($max_exams = 5, $max_characters = 120)

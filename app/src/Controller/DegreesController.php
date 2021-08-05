@@ -36,6 +36,15 @@ use App\Form\DegreesFilterForm;
  */
 class DegreesController extends AppController
 {
+    public $paginate = [
+//        'contain' => [ 'Degrees' ],
+        'sortWhitelist' => [ 'academic_year', 'name' ],
+        'limit' => 10,
+        'order' => [
+            'academic_year' => 'desc'
+        ]
+    ];
+
     /**
      * Index method
      *
@@ -150,7 +159,7 @@ class DegreesController extends AppController
     public function view($id = null)
     {
         $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula']
+            'contain' => ['Curricula', 'Degrees']
         ]);
 
         $this->set('degree', $degree);

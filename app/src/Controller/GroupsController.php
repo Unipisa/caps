@@ -28,9 +28,20 @@ use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
+use App\Form\GroupsFilterForm;
 
 class GroupsController extends AppController
 {
+    public $paginate = [
+        'contain' => [ 'Degrees' ],
+        'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
+        'limit' => 10,
+        'order' => [
+            'academic_year' => 'desc'
+        ]
+    ];
+
     public function initialize()
     {
         parent::initialize();
@@ -44,22 +55,46 @@ class GroupsController extends AppController
 
     public function index()
     {
-        $groups = $this->Groups->find('all')->contain([ 'Exams' => function ($q) {
-            return $q->order([ 'Exams.name' => 'asc' ]);
-        } ]);
+        $groups = $this->Groups->find('all')->contain([ 
+            'Exams' => function ($q) {
+                return $q->order([ 'Exams.name' => 'asc' ]);
+                },
+            'Degrees' 
+            ]);
+        
+        $filterForm = new GroupsFilterForm($groups);
+        $groups = $filterForm->validate_and_execute($this->request->getQuery());
+        $this->set('filterForm', $filterForm);
+        $this->set('groups', $groups);
+        $this->set('_serialize', ['groups']); // overwritten below if CSV is requested
+        $this->set('paginated_groups', $this->paginate($groups->cleanCopy()));
 
+        if ($this->request->is('csv')) {
+            $data = [];
+            foreach ($groups as $group) {
+                $exams = $group->exams;
+                $bare_group = $group;
+                unset($bare_group->exams);
+                foreach ($exams as $exam) {
+                    $data[] = ['group' => $bare_group, 'exam' => $exam];
+                }
+            }
+            $this->set('data', $data);
+            $this->set('_serialize', 'data');
+        } 
+        
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
 
-            if ($this->request->getData('delete')) {
-                $selected = $this->request->getData('selection');
-                if (!$selected) {
-                    $this->Flash->error(__('nessun gruppo selezionato'));
+            $selected = $this->request->getData('selection');
+            if (!$selected) {
+                $this->Flash->error(__('nessun gruppo selezionato'));
 
-                    return $this->redirect(['action' => 'index']);
-                }
+                return $this->redirect(['action' => 'index']);
+            }
+            if ($this->request->getData('delete')) {
 
                 $delete_count = 0;
                 foreach ($selected as $group_id) {
@@ -79,22 +114,6 @@ class GroupsController extends AppController
             }
         }
 
-        $this->set('groups', $groups);
-        if ($this->request->is('csv')) {
-            $data = [];
-            foreach ($groups as $group) {
-                $exams = $group->exams;
-                $bare_group = $group;
-                unset($bare_group->exams);
-                foreach ($exams as $exam) {
-                    $data[] = ['group' => $bare_group, 'exam' => $exam];
-                }
-            }
-            $this->set('data', $data);
-            $this->set('_serialize', 'data');
-        } else {
-            $this->set('_serialize', ['groups']);
-        }
     }
 
     public function view($id = null)
@@ -103,7 +122,7 @@ class GroupsController extends AppController
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
 
-        $group = $this->Groups->findById($id)->contain([ 'Exams' ])->firstOrFail();
+        $group = $this->Groups->findById($id)->contain([ 'Exams', 'Degrees' ])->firstOrFail();
         if (!$group) {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
@@ -118,7 +137,7 @@ class GroupsController extends AppController
         }
 
         if ($id) {
-            $group = $this->Groups->findById($id)->contain([ 'Exams' ])->firstOrFail();
+            $group = $this->Groups->findById($id)->contain([ 'Exams', 'Degrees' ])->firstOrFail();
             if (!$group) {
                 throw new NotFoundException(__('Errore: gruppo non esistente.'));
             }
@@ -134,7 +153,6 @@ class GroupsController extends AppController
             $group = $this->Groups->patchEntity($group, $this->request->getData());
             if ($group = $this->Groups->save($group)) {
                 $this->Flash->success($success_message);
-
                 return $this->redirect(['action' => 'view', $group->id]);
             }
             $this->Flash($failure_message);
@@ -150,6 +168,9 @@ class GroupsController extends AppController
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
+        $this->set('degrees', $this->Groups->Degrees->find(
+            'list',
+            ['order' => ['Degrees.academic_year' => 'DESC']]));
     }
 
     public function delete($id = null)
