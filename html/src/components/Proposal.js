@@ -59,7 +59,7 @@ class Proposal extends React.Component {
     }
 
     renderProposal() {
-        return <div key="proposal">"Proposal"</div>;
+        return <div key="proposal">Proposal</div>;
     }
 
     render() {

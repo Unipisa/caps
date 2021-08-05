@@ -16,8 +16,8 @@ ul.attachments {
 }
 
 .caps-setting-header {
-  @extend .h5;
-  @extend .font-weight-bold;
+  @extend .h5 !optional;
+  @extend .font-weight-bold !optional;
   margin-top: 15px;
 }
 

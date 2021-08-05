@@ -1,5 +1,12 @@
 require("regenerator-runtime/runtime");
 
+import "../scss/main.scss";
+
+import '@fortawesome/fontawesome-free/js/fontawesome';
+import '@fortawesome/fontawesome-free/js/solid';
+import '@fortawesome/fontawesome-free/js/regular';
+import '@fortawesome/fontawesome-free/js/brands';
+
 // These libraries need to be available as global variables
 global.CapsController = require('./caps-controller.js');
 
