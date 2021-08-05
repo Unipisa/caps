@@ -2,6 +2,10 @@ const CapsAppController = require('./app-controller');
 const { loadDashboardData } = require('../modules/dashboard');
 const caps_proposals_add = require('../modules/proposals-add');
 
+const React = require('react');
+const ReactDOM = require('react-dom');
+const Proposal = require('../components/Proposal');
+
 class CapsProposalsController extends CapsAppController {
 
     dashboard() {
@@ -17,7 +21,12 @@ class CapsProposalsController extends CapsAppController {
         }
         
         caps_proposals_add();
-    }
+
+        ReactDOM.render(
+            <Proposal root={this.root}></Proposal>,
+            document.querySelector('#app')
+        );
+    } 
 
     index(params) {
         var query = params["?"];

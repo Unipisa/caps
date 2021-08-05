@@ -52,6 +52,9 @@
         </div>
 </div>
 
+<div id="app">
+</div>
+
 <div id="completeForm">
 <?php
 echo $this->Form->create(null);

@@ -350,6 +350,12 @@ function caps_proposals_add() {
       el.parent().next('div[class="col-2"]').remove();
       jQuery(el).parent().after(creditsHTML);
       updateCounters();
+
+      if (exam['notes'] != null) {
+        var ex_msg = "<div class=\"col-9 mt-1 small text-muted\">" + 
+            exam['notes'] + 
+          "</div>";
+      }
     };
 
     var addMathematicsExam = function(year, chosen_exam = null) {

@@ -206,6 +206,8 @@ class ExamsController extends AppController
                 }
             }
 
+
+
             // If the code is '', make it null => this works on MySQL that allows
             // multiple null keys even when forced to be unique.
             if ($exam->code == '') {
