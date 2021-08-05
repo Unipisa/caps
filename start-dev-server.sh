@@ -48,7 +48,7 @@ fi
 echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 
 # From now on, all command should succeed
-set -ex
+set -e
 
 cd app
 composer -n install
@@ -59,7 +59,11 @@ npm install
 cd ..
 
 # Start the development server. If needed, build the image
-${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
+echo -n "Do you wish to regenerate the images? [yn]: "
+read ANS
+if [ "$ANS" = "y" ]; then
+  ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
+fi
 ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
 
 (cd html && npm run watch )&
