@@ -58,9 +58,8 @@ class DegreesController extends AppController
         $degrees = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);
 
-        $this->set('data', $degrees);  // obsolete... can be removed?
         $this->set('degrees', $degrees);
-        $this->set('_serialize', 'data'); // TODO: dovrebbe essere: $this->set('_serialize', [ 'data' ]); 
+        $this->set('_serialize', [ 'degrees' ]);
         $this->set('paginated_degrees', $this->paginate($degrees->cleanCopy()));
 
         if ($this->request->is("post")) {
