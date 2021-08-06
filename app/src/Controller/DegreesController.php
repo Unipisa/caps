@@ -245,4 +245,13 @@ class DegreesController extends AppController
 
         return true;
     }
+
+    public function curricula($id) {
+        $degree = $this->Degrees->get($id, [
+            'contain' => ['Curricula']
+        ]);
+
+        $this->set('curricula', $degree['curricula']);
+        $this->set('_serialize', [ 'curricula' ]);
+    }
 }
