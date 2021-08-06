@@ -5,6 +5,7 @@ const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
 const Degrees = require('../models/degrees');
 const Curricula = require('../models/curricula');
+const ProposalYear = require('./ProposalYear');
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -15,7 +16,6 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'proposal': null
         };
 
         this.loadDegrees();
@@ -100,25 +100,30 @@ class Proposal extends React.Component {
 
     async onCurriculaSelected() {
         const idx = document.getElementById('curriculum_select').value;
-        console.log(idx);
         if (idx >= 0) {
             const curriculum_id = this.state.curricula[idx].id;
             const curriculum = await Curricula.get(curriculum_id);
             await this.setState({ 
                 'selected_curriculum': curriculum
             });
-            console.log(this.state.selected_curriculum);
         }
     }
 
     renderProposal() {
-        return "Proposal here";
+        var rows = [];
+        for (var i = 1; i <= this.state.selected_curriculum.credits.length; i++) {
+            rows.push(
+                <ProposalYear key={"proposal-year-" + i} year={i} curriculum={this.state.selected_curriculum}></ProposalYear>
+            );
+        }
+        
+        return rows;
     }
 
     render() {
         return <div>
             <Card>{this.renderDegreeCurriculaSelection()}</Card>
-            {this.state.proposal !== null && <Card>{this.renderProposal()}</Card>}
+            {this.state.selected_curriculum !== null && this.renderProposal()}
         </div>;
     }
 }
