@@ -71,4 +71,17 @@ class FilterForm extends Form
     protected function filterFieldValue($dbfield, $value) {
         $this->query = $this->query->where([$dbfield => $value]);
     }
+
+    protected function filterFieldBoolean($dbfield, $field) {
+        $bool_values = [
+            '0' => FALSE,
+            '1' => TRUE
+        ];
+        $value = $this->getData($field);
+        if (array_key_exists($value, $bool_values)) {
+            $this->query = $this->query->where([
+                $dbfield => $bool_values[$value]
+            ]);
+        }
+    }
 }

@@ -182,6 +182,7 @@ bin/cake migrations migrate
         name
         academic_year
         years
+        enabled
         enable_sharing
         approval_confirmation
         rejection_confirmation
@@ -207,6 +208,7 @@ bin/cake migrations migrate
         year
         position
         curriculum -> Curriculum [curriculum_id]
+        group -> Group [group_id, NULL]
 
     Group [groups]
         id

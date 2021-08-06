@@ -23,15 +23,9 @@
 
 namespace App\Controller;
 
-use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
-use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use App\Controller\Event;
-use App\Model\Entity\User;
 use App\Form\UsersFilterForm;
 use Cake\Log\Log;
-use Cake\ORM\TableRegistry;
 
 class UsersController extends AppController {
 
@@ -216,43 +210,6 @@ class UsersController extends AppController {
             }
         }
     }
-
-    public function admin_login() {
-        if ($this->request->is('post')) {
-            if ($this->Auth->login()) {
-                $user = AuthComponent::user();
-
-                // If the user is an admin, show the administration panel...
-                if ($user['admin']) {
-                    return $this->redirect(
-                        $this->Auth->redirectUrl(
-                            ['admin' => true,
-                                'controller' => 'proposals',
-                                'action' => 'index']
-                        )
-                    );
-                }
-
-                throw new NotFoundException();
-            } else {
-                $this->Flash->error(__('Username o password non corretti.'));
-            }
-        }
-    }
-
-    public function clear_admin() {
-
-    }
-
-    public function set_admin() {
-
-    }
-
-    /*
-    public function login() {
-        $this->Flash->info(__('CAPS è attualmente in manutenzione.'));
-    }
-    */
 
     public function logout() {
         return $this->redirect($this->Auth->logout());

@@ -55,7 +55,7 @@ class GroupsTable extends Table
         parent::initialize($config);
 
         $this->setTable('groups');
-        $this->setDisplayField(['name','degree']);
+        $this->setDisplayField(['name','degree_id']);
         $this->setPrimaryKey('id');
 
         $this->belongsToMany('Exams', [

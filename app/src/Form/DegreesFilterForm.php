@@ -32,7 +32,8 @@ class DegreesFilterForm extends FilterForm
         return $schema
           ->addField('name', ['type' => 'string'])
           ->addField('academic_year', ['type' => 'integer'])
-          ->addField('years', ['type' => 'integer']);
+          ->addField('years', ['type' => 'integer'])
+          ->addField('enabled', ['type' => 'select', 'options' => [0, 1]]);
     }
 
     protected function _execute(array $data)
@@ -41,6 +42,7 @@ class DegreesFilterForm extends FilterForm
         $this->filterFieldLike('Degrees.name', 'name');
         $this->filterFieldEqual('Degrees.academic_year', 'academic_year');
         $this->filterFieldEqual('Degrees.years', 'years');
+        $this->filterFieldBoolean('Degrees.enabled', 'enabled');
 
         return $this->query;
     }

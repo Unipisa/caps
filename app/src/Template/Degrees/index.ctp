@@ -28,7 +28,17 @@
         <?= $this->element('filter-button', ['items' => [
                     'academic_year' => __('anno'),
                     'name' => __('nome'),
-                    'years' => __('anni')]]) ?>
+                    'years' => __('anni'),
+                    'enabled' => [
+                        'label' => __('attivazione'),
+                        'type' => 'select',
+                        'options' => [
+                            '' => __('tutti'),
+                            '1' => __('attivo'),
+                            '0' => __('disattivo')
+                        ]]                    
+                    ]]) 
+        ?>
 
         <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">
@@ -61,7 +71,7 @@
     </div>
 
     <?php echo $this->element('filter_badges', [
-                  'fields' => [ 'name', 'academic_year', 'years' ]
+                  'fields' => [ 'name', 'academic_year', 'years', 'enabled' ]
                 ]); ?>
 
     <?php echo $this->Form->create(null, ['id' => 'form-degree']); ?>
@@ -71,6 +81,7 @@
         <thead>
         <tr>
             <th></th>
+            <th><?= $this->Paginator->sort('Degrees.enabled', 'Attivo'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.academic_year', 'Anno'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.name', 'Nome'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.years', 'Anni'); ?></th>
@@ -80,6 +91,9 @@
             <tr>
                 <td >
                     <input type=checkbox name="selection[]" value="<?php echo $degree['id']; ?>">
+                </td>
+                <td>
+                    <?= $degree['enabled'] ? "attivo" : "disattivo" ?>
                 </td>
                 <td>
                     <?= $degree['academic_year'] ?>

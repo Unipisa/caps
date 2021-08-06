@@ -105,7 +105,8 @@ class DuplicateDegrees extends AbstractMigration
         $new_groups = []; // old_group_id -> academic_year -> new_group_id
 
         foreach($this->fetchAll(
-            'SELECT compulsory_groups.group_id as group_id, '
+            'SELECT compulsory_groups.id as id, ' 
+            . 'compulsory_groups.group_id as group_id, '
             . 'compulsory_groups.curriculum_id as curriculum_id, '
             . 'curricula.academic_year as academic_year, '
             . 'groups.name as name, '
@@ -114,6 +115,7 @@ class DuplicateDegrees extends AbstractMigration
             . 'where compulsory_groups.curriculum_id = curricula.id AND '
             . 'groups.id = compulsory_groups.group_id'
             ) as $row) {
+            $row['id'] = intval($row['id']);
             $row['group_id'] = intval($row['group_id']);
             $row['curriculum_id'] = intval($row['curriculum_id']);
             $row['academic_year'] = intval($row['academic_year']);
@@ -121,12 +123,52 @@ class DuplicateDegrees extends AbstractMigration
             // debug($row);
             if (array_key_exists($row['group_id'], $new_groups)) {
                 if (array_key_exists($row['academic_year'], $new_groups[$row['group_id']])) {
-                    // pass
+                    // group already created
+                    $new_group_id = $new_groups[$row['group_id']][$row['academic_year']];
                 } else {
                     // duplicate group
                     $new_group_id = $this->create_group($row['name'], $row['degree_id']);
                     $new_groups[$row['group_id']][$row['academic_year']] = $new_group_id;
                 }
+                $this->execute('UPDATE compulsory_groups SET group_id = ' . $new_group_id . ' WHERE id = ' . $row['id']);
+            } else {
+                // reuse group
+                $this->execute('UPDATE `groups` set degree_id = ' . $row['degree_id'] . ' where id = ' . $row['group_id']);
+                $new_groups[$row['group_id']] = [
+                    $row['academic_year'] => $row['group_id']
+                ];
+            }
+        }
+
+        foreach($this->fetchAll(
+            'SELECT free_choice_exams.id as id, ' 
+            . 'free_choice_exams.group_id as group_id, '
+            . 'free_choice_exams.curriculum_id as curriculum_id, '
+            . 'curricula.academic_year as academic_year, '
+            . 'groups.name as name, '
+            . 'curricula.degree_id as degree_id '
+            . 'from free_choice_exams, curricula, `groups` '
+            . 'where free_choice_exams.curriculum_id = curricula.id AND '
+            . 'groups.id = free_choice_exams.group_id'
+            ) as $row) {
+            if ($row['group_id'] == 'null') continue;
+
+            $row['id'] = intval($row['id']);
+            $row['group_id'] = intval($row['group_id']);
+            $row['curriculum_id'] = intval($row['curriculum_id']);
+            $row['academic_year'] = intval($row['academic_year']);
+            $row['degree_id'] = intval($row['degree_id']);
+            // debug($row);
+            if (array_key_exists($row['group_id'], $new_groups)) {
+                if (array_key_exists($row['academic_year'], $new_groups[$row['group_id']])) {
+                    // group already created
+                    $new_group_id = $new_groups[$row['group_id']][$row['academic_year']];
+                } else {
+                    // duplicate group
+                    $new_group_id = $this->create_group($row['name'], $row['degree_id']);
+                    $new_groups[$row['group_id']][$row['academic_year']] = $new_group_id;
+                }
+                $this->execute('UPDATE free_choice_exams SET group_id = ' . $new_group_id . ' WHERE id = ' . $row['id']);
             } else {
                 // reuse group
                 $this->execute('UPDATE `groups` set degree_id = ' . $row['degree_id'] . ' where id = ' . $row['group_id']);

@@ -51,6 +51,10 @@
             <td><?php echo $degree['years']; ?></td>
         </tr>
         <tr>
+            <th>Attivato</th>
+            <td><?= $degree['enabled'] ? 'Attivo' : 'Non attivo' ?></td>
+        </tr>
+        <tr>
             <th>Richiesta parere</th>
             <td><?= $degree['enable_sharing'] ? 'Abilitata' : 'Non abilitata' ?></td>
         </tr>

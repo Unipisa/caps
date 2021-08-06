@@ -48,6 +48,7 @@ class Degree extends Entity
         'academic_year' => true,
         'curricula' => true,
         'years' => true,
+        'enabled' => true,
         'enable_sharing' => true,
         'approval_message' => true,
         'submission_message' => true,

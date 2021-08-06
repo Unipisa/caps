@@ -26,13 +26,10 @@ use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use App\Auth;
 use App\Application;
 use Cake\I18n\FrozenTime;
 use stdClass;
-use Cake\I18n\I18n;
 
 function is_associative_array($item)
 {

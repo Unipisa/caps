@@ -615,7 +615,7 @@ function caps_proposals_add() {
       cv_per_year = new Map();
 
       for (var j = 0; j < curricula.length; j++) {
-        var year = curricula[j].academic_year;
+        var year = curricula[j].degree.academic_year;
         if (cv_per_year.has(year)) {
           cv_per_year.get(year).push(curricula[j]);
         }

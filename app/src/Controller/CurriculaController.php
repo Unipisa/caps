@@ -23,8 +23,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
-use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
@@ -38,7 +36,7 @@ class CurriculaController extends AppController
         'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
-            'academic_year' => 'desc'
+            'Degrees.academic_year' => 'desc'
         ]
     ];
 
@@ -163,7 +161,10 @@ class CurriculaController extends AppController
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
 
         $exams = $exams_table->find('all');
-        $groups = $groups_table->find('all');
+        $groups = $groups_table->find('all', [
+            'conditions' => [
+                'Groups.degree_id' => $curriculum['degree_id']],
+            'contains' => ['Degrees']]);
 
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
@@ -176,7 +177,9 @@ class CurriculaController extends AppController
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
-        $this->set('groupsList', $groups_table->find('list'));
+        $this->set('groupsList', $groups_table->find('list',
+            ['conditions' => ['Groups.degree_id' => $curriculum['degree_id']]]
+        ));
 
         if (! $this->request->getData('curriculum')) {
             $this->set(compact('curriculum'));

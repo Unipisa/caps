@@ -79,17 +79,19 @@
                         <th>Anno</th>
                         <th>Azioni</th>
                     </tr>
-                    <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) { ?>
+                    <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) {
+                        // XXX(jacquerie): Terrible, terrible fix.
+                        $exam = null;
+                        foreach($exams as $e) {
+                            if ($e['id'] == $compulsory_exam['exam_id']) {
+                                $exam = $e;
+                            }
+                        }
+                        ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
                                 <?php
-                                // XXX(jacquerie): Terrible, terrible fix.
-                                foreach($exams as $exam) {
-                                    if ($exam['id'] == $compulsory_exam['exam_id']) {
-                                        $name = $exam['name'];
-                                    }
-                                }
-                                echo h($name);
+                                echo h($exam['name']);
                                 ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year"><?php echo $compulsory_exam['year']; ?></td>
@@ -102,7 +104,7 @@
                                         $compulsory_exam['id']],
                                     [
                                         'class' => 'btn btn-sm btn-danger',
-                                        'confirm' => __('Sei sicuro di voler cancellare l\'esame "{0}"?', $name)
+                                        'confirm' => __('Sei sicuro di voler cancellare l\'esame "{0}"?', $exam['name'])
                                     ]
                                 )
                                 ?>

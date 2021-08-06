@@ -24,8 +24,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
-use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
@@ -38,7 +36,7 @@ class GroupsController extends AppController
         'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
-            'academic_year' => 'desc'
+            'Degrees.academic_year' => 'desc'
         ]
     ];
 
