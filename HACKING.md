@@ -182,6 +182,7 @@ bin/cake migrations migrate
         name
         academic_year
         years
+        enabled
         enable_sharing
         approval_confirmation
         rejection_confirmation
