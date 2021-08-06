@@ -122,7 +122,7 @@
                     ?></td>
                 <td class="caps-admin-proposal-year">
                     <?php
-                    echo $curriculum['academic_year'];
+                    echo $curriculum['degree']['academic_year'];
                     ?>
                 </td>
                 <td class="caps-admin-proposal-degree">

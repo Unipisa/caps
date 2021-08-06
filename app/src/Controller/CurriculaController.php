@@ -38,7 +38,7 @@ class CurriculaController extends AppController
         'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
-            'academic_year' => 'desc'
+            'Degrees.academic_year' => 'desc'
         ]
     ];
 
