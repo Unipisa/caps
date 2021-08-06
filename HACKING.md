@@ -61,7 +61,8 @@ Per compilare i file JS e CSS è necessario entrare nella cartella ```html``` ed
 cd html/
 npm install
 npm run test # run js unit tests
-npm run deploy
+npm run deploy # compiles js and css files
+npm run deploy:dev # as above but for development
 ```
 
 Dopo la prima compilazione, può essere conveniente usare il comando ```npm run watch``` per ricompilare 

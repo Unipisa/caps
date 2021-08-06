@@ -10,6 +10,14 @@ class Degrees {
         return response["degrees"];
     }
 
+    async allActive() {
+        const response = await (
+            await fetch(Caps.root + 'degrees.json?enabled=1')
+        ).json();
+
+        return response["degrees"];
+    } 
+
 }
 
 module.exports = new Degrees();

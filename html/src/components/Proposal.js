@@ -24,7 +24,7 @@ class Proposal extends React.Component {
     async loadDegrees() {
         if (this.state.degrees === null) {
             this.setState({
-                degrees: await Degrees.all()
+                degrees: await Degrees.allActive()
             });
         }
     }
