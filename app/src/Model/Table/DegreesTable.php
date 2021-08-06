@@ -54,10 +54,16 @@ class DegreesTable extends Table
         parent::initialize($config);
 
         $this->setTable('degrees');
-        $this->setDisplayField('name');
+        $this->setDisplayField([
+            'name', 
+            'academic_year']);
         $this->setPrimaryKey('id');
 
         $this->hasMany('Curricula', [
+            'foreignKey' => 'degree_id'
+        ]);
+
+        $this->hasMany('Groups', [
             'foreignKey' => 'degree_id'
         ]);
     }
@@ -73,6 +79,9 @@ class DegreesTable extends Table
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
+
+        $validator
+            ->integer('academic_year');
 
         $validator
             ->scalar('name')

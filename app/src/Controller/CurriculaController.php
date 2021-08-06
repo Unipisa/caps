@@ -29,12 +29,13 @@ use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
 use App\Form\CurriculaFilterForm;
+use Cake\Http\Exception\NotFoundException;
 
 class CurriculaController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'academic_year', 'name', 'Degrees.name' ],
+        'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
             'academic_year' => 'desc'
@@ -79,51 +80,7 @@ class CurriculaController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-            if ($this->request->getData('clone')) {
-                $year = intval($this->request->getData('year'));
-
-                if ($year <= 0) {
-                    $this->Flash->error('Anno non valido specificato');
-
-                    return;
-                }
-
-                foreach ($selected as $curriculum_id) {
-                    $curriculum = $this->Curricula
-                        ->findById($curriculum_id)
-                        ->contain([ 'CompulsoryGroups', 'CompulsoryExams', 'FreeChoiceExams' ])
-                        ->firstOrFail();
-
-                    // We set the id and the id of all the children entities to null, so that a call to save will
-                    // automatically create new entities.
-                    $curriculum['id'] = null;
-                    $curriculum->isNew(true);
-                    $curriculum['academic_year'] = $year;
-
-                    foreach ($curriculum['compulsory_groups'] as $cg) {
-                        $cg['id'] = null;
-                        $cg->isNew(true);
-                    }
-                    foreach ($curriculum['compulsory_exams'] as $ce) {
-                        $ce['id'] = null;
-                        $ce->isNew(true);
-                    }
-                    foreach ($curriculum['free_choice_exams'] as $fce) {
-                        $fce['id'] = null;
-                        $fce->isNew(true);
-                    }
-
-                    if (! $this->Curricula->save($curriculum)) {
-                        $this->Flash->error('Impossibile duplicare il curriculum: ' + $curriculum['name']);
-
-                        return $this->redirect([ 'action' => 'index' ]);
-                    }
-                }
-                // debug($selected);
-                $this->Flash->success('Curricula correttamente duplicati');
-
-                return $this->redirect(['action' => 'index']);
-            } elseif ($this->request->getData('delete')) {
+            if ($this->request->getData('delete')) {
                 $delete_count = 0;
                 foreach ($selected as $curriculum_id) {
                     if ($this->deleteIfNotUsed($curriculum_id)) {
@@ -206,7 +163,10 @@ class CurriculaController extends AppController
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
 
         $exams = $exams_table->find('all');
-        $groups = $groups_table->find('all');
+        $groups = $groups_table->find('all', [
+            'conditions' => [
+                'Groups.degree_id' => $curriculum['degree_id']],
+            'contains' => ['Degrees']]);
 
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
@@ -219,7 +179,9 @@ class CurriculaController extends AppController
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
-        $this->set('groupsList', $groups_table->find('list'));
+        $this->set('groupsList', $groups_table->find('list',
+            ['conditions' => ['Groups.degree_id' => $curriculum['degree_id']]]
+        ));
 
         if (! $this->request->getData('curriculum')) {
             $this->set(compact('curriculum'));

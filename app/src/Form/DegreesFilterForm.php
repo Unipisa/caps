@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,23 +20,28 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-?>
-<h1>
-    <?= $group->isNew() ? 'Aggiungi gruppo' : 'Modifica gruppo' ?>
-</h1>
+namespace App\Form;
 
-<?= $this->element('card-start') ?>
-    <?php
-    // debug($group);
-    echo $this->Form->create($group);
-    echo $this->Form->input('name', ['label' => 'Nome']);
-    echo $this->Form->control('degree_id', ['label' => 'Corso']);
-    echo $this->Form->control('exams._ids', [ 'label' => 'Esami', 'size' => 15 ]);
-    if ($group->isNew()):
-        echo $this->Form->submit('Salva gruppo');
-    else:
-        echo $this->Form->submit('Modifica gruppo');
-    endif;
-    echo $this->Form->end();
-    ?>
-<?= $this->element('card-end') ?>
+use Cake\Form\Schema;
+use App\Form\FilterForm;
+
+class DegreesFilterForm extends FilterForm
+{
+    protected function _buildSchema(Schema $schema)
+    {
+        return $schema
+          ->addField('name', ['type' => 'string'])
+          ->addField('academic_year', ['type' => 'integer'])
+          ->addField('years', ['type' => 'integer']);
+    }
+
+    protected function _execute(array $data)
+    {
+        $this->setData($data);
+        $this->filterFieldLike('Degrees.name', 'name');
+        $this->filterFieldEqual('Degrees.academic_year', 'academic_year');
+        $this->filterFieldEqual('Degrees.years', 'years');
+
+        return $this->query;
+    }
+}

@@ -75,7 +75,7 @@ i file JS e CSS.
 
 ```bash
 cd app
-bin/cake migrations/migrate # applica eventuali migrazioni al database
+bin/cake migrations migrate # applica eventuali migrazioni al database
 vendor/bin/phpunit # run php unit tests
 bin/cake server & # run a development server
 ```
@@ -124,121 +124,128 @@ bin/cake migrations migrate
 
 ## Struttura dati
 
-    Attachment
+    Attachment [attachments]
         id
         filename
-        user -> User
-        proposal -> Proposal
+        user -> User [user_id]
+        proposal -> Proposal [proposal_id]
         data
         mimetype
         comment
         created
 
-    ChosenExam
+    ChosenExam [chosen_exams]
         id
         credits
         chosen_year
-        exam -> Exam
-        proposal -> Proposal
-        compulsory_group -> CompulsoryGroup (*) (!) 
-        compulsory_exam -> CompulsoryExams (*) (!) 
-        free_choice_exam -> FreeChoiceExam (*) (!) 
+        exam -> Exam [exam_id]
+        proposal -> Proposal [proposal_id]
+        compulsory_group -> CompulsoryGroup [compulsory_group_id] (*) (!) 
+        compulsory_exam -> CompulsoryExams [compulsory_exam_id] (*) (!) 
+        free_choice_exam -> FreeChoiceExam [free_choice_exam_id] (*) (!) 
         (*) uno solo dei tre puo' essere non null: indica la corrispondenza dell'esame nel curriculum
         (*) se tutti e tre sono null vuol dire che l'esame non era previsto nel curriculum
 
-    ChosenFreeChoiceExam
+    ChosenFreeChoiceExam [chosen_free_choice_exams]
         id
         name
         credits
         chosen_year
-        proposal -> Proposal
-        free_choice_exam -> FreeChoiceExam (*) (!)
-        (*) se non null indica la corrispondenza dell'esame nel curriculum. Ma attualmente l'utente non puo' inserirlo, infatti è sempre null!
-        (*) se null significa che e' un esame non in databse e  non previsto dal curriculum.
+        proposal -> Proposal [proposal_id]
 
-    CompulsoryExam
+    CompulsoryExam [compulsory_exams]
         id
         year
         position
-        exam -> Exam
-        curriculum -> Curriculum
+        exam -> Exam [exam_id]
+        curriculum -> Curriculum [curriculum_id]
 
-    CompulsoryGroup
+    CompulsoryGroup [compulsory_groups]
         id
         year
         position
-        group -> Group
-        curriculum -> Curriculum
+        group -> Group [group_id]
+        curriculum -> Curriculum [curriculum_id]
 
-    Curriculum
+    Curriculum [curricula]
         id
         name
-        academic_year
         notes
-        degree -> Degrees (!)
-        proposals <- Proposals
+        degree -> Degree [degree_id]
+        proposals <- Proposals 
         free_choice_exams <- FreeChoiceExam
         compulsory_exams <- CompulsoryExam
         compulsory_groups <- CompulsoryGroup
-        <- Proposal
 
-    Degree
+    Degree [degrees]
         id
         name
+        academic_year
         years
         enable_sharing
+        approval_confirmation
+        rejection_confirmation
+        submission_confirmation
+        approval_message
+        rejection_message
+        submission_message
+        free_choice_message
+        <- Curricula
+        <- Group
 
-    Exam
+
+    Exam [exams]
         id
         name
         code
         sector
         credits
-        <-> Exam
+        <-> Group [exams_groups]
 
-    FreeChoiceExam
+    FreeChoiceExam [free_choice_exams]
         id
         year
         position
-        curriculum -> Curriculum
+        curriculum -> Curriculum [curriculum_id]
 
-    Group
+    Group [groups]
         id
+        degree -> Degree [degree_id]
         name
-        <-> Exam
+        <-> Exam [exams_groups]
 
-    ProposalAuth
+    ProposalAuth [proposal_auths]
         id
         email
         secret
         created
-        proposal -> Proposal
+        proposal -> Proposal [proposal_id]
 
     Proposal
         id
-        modified
+        modified (date)
         state in ['draft','submitted','approved','rejected']
-        submitted_date
-        approved_date
-        user -> User
-        curriculum -> Curriculum
+        submitted_date (date)
+        approved_date (date)
+        user -> User [user_id]
+        curriculum -> Curriculum [curriculum_id]
         <- ChosenExam
         <- ChosenFreeChoiceExam
         <- ProposalAuth
         <- Attachment
 
-    Settings
+    Settings [settings]
         id
         field
         value
         fieldtype
 
-    Tag
+    Tag [tags]
         id
         name
-        <-> Exam
+        <-> Exam [tags_exams]
 
-    User
+    User [users]
         id
         username
         name
@@ -246,6 +253,6 @@ bin/cake migrations migrate
         givenname
         surname
         email
-        admin
+        admin (bool)
 
 (!) nel database manca il constraint!!
