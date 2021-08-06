@@ -23,7 +23,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
 use App\Caps\Utils;
 use App\Form\ProposalsFilterForm;
 use App\Model\Entity\ProposalAuth;
@@ -31,8 +30,6 @@ use Cake\Core\Configure;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
-use Cake\ORM\TableRegistry;
-use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\I18n\Time;
 use Cake\Utility\Security;

@@ -23,8 +23,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
-use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
