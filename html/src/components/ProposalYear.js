@@ -8,6 +8,32 @@ class ProposalYear extends React.Component {
 
     constructor(props) {
         super(props);
+        
+        this.state = {
+          selected_exams: []
+        };
+
+        // Based on the data in the Curriculum, we generate the initial state
+        // for this component, which holds all the exams that should be here.
+        this.createInitialState();
+    }
+
+    createInitialState() {
+      var selected_exams = [];
+
+      this.props.curriculum.compulsory_exams
+        .filter((e) => e.year == this.props.year)
+        .map((e) => selected_exams.push(e));
+
+      this.props.curriculum.compulsory_groups
+        .filter((e) => e.year == this.props.year)
+        .map((e) => selected_exams.push(e));
+
+      this.props.curriculum.free_choice_exams
+        .filter((e) => e.year == this.props.year)
+        .map((e) => selected_exams.push(e));
+
+      this.state["selected_exams"] = selected_exams;
     }
 
     getTitle() {
@@ -34,26 +60,36 @@ class ProposalYear extends React.Component {
         return "";
     }
 
+    handleExamDelete(exam) {
+      var selected_exams = this.state.selected_exams;
+      const idx = selected_exams.indexOf(exam);
+
+      if (idx > -1) {
+        selected_exams.splice(idx, 1);
+
+        this.setState({ 
+          selected_exams: selected_exams
+        });
+      }
+    }
+
     render() {
         const title = this.getTitle();
         const required_credits = this.props.curriculum.credits[this.props.year - 1];
         const credits = 0;
         const credits_color = this.getCreditsColor(credits, required_credits);
 
-        // We build the list of exams that are needed for this year; they are 
-        // rendered differently depending if they are compulsory exams, exams
-        // in a group, or free choice ones. 
-        var compulsory_exams = this.props.curriculum.compulsory_exams
-            .filter((e) => e.year == this.props.year)
-            .map((exam, i) => 
-                <ExamInput exam={exam} key={"compulsory-exam-" + i} />
-            );
-
-        var group_exams = this.props.curriculum.compulsory_groups
-            .filter((e) => e.year == this.props.year)
-            .map((exam, i) => 
-                <ExamInput group={exam.group} key={"group-exam" + i} />
-            );
+        const exam_inputs = this.state.selected_exams.map((exam, i) => {
+          if (exam.exam !== undefined) {
+            return <ExamInput exam={exam} key={"compulsory-exam-" + i} />
+          }
+          else if (exam.group !== undefined) {
+            return <ExamInput group={exam.group} key={"group-exam" + i} />
+          }
+          else {
+            return <ExamInput freeChoiceExam={exam} key={"free-choice-exam" + i} deleteCallback={() => this.handleExamDelete(exam)}/>
+          }
+        });
 
         return <div className="row my-2">
             <div className="col">
@@ -69,8 +105,7 @@ class ProposalYear extends React.Component {
                     </div>
                     <div className="card-body">
                         <ProposalYearNavBar year={this.props.year} />
-                        {compulsory_exams}
-                        {group_exams}
+                        {exam_inputs}
                     </div>
                 </div>
             </div>
