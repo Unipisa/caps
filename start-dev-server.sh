@@ -61,6 +61,7 @@ cd ..
 # Start the development server. If needed, build the image
 echo -n "Do you wish to regenerate the images? [yn]: "
 read ANS
+sudo true
 if [ "$ANS" = "y" ]; then
   ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
 fi

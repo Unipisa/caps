@@ -10,18 +10,19 @@ class ExamInput extends React.Component {
 
     var choices = null;
 
-    if (this.props.group !== undefined) {
-      this.loadGroupChoices();
-    }
-
-    if (this.props.freeChoiceExam !== undefined) {
-      // FIXME: We are currently not handling the case where this is a free choice 
-      // exam in a group, and instead we are always loading all the exams. 
-      this.loadChoices();
+    switch (this.props.exam.type) {
+      case "compulsory_group":
+        this.loadGroupChoices();
+        break;
+      case "free_choice_exam":
+        // FIXME: We are currently not handling the case where this is a free choice 
+        // exam in a group, and instead we are always loading all the exams. 
+        this.loadChoices();
+        break;
     }
 
     this.state = {
-      "selected_exam": this.props.exam ? this.props.exam.exam : null,
+      "selected_exam": this.props.exam.selection,
       "choices": choices
     };
   }
@@ -35,7 +36,7 @@ class ExamInput extends React.Component {
   }
 
   async loadGroupChoices() {
-    const group = await Groups.get(this.props.group.id);
+    const group = await Groups.get(this.props.exam.group.id);
 
     this.setState({
       group: group,
@@ -62,48 +63,63 @@ class ExamInput extends React.Component {
     this.props.deleteCallback();
   }
 
+  async onExamSelected(evt) {
+    const selected_exam = this.state.choices[evt.target.value];
+
+    this.setState({ 
+      selected_exam: selected_exam
+    });
+
+    // Trigger the onChange method from the parent, if specified
+    if (this.props.onChange !== undefined) {
+      this.props.onChange(this.props.exam, selected_exam);
+    }
+  }
+
+  getCredits() {
+    if (this.state.selected_exam === null) {
+      return 0;
+    }
+    else {
+      return this.state.selected_exam.credits;
+    }
+  }
+
   render() {
     var options = [];
     var hidden_fields = [];
 
     const removable = this.props.deleteCallback !== undefined;
 
-    // Free choice exams are rendered rather differently, so we use 
-    // a specific function. 
-    // if (this.props.freeChoiceExam !== undefined) {
-    //   return this.renderFreeChoiceExam();
-    // }
-
-    if (this.props.exam !== undefined) {
-      const exam = this.props.exam.exam;
-      options.push(
-        <option key={"exam-" + this.props.exam.exam_id} value={exam.id}>
-          {exam.name}
-        </option>
-      )
-      hidden_fields.push(
-        <input key="compulsory-exam-id" type="hidden" name="data[ChosenExam][][compulsory_exam_id]" value={this.props.exam.id} />
-      );
-    }
-
-    if (this.props.group !== undefined) {
-      options.push(
-        <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.group.name}</option>
-      );
-      hidden_fields.push(
-        <input key="compulsory-group-id" type="hidden" name="data[ChosenExam][][compulsory_group_id]" value={ this.props.group.id }></input>
-      )
-    }
-
-    if (this.props.freeChoiceExam !== undefined) {
-      options.push(
-        <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
-      );
+    switch (this.props.exam.type) {
+      case "compulsory_exam":
+        options.push(
+          <option key={"exam-" + this.props.exam.exam_id} value={this.props.exam.exam.id}>
+            {this.props.exam.exam.name}
+          </option>
+        )
+        hidden_fields.push(
+          <input key="compulsory-exam-id" type="hidden" name="data[ChosenExam][][compulsory_exam_id]" value={this.props.exam.id} />
+        );
+        break;
+      case "compulsory_group":
+        options.push(
+          <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.exam.group.name}</option>
+        );
+        hidden_fields.push(
+          <input key="compulsory-group-id" type="hidden" name="data[ChosenExam][][compulsory_group_id]" value={ this.props.exam.group.id }></input>
+        )
+        break;
+      case "free_choice_exam":
+        options.push(
+          <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
+        );
+        break;
     }
 
     if (this.state.choices !== null) {
       this.state.choices.map((exam, i) => 
-        options.push(<option key={"exam-choice-" + exam.id} value={exam.id}>
+        options.push(<option key={"exam-choice-" + exam.id} value={i}>
           {exam.name}
         </option>)
       );
@@ -111,7 +127,7 @@ class ExamInput extends React.Component {
 
     return <li className="form-group row">
         <div className="col-9">
-            <select name="data[ChosenExam][][exam_id]" className="exam form-control" defaultValue="-1">
+            <select name="data[ChosenExam][][exam_id]" className="exam form-control" defaultValue="-1" onChange={this.onExamSelected.bind(this)}>
               {options}
             </select>
         </div>
