@@ -4,10 +4,26 @@ const React = require('react');
 const ExamInput = require('./ExamInput');
 const ProposalYearNavBar = require('./ProposalYearNavBar');
 
+/**
+ * Tracks one year of the proposal; it contains in the state an array of 
+ * exams from the proposal, together with their current selection. They have 
+ * the following form:
+ * 
+ * { 
+ *   "exam": ... // in case of compulsory exams
+ *   "group" ... // in case of compulsory groups
+ *   "type": "XXX" // One of [ "compulsory_exam", "compulsory_group", "free_choice_exam", "free_exam" ]
+ *   ... // other fields from the database
+ * }
+ */
 class ProposalYear extends React.Component {
 
     constructor(props) {
         super(props);
+
+        // We use these ids to uniquely identified the newly added free choice
+        // exams, through the buttons in the navbar. 
+        this.id_counter = 0;
         
         this.state = {
           selected_exams: []
@@ -98,6 +114,34 @@ class ProposalYear extends React.Component {
       }
     }
 
+    onAddExamClicked() {
+      this.setState({ 
+        selected_exams: [ 
+          ...this.state.selected_exams, 
+          { 
+            "type": "free_choice_exam",
+            "id": "custom-" + this.props.year + "-" + this.id_counter
+          }
+        ]
+      })
+
+      this.id_counter++;
+    }
+
+    onAddFreeExamClicked() {
+      this.setState({ 
+        selected_exams: [ 
+          ...this.state.selected_exams, 
+          { 
+            "type": "free_exam",
+            "id": "custom-" + this.props.year + "-" + this.id_counter
+          }
+        ]
+      })
+
+      this.id_counter++;
+    }
+
     creditCount() {
       return this.state.selected_exams.reduce(
         (a, b) => a + (b.selection != null ? b.selection.credits : 0),
@@ -110,10 +154,11 @@ class ProposalYear extends React.Component {
         const required_credits = this.props.curriculum.credits[this.props.year - 1];
 
         const exam_inputs = this.state.selected_exams.map((exam, i) => {
+          const removable = exam.type == "free_choice_exam" || exam.type == "free_exam";
           const deleteCallback = () => this.handleExamDelete(exam);
           const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
           return <ExamInput exam={exam} key={"exam-input-" + i} 
-                            deleteCallback={exam.type == "free_choice_exam" ? deleteCallback : undefined}
+                            deleteCallback={removable ? deleteCallback : undefined}
                             onChange={onChangeCallback} />;
         });
 
@@ -130,13 +175,14 @@ class ProposalYear extends React.Component {
                         <div className="d-flex justify-content-between align-content-center">
                             <h3 className="h5 text-white">{title}</h3>
                             <div className="h5 text-white">Crediti:  
-                                    <span className={ "credit-block " + credits_color } 
-                                      id="credit-block-1"> {credits}</span>/{required_credits}
+                                    <span className={ "credit-block " + credits_color }> {credits}</span>/{required_credits}
                             </div>
                         </div>
                     </div>
                     <div className="card-body">
-                        <ProposalYearNavBar year={this.props.year} />
+                        <ProposalYearNavBar year={this.props.year} 
+                          onAddExamClicked={this.onAddExamClicked.bind(this)} 
+                          onAddFreeExamClicked={this.onAddFreeExamClicked.bind(this)} />
                         {exam_inputs}
                     </div>
                 </div>

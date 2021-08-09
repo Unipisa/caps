@@ -8,12 +8,28 @@ class ProposalYearNavBar extends React.Component {
         super(props);
     }
 
+    onAddExamClicked() {
+        if (this.props.onAddExamClicked !== undefined) {
+            this.props.onAddExamClicked();
+        }
+    }
+
+    onAddFreeExamClicked() {
+        if (this.props.onAddFreeExamClicked !== undefined) {
+            this.props.onAddFreeExamClicked();
+        }
+    }
+
     render() {
         return <nav id={ "nav-year-" + this.props.year }>
             <div className="d-flex mb-4">
                 <div className="flex-fill"></div>
-                <a href="#" className="newMathematicsExam"><button type="button" className="btn-primary btn btn-sm mr-2">Aggiungi esame di Matematica</button></a>
-                <a href="#" className="newFreeChoiceExam"><button type="button" className="btn-primary btn btn-sm">Aggiungi esame a scelta libera</button></a>
+                <button type="button" className="btn-primary btn btn-sm mr-2" onClick={this.onAddExamClicked.bind(this)}>
+                    Aggiungi esame di Matematica
+                </button>
+                <button type="button" className="btn-primary btn btn-sm" onClick={this.onAddFreeExamClicked.bind(this)}>
+                    Aggiungi esame a scelta libera
+                </button>
             </div>
         </nav>;
     }

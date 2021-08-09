@@ -15,9 +15,10 @@ class ExamInput extends React.Component {
         this.loadGroupChoices();
         break;
       case "free_choice_exam":
-        // FIXME: We are currently not handling the case where this is a free choice 
-        // exam in a group, and instead we are always loading all the exams. 
-        this.loadChoices();
+        if (this.props.exam.group_id == null)
+          this.loadChoices();
+        else
+          this.loadGroupChoices();
         break;
     }
 
@@ -36,7 +37,7 @@ class ExamInput extends React.Component {
   }
 
   async loadGroupChoices() {
-    const group = await Groups.get(this.props.exam.group.id);
+    const group = await Groups.get(this.props.exam.group_id);
 
     this.setState({
       group: group,
@@ -44,23 +45,31 @@ class ExamInput extends React.Component {
     });
   }
 
-  renderFreeChoiceExam() {
-    // return <li className="form-group row">
-    //   <div className="col-9">
-    //     <input className="form-control exam" name="data[ChosenFreeChoiceExam][][name]" required="" type="text" placeholder="Un esame a scelta libera" value="" />
-    //   </div>
-    //     <input className="form-control" type="hidden" name="data[ChosenFreeChoiceExam][][chosen_year]" value="1" />
-    //   <div className="col-2">
-    //     <input className="form-control credits" name="data[ChosenFreeChoiceExam][][credits]" type="number" min="1" required="" value="" />
-    //   </div>
-    //   <div className="col-1 my-auto">
-    //     <a href='#' className='delete fas fw fa-trash'></a>
-    //   </div>
-    // </li>;
+  onFreeExamChanged(evt) {
+    const text = evt.target.value;
+  }
+
+  renderFreeExam() {
+    return <li className="form-group row">
+      <div className="col-9">
+        <input className="form-control exam"
+        required="" type="text" placeholder="Un esame a scelta libera" 
+        onChange={this.onFreeExamChanged.bind(this)} />
+      </div>
+      <div className="col-2">
+        <input className="form-control credits" 
+        type="number" min="1" required=""
+        onChange={this.onFreeExamChanged.bind(this)} />
+      </div>
+      <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
+        <i href='#' className='delete fas fw fa-trash'></i>
+      </div>
+    </li>;
   }
 
   onDeleteClicked() {
-    this.props.deleteCallback();
+    if (this.props.deleteCallback !== undefined)
+      this.props.deleteCallback();
   }
 
   async onExamSelected(evt) {
@@ -86,6 +95,11 @@ class ExamInput extends React.Component {
   }
 
   render() {
+    // Free exams are a special case, we handle them separately
+    if (this.props.exam.type == "free_exam") {
+      return this.renderFreeExam();
+    }
+
     var options = [];
     var hidden_fields = [];
 
