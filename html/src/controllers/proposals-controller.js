@@ -20,14 +20,14 @@ class CapsProposalsController extends CapsAppController {
             // embedded script in the page. 
             id = params.pass[0];
         }
-        
+
         // caps_proposals_add();
 
         ReactDOM.render(
-            <Proposal root={this.root} id={id} csrfToken={ params._csrfToken }></Proposal>,
+            <Proposal root={this.root} id={id} csrfToken={params._csrfToken}></Proposal>,
             document.querySelector('#app')
         );
-    } 
+    }
 
     index(params) {
         var query = params["?"];

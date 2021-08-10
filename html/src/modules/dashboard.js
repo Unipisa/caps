@@ -14,7 +14,7 @@ async function loadDashboardData() {
 
     // We fill in the data
     document.getElementById('current-month-submission-count').innerHTML = data.submission_counts[11];
-    document.getElementById('current-year-submission-count').innerHTML = data.submission_counts.reduce((a,b) => a + b);
+    document.getElementById('current-year-submission-count').innerHTML = data.submission_counts.reduce((a, b) => a + b);
 
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 

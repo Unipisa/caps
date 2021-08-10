@@ -16,7 +16,7 @@ class Degrees {
         ).json();
 
         return response["degrees"];
-    } 
+    }
 
 }
 
