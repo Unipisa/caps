@@ -24,7 +24,12 @@ class ExamInput extends React.Component {
 
     this.state = {
       "selected_exam": this.props.exam.selection,
-      "choices": choices
+      "choices": choices,
+
+      // These two fields are only used for Free exams, which are 
+      // typed in manually by the user
+      "credits": 0,
+      "name": ""
     };
   }
 
@@ -45,8 +50,38 @@ class ExamInput extends React.Component {
     });
   }
 
-  onFreeExamChanged(evt) {
+  onFreeExamNameChanged(evt) {
     const text = evt.target.value;
+    this.setState((s) => { 
+      if (this.props.onChange !== undefined) {
+        this.props.onChange(this.props.exam, {
+          "name": text, "credits": s.credits
+        });
+      }
+
+      return {
+        name: text
+      };
+    });
+  }
+
+  onFreeExamCreditsChanged(evt) {
+    var credits = parseInt(evt.target.value);
+
+    if (isNaN(credits) || credits < 0)
+      credits = 0;
+
+    this.setState((s) => { 
+      if (this.props.onChange !== undefined) {
+        this.props.onChange(this.props.exam, {
+          "name": s.name, "credits": credits
+        });
+      }
+
+      return {
+        credits: credits
+      };
+    });
   }
 
   renderFreeExam() {
@@ -54,12 +89,12 @@ class ExamInput extends React.Component {
       <div className="col-9">
         <input className="form-control exam"
         required="" type="text" placeholder="Un esame a scelta libera" 
-        onChange={this.onFreeExamChanged.bind(this)} />
+        onChange={this.onFreeExamNameChanged.bind(this)} />
       </div>
       <div className="col-2">
         <input className="form-control credits" 
         type="number" min="1" required=""
-        onChange={this.onFreeExamChanged.bind(this)} />
+        onChange={this.onFreeExamCreditsChanged.bind(this)} />
       </div>
       <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
         <i href='#' className='delete fas fw fa-trash'></i>

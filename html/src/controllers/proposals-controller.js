@@ -13,17 +13,18 @@ class CapsProposalsController extends CapsAppController {
     }
 
     add(params) {
+        var id = undefined;
         if (params.pass.length > 0) {
             // FIXME: We may use this to initialize the proposal for drafts, 
             // instead of the current hack passing data through CakePHP in an 
             // embedded script in the page. 
-            const id = params.pass[0];
+            id = params.pass[0];
         }
         
         caps_proposals_add();
 
         ReactDOM.render(
-            <Proposal root={this.root}></Proposal>,
+            <Proposal root={this.root} id={id}></Proposal>,
             document.querySelector('#app')
         );
     } 

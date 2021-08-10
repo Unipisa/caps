@@ -364,7 +364,7 @@ class ProposalsController extends AppController
         $proposal->attachments = null;
         $this->set('proposal_json', json_encode($proposal));
         $proposal->attachments = $save_attachments;
-        $this->set('_serialize', [ 'proposal' ]);
+        $this->set('_serialize', 'proposal');
     }
 
     public function pdf($id)

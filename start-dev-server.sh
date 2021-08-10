@@ -59,7 +59,14 @@ npm install
 cd ..
 
 # Start the development server. If needed, build the image
-echo -n "Do you wish to regenerate the images? [yn]: "
+echo ""
+echo "== IMAGE REGENERATION =="
+echo "Regenerating the image is only needed in case there have been"
+echo "changes in the migrations or the app configuration, or if this"
+echo "is the first time that the script is used. "
+echo "The regeneration can take some time."
+echo ""
+echo -n "Do you wish to regenerate the images now? [yn]: "
 read ANS
 sudo true
 if [ "$ANS" = "y" ]; then
