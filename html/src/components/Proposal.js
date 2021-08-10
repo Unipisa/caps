@@ -260,8 +260,8 @@ class Proposal extends React.Component {
         ce.map((e) => {
           if (e.type == "free_exam") {
             chosen_free_choice_exams.push({
-              name: e.name, 
-              credits: e.credits, 
+              name: e.selection.name, 
+              credits: e.selection.credits, 
               chosen_year: year
             });
           }
