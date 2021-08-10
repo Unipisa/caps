@@ -35,9 +35,8 @@ class Proposal extends React.Component {
                     if (a.name > b.name) return 1;
                     return 0;}
                 )}, () => {
-                if (this.props.id !== undefined) {
+                  if (this.props.id !== undefined)
                     this.loadProposal(this.props.id);
-                }
             });
         }
     }
@@ -52,12 +51,25 @@ class Proposal extends React.Component {
         // the selected exams array in the correct way.
         // console.log(proposal);
 
+        var selected_exams = Array(degree.years).fill();
+
+        for (var year = 1; year <= degree.years; year++) {
+          // Compute the list of selected exams for this year, if this is a 
+          // proposal that has been already saved.
+          var exams = [];
+          var free_exams = [];
+          exams = proposal.chosen_exams.filter((e) => e.chosen_year == year);
+          free_exams = proposal.chosen_free_choice_exams.filter((e) => e.chosen_year == year);
+
+          selected_exams[year-1] = this.createInitialState(curriculum, year, exams, free_exams, true);
+        }
+
         this.setState((s) => {
             return {
                 'curricula': curricula,
                 'selected_curriculum': curriculum, 
                 'selected_degree': degree,
-                'selected_exams': [],
+                'selected_exams': selected_exams,
                 'proposal': proposal
             }
         });
@@ -138,37 +150,135 @@ class Proposal extends React.Component {
         if (idx >= 0) {
             const curriculum_id = this.state.curricula[idx].id;
             const curriculum = await Curricula.get(curriculum_id);
-            const years = curriculum.credits.length;
+            const years = curriculum.degree.years;
+
+            var selected_exams = Array(years).fill();
+            
+            for (var year = 1; year <= curriculum.degree.years; year++) {    
+             selected_exams[year-1] = this.createInitialState(curriculum, year, [], [], true);
+            }
+
+            console.log(selected_exams);
+    
             this.setState({ 
                 'selected_curriculum': curriculum,
-                // We prepare selected exams as an array of arrays, each containing 
-                // the exams selected for a given year
-                'selected_exams': Array(years).fill().map(() => [])
+                'selected_exams': selected_exams
             });
             
         }
     }
 
+    createInitialState(curriculum, year, exams, free_exams) {
+      var selected_exams = [];
+
+      curriculum.compulsory_exams
+        .filter((e) => e.year == year)
+        .map((e) => selected_exams.push({ ...e, "type": "compulsory_exam", "selection": e.exam }));
+
+      curriculum.compulsory_groups
+        .filter((e) => e.year == year)
+        .map((e) => selected_exams.push({ ...e, "type": "compulsory_group", "selection": null }));
+
+      curriculum.free_choice_exams
+        .filter((e) => e.year == year)
+        .map((e) => selected_exams.push({ ...e, "type": "free_choice_exam", "selection": null }));
+
+      // We sort the exams based on their position index
+      selected_exams.sort((a, b) => a.position < b.position);
+
+      // If the user has prescribed some exams that have already been
+      // chosen, try to match them to the constraints in the curriculum.
+      selected_exams = this.matchExamsToCurriculum(selected_exams, exams, free_exams, this.state.proposal !== null);
+      
+      return selected_exams;
+    }
+
+    matchExamsToCurriculum(selected_exams, exams, free_exams, purge_removable) {
+      var exams = [ ...exams ];
+      var free_exams = [ ...free_exams ];
+
+      while (exams.length > 0) {
+        const e = exams.pop();
+        var match = false; // This is set to true if we find a match
+
+        if (e.compulsory_exam_id !== null) {
+          const idx = selected_exams
+            .map((e) => e.type == "compulsory_exam" ? e.id : -1)
+            .indexOf(e.compulsory_exam_id);
+
+          if (idx > -1) {
+            selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+        else if (e.compulsory_group_id != null) {
+          const idx = selected_exams
+          .map((e) => e.type == "compulsory_group" ? e.id : -1)
+          .indexOf(e.compulsory_group_id);
+
+          if (idx > -1) {
+            selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+        else {
+          const idx = selected_exams
+          .map((e) => e.type == "free_choice_exam" ? e.id : -1)
+          .indexOf(e.free_choice_exam_id);
+
+          if (idx > -1) {
+            selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+
+        if (! match) {
+          selected_exams.push({
+            type: "free_choice_exam",
+            selection: e.exam,
+            "id": "custom-" + this.props.year + "-" + this.id_counter++,
+          })
+        }
+      }
+
+      while (free_exams.length > 0) {
+        const e = free_exams.pop();
+
+       selected_exams.push({
+          type: "free_exam",
+          selection: {
+            "name": e.name,
+            "credits": e.credits
+          },
+          "id": "custom-" + this.props.year + "-" + this.id_counter++
+        });
+      }
+
+      // At this point we can remove any removable exam that was not found in 
+      // the saved entry, since this needs to have been deleted by the user. 
+      // The only removable exams that are prescribed in the curricula are
+      // free_choice_exams, so it's sufficient to check those. 
+      if (purge_removable) {
+        selected_exams = selected_exams
+          .filter((e) => e.type != "free_choice_exam" || e.selection);
+      }
+
+      return selected_exams;
+    }
+
     renderProposal() {
         var rows = [];
-        for (var i = 1; i <= this.state.selected_curriculum.credits.length; i++) {
+        for (var i = 1; i <= this.state.selected_degree.years; i++) {
             const year = i;
 
-            // Compute the list of selected exams for this year, if this is a 
-            // proposal that has been already saved.
-            var exams = [];
-            var free_exams = [];
-            if (this.state.proposal !== null) {
-              exams = this.state.proposal.chosen_exams.filter((e) => e.chosen_year == year);
-              free_exams = this.state.proposal.chosen_free_choice_exams.filter((e) => e.chosen_year == year);
-            }
+            const selected_exams = this.state.selected_exams[i-1];
 
             rows.push(
                 <ProposalYear key={"proposal-year-" + year} 
                   year={year} 
                   curriculum={this.state.selected_curriculum} 
                   onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
-                  exams={exams} free_exams={free_exams} />
+                  selected_exams={selected_exams} />
             );
         }
         
@@ -176,6 +286,8 @@ class Proposal extends React.Component {
     }
 
     onSelectedExamsChanged(year, selected_exams) {
+      console.log(selected_exams);
+
         // Wrapping this into a function is necessary to 
         // make sure there are no race conditions in the update, 
         // and the state is always read in an updated version.
@@ -194,6 +306,7 @@ class Proposal extends React.Component {
         var missing_selections = 0;
 
         // Count the number of missing selections for each of the curriculum's years. 
+        console.log(this.state.selected_exams);
         this.state.selected_exams.map((se) => {
             missing_selections += se.filter(
                 (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null

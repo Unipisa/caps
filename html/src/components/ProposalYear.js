@@ -24,105 +24,10 @@ class ProposalYear extends React.Component {
         // We use these ids to uniquely identified the newly added free choice
         // exams, through the buttons in the navbar. 
         this.id_counter = 0;
-        
-        this.state = {
-          selected_exams: []
-        };
 
         // Based on the data in the Curriculum, we generate the initial state
         // for this component, which holds all the exams that should be here.
-        this.createInitialState();
-    }
-
-    createInitialState() {
-      var selected_exams = [];
-
-      this.props.curriculum.compulsory_exams
-        .filter((e) => e.year == this.props.year)
-        .map((e) => selected_exams.push({ ...e, "type": "compulsory_exam", "selection": e.exam }));
-
-      this.props.curriculum.compulsory_groups
-        .filter((e) => e.year == this.props.year)
-        .map((e) => selected_exams.push({ ...e, "type": "compulsory_group", "selection": null }));
-
-      this.props.curriculum.free_choice_exams
-        .filter((e) => e.year == this.props.year)
-        .map((e) => selected_exams.push({ ...e, "type": "free_choice_exam", "selection": null }));
-
-      // We sort the exams based on their position index
-      selected_exams.sort((a, b) => a.position < b.position);
-
-      // If the user has prescribed some exams that have already been
-      // chosen, try to match them to the constraints in the curriculum.
-      this.state.selected_exams = selected_exams;
-      this.matchExamsToCurriculum();
-      this.onSelectedExamsChanged(selected_exams);
-    }
-
-    matchExamsToCurriculum(exams) {
-      while (this.props.exams.length > 0) {
-        const e = this.props.exams.pop();
-        var match = false; // This is set to true if we find a match
-
-        if (e.compulsory_exam_id !== null) {
-          const idx = this.state.selected_exams
-            .map((e) => e.type == "compulsory_exam" ? e.id : -1)
-            .indexOf(e.compulsory_exam_id);
-
-          if (idx > -1) {
-            this.state.selected_exams[idx].selection = e.exam;
-            match = true;
-          }
-        }
-        else if (e.compulsory_group_id != null) {
-          const idx = this.state.selected_exams
-          .map((e) => e.type == "compulsory_group" ? e.id : -1)
-          .indexOf(e.compulsory_group_id);
-
-          if (idx > -1) {
-            this.state.selected_exams[idx].selection = e.exam;
-            match = true;
-          }
-        }
-        else {
-          const idx = this.state.selected_exams
-          .map((e) => e.type == "free_choice_exam" ? e.id : -1)
-          .indexOf(e.free_choice_exam_id);
-
-          if (idx > -1) {
-            this.state.selected_exams[idx].selection = e.exam;
-            match = true;
-          }
-        }
-
-        if (! match) {
-          this.state.selected_exams.push({
-            type: "free_choice_exam",
-            selection: e.exam,
-            "id": "custom-" + this.props.year + "-" + this.id_counter++,
-          })
-        }
-      }
-
-      while (this.props.free_exams.length > 0) {
-        const e = this.props.free_exams.pop();
-
-        this.state.selected_exams.push({
-          type: "free_exam",
-          selection: {
-            "name": e.name,
-            "credits": e.credits
-          },
-          "id": "custom-" + this.props.year + "-" + this.id_counter++
-        });
-      }
-
-      // At this point we can remove any removable exam that was not found in 
-      // the saved entry, since this needs to have been deleted by the user. 
-      // The only removable exams that are prescribed in the curricula are
-      // free_choice_exams, so it's sufficient to check those. 
-      this.state.selected_exams = this.state.selected_exams
-        .filter((e) => e.type != "free_choice_exam" || e.selection);
+        // this.createInitialState();
     }
 
     getTitle() {
@@ -150,86 +55,62 @@ class ProposalYear extends React.Component {
     }
 
     handleExamDelete(exam) {
-      var selected_exams = this.state.selected_exams;
+      var selected_exams = this.props.selected_exams;
       const idx = selected_exams.indexOf(exam);
 
       if (idx > -1) {
         selected_exams.splice(idx, 1);
-
-        this.setState({ 
-          selected_exams: selected_exams
-        });
-
         this.onSelectedExamsChanged(selected_exams);
       }
     }
 
     handleExamSelected(exam, selected_exam) {
-      const idx = this.state.selected_exams.indexOf(exam);
+      const idx = this.props.selected_exams.indexOf(exam);
 
       if (idx >= -1) {
         // This part is a bit tricky because we need to make a 
         // deep copy of the exam, and actually replace the array, 
         // not just the references, for React to trigger the 
         // correct re-rendering. 
-        const exam = this.state.selected_exams[idx];
+        const exam = this.props.selected_exams[idx];
         var exam_copy = { ...exam };
         exam_copy.selection = selected_exam;
 
         const selected_exams = [ 
-          ...this.state.selected_exams.slice(0, idx), 
+          ...this.props.selected_exams.slice(0, idx), 
           exam_copy, 
-          ...this.state.selected_exams.slice(idx+1), 
+          ...this.props.selected_exams.slice(idx+1), 
         ];
-
-        this.setState({
-          selected_exams: selected_exams
-        });
-
         this.onSelectedExamsChanged(selected_exams);
       }
     }
 
     onAddExamClicked() {
-      this.setState((s) => { 
-        const selected_exams = [ 
-          ...this.state.selected_exams, 
-          { 
-            "type": "free_choice_exam",
-            "id": "custom-" + this.props.year + "-" + this.id_counter,
-            "selection": null
-          }
-        ];
-
-        this.onSelectedExamsChanged(selected_exams);
-
-        return { 
-          selected_exams: selected_exams
-        };
-      })
+      const selected_exams = [ 
+        ...this.props.selected_exams, 
+        { 
+          "type": "free_choice_exam",
+          "id": "custom-" + this.props.year + "-" + this.id_counter,
+          "selection": null
+        }
+      ];
 
       this.id_counter++;
+      this.onSelectedExamsChanged(selected_exams);
     }
 
     onAddFreeExamClicked() {
-      this.setState((s) => { 
-        const selected_exams = [ 
-          ...s.selected_exams, 
-          { 
-            "type": "free_exam",
-            "id": "custom-" + this.props.year + "-" + this.id_counter,
-            "selection": null
-          }
-        ];
-
-        this.onSelectedExamsChanged(selected_exams);
-
-        return { 
-          selected_exams: selected_exams
-        };
-      })
+      const selected_exams = [ 
+        ...this.props.selected_exams, 
+        { 
+          "type": "free_exam",
+          "id": "custom-" + this.props.year + "-" + this.id_counter,
+          "selection": null
+        }
+      ];
 
       this.id_counter++;
+      this.onSelectedExamsChanged(selected_exams);
     }
 
     onSelectedExamsChanged(selected_exams) {
@@ -239,7 +120,7 @@ class ProposalYear extends React.Component {
     }
 
     creditCount() {
-      return this.state.selected_exams.reduce(
+      return this.props.selected_exams.reduce(
         (a, b) => a + (b.selection != null ? b.selection.credits : 0),
         0
       );
@@ -249,7 +130,7 @@ class ProposalYear extends React.Component {
         const title = this.getTitle();
         const required_credits = this.props.curriculum.credits[this.props.year - 1];
 
-        const exam_inputs = this.state.selected_exams.map((exam, i) => {
+        const exam_inputs = this.props.selected_exams.map((exam, i) => {
           const removable = exam.type == "free_choice_exam" || exam.type == "free_exam";
           const deleteCallback = () => this.handleExamDelete(exam);
           const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
