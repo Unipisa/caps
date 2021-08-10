@@ -18,7 +18,7 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'selected_exams': null,
+            'chosen_exams': null,
             'proposal': null
         };
 
@@ -51,7 +51,7 @@ class Proposal extends React.Component {
         // the selected exams array in the correct way.
         // console.log(proposal);
 
-        var selected_exams = Array(degree.years).fill();
+        var chosen_exams = Array(degree.years).fill();
 
         for (var year = 1; year <= degree.years; year++) {
           // Compute the list of selected exams for this year, if this is a 
@@ -61,7 +61,7 @@ class Proposal extends React.Component {
           exams = proposal.chosen_exams.filter((e) => e.chosen_year == year);
           free_exams = proposal.chosen_free_choice_exams.filter((e) => e.chosen_year == year);
 
-          selected_exams[year-1] = this.createInitialState(curriculum, year, exams, free_exams, true);
+          chosen_exams[year-1] = this.createInitialState(curriculum, year, exams, free_exams, true);
         }
 
         this.setState((s) => {
@@ -69,7 +69,7 @@ class Proposal extends React.Component {
                 'curricula': curricula,
                 'selected_curriculum': curriculum, 
                 'selected_degree': degree,
-                'selected_exams': selected_exams,
+                'chosen_exams': chosen_exams,
                 'proposal': proposal
             }
         });
@@ -152,48 +152,48 @@ class Proposal extends React.Component {
             const curriculum = await Curricula.get(curriculum_id);
             const years = curriculum.degree.years;
 
-            var selected_exams = Array(years).fill();
+            var chosen_exams = Array(years).fill();
             
             for (var year = 1; year <= curriculum.degree.years; year++) {    
-             selected_exams[year-1] = this.createInitialState(curriculum, year, [], [], true);
+             chosen_exams[year-1] = this.createInitialState(curriculum, year, [], [], true);
             }
 
-            console.log(selected_exams);
+            console.log(chosen_exams);
     
             this.setState({ 
                 'selected_curriculum': curriculum,
-                'selected_exams': selected_exams
+                'chosen_exams': chosen_exams
             });
             
         }
     }
 
     createInitialState(curriculum, year, exams, free_exams) {
-      var selected_exams = [];
+      var chosen_exams = [];
 
       curriculum.compulsory_exams
         .filter((e) => e.year == year)
-        .map((e) => selected_exams.push({ ...e, "type": "compulsory_exam", "selection": e.exam }));
+        .map((e) => chosen_exams.push({ ...e, "type": "compulsory_exam", "selection": e.exam }));
 
       curriculum.compulsory_groups
         .filter((e) => e.year == year)
-        .map((e) => selected_exams.push({ ...e, "type": "compulsory_group", "selection": null }));
+        .map((e) => chosen_exams.push({ ...e, "type": "compulsory_group", "selection": null }));
 
       curriculum.free_choice_exams
         .filter((e) => e.year == year)
-        .map((e) => selected_exams.push({ ...e, "type": "free_choice_exam", "selection": null }));
+        .map((e) => chosen_exams.push({ ...e, "type": "free_choice_exam", "selection": null }));
 
       // We sort the exams based on their position index
-      selected_exams.sort((a, b) => a.position < b.position);
+      chosen_exams.sort((a, b) => a.position < b.position);
 
       // If the user has prescribed some exams that have already been
       // chosen, try to match them to the constraints in the curriculum.
-      selected_exams = this.matchExamsToCurriculum(selected_exams, exams, free_exams, this.state.proposal !== null);
+      chosen_exams = this.matchExamsToCurriculum(chosen_exams, exams, free_exams, this.state.proposal !== null);
       
-      return selected_exams;
+      return chosen_exams;
     }
 
-    matchExamsToCurriculum(selected_exams, exams, free_exams, purge_removable) {
+    matchExamsToCurriculum(chosen_exams, exams, free_exams, purge_removable) {
       var exams = [ ...exams ];
       var free_exams = [ ...free_exams ];
 
@@ -202,38 +202,38 @@ class Proposal extends React.Component {
         var match = false; // This is set to true if we find a match
 
         if (e.compulsory_exam_id !== null) {
-          const idx = selected_exams
+          const idx = chosen_exams
             .map((e) => e.type == "compulsory_exam" ? e.id : -1)
             .indexOf(e.compulsory_exam_id);
 
           if (idx > -1) {
-            selected_exams[idx].selection = e.exam;
+            chosen_exams[idx].selection = e.exam;
             match = true;
           }
         }
         else if (e.compulsory_group_id != null) {
-          const idx = selected_exams
+          const idx = chosen_exams
           .map((e) => e.type == "compulsory_group" ? e.id : -1)
           .indexOf(e.compulsory_group_id);
 
           if (idx > -1) {
-            selected_exams[idx].selection = e.exam;
+            chosen_exams[idx].selection = e.exam;
             match = true;
           }
         }
         else {
-          const idx = selected_exams
+          const idx = chosen_exams
           .map((e) => e.type == "free_choice_exam" ? e.id : -1)
           .indexOf(e.free_choice_exam_id);
 
           if (idx > -1) {
-            selected_exams[idx].selection = e.exam;
+            chosen_exams[idx].selection = e.exam;
             match = true;
           }
         }
 
         if (! match) {
-          selected_exams.push({
+          chosen_exams.push({
             type: "free_choice_exam",
             selection: e.exam,
             "id": "custom-" + this.props.year + "-" + this.id_counter++,
@@ -244,7 +244,7 @@ class Proposal extends React.Component {
       while (free_exams.length > 0) {
         const e = free_exams.pop();
 
-       selected_exams.push({
+       chosen_exams.push({
           type: "free_exam",
           selection: {
             "name": e.name,
@@ -259,11 +259,11 @@ class Proposal extends React.Component {
       // The only removable exams that are prescribed in the curricula are
       // free_choice_exams, so it's sufficient to check those. 
       if (purge_removable) {
-        selected_exams = selected_exams
+        chosen_exams = chosen_exams
           .filter((e) => e.type != "free_choice_exam" || e.selection);
       }
 
-      return selected_exams;
+      return chosen_exams;
     }
 
     renderProposal() {
@@ -271,32 +271,32 @@ class Proposal extends React.Component {
         for (var i = 1; i <= this.state.selected_degree.years; i++) {
             const year = i;
 
-            const selected_exams = this.state.selected_exams[i-1];
+            const chosen_exams = this.state.chosen_exams[i-1];
 
             rows.push(
                 <ProposalYear key={"proposal-year-" + year} 
                   year={year} 
                   curriculum={this.state.selected_curriculum} 
                   onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
-                  selected_exams={selected_exams} />
+                  chosen_exams={chosen_exams} />
             );
         }
         
         return rows;
     }
 
-    onSelectedExamsChanged(year, selected_exams) {
-      console.log(selected_exams);
+    onSelectedExamsChanged(year, chosen_exams) {
+      console.log(chosen_exams);
 
         // Wrapping this into a function is necessary to 
         // make sure there are no race conditions in the update, 
         // and the state is always read in an updated version.
         this.setState((s) => {
             return {
-                selected_exams: [
-                    ...s.selected_exams.slice(0, year - 1), 
-                    selected_exams,
-                    ...s.selected_exams.slice(year)
+                chosen_exams: [
+                    ...s.chosen_exams.slice(0, year - 1), 
+                    chosen_exams,
+                    ...s.chosen_exams.slice(year)
                 ]
             };
         });
@@ -306,8 +306,8 @@ class Proposal extends React.Component {
         var missing_selections = 0;
 
         // Count the number of missing selections for each of the curriculum's years. 
-        console.log(this.state.selected_exams);
-        this.state.selected_exams.map((se) => {
+        console.log(this.state.chosen_exams);
+        this.state.chosen_exams.map((se) => {
             missing_selections += se.filter(
                 (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null
             ).length;
@@ -316,7 +316,7 @@ class Proposal extends React.Component {
         // Compute the number of selected credits, and the number of required 
         // credits for this curriculum. 
         const sum = (e1, e2) => e1 + e2;
-        const total_credits = this.state.selected_exams.map((se) => 
+        const total_credits = this.state.chosen_exams.map((se) => 
             se.map(e => e.selection === null ? 0 : e.selection.credits)
         ).reduce(
             (se1, se2) => se1 + se2.reduce(sum, 0), 0

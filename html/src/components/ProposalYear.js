@@ -55,39 +55,39 @@ class ProposalYear extends React.Component {
     }
 
     handleExamDelete(exam) {
-      var selected_exams = this.props.selected_exams;
-      const idx = selected_exams.indexOf(exam);
+      var chosen_exams = this.props.chosen_exams;
+      const idx = chosen_exams.indexOf(exam);
 
       if (idx > -1) {
-        selected_exams.splice(idx, 1);
-        this.onSelectedExamsChanged(selected_exams);
+        chosen_exams.splice(idx, 1);
+        this.onSelectedExamsChanged(chosen_exams);
       }
     }
 
     handleExamSelected(exam, selected_exam) {
-      const idx = this.props.selected_exams.indexOf(exam);
+      const idx = this.props.chosen_exams.indexOf(exam);
 
       if (idx >= -1) {
         // This part is a bit tricky because we need to make a 
         // deep copy of the exam, and actually replace the array, 
         // not just the references, for React to trigger the 
         // correct re-rendering. 
-        const exam = this.props.selected_exams[idx];
+        const exam = this.props.chosen_exams[idx];
         var exam_copy = { ...exam };
         exam_copy.selection = selected_exam;
 
-        const selected_exams = [ 
-          ...this.props.selected_exams.slice(0, idx), 
+        const chosen_exams = [ 
+          ...this.props.chosen_exams.slice(0, idx), 
           exam_copy, 
-          ...this.props.selected_exams.slice(idx+1), 
+          ...this.props.chosen_exams.slice(idx+1), 
         ];
-        this.onSelectedExamsChanged(selected_exams);
+        this.onSelectedExamsChanged(chosen_exams);
       }
     }
 
     onAddExamClicked() {
-      const selected_exams = [ 
-        ...this.props.selected_exams, 
+      const chosen_exams = [ 
+        ...this.props.chosen_exams, 
         { 
           "type": "free_choice_exam",
           "id": "custom-" + this.props.year + "-" + this.id_counter,
@@ -96,12 +96,12 @@ class ProposalYear extends React.Component {
       ];
 
       this.id_counter++;
-      this.onSelectedExamsChanged(selected_exams);
+      this.onSelectedExamsChanged(chosen_exams);
     }
 
     onAddFreeExamClicked() {
-      const selected_exams = [ 
-        ...this.props.selected_exams, 
+      const chosen_exams = [ 
+        ...this.props.chosen_exams, 
         { 
           "type": "free_exam",
           "id": "custom-" + this.props.year + "-" + this.id_counter,
@@ -110,17 +110,17 @@ class ProposalYear extends React.Component {
       ];
 
       this.id_counter++;
-      this.onSelectedExamsChanged(selected_exams);
+      this.onSelectedExamsChanged(chosen_exams);
     }
 
-    onSelectedExamsChanged(selected_exams) {
+    onSelectedExamsChanged(chosen_exams) {
       if (this.props.onSelectedExamsChanged !== undefined) {
-        this.props.onSelectedExamsChanged(selected_exams);
+        this.props.onSelectedExamsChanged(chosen_exams);
       }
     }
 
     creditCount() {
-      return this.props.selected_exams.reduce(
+      return this.props.chosen_exams.reduce(
         (a, b) => a + (b.selection != null ? b.selection.credits : 0),
         0
       );
@@ -130,7 +130,7 @@ class ProposalYear extends React.Component {
         const title = this.getTitle();
         const required_credits = this.props.curriculum.credits[this.props.year - 1];
 
-        const exam_inputs = this.props.selected_exams.map((exam, i) => {
+        const exam_inputs = this.props.chosen_exams.map((exam, i) => {
           const removable = exam.type == "free_choice_exam" || exam.type == "free_exam";
           const deleteCallback = () => this.handleExamDelete(exam);
           const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
