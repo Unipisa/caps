@@ -530,7 +530,7 @@ class ProposalsController extends AppController
                 ->firstOrFail();
 
             // Check if the user is the right user
-            if ($proposal['user']['id'] != $this->user['id']) {
+            if ($proposal['user']['id'] != $this->user['id'] && !$this->user['admin']) {
                 throw new ForbiddenException();
             }
         } else {
