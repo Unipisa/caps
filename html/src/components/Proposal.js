@@ -6,6 +6,7 @@ const LoadingMessage = require('./LoadingMessage');
 const Degrees = require('../models/degrees');
 const Curricula = require('../models/curricula');
 const ProposalYear = require('./ProposalYear');
+const curricula = require('../models/curricula');
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
+            'selected_exams': null
         };
 
         this.loadDegrees();
@@ -103,35 +105,86 @@ class Proposal extends React.Component {
         if (idx >= 0) {
             const curriculum_id = this.state.curricula[idx].id;
             const curriculum = await Curricula.get(curriculum_id);
-            await this.setState({ 
-                'selected_curriculum': curriculum
+            const years = curriculum.credits.length;
+            this.setState({ 
+                'selected_curriculum': curriculum,
+                // We prepare selected exams as an array of arrays, each containing 
+                // the exams selected for a given year
+                'selected_exams': Array(years).fill().map(() => [])
             });
+            
         }
     }
 
     renderProposal() {
         var rows = [];
         for (var i = 1; i <= this.state.selected_curriculum.credits.length; i++) {
+            const year = i;
             rows.push(
-                <ProposalYear key={"proposal-year-" + i} 
-                  year={i} 
-                  curriculum={this.state.selected_curriculum} />
+                <ProposalYear key={"proposal-year-" + year} 
+                  year={year} 
+                  curriculum={this.state.selected_curriculum} 
+                  onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} />
             );
         }
         
         return rows;
     }
 
+    onSelectedExamsChanged(year, selected_exams) {
+        // Wrapping this into a function is necessary to 
+        // make sure there are no race conditions in the update, 
+        // and the state is always read in an updated version.
+        this.setState((s) => {
+            return {
+                selected_exams: [
+                    ...s.selected_exams.slice(0, year - 1), 
+                    selected_exams,
+                    ...s.selected_exams.slice(year)
+                ]
+            };
+        });
+    }
+
     renderSubmitBlock() {
-      return  <div>
-        <div id="proposalWarning">
-          Non sono state effettuate tutte le scelte obbligatorie.<br /><br />
-        </div>
-        <div className="form-group btn-group">
-          <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio" disabled="" /> 
-          <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza" />
-        </div>
-      </div>;
+        var missing_selections = 0;
+
+        // Count the number of missing selections for each of the curriculum's years. 
+        this.state.selected_exams.map((se) => {
+            missing_selections += se.filter(
+                (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null
+            ).length;
+        });
+
+        // Compute the number of selected credits, and the number of required 
+        // credits for this curriculum. 
+        const sum = (e1, e2) => e1 + e2;
+        const total_credits = this.state.selected_exams.map((se) => 
+            se.map(e => e.selection === null ? 0 : e.selection.credits)
+        ).reduce(
+            (se1, se2) => se1 + se2.reduce(sum, 0), 0
+        );
+        const required_credits = this.state.selected_curriculum.credits.reduce(sum);
+
+        // FIXME: We need to check for duplicate exams
+
+        const submit_enabled = (missing_selections == 0) &&
+            (total_credits >= required_credits);
+
+        return  <div>
+            
+                <div id="proposalWarning">
+                { missing_selections > 0 && 
+                    <span>Non sono state effettuate {missing_selections} scelte obbligatorie. <br /></span> }
+                { total_credits < required_credits && 
+                    <span>Mancano {required_credits - total_credits} crediti per poter chiudere il piano. </span>}
+                </div>
+                <br />
+            <div className="form-group btn-group">
+                <button className="btn btn-success" disabled={ ! submit_enabled }>Sottometti piano di studio</button>
+                <button className="btn btn-primary">Salva bozza</button>
+            </div>
+        </div>;
     }
 
     render() {

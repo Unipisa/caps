@@ -52,7 +52,8 @@ class ProposalYear extends React.Component {
       // We sort the exams based on their position index
       selected_exams.sort((a, b) => a.position < b.position);
 
-      this.state["selected_exams"] = selected_exams;
+      this.state.selected_exams = selected_exams;
+      this.onSelectedExamsChanged(selected_exams);
     }
 
     getTitle() {
@@ -89,6 +90,8 @@ class ProposalYear extends React.Component {
         this.setState({ 
           selected_exams: selected_exams
         });
+
+        this.onSelectedExamsChanged(selected_exams);
       }
     }
 
@@ -104,42 +107,66 @@ class ProposalYear extends React.Component {
         var exam_copy = { ...exam };
         exam_copy.selection = selected_exam;
 
+        const selected_exams = [ 
+          ...this.state.selected_exams.slice(0, idx), 
+          exam_copy, 
+          ...this.state.selected_exams.slice(idx+1), 
+        ];
+
         this.setState({
-          selected_exams: [ 
-            ...this.state.selected_exams.slice(0, idx), 
-            exam_copy, 
-            ...this.state.selected_exams.slice(idx+1), 
-          ]
+          selected_exams: selected_exams
         });
+
+        this.onSelectedExamsChanged(selected_exams);
       }
     }
 
     onAddExamClicked() {
-      this.setState({ 
-        selected_exams: [ 
+      this.setState((s) => { 
+        const selected_exams = [ 
           ...this.state.selected_exams, 
           { 
             "type": "free_choice_exam",
-            "id": "custom-" + this.props.year + "-" + this.id_counter
+            "id": "custom-" + this.props.year + "-" + this.id_counter,
+            "selection": null
           }
-        ]
+        ];
+
+        this.onSelectedExamsChanged(selected_exams);
+
+        return { 
+          selected_exams: selected_exams
+        };
       })
 
       this.id_counter++;
     }
 
     onAddFreeExamClicked() {
-      this.setState({ 
-        selected_exams: [ 
-          ...this.state.selected_exams, 
+      this.setState((s) => { 
+        const selected_exams = [ 
+          ...s.selected_exams, 
           { 
             "type": "free_exam",
-            "id": "custom-" + this.props.year + "-" + this.id_counter
+            "id": "custom-" + this.props.year + "-" + this.id_counter,
+            "selection": null
           }
-        ]
+        ];
+
+        this.onSelectedExamsChanged(selected_exams);
+
+        return { 
+          selected_exams: selected_exams
+        };
       })
 
       this.id_counter++;
+    }
+
+    onSelectedExamsChanged(selected_exams) {
+      if (this.props.onSelectedExamsChanged !== undefined) {
+        this.props.onSelectedExamsChanged(selected_exams);
+      }
     }
 
     creditCount() {
@@ -161,9 +188,6 @@ class ProposalYear extends React.Component {
                             deleteCallback={removable ? deleteCallback : undefined}
                             onChange={onChangeCallback} />;
         });
-
-        // We save this to be able to recompute the number of credits afterwards
-        this.exam_inputs = exam_inputs;
 
         const credits = this.creditCount();
         const credits_color = this.getCreditsColor(credits, required_credits);
