@@ -113,17 +113,34 @@ class Proposal extends React.Component {
         var rows = [];
         for (var i = 1; i <= this.state.selected_curriculum.credits.length; i++) {
             rows.push(
-                <ProposalYear key={"proposal-year-" + i} year={i} curriculum={this.state.selected_curriculum}></ProposalYear>
+                <ProposalYear key={"proposal-year-" + i} 
+                  year={i} 
+                  curriculum={this.state.selected_curriculum} />
             );
         }
         
         return rows;
     }
 
+    renderSubmitBlock() {
+      return  <div>
+        <div id="proposalWarning">
+          Non sono state effettuate tutte le scelte obbligatorie.<br /><br />
+        </div>
+        <div className="form-group btn-group">
+          <input id="submit-button" type="submit" class="btn btn-success" name="action-close" value="Sottometti piano di studio" disabled="" /> 
+          <input id="save-button" type="submit" class="btn btn-primary" name="action-save" value="Salva bozza" />
+        </div>
+      </div>;
+    }
+
     render() {
         return <div>
             <Card>{this.renderDegreeCurriculaSelection()}</Card>
             {this.state.selected_curriculum !== null && this.renderProposal()}
+            {this.state.selected_curriculum !== null &&
+              <Card>{this.renderSubmitBlock()}</Card>
+            }
         </div>;
     }
 }
