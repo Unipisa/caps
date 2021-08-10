@@ -22,6 +22,7 @@ class Proposal extends React.Component {
             'proposal': null
         };
 
+        this.id_counter = 0;
         this.loadDegrees();
     }
 
@@ -51,18 +52,7 @@ class Proposal extends React.Component {
         // the selected exams array in the correct way.
         // console.log(proposal);
 
-        var chosen_exams = Array(degree.years).fill();
-
-        for (var year = 1; year <= degree.years; year++) {
-          // Compute the list of selected exams for this year, if this is a 
-          // proposal that has been already saved.
-          var exams = [];
-          var free_exams = [];
-          exams = proposal.chosen_exams.filter((e) => e.chosen_year == year);
-          free_exams = proposal.chosen_free_choice_exams.filter((e) => e.chosen_year == year);
-
-          chosen_exams[year-1] = this.createInitialState(curriculum, year, exams, free_exams, true);
-        }
+        const chosen_exams = this.createInitialState(curriculum, proposal.chosen_exams, proposal.chosen_free_choice_exams, true);
 
         this.setState((s) => {
             return {
@@ -116,11 +106,7 @@ class Proposal extends React.Component {
             const curriculum = await Curricula.get(curriculum_id);
             const years = curriculum.degree.years;
 
-            var chosen_exams = Array(years).fill();
-            
-            for (var year = 1; year <= curriculum.degree.years; year++) {    
-             chosen_exams[year-1] = this.createInitialState(curriculum, year, [], [], true);
-            }
+            var chosen_exams = this.createInitialState(curriculum, [], [], true);
 
             this.setState({ 
                 'selected_curriculum': curriculum,
@@ -130,19 +116,16 @@ class Proposal extends React.Component {
         }
     }
 
-    createInitialState(curriculum, year, exams, free_exams) {
+    createInitialState(curriculum, exams, free_exams) {
       var chosen_exams = [];
 
       curriculum.compulsory_exams
-        .filter((e) => e.year == year)
         .map((e) => chosen_exams.push({ ...e, "type": "compulsory_exam", "selection": e.exam }));
 
       curriculum.compulsory_groups
-        .filter((e) => e.year == year)
         .map((e) => chosen_exams.push({ ...e, "type": "compulsory_group", "selection": null }));
 
       curriculum.free_choice_exams
-        .filter((e) => e.year == year)
         .map((e) => chosen_exams.push({ ...e, "type": "free_choice_exam", "selection": null }));
 
       // We sort the exams based on their position index
@@ -198,7 +181,8 @@ class Proposal extends React.Component {
           chosen_exams.push({
             type: "free_choice_exam",
             selection: e.exam,
-            "id": "custom-" + this.props.year + "-" + this.id_counter++,
+            year: e.chosen_year,
+            "id": "custom-" + this.id_counter++,
           })
         }
       }
@@ -210,9 +194,11 @@ class Proposal extends React.Component {
           type: "free_exam",
           selection: {
             "name": e.name,
-            "credits": e.credits
+            "credits": e.credits,
+            "year": e.chosen_year
           },
-          "id": "custom-" + this.props.year + "-" + this.id_counter++
+          "id": "custom-" + this.id_counter++,
+          "year": e.chosen_year
         });
       }
 
@@ -235,9 +221,9 @@ class Proposal extends React.Component {
         this.setState((s) => {
             return {
                 chosen_exams: [
-                    ...s.chosen_exams.slice(0, year - 1), 
-                    chosen_exams,
-                    ...s.chosen_exams.slice(year)
+                    ...s.chosen_exams.filter((e) => e.year < year),
+                    ...chosen_exams,
+                    ...s.chosen_exams.filter((e) => e.year > year)
                 ]
             };
         });
@@ -255,29 +241,27 @@ class Proposal extends React.Component {
       var chosen_exams = [];
       var chosen_free_choice_exams = [];
 
-      this.state.chosen_exams.map((ce, j) => {
-        const year = j + 1;
-        ce.map((e) => {
-          if (e.type == "free_exam") {
-            chosen_free_choice_exams.push({
-              name: e.selection.name, 
-              credits: e.selection.credits, 
-              chosen_year: year
+      this.state.chosen_exams.map((e) => {
+        const year = e.year;
+        if (e.type == "free_exam") {
+          chosen_free_choice_exams.push({
+            name: e.selection.name, 
+            credits: e.selection.credits, 
+            chosen_year: year
+          });
+        }
+        else {
+          if (e.selection) {
+            chosen_exams.push({ 
+              exam_id: e.selection.id, 
+              chosen_year: year, 
+              credits: e.selection.credits,
+              compulsory_exam_id: e.type == "compulsory_exam" ? e.id : null, 
+              compulsory_group_id: e.type == "compulsory_group" ? e.id : null, 
+              free_choice_exam_id: e.type == "free_choice_exam" ? e.id : null
             });
           }
-          else {
-            if (e.selection) {
-              chosen_exams.push({ 
-                exam_id: e.selection.id, 
-                chosen_year: year, 
-                credits: e.selection.credits,
-                compulsory_exam_id: e.type == "compulsory_exam" ? e.id : null, 
-                compulsory_group_id: e.type == "compulsory_group" ? e.id : null, 
-                free_choice_exam_id: e.type == "free_choice_exam" ? e.id : null
-              });
-            }
-          }
-        });
+        }
       });
 
       var payload = new URLSearchParams();
@@ -357,7 +341,7 @@ class Proposal extends React.Component {
         var rows = [];
         for (var i = 1; i <= this.state.selected_degree.years; i++) {
             const year = i;
-            const chosen_exams = this.state.chosen_exams[i-1];
+            const chosen_exams = this.state.chosen_exams.filter((e) => e.year == year);
 
             rows.push(
                 <ProposalYear key={"proposal-year-" + year} 
@@ -372,37 +356,46 @@ class Proposal extends React.Component {
     }
 
     renderSubmitBlock() {
-        var missing_selections = 0;
-
         // Count the number of missing selections for each of the curriculum's years. 
-        this.state.chosen_exams.map((se) => {
-            missing_selections += se.filter(
+        const missing_selections = this.state.chosen_exams.filter(
                 (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null
             ).length;
-        });
 
         // Compute the number of selected credits, and the number of required 
         // credits for this curriculum. 
         const sum = (e1, e2) => e1 + e2;
-        const total_credits = this.state.chosen_exams.map((se) => 
-            se.map(e => e.selection === null ? 0 : e.selection.credits)
-        ).reduce(
-            (se1, se2) => se1 + se2.reduce(sum, 0), 0
-        );
+        const total_credits = this.state.chosen_exams.map(
+          (e) => e.selection ? e.selection.credits : 0
+        ).reduce((se1, se2) => se1 + se2, 0);
         const required_credits = this.state.selected_curriculum.credits.reduce(sum);
 
-        // FIXME: We need to check for duplicate exams
+        // Check for duplicate exams
+        var found_exams = {};
+        var duplicate_exams = [];
+        this.state.chosen_exams.map((e) => {
+          if (e.selection) {
+            if (found_exams.hasOwnProperty(e.selection.id)) {
+              duplicate_exams.push(e.selection.name);
+            }
+            found_exams[e.selection.id] = true;
+          }
+        });
+        const duplicate_list = duplicate_exams.reduce((a, e) => {
+          return a + (a == "" ? "" : ", ") + e;
+        }, "");
 
         const submit_enabled = (missing_selections == 0) &&
-            (total_credits >= required_credits);
+            (total_credits >= required_credits) && 
+            (duplicate_exams.length == 0);
 
         return  <div>
-            
                 <div id="proposalWarning">
                 { missing_selections > 0 && 
                     <span>Non sono state effettuate {missing_selections} scelte obbligatorie. <br /></span> }
                 { total_credits < required_credits && 
                     <span>Mancano {required_credits - total_credits} crediti per poter chiudere il piano. </span>}
+                { duplicate_exams.length > 0 && 
+                  <span>Il piano contiene i seguenti esami duplicati: {duplicate_list}.<br /></span>}
                 </div>
                 <br />
             <div className="form-group btn-group">
