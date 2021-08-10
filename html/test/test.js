@@ -5,7 +5,7 @@ describe('models', function() {
     var degrees = require('../src/models/degrees.js');
     var exams = require('../src/models/exams.js');
     var groups = require('../src/models/groups.js');
-    // var proposals = require('../src/models/proposals.js');
+    var proposals = require('../src/models/proposals.js');
 });
 
 describe('modules', function() {
@@ -13,7 +13,6 @@ describe('modules', function() {
     global.window = new jsdom.JSDOM().window;
     global.document = window.document;
     var CapsAttachment = require('../src/modules/attachment.js');
-    // ERROR: cannot use ES6 syntax: 
     var loadDashboardData = require('../src/modules/dashboard.js');
     var caps_proposals_add = require('../src/modules/proposals-add.js');
     describe('upload-csv', function() {
