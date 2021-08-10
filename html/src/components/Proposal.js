@@ -122,8 +122,6 @@ class Proposal extends React.Component {
              chosen_exams[year-1] = this.createInitialState(curriculum, year, [], [], true);
             }
 
-            console.log(chosen_exams);
-    
             this.setState({ 
                 'selected_curriculum': curriculum,
                 'chosen_exams': chosen_exams
@@ -231,8 +229,6 @@ class Proposal extends React.Component {
     }
 
     onSelectedExamsChanged(year, chosen_exams) {
-      console.log(chosen_exams);
-
         // Wrapping this into a function is necessary to 
         // make sure there are no race conditions in the update, 
         // and the state is always read in an updated version.
@@ -301,11 +297,6 @@ class Proposal extends React.Component {
         payload.append(`data[ChosenFreeChoiceExam][${i}][chosen_year]`, chosen_free_choice_exams[i].chosen_year);
       }
 
-
-      // payload.append('data', {
-      //   ChosenExam: chosen_exams, 
-      //   ChosenFreeChoiceExam: chosen_free_choice_exams
-      // });
       payload.append('curriculum_id', this.state.selected_curriculum.id);
       payload.append('academic_year', this.state.selected_degree.academic_year);
 
@@ -313,10 +304,8 @@ class Proposal extends React.Component {
         payload.append('action-save', "true");
       else
         payload.append('action-close', "true");
-        
-      payload.append('_csrfToken', this.props.csrfToken);
 
-      console.log(payload);
+      payload.append('_csrfToken', this.props.csrfToken);
 
       const response = await fetch(window.location.href, {
         method: 'post',
@@ -386,7 +375,6 @@ class Proposal extends React.Component {
         var missing_selections = 0;
 
         // Count the number of missing selections for each of the curriculum's years. 
-        console.log(this.state.chosen_exams);
         this.state.chosen_exams.map((se) => {
             missing_selections += se.filter(
                 (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null
