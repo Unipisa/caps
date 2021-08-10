@@ -1,12 +1,13 @@
 'use strict';
 
+const Degrees = require('../models/degrees');
+const Curricula = require('../models/curricula');
+const Proposals = require('../models/proposals');
+
 const React = require('react');
 const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
-const Degrees = require('../models/degrees');
-const Curricula = require('../models/curricula');
 const ProposalYear = require('./ProposalYear');
-const curricula = require('../models/curricula');
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -27,8 +28,31 @@ class Proposal extends React.Component {
         if (this.state.degrees === null) {
             this.setState({
                 degrees: await Degrees.allActive()
+            }, () => {
+                if (this.props.id !== undefined) {
+                    this.loadProposal(this.props.id);
+                }
             });
         }
+    }
+
+    async loadProposal(id) {
+        const proposal = await Proposals.get(id);
+        const curriculum = await Curricula.get(proposal.curriculum.id);
+        const degree = curriculum.degree;
+        const curricula = await Curricula.forDegree(degree.id);
+
+        // Read the exam selection in the proposal, and use them to populate 
+        // the selected exams array in the correct way.
+
+        this.setState((s) => {
+            return {
+                'curricula': curricula,
+                'selected_curriculum': curriculum, 
+                'selected_degree': degree,
+                'selected_exams': []
+            }
+        });
     }
 
     async loadCurricula() {
@@ -46,7 +70,8 @@ class Proposal extends React.Component {
         });
 
         return <div className="form-group" key="degree-selection">
-            <select className="form-control" name="degree" id="degree_select" onChange={this.onDegreeSelected.bind(this)}>
+            <select className="form-control" name="degree" id="degree_select" onChange={this.onDegreeSelected.bind(this)} 
+                value={ this.state.selected_degree ? this.state.degrees.map((d) => d.id).indexOf(this.state.selected_degree.id) : -1 }>
                 <option key="degree-dummy" value="-1">
                     Selezionare il corso di Laurea
                 </option>
@@ -60,7 +85,8 @@ class Proposal extends React.Component {
             return <option key={"curriculum-" + c.id} value={idx}>{c.name}</option>
         });
         return <div className="form-group" key="curricula-selection">
-            <select className="form-control" name="curriculum" id="curriculum_select" onChange={this.onCurriculaSelected.bind(this)}>
+            <select className="form-control" name="curriculum" id="curriculum_select" onChange={this.onCurriculaSelected.bind(this)}
+                value={ this.state.selected_curriculum ? this.state.curricula.map((c) => c.id).indexOf(this.state.selected_curriculum.id) : -1}>
                 <option key="curriculum-dummy" value="-1">
                     Selezionare il Curriculum
                 </option>
@@ -93,10 +119,9 @@ class Proposal extends React.Component {
     async onDegreeSelected() {
         const degree_idx = document.getElementById('degree_select').value;
         if (degree_idx >= 0) {
-            await this.setState({
+            this.setState({
                 'selected_degree': this.state.degrees[degree_idx]
-            })
-            this.loadCurricula();
+            }, () => this.loadCurricula());
         }
     }
 
