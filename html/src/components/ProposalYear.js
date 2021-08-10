@@ -91,7 +91,8 @@ class ProposalYear extends React.Component {
             {
                 "type": "free_choice_exam",
                 "id": "custom-" + this.props.year + "-" + this.id_counter,
-                "selection": null
+                "selection": null,
+                "year": this.props.year
             }
         ];
 
@@ -105,7 +106,8 @@ class ProposalYear extends React.Component {
             {
                 "type": "free_exam",
                 "id": "custom-" + this.props.year + "-" + this.id_counter,
-                "selection": null
+                "selection": null,
+                "year": this.props.year
             }
         ];
 
