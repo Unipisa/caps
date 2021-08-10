@@ -83,7 +83,7 @@ $num_proposals = 0;
 
                     <tr>
                         <td><?php echo h($proposal['curriculum']['name']); ?></td>
-                        <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
+                        <td><?php echo $proposal['curriculum']['degree']->academic_years(); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
