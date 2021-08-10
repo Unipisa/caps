@@ -24,7 +24,13 @@ class Proposal extends React.Component {
     async loadDegrees() {
         if (this.state.degrees === null) {
             this.setState({
-                degrees: await Degrees.allActive()
+                degrees: (await Degrees.allActive()).sort((a,b) => {
+                    if (a.academic_year > b.academic_year) return -1;
+                    if (a.academic_year < b.academic_year) return 1;
+                    if (a.name < b.name) return -1;
+                    if (a.name > b.name) return 1;
+                    return 0;
+                })
             });
         }
     }

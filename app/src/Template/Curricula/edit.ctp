@@ -176,6 +176,7 @@
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
                                 <?php
+                                    $name = "*** gruppo non più disponibile ***";
                                     // XXX(jacquerie): Terrible, terrible fix.
                                     foreach($groups as $group) {
                                         if ($group['id'] == $compulsory_group['group_id']) {
