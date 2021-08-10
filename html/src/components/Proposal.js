@@ -157,8 +157,10 @@ class Proposal extends React.Component {
             // Compute the list of selected exams for this year, if this is a 
             // proposal that has been already saved.
             var exams = [];
+            var free_exams = [];
             if (this.state.proposal !== null) {
               exams = this.state.proposal.chosen_exams.filter((e) => e.chosen_year == year);
+              free_exams = this.state.proposal.chosen_free_choice_exams.filter((e) => e.chosen_year == year);
             }
 
             rows.push(
@@ -166,7 +168,7 @@ class Proposal extends React.Component {
                   year={year} 
                   curriculum={this.state.selected_curriculum} 
                   onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
-                  exams={exams} />
+                  exams={exams} free_exams={free_exams} />
             );
         }
         

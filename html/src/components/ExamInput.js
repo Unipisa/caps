@@ -22,14 +22,22 @@ class ExamInput extends React.Component {
         break;
     }
 
+    var credits = 0;
+    var name = "";
+
+    if (this.props.exam && this.props.exam.type == "free_exam" && this.props.exam.selection) {
+      name = this.props.exam.selection.name;
+      credits = this.props.exam.selection.credits;
+    }
+
     this.state = {
       "selected_exam": this.props.exam.selection,
       "choices": choices,
 
       // These two fields are only used for Free exams, which are 
       // typed in manually by the user
-      "credits": 0,
-      "name": ""
+      "credits": credits,
+      "name": name
     };
   }
 
@@ -88,12 +96,14 @@ class ExamInput extends React.Component {
     return <li className="form-group row">
       <div className="col-9">
         <input className="form-control exam"
-        required="" type="text" placeholder="Un esame a scelta libera" 
+        required="" type="text" placeholder="Un esame a scelta libera"
+        value={this.state.name}
         onChange={this.onFreeExamNameChanged.bind(this)} />
       </div>
       <div className="col-2">
         <input className="form-control credits" 
         type="number" min="1" required=""
+        value={this.state.credits}
         onChange={this.onFreeExamCreditsChanged.bind(this)} />
       </div>
       <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
