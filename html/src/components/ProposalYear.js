@@ -52,8 +52,57 @@ class ProposalYear extends React.Component {
       // We sort the exams based on their position index
       selected_exams.sort((a, b) => a.position < b.position);
 
+      // If the user has prescribed some exams that have already been
+      // chosen, try to match them to the constraints in the curriculum.
       this.state.selected_exams = selected_exams;
+      this.matchExamsToCurriculum(this.props.exams);
       this.onSelectedExamsChanged(selected_exams);
+    }
+
+    matchExamsToCurriculum(exams) {
+      while (exams.length > 0) {
+        const e = exams.pop();
+        var match = false; // This is set to true if we find a match
+
+        if (e.compulsory_exam_id !== null) {
+          const idx = this.state.selected_exams
+            .map((e) => e.type == "compulsory_exam" ? e.id : -1)
+            .indexOf(e.compulsory_exam_id);
+
+          if (idx > -1) {
+            this.state.selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+        else if (e.compulsory_group_id != null) {
+          const idx = this.state.selected_exams
+          .map((e) => e.type == "compulsory_group" ? e.id : -1)
+          .indexOf(e.compulsory_group_id);
+
+          if (idx > -1) {
+            this.state.selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+        else {
+          const idx = this.state.selected_exams
+          .map((e) => e.type == "free_choice_exam" ? e.id : -1)
+          .indexOf(e.free_choice_exam_id);
+
+          if (idx > -1) {
+            this.state.selected_exams[idx].selection = e.exam;
+            match = true;
+          }
+        }
+
+        if (! match) {
+          this.state.selected_exams.push({
+            type: "free_choice_exam",
+            selection: e.exam,
+            "id": "custom-" + this.props.year + "-" + this.id_counter++,
+          })
+        }
+      }
     }
 
     getTitle() {

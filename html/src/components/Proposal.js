@@ -18,7 +18,8 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'selected_exams': null
+            'selected_exams': null,
+            'proposal': null
         };
 
         this.loadDegrees();
@@ -49,13 +50,15 @@ class Proposal extends React.Component {
 
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
+        // console.log(proposal);
 
         this.setState((s) => {
             return {
                 'curricula': curricula,
                 'selected_curriculum': curriculum, 
                 'selected_degree': degree,
-                'selected_exams': []
+                'selected_exams': [],
+                'proposal': proposal
             }
         });
     }
@@ -150,11 +153,20 @@ class Proposal extends React.Component {
         var rows = [];
         for (var i = 1; i <= this.state.selected_curriculum.credits.length; i++) {
             const year = i;
+
+            // Compute the list of selected exams for this year, if this is a 
+            // proposal that has been already saved.
+            var exams = [];
+            if (this.state.proposal !== null) {
+              exams = this.state.proposal.chosen_exams.filter((e) => e.chosen_year == year);
+            }
+
             rows.push(
                 <ProposalYear key={"proposal-year-" + year} 
                   year={year} 
                   curriculum={this.state.selected_curriculum} 
-                  onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} />
+                  onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
+                  exams={exams} />
             );
         }
         

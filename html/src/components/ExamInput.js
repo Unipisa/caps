@@ -166,17 +166,26 @@ class ExamInput extends React.Component {
         break;
     }
 
+    var selected_exam = -1;
     if (this.state.choices !== null) {
       this.state.choices.map((exam, i) => 
         options.push(<option key={"exam-choice-" + exam.id} value={i}>
           {exam.name}
         </option>)
       );
+
+      // If the exam has been prescribed in the properties (for instance, if 
+      // this proposal has been loaded as draft), we select the right element
+      // in the dropdown list. 
+      selected_exam = this.props.exam.selection ? 
+        this.state.choices.map((e) => e.id).indexOf(this.props.exam.selection.id) 
+        : -1;
     }
 
     return <li className="form-group row">
         <div className="col-9">
-            <select name="data[ChosenExam][][exam_id]" className="exam form-control" defaultValue="-1" onChange={this.onExamSelected.bind(this)}>
+            <select name="data[ChosenExam][][exam_id]" className="exam form-control" 
+              value={selected_exam} onChange={this.onExamSelected.bind(this)}>
               {options}
             </select>
         </div>
