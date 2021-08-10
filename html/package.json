@@ -10,6 +10,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-select": "^1.13.18",
     "ckeditor5": "^23.1.0",
+    "esm": "^3.2.25",
     "jquery-easing": "0.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -56,7 +57,7 @@
     }
   },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha -r esm",
     "js": "webpack --config webpack.config.js",
     "js:dev": "webpack --config webpack.config.dev.js",
     "install": "copyfiles css/style.min.css css/style.min.css.map js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
