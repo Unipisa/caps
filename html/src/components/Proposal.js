@@ -313,7 +313,7 @@ class Proposal extends React.Component {
       });
 
       // Follow the redirect
-      if (response.redirected && response.status == 200)
+      if (response.status == 200)
         window.location.href = response.url;
     }
 
