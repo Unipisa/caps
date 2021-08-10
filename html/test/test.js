@@ -1,5 +1,13 @@
 var assert = require('assert');
 
+describe('caps-models', function() {
+    var curricula = require('../src/models/curricula.js');
+    var degrees = require('../src/models/degrees.js');
+    var exams = require('../src/models/exams.js');
+    var groups = require('../src/models/groups.js');
+    var proposals = require('../src/models/proposals.js');
+});
+
 describe('caps-upload-csv', function() {
     var jsdom = require('jsdom');
     global.window = new jsdom.JSDOM().window;
