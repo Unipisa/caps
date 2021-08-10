@@ -10,9 +10,9 @@ class CapsDegreesController extends CapsAppController {
 
     onDuplicateBtnClicked(evt) {
         const year = document.getElementById('clone-year').value;
-        
-        Caps.submitForm('form-degree', 
-            { 'clone': 1, 'year': year }, 
+
+        Caps.submitForm('form-degree',
+            { 'clone': 1, 'year': year },
             "Clonare i nuovi corsi per l'anno selezionato?"
         );
     }

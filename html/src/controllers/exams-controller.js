@@ -13,8 +13,8 @@ class CapsExamsController extends CapsAppController {
         })
 
         const csv = new CsvUpload({
-            upload_fields: ['nome','codice','settore','crediti'], 
-            upload_fields_db: ['name','code','sector','credits'], 
+            upload_fields: ['nome', 'codice', 'settore', 'crediti'],
+            upload_fields_db: ['name', 'code', 'sector', 'credits'],
             validator: function (item, context) {
                 if (!context.used_codes) context.used_codes = {};
                 if (item.name === "") return "nome vuoto";

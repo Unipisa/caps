@@ -16,11 +16,11 @@ const CapsSettingsController = require('./controllers/settings-controller');
  * that is being rendered. 
  */
 const routes = {
-  "Curricula": CapsCurriculaController,
-  "Proposals": CapsProposalsController,
-  "Settings": CapsSettingsController,
-  "Exams": CapsExamsController,
-  "Degrees": CapsDegreesController
+    "Curricula": CapsCurriculaController,
+    "Proposals": CapsProposalsController,
+    "Settings": CapsSettingsController,
+    "Exams": CapsExamsController,
+    "Degrees": CapsDegreesController
 }
 
 /**
@@ -36,51 +36,51 @@ const routes = {
  */
 class CapsController {
 
-  constructor(root, controller, action, params = []) {
-    this.root = root;
-    this.controller = controller;
-    this.action = action;
+    constructor(root, controller, action, params = []) {
+        this.root = root;
+        this.controller = controller;
+        this.action = action;
 
-    jQuery(() => {
-      if (routes.hasOwnProperty(this.controller)) {
-          const controller = new routes[this.controller](root);
+        jQuery(() => {
+            if (routes.hasOwnProperty(this.controller)) {
+                const controller = new routes[this.controller](root);
 
-          if (controller[action] !== undefined) {
-              controller[action](params);
-          }
-      }
-      else {
-          // In case the controller for this particular page has not been 
-          // overloaded we call the default one. 
-          const controller = new CapsAppController(root);
-      }
-    });
-  }
+                if (controller[action] !== undefined) {
+                    controller[action](params);
+                }
+            }
+            else {
+                // In case the controller for this particular page has not been 
+                // overloaded we call the default one. 
+                const controller = new CapsAppController(root);
+            }
+        });
+    }
 
-  // Trigger a CSV download using Javascript. 
-  downloadCSV() {
-    location.pathname += '.csv';
-  }
+    // Trigger a CSV download using Javascript. 
+    downloadCSV() {
+        location.pathname += '.csv';
+    }
 
-  // Submit a form by injecting the name and value of an element; this is used
-  // in several places where we allow to operate on a set of elements selected
-  // by checkboxes, even with buttons that are outside the HTML <form> tags.
-  submitForm(form_id, data, action_message) {
-      if (action_message == null || confirm(action_message)) {
-          var form = document.getElementById(form_id);
+    // Submit a form by injecting the name and value of an element; this is used
+    // in several places where we allow to operate on a set of elements selected
+    // by checkboxes, even with buttons that are outside the HTML <form> tags.
+    submitForm(form_id, data, action_message) {
+        if (action_message == null || confirm(action_message)) {
+            var form = document.getElementById(form_id);
 
-          for (var key in data) {
-              // Insert hidden input entries in the form
-              var inp = document.createElement('input');
-              inp.name = key;
-              inp.value = data[key];
-              inp.style = "display: none";
-              form.appendChild(inp);
-          }
+            for (var key in data) {
+                // Insert hidden input entries in the form
+                var inp = document.createElement('input');
+                inp.name = key;
+                inp.value = data[key];
+                inp.style = "display: none";
+                form.appendChild(inp);
+            }
 
-          form.submit();
-      }
-  }
+            form.submit();
+        }
+    }
 
 }
 

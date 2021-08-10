@@ -57,7 +57,8 @@ $num_proposals = 0;
 
 <?php foreach ($degrees as $degree_id => $degree): ?>
 
-<?= $this->element('card-start', [ 'header' => $degree['name'] ]); ?>
+<?= $this->element('card-start', [ 'header' => $degree['name'] . "<br /><small>Regolamento dell'anno accademico " .
+                   $degree->academic_years()  . "</small>" ]); ?>
 
         <div class="table-responsive-xl">
             <table class='table table'>
@@ -73,7 +74,7 @@ $num_proposals = 0;
                 </tr>
                 <?php
                     foreach ($proposals as $proposal) {
-                        if ($proposal['curriculum']['degree']['name'] != $degree['name'])
+                        if ($proposal['curriculum']['degree']['id'] != $degree['id'])
                           continue;
 
                         // We keep track of the number of proposals, since $proposals is not an array
@@ -83,7 +84,7 @@ $num_proposals = 0;
 
                     <tr>
                         <td><?php echo h($proposal['curriculum']['name']); ?></td>
-                        <td><?php echo $proposal['curriculum']['academic_year']; ?>/<?php echo ($proposal['curriculum']['academic_year']+1); ?></td>
+                        <td><?php echo $proposal['curriculum']['degree']->academic_years(); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
