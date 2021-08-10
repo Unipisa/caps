@@ -135,12 +135,12 @@ class Proposal extends React.Component {
 
         // If the user has prescribed some exams that have already been
         // chosen, try to match them to the constraints in the curriculum.
-        chosen_exams = this.matchExamsToCurriculum(chosen_exams, exams, free_exams, this.state.proposal !== null);
+        chosen_exams = this.matchExamsToCurriculum(chosen_exams, exams, free_exams);
 
         return chosen_exams;
     }
 
-    matchExamsToCurriculum(chosen_exams, exams, free_exams, purge_removable) {
+    matchExamsToCurriculum(chosen_exams, exams, free_exams) {
         var exams = [...exams];
         var free_exams = [...free_exams];
 
@@ -202,15 +202,6 @@ class Proposal extends React.Component {
                 "id": "custom-" + this.id_counter++,
                 "year": e.chosen_year
             });
-        }
-
-        // At this point we can remove any removable exam that was not found in 
-        // the saved entry, since this needs to have been deleted by the user. 
-        // The only removable exams that are prescribed in the curricula are
-        // free_choice_exams, so it's sufficient to check those. 
-        if (purge_removable) {
-            chosen_exams = chosen_exams
-                .filter((e) => e.type != "free_choice_exam" || e.selection);
         }
 
         return chosen_exams;
