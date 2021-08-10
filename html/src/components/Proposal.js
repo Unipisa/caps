@@ -100,42 +100,6 @@ class Proposal extends React.Component {
         </div>;
     }
 
-    renderCurriculaSelection() {
-        const options = this.state.curricula.map((c, idx) => {
-            return <option key={"curriculum-" + c.id} value={idx}>{c.name}</option>
-        });
-        return <div className="form-group" key="curricula-selection">
-            <select className="form-control" name="curriculum" id="curriculum_select" onChange={this.onCurriculaSelected.bind(this)}
-                value={ this.state.selected_curriculum ? this.state.curricula.map((c) => c.id).indexOf(this.state.selected_curriculum.id) : -1}>
-                <option key="curriculum-dummy" value="-1">
-                    Selezionare il Curriculum
-                </option>
-                {options}
-            </select>
-        </div>;
-    }
-
-    renderDegreeCurriculaSelection() {
-        var blocks = [];
-
-        if (this.state.degrees === null) {
-            blocks.push(<LoadingMessage key="loading-degrees">Loading degrees...</LoadingMessage>);
-        }
-        else {
-            blocks.push(this.renderDegreeSelection());
-            if (this.state.selected_degree) {
-                if (this.state.curricula === null) {
-                    blocks.push(<LoadingMessage key="loading-curricula">Loading curricula...</LoadingMessage>)
-                }
-                else {
-                    blocks.push(this.renderCurriculaSelection());
-                }
-            }
-        }
-
-        return blocks;
-    }
-
     async onDegreeSelected() {
         const degree_idx = document.getElementById('degree_select').value;
         if (degree_idx >= 0) {
@@ -266,25 +230,6 @@ class Proposal extends React.Component {
       return chosen_exams;
     }
 
-    renderProposal() {
-        var rows = [];
-        for (var i = 1; i <= this.state.selected_degree.years; i++) {
-            const year = i;
-
-            const chosen_exams = this.state.chosen_exams[i-1];
-
-            rows.push(
-                <ProposalYear key={"proposal-year-" + year} 
-                  year={year} 
-                  curriculum={this.state.selected_curriculum} 
-                  onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
-                  chosen_exams={chosen_exams} />
-            );
-        }
-        
-        return rows;
-    }
-
     onSelectedExamsChanged(year, chosen_exams) {
       console.log(chosen_exams);
 
@@ -300,6 +245,141 @@ class Proposal extends React.Component {
                 ]
             };
         });
+    }
+
+    onSaveDraft() {
+      this.save(true);
+    }
+
+    onSubmit() {
+      this.save(false);
+    }
+
+    async save(draft = false) {
+      var chosen_exams = [];
+      var chosen_free_choice_exams = [];
+
+      this.state.chosen_exams.map((ce, j) => {
+        const year = j + 1;
+        ce.map((e) => {
+          if (e.type == "free_exam") {
+            chosen_free_choice_exams.push({
+              name: e.name, 
+              credits: e.credits, 
+              chosen_year: year
+            });
+          }
+          else {
+            if (e.selection) {
+              chosen_exams.push({ 
+                exam_id: e.selection.id, 
+                chosen_year: year, 
+                credits: e.selection.credits,
+                compulsory_exam_id: e.type == "compulsory_exam" ? e.id : null, 
+                compulsory_group_id: e.type == "compulsory_group" ? e.id : null, 
+                free_choice_exam_id: e.type == "free_choice_exam" ? e.id : null
+              });
+            }
+          }
+        });
+      });
+
+      var payload = new URLSearchParams();
+
+      for (var i = 0; i < chosen_exams.length; i++) {
+        payload.append(`data[ChosenExam][${i}][exam_id]`, chosen_exams[i].exam_id);
+        payload.append(`data[ChosenExam][${i}][chosen_year]`, chosen_exams[i].chosen_year);
+        payload.append(`data[ChosenExam][${i}][credits]`, chosen_exams[i].credits);
+        payload.append(`data[ChosenExam][${i}][compulsory_exam_id]`, chosen_exams[i].compulsory_exam_id);
+        payload.append(`data[ChosenExam][${i}][compulsory_group_id]`, chosen_exams[i].compulsory_group_id);
+        payload.append(`data[ChosenExam][${i}][free_choice_exam_id]`, chosen_exams[i].free_choice_exam_id);
+      }
+
+      for (var i = 0; i < chosen_free_choice_exams.length; i++) {
+        payload.append(`data[ChosenFreeChoiceExam][${i}][name]`, chosen_free_choice_exams[i].name);
+        payload.append(`data[ChosenFreeChoiceExam][${i}][credits]`, chosen_free_choice_exams[i].credits);
+        payload.append(`data[ChosenFreeChoiceExam][${i}][chosen_year]`, chosen_free_choice_exams[i].chosen_year);
+      }
+
+
+      // payload.append('data', {
+      //   ChosenExam: chosen_exams, 
+      //   ChosenFreeChoiceExam: chosen_free_choice_exams
+      // });
+      payload.append('curriculum_id', this.state.selected_curriculum.id);
+      payload.append('academic_year', this.state.selected_degree.academic_year);
+
+      if (draft)
+        payload.append('action-save', "true");
+      else
+        payload.append('action-close', "true");
+        
+      payload.append('_csrfToken', this.props.csrfToken);
+
+      console.log(payload);
+
+      const response = await fetch(window.location.href, {
+        method: 'post',
+        body: payload,
+      });
+
+      // Follow the redirect
+      if (response.redirected && response.status == 200)
+        window.location.href = response.url;
+    }
+
+    renderCurriculaSelection() {
+      const options = this.state.curricula.map((c, idx) => {
+          return <option key={"curriculum-" + c.id} value={idx}>{c.name}</option>
+      });
+      return <div className="form-group" key="curricula-selection">
+          <select className="form-control" name="curriculum" id="curriculum_select" onChange={this.onCurriculaSelected.bind(this)}
+              value={ this.state.selected_curriculum ? this.state.curricula.map((c) => c.id).indexOf(this.state.selected_curriculum.id) : -1}>
+              <option key="curriculum-dummy" value="-1">
+                  Selezionare il Curriculum
+              </option>
+              {options}
+          </select>
+      </div>;
+  }
+
+  renderDegreeCurriculaSelection() {
+      var blocks = [];
+
+      if (this.state.degrees === null) {
+          blocks.push(<LoadingMessage key="loading-degrees">Loading degrees...</LoadingMessage>);
+      }
+      else {
+          blocks.push(this.renderDegreeSelection());
+          if (this.state.selected_degree) {
+              if (this.state.curricula === null) {
+                  blocks.push(<LoadingMessage key="loading-curricula">Loading curricula...</LoadingMessage>)
+              }
+              else {
+                  blocks.push(this.renderCurriculaSelection());
+              }
+          }
+      }
+
+      return blocks;
+  }    
+
+    renderProposal() {
+        var rows = [];
+        for (var i = 1; i <= this.state.selected_degree.years; i++) {
+            const year = i;
+            const chosen_exams = this.state.chosen_exams[i-1];
+
+            rows.push(
+                <ProposalYear key={"proposal-year-" + year} 
+                  year={year} 
+                  curriculum={this.state.selected_curriculum} 
+                  onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)} 
+                  chosen_exams={chosen_exams} />
+            );
+        }
+        
+        return rows;
     }
 
     renderSubmitBlock() {
@@ -338,8 +418,8 @@ class Proposal extends React.Component {
                 </div>
                 <br />
             <div className="form-group btn-group">
-                <button className="btn btn-success" disabled={ ! submit_enabled }>Sottometti piano di studio</button>
-                <button className="btn btn-primary">Salva bozza</button>
+                <button className="btn btn-success" disabled={ ! submit_enabled } onClick={this.onSubmit.bind(this)}>Sottometti piano di studio</button>
+                <button className="btn btn-primary" onClick={this.onSaveDraft.bind(this)}>Salva bozza</button>
             </div>
         </div>;
     }
