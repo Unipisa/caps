@@ -133,7 +133,7 @@ class ExamsController extends AppController
             ->select([
                 'count' => $query->func()->count('proposal_id'),
                 'curriculum_id' => 'Proposals.curriculum_id',
-                'academic_year' => 'Curricula.academic_year',
+                'academic_year' => 'Degrees.academic_year',
                 'curriculum_name' => 'Curricula.name',
                 'degree_name' => 'Degrees.name'
                 ])

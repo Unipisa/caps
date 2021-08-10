@@ -96,9 +96,6 @@ class CurriculaTable extends Table
             ->maxLength('name', 255)
             ->allowEmptyString('name', false);
 
-        $validator
-            ->naturalNumber('academic_year');
-
         return $validator;
     }
 

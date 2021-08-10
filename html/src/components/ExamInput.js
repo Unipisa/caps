@@ -93,12 +93,15 @@ class ExamInput extends React.Component {
     }
 
     renderFreeExam() {
+        const note = this.props.freeChoiceMessage;
+
         return <li className="form-group row">
             <div className="col-9">
                 <input className="form-control exam"
                     required="" type="text" placeholder="Un esame a scelta libera"
                     value={this.state.name}
                     onChange={this.onFreeExamNameChanged.bind(this)} />
+                { note && <div className="col-9 mt-1 small text-muted" dangerouslySetInnerHTML={{__html: note}}></div> }
             </div>
             <div className="col-2">
                 <input className="form-control credits"
@@ -146,8 +149,6 @@ class ExamInput extends React.Component {
         }
 
         var options = [];
-        var hidden_fields = [];
-
         const removable = this.props.deleteCallback !== undefined;
 
         switch (this.props.exam.type) {
@@ -157,17 +158,11 @@ class ExamInput extends React.Component {
                         {this.props.exam.exam.name}
                     </option>
                 )
-                hidden_fields.push(
-                    <input key="compulsory-exam-id" type="hidden" name="data[ChosenExam][][compulsory_exam_id]" value={this.props.exam.id} />
-                );
                 break;
             case "compulsory_group":
                 options.push(
                     <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.exam.group.name}</option>
                 );
-                hidden_fields.push(
-                    <input key="compulsory-group-id" type="hidden" name="data[ChosenExam][][compulsory_group_id]" value={this.props.exam.group.id}></input>
-                )
                 break;
             case "free_choice_exam":
                 options.push(
@@ -192,23 +187,24 @@ class ExamInput extends React.Component {
                 : -1;
         }
 
+        const note = this.props.exam.exam ? this.props.exam.exam.notes : "";
+
         return <li className="form-group row">
             <div className="col-9">
-                <select name="data[ChosenExam][][exam_id]" className="exam form-control"
+                <select className="exam form-control"
                     value={selected_exam} onChange={this.onExamSelected.bind(this)}>
                     {options}
                 </select>
+                { note && <div className="col-9 mt-1 small text-muted" dangerouslySetInnerHTML={{__html: note}}></div> }
             </div>
             <div className={removable ? "col-2" : "col-3"}>
-                <input className="credits form-control" name="data[ChosenExam][][credits]"
+                <input className="credits form-control"
                     value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
                     readOnly={this.props.exam !== undefined ? "1" : "0"} />
             </div>
             {removable && <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
                 <i className='delete fas fw fa-trash'></i>
             </div>}
-            <input type="hidden" name="data[ChosenExam][][chosen_year]" value={this.props.year} />
-            {hidden_fields}
         </li>;
     }
 

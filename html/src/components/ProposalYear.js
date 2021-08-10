@@ -138,6 +138,7 @@ class ProposalYear extends React.Component {
             const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
             return <ExamInput exam={exam} key={"exam-input-" + i}
                 deleteCallback={removable ? deleteCallback : undefined}
+                freeChoiceMessage={this.props.curriculum.degree.free_choice_message}
                 onChange={onChangeCallback} />;
         });
 

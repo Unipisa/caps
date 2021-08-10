@@ -50,7 +50,6 @@ class Curriculum extends Entity
         'compulsory_exams' => true,
         'compulsory_groups' => true,
         'free_choice_exams' => true,
-        'academic_year' => true,
         'degree_id' => true,
         'notes' => true,
         'credits_per_year' => true
@@ -62,11 +61,7 @@ class Curriculum extends Entity
     {
         return $this['degree']['name'] .
             " — Curriculum " .
-            $this['name'] .
-            " — Anno Accademico " .
-            $this['academic_year'] .
-            "/" .
-            ($this['academic_year'] + 1);
+            $this['name'];
     }
 
     // Curriculum has a virtual field 'credits' that is the array 
