@@ -204,8 +204,11 @@ class ExamInput extends React.Component {
                     value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
                     readOnly={this.props.exam !== undefined ? "1" : "0"} />
             </div>
-            {removable && <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)} style={{ cursor: "pointer" }}>
-                <i className='delete fas fw fa-trash'></i>
+            {removable && <div className="col-1 my-auto" 
+                onClick={this.onDeleteClicked.bind(this)} style={{ cursor: "pointer" }}
+                onMouseLeave={(e) => e.target.children[0].classList.remove("text-danger")}
+                onMouseEnter={(e) => e.target.children[0].classList.add("text-danger")}>
+                    <i className='delete fas fw fa-trash'></i>
             </div>}
         </li>;
     }
