@@ -1,13 +1,15 @@
 'use strict';
 
 /**
- * This function creates a form in the DOM, with display: none set, and create 
- * hidden fields with name equal to the keys found in params, and value equal to
- * params[key]. Then, the form is submit to the specified action using the given 
- * method (GET or POST). 
+ * This function creates a form in the DOM, with display: none set, and 
+ * hidden fields with name equal to the parameters specified in params. 
  * 
- * params is an instance of UrlSearchParams with the fields that will be present
- *   in the form. 
+ * Then, the form is submit to the specified action using the given method
+ * (either GET or POST). 
+ * 
+ * @param {*} action The Url where the form is submit
+ * @param {*} method A string, either 'GET' or 'POST'
+ * @param {*} params An instance of URLSearchParams with the required fields. 
  */
 function submitForm(action, method, params) {
     var form = document.createElement('form');
@@ -27,7 +29,7 @@ function submitForm(action, method, params) {
 
     const body = document.getElementsByTagName("body")[0];
     body.appendChild(form);
-    
+
     form.submit();
 }
 
