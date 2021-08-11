@@ -204,7 +204,7 @@ class ExamInput extends React.Component {
                     value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
                     readOnly={this.props.exam !== undefined ? "1" : "0"} />
             </div>
-            {removable && <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
+            {removable && <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)} style={{ cursor: "pointer" }}>
                 <i className='delete fas fw fa-trash'></i>
             </div>}
         </li>;
