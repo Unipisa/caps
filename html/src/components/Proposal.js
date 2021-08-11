@@ -96,15 +96,35 @@ class Proposal extends React.Component {
 
     async onDegreeSelected(evt) {
         const degree_idx = evt.target.value;
+
+        if (this.state.selected_degree !== null) {
+            const res = confirm('Cambiare corso di Laurea comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?');
+            if (! res) {
+                evt.preventDefault();
+                return;
+            }
+        }
+
         if (degree_idx >= 0) {
             this.setState({
-                'selected_degree': this.state.degrees[degree_idx]
+                'selected_degree': this.state.degrees[degree_idx],
+                'selected_curriculum': null,
+                'chosen_exams': []
             }, () => this.loadCurricula());
         }
     }
 
     async onCurriculaSelected(evt) {
         const idx = evt.target.value;
+
+        if (this.state.selected_curriculum !== null) {
+            const res = confirm('Cambiare curriculum comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?');
+            if (! res) {
+                evt.preventDefault();
+                return;
+            }
+        }
+
         if (idx >= 0) {
             const curriculum_id = this.state.curricula[idx].id;
             const curriculum = await Curricula.get(curriculum_id);
