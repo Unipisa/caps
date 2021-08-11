@@ -82,7 +82,7 @@ class Proposal extends React.Component {
         });
 
         return <div className="form-group" key="degree-selection">
-            <select className="form-control" name="degree" id="degree_select" onChange={this.onDegreeSelected.bind(this)}
+            <select className="form-control" onChange={this.onDegreeSelected.bind(this)}
                 value={this.state.selected_degree ? this.state.degrees.map((d) => d.id).indexOf(this.state.selected_degree.id) : -1}>
                 <option key="degree-dummy" value="-1">
                     Selezionare il corso di Laurea
@@ -92,8 +92,8 @@ class Proposal extends React.Component {
         </div>;
     }
 
-    async onDegreeSelected() {
-        const degree_idx = document.getElementById('degree_select').value;
+    async onDegreeSelected(evt) {
+        const degree_idx = evt.target.value;
         if (degree_idx >= 0) {
             this.setState({
                 'selected_degree': this.state.degrees[degree_idx]
@@ -101,8 +101,8 @@ class Proposal extends React.Component {
         }
     }
 
-    async onCurriculaSelected() {
-        const idx = document.getElementById('curriculum_select').value;
+    async onCurriculaSelected(evt) {
+        const idx = evt.target.value;
         if (idx >= 0) {
             const curriculum_id = this.state.curricula[idx].id;
             const curriculum = await Curricula.get(curriculum_id);
@@ -299,7 +299,7 @@ class Proposal extends React.Component {
             return <option key={"curriculum-" + c.id} value={idx}>{c.name}</option>
         });
         return <div className="form-group" key="curricula-selection">
-            <select className="form-control" name="curriculum" id="curriculum_select" onChange={this.onCurriculaSelected.bind(this)}
+            <select className="form-control" onChange={this.onCurriculaSelected.bind(this)}
                 value={this.state.selected_curriculum ? this.state.curricula.map((c) => c.id).indexOf(this.state.selected_curriculum.id) : -1}>
                 <option key="curriculum-dummy" value="-1">
                     Selezionare il Curriculum
