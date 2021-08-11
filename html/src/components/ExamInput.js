@@ -155,7 +155,7 @@ class ExamInput extends React.Component {
             case "compulsory_exam":
                 options.push(
                     <option key={"exam-" + this.props.exam.exam_id} value={this.props.exam.exam.id}>
-                        {this.props.exam.exam.name}
+                        {this.props.exam.exam.code} &mdash; {this.props.exam.exam.name}
                     </option>
                 )
                 break;
@@ -175,7 +175,7 @@ class ExamInput extends React.Component {
         if (this.state.choices !== null) {
             this.state.choices.map((exam, i) =>
                 options.push(<option key={"exam-choice-" + exam.id} value={i}>
-                    {exam.name}
+                    {exam.code} &mdash; {exam.name}
                 </option>)
             );
 
