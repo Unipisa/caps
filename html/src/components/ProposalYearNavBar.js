@@ -24,7 +24,7 @@ class ProposalYearNavBar extends React.Component {
         const cds = Caps.params.settings.cds;
 
         return <nav>
-            <div className="d-flex mb-4">
+            <div className="d-flex mt-4">
                 <div className="flex-fill"></div>
                 <button type="button" className="btn-primary btn btn-sm mr-2" onClick={this.onAddExamClicked.bind(this)}>
                     Aggiungi esame di {cds}

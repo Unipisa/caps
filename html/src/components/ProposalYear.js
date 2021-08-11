@@ -157,10 +157,10 @@ class ProposalYear extends React.Component {
                         </div>
                     </div>
                     <div className="card-body">
+                        {exam_inputs}
                         <ProposalYearNavBar year={this.props.year}
                             onAddExamClicked={this.onAddExamClicked.bind(this)}
                             onAddFreeExamClicked={this.onAddFreeExamClicked.bind(this)} />
-                        {exam_inputs}
                     </div>
                 </div>
             </div>
