@@ -110,7 +110,8 @@ class CurriculaController extends AppController
         $curriculum = $this->Curricula->findById($id)
             ->contain([
               'FreeChoiceExams', 'CompulsoryGroups' => ['Groups'],
-              'CompulsoryExams' => ['Exams'], 'Degrees' ])
+              'CompulsoryExams' => ['Exams'], 
+              'FreeChoiceExams' => [ 'Groups' ], 'Degrees' ])
             ->firstOrFail();
 
         if (!$curriculum) {

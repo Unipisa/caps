@@ -166,7 +166,9 @@ class ExamInput extends React.Component {
                 break;
             case "free_choice_exam":
                 options.push(
-                    <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
+                    this.props.exam.group_id ? 
+                        <option key="dummy" value="-1" disabled="1">Un esame a scelta del gruppo {this.props.exam.group.name}</option> : 
+                        <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
                 );
                 break;
         }
