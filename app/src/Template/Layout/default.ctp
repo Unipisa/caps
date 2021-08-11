@@ -54,7 +54,8 @@
           <?= json_encode([
               '_csrfToken' => $this->request->getParam('_csrfToken'),
               'pass' => $this->request->getParam('pass'),
-              "?" => $this->request->getQueryParams('?')
+              '?' => $this->request->getQueryParams('?'),
+              'settings' => $settings
             ]) 
           ?>);
     </script>

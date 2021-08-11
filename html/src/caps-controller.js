@@ -40,6 +40,7 @@ class CapsController {
         this.root = root;
         this.controller = controller;
         this.action = action;
+        this.params = params;
 
         jQuery(() => {
             if (routes.hasOwnProperty(this.controller)) {
