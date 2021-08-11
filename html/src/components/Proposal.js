@@ -385,7 +385,8 @@ class Proposal extends React.Component {
             { submit_enabled || <div>Il piano non può essere sottomesso per i seguenti motivi:</div>}
             <ul id="proposalWarning">
                 {missing_selections > 0 &&
-                    <li>Non sono state effettuate <strong>{missing_selections} scelte obbligatorie</strong>.</li>}
+                    <li>Non sono state effettuate <strong>{missing_selections} { missing_selections == 1 ? "scelta obbligatoria" : "scelte obbligatorie" }</strong>.
+                </li>}
                 {total_credits < required_credits &&
                     <li>Sono stati selezionati esami per <strong>{total_credits}</strong> crediti su <strong>{required_credits}</strong>.</li>}
                 {duplicate_exams.length > 0 &&
