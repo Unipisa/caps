@@ -670,7 +670,7 @@ function caps_proposals_add() {
     function on_submit_clicked(e) {
         if (!confirm(
             'Una volta sottomesso il piano, non sarà più possibile modificarlo, ' +
-            'nè sottometterne di nuovi fino ad avvenuta approvazione.\n\n' +
+            'né sottometterne di nuovi fino ad avvenuta approvazione.\n\n' +
             'Sottomettere definitivamente il piano?')) {
             e.preventDefault();
         }

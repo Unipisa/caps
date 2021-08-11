@@ -8,6 +8,7 @@ const React = require('react');
 const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
 const ProposalYear = require('./ProposalYear');
+const CapsAppController = require('../controllers/app-controller');
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -230,6 +231,15 @@ class Proposal extends React.Component {
     }
 
     onSubmit() {
+        const res = confirm(
+            'Una volta sottomesso il piano, non sarà più possibile modificarlo, ' +
+            'né sottometterne di nuovi fino ad avvenuta approvazione.\n\n' +
+            'Sottomettere definitivamente il piano?');
+
+        if (! res) {
+            return;
+        }
+
         this.setState({ 
             saving: true
         }, () => this.save(false));
@@ -292,6 +302,14 @@ class Proposal extends React.Component {
         const response = await fetch(window.location.href, {
             method: 'post',
             body: payload,
+            redirect: 'follow' // FIXME: This currently breaks CakePHP flashes, 
+              // because most of them are only stored for a single request after 
+              // the error / warning, and therefore are hidden when the browser 
+              // loads the page by setting window.location.href below. 
+              //
+              // The only solution seems to actually construct a form, hidden, 
+              // with the right fields, and submit it. Unless we want to switch 
+              // to a full JSON API, and handle the errors ourselves. 
         });
 
         // Follow the redirect
