@@ -62,7 +62,8 @@ class Proposal extends React.Component {
                 'selected_curriculum': curriculum,
                 'selected_degree': degree,
                 'chosen_exams': chosen_exams,
-                'proposal': proposal
+                'proposal': proposal,
+                'saving': false // this is set to true when save is clicked, to avoid double requests
             }
         });
     }
@@ -223,11 +224,15 @@ class Proposal extends React.Component {
     }
 
     onSaveDraft() {
-        this.save(true);
+        this.setState({
+            'saving': true, 
+        }, () => this.save(true));
     }
 
     onSubmit() {
-        this.save(false);
+        this.setState({ 
+            saving: true
+        }, () => this.save(false));
     }
 
     async save(draft = false) {
@@ -349,6 +354,12 @@ class Proposal extends React.Component {
     }
 
     renderSubmitBlock() {
+        if (this.state.saving) {
+            return <LoadingMessage>
+                Salvataggio del piano in corso ...
+            </LoadingMessage>;
+        }
+
         // Count the number of missing selections for each of the curriculum's years. 
         const missing_selections = this.state.chosen_exams.filter(
             (e) => (e.type == "compulsory_exam" || e.type == "compulsory_group") && e.selection === null
