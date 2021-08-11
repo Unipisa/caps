@@ -4,6 +4,8 @@ const Degrees = require('../models/degrees');
 const Curricula = require('../models/curricula');
 const Proposals = require('../models/proposals');
 
+const submitForm = require('../modules/form-submission');
+
 const React = require('react');
 const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
@@ -319,22 +321,7 @@ class Proposal extends React.Component {
 
         payload.append('_csrfToken', this.props.csrfToken);
 
-        const response = await fetch(window.location.href, {
-            method: 'post',
-            body: payload,
-            redirect: 'follow' // FIXME: This currently breaks CakePHP flashes, 
-              // because most of them are only stored for a single request after 
-              // the error / warning, and therefore are hidden when the browser 
-              // loads the page by setting window.location.href below. 
-              //
-              // The only solution seems to actually construct a form, hidden, 
-              // with the right fields, and submit it. Unless we want to switch 
-              // to a full JSON API, and handle the errors ourselves. 
-        });
-
-        // Follow the redirect
-        if (response.status == 200)
-            window.location.href = response.url;
+        submitForm(window.location.href, 'post', payload);
     }
 
     renderCurriculaSelection() {
