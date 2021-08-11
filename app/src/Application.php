@@ -71,7 +71,7 @@ class Application extends BaseApplication
             }
             else
             {
-                $version = trim(exec('git describe --tags'));
+                $version = trim(exec('git describe --tags --match *.*.*'));
                 $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
                 $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
                 $commitDate = $commitDate->format('Y-m-d H:i:s');
