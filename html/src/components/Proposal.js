@@ -318,13 +318,13 @@ class Proposal extends React.Component {
         var blocks = [];
 
         if (this.state.degrees === null) {
-            blocks.push(<LoadingMessage key="loading-degrees">Loading degrees...</LoadingMessage>);
+            blocks.push(<LoadingMessage key="loading-degrees">Caricamento cordi di laurea...</LoadingMessage>);
         }
         else {
             blocks.push(this.renderDegreeSelection());
             if (this.state.selected_degree) {
                 if (this.state.curricula === null) {
-                    blocks.push(<LoadingMessage key="loading-curricula">Loading curricula...</LoadingMessage>)
+                    blocks.push(<LoadingMessage key="loading-curricula">Caricamento curricula...</LoadingMessage>)
                 }
                 else {
                     blocks.push(this.renderCurriculaSelection());
