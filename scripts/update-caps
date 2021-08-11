@@ -35,6 +35,7 @@ for CAPSDIRECTORY in $(find /var/www -name bootstrap_cli.php -exec dirname {} \;
       # Make sure npm is recent enough
       npm install
       npm run -s deploy
+      npm run -s deploy:dev
       cd ../app
     fi
 
