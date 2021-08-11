@@ -411,6 +411,14 @@ class Proposal extends React.Component {
     }
 
     render() {
+        // If we are opening a proposal, but it has not been loaded yet, we display 
+        // a LoadingMessage instead of the usual "Loading degrees" indicator. 
+        if (this.props.id !== undefined && this.state.chosen_exams === null) {
+            return <Card>
+                <LoadingMessage>Caricamento del piano in corso ...</LoadingMessage>
+            </Card>;
+        }
+
         return <div>
             <Card>{this.renderDegreeCurriculaSelection()}</Card>
             {this.state.selected_curriculum !== null && this.renderProposal()}
