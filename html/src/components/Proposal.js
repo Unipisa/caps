@@ -382,15 +382,15 @@ class Proposal extends React.Component {
             (duplicate_exams.length == 0);
 
         return <div>
-            <div id="proposalWarning">
+            { submit_enabled || <div>Il piano non può essere sottomesso per i seguenti motivi:</div>}
+            <ul id="proposalWarning">
                 {missing_selections > 0 &&
-                    <span>Non sono state effettuate {missing_selections} scelte obbligatorie. <br /></span>}
+                    <li>Non sono state effettuate <strong>{missing_selections} scelte obbligatorie</strong>.</li>}
                 {total_credits < required_credits &&
-                    <span>Mancano {required_credits - total_credits} crediti per poter chiudere il piano. </span>}
+                    <li>Sono stati selezionati esami per <strong>{total_credits}</strong> crediti su <strong>{required_credits}</strong>.</li>}
                 {duplicate_exams.length > 0 &&
-                    <span>Il piano contiene i seguenti esami duplicati: {duplicate_list}.<br /></span>}
-            </div>
-            <br />
+                    <li>Sono presenti i seguenti <strong>esami duplicati</strong>: {duplicate_list}.</li>}
+            </ul>
             <div className="form-group btn-group">
                 <button className="btn btn-success" disabled={!submit_enabled} onClick={this.onSubmit.bind(this)}>Sottometti piano di studio</button>
                 <button className="btn btn-primary" onClick={this.onSaveDraft.bind(this)}>Salva bozza</button>
