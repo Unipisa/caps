@@ -40,7 +40,7 @@ $num_proposals = 0;
     <?php if ($user['username'] == $user_entry['username']): ?>
     <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'add' ]) ?>">
         <button class="btn btn-sm btn-primary shadow-sm">
-            <i class="fw fas fa-plus"></i>
+            <i class="fw fas fa-plus-square"></i>
             Nuovo piano
         </button>
     </a>

@@ -67,7 +67,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'add'
             ]); ?>">
-                <i class="fas fa-fw fa-plus"></i>
+                <i class="fas fa-fw fa-plus-square"></i>
                 <span>Nuovo piano</span>
             </a>
         </li>
