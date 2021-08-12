@@ -193,24 +193,14 @@ class AppController extends Controller
      */
     private function computeAssetVersioning()
     {
-        $css_hash = Cache::read('css_hash');
-        $js_hash  = Cache::read('js_hash');
+        $js_name = Cache::read('js_name');
 
-        if ($css_hash == false)
-        {
-            $css_file = WWW_ROOT . DS . "css" . DS . "style.min.css";
-            $css_hash = file_exists($css_file) ? md5_file($css_file) : "";
-            Cache::write('css_hash', $css_hash);
+        if ($js_name == false) {
+            $ver = file_get_contents(WWW_ROOT . DS . "js" . DS . "ver");
+            Cache::write('js_name', $ver);
         }
 
-        if ($js_hash == false)
-        {
-            $js_file = WWW_ROOT . DS . "js" . DS . "caps.min.js";
-            $js_hash = file_exists($js_file) ? md5_file($js_file) : "";
-            Cache::write('js_hash', $js_hash);
-        }
-
-        $this->set(compact('css_hash', 'js_hash'));
+        $this->set(compact('js_name'));
     }
 
     /**
