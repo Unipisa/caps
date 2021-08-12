@@ -103,6 +103,14 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+            Configurazione
+        </div>
+
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item<?= $controllerName == 'Degrees' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
@@ -141,38 +149,30 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
-        <li class="nav-item">
-            <?php
-              $settingsShow = ($controllerName == 'Settings' || ($controllerName == 'Users' && $actionName == 'index'));
-            ?>
-            <a class="<?= $settingsShow ? 'nav-link' : 'nav-link collapsed' ?>"
-               href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" >
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>Impostazioni</span>
-            </a>
-            <div id="collapseUtilities" class="collapse <?= $settingsShow ? 'show' : '' ?>" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <!-- <h6 class="collapse-header">Heading</h6> -->
-                    <a class="collapse-item <?= ($controllerName == 'Settings') ? 'active' : '' ?>" href="<?= $this->Url->build([
-                            'controller' => 'settings', 'action' => 'index'
-                        ]); ?>">Generali</a>
-                    <a class="collapse-item <?= ($controllerName == 'Users' && $actionName == 'index') ? 'active' : '' ?>" href="<?= $this->Url->build([
-                            'controller' => 'users', 'action' => 'index',
-                            '?' => [ 'admin' => 'admin' ]
-                        ], [
-                            'escape' => false
-                        ]); ?>">Utenti</a>
-                </div>
-            </div>
+        <li class="nav-item<?= $controllerName == 'Users' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build([
+                'controller' => 'users', 'action' => 'index',
+                '?' => ['admin' => 'admin']], [
+                    'escape' => false
+                ]); ?>">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Utenti</span>
+                </a>
         </li>
 
+        <li class="nav-item<?= $controllerName == 'Settings' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'settings', 'action' => 'index']); ?>">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Impostazioni</span>
+            </a>
+        </li>
     <?php endif; ?>
 
     <!-- Divider -->
     <hr class="sidebar-divider">
     <li class="nav-item">
         <a class="nav-link" href="mailto:help@dm.unipi.it">
-            <i class="fas f-fw fa-question"></i>
+            <i class="fas f-fw fa-at"></i>
             <span>Supporto</span>
         </a>
     </li>
