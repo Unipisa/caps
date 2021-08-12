@@ -13,7 +13,6 @@ describe('modules', function() {
     global.window = new jsdom.JSDOM().window;
     global.document = window.document;
     var CapsAttachment = require('../src/modules/attachment.js');
-    // ERROR: cannot use ES6 syntax: 
     var loadDashboardData = require('../src/modules/dashboard.js');
     describe('upload-csv', function() {
         var UploadCsv = require("../src/modules/upload-csv.js");
