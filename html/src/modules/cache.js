@@ -8,7 +8,7 @@ class Cache {
 
     // We default to 60 seconds expiration. This may be adjusted with 
     // setExpire()
-    expire = 60;
+    expire = 60000;
 
     setExpire(e) {
         this.expire = e;
@@ -26,7 +26,7 @@ class Cache {
             const now = (new Date()).getTime();
 
             if (this._data[key].state == 'cached') {
-                if (now >= this._data[key].expires) {
+                if (now <= this._data[key].expires) {
                     return this._data[key].value;
                 }
                 else {
@@ -58,8 +58,8 @@ class Cache {
         const value = await fun();
 
         this._data[key].value = value;
-        this._data[key].state = 'cached';
         this._data[key].expires = (new Date()).getTime() + this.expire;
+        this._data[key].state = 'cached';
 
         this._data[key].queue.map((q) => {
             q(value);
