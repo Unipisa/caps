@@ -45,7 +45,7 @@ run ```docker-compose build``` again.
 The image is set up for automatic SSH forwarding of LDAP server that are not
 publicly accessible, for development. In this case, you may set the variable 
 ```CAPS_SSH_TUNNEL``` in ```caps.env```, and make sure that a private RSA key
-is available ad ```/app/id_rsa``` inside the tunnel. For instance, it suffices
+is available at ```/app/id_rsa``` inside the container. For instance, it suffices
 to have:
 ```
   volumes:
