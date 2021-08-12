@@ -1,8 +1,10 @@
 'use strict';
 
-const React = require('react');
 const Groups = require('../models/groups')
 const Exams = require('../models/exams');
+
+const React = require('react');
+const TrashIcon = require('./TrashIcon');
 
 class ExamInput extends React.Component {
     constructor(props) {
@@ -109,9 +111,7 @@ class ExamInput extends React.Component {
                     value={this.state.credits}
                     onChange={this.onFreeExamCreditsChanged.bind(this)} />
             </div>
-            <div className="col-1 my-auto" onClick={this.onDeleteClicked.bind(this)}>
-                <i href='#' className='delete fas fw fa-trash'></i>
-            </div>
+            <TrashIcon onClick={this.onDeleteClicked.bind(this)} />
         </li>;
     }
 
@@ -204,12 +204,7 @@ class ExamInput extends React.Component {
                     value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
                     readOnly={this.props.exam !== undefined ? "1" : "0"} />
             </div>
-            {removable && <div className="col-1 my-auto" 
-                onClick={this.onDeleteClicked.bind(this)} style={{ cursor: "pointer" }}
-                onMouseLeave={(e) => e.target.children[0].classList.remove("text-danger")}
-                onMouseEnter={(e) => e.target.children[0].classList.add("text-danger")}>
-                    <i className='delete fas fw fa-trash'></i>
-            </div>}
+            {removable && <TrashIcon onClick={this.onDeleteClicked.bind(this)} />}
         </li>;
     }
 

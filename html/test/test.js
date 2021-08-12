@@ -14,7 +14,6 @@ describe('modules', function() {
     global.document = window.document;
     var CapsAttachment = require('../src/modules/attachment.js');
     var loadDashboardData = require('../src/modules/dashboard.js');
-    var caps_proposals_add = require('../src/modules/proposals-add.js');
     describe('upload-csv', function() {
         var UploadCsv = require("../src/modules/upload-csv.js");
         const headers = ['nome','codice','settore','crediti'];
