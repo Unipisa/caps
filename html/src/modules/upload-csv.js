@@ -1,4 +1,12 @@
-const jQuery = require('jquery');
+// Explicitly passing window is required for the mocha tests to work; we detect 
+// the tests environment by checking for jsdom in the useragent. 
+var jQuery = null;
+if (window._resourceLoader && window._resourceLoader._userAgent.includes("jsdom")) {
+    jQuery = require('jquery')(window);
+}
+else {
+    jQuery = require('jquery');
+}
 
 // https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/string/levenshtein-distance
 /**
@@ -239,6 +247,7 @@ class CsvUpload {
     }
 
     setup() {
+        console.log(jQuery);
         var csv = this;
         jQuery("#csv_file_input").change(function (evt) {
             csv.upload_file(evt.target.files[0]);

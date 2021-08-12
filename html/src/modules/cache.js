@@ -4,11 +4,13 @@ const { get } = require("jquery");
 
 class Cache {
 
-    _data = {};
+    constructor() {
+        this._data = {};
 
-    // We default to 60 seconds expiration. This may be adjusted with 
-    // setExpire()
-    expire = 60000;
+        // We default to 60 seconds expiration. This may be 
+        // adjusted with setExpire()
+        this.expire = 60000;
+    }
 
     setExpire(e) {
         this.expire = e;

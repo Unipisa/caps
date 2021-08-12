@@ -4,7 +4,9 @@ const Cache = require('../modules/cache');
 
 class Exams {
 
-    cache = new Cache();
+    constructor() {
+        this.cache = new Cache();
+    }
 
     async all() {
         const exams = this.cache.get("exams-all", async () => {

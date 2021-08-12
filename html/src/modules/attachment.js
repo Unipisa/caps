@@ -1,6 +1,4 @@
 const jQuery = require('jquery');
-const popper = require('popper.js');
-const bootstrap = require('bootstrap');
 
 /**
  * The CapsAttachment is the controller for a span.pdf-attachment element, and

@@ -4,8 +4,10 @@ const Cache = require('../modules/cache');
 
 class Groups {
 
-    cache = new Cache();
-
+    constructor() {
+        this.cache = new Cache();
+    }
+    
     async all() {
         const groups = this.cache.get("groups-all", async () => {
             const response = await (
