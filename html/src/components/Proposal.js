@@ -21,7 +21,7 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'chosen_exams': null,
+            'chosen_exams': [],
             'proposal': null
         };
 
@@ -128,17 +128,23 @@ class Proposal extends React.Component {
         }
 
         if (idx >= 0) {
-            const curriculum_id = this.state.curricula[idx].id;
-            const curriculum = await Curricula.get(curriculum_id);
-            const years = curriculum.degree.years;
-
-            var chosen_exams = this.createInitialState(curriculum, [], [], true);
-
+            // A partial version of the curriculum is loaded first, as listed
+            // in this.state.curricula. This displays the <LoadingMessage> for
+            // the user, while we make the necessary AJAX calls to set up the
+            // proposal.
             this.setState({
-                'selected_curriculum': curriculum,
-                'chosen_exams': chosen_exams
-            });
+                'selected_curriculum': this.state.curricula[idx],
+                'chosen_exams': []
+            }, async () => {
+                const curriculum_id = this.state.curricula[idx].id;
+                const curriculum = await Curricula.get(curriculum_id);
+                var chosen_exams = this.createInitialState(curriculum, [], [], true);
 
+                this.setState({
+                    'selected_curriculum': curriculum,
+                    'chosen_exams': chosen_exams
+                });
+            });
         }
     }
 
@@ -362,6 +368,13 @@ class Proposal extends React.Component {
 
     renderProposal() {
         var rows = [];
+
+        if (this.state.chosen_exams.length == 0) {
+            return <Card>
+                <LoadingMessage>Caricamento del piano in corso...</LoadingMessage>
+            </Card>;
+        }
+
         for (var i = 1; i <= this.state.selected_degree.years; i++) {
             const year = i;
             const chosen_exams = this.state.chosen_exams.filter((e) => e.year == year);

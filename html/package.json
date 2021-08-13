@@ -61,8 +61,8 @@
     "js": "webpack --config webpack.config.js",
     "js:dev": "webpack --config webpack.config.dev.js",
     "install": "copyfiles css/style.min.css css/style.min.css.map js/caps.js js/caps.min.js node_modules/@fortawesome/fontawesome-free/webfonts/* ../app/webroot/",
-    "deploy": "npm run js && ../app/bin/cake cache clear_all",
-    "deploy:dev": "npm run js:dev && ../app/bin/cake cache clear_all",
+    "deploy": "npm run js && node deploy.js && ../app/bin/cake cache clear_all",
+    "deploy:dev": "npm run js:dev && node deploy.js && ../app/bin/cake cache clear_all",
     "watch": "webpack --watch --config webpack.config.dev.js"
   },
   "keywords": [],
