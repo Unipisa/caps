@@ -196,11 +196,13 @@ class AppController extends Controller
         $js_name = Cache::read('js_name');
         $js_time = Cache::read('js_time');
 
-        $ver_file = WWW_ROOT . DS . "js" . DS . "ver";
+        $prefix = Configure::read('debug') ? "caps.js" : "caps.min.js";
+
+        $ver_file = WWW_ROOT . DS . "js" . DS . $prefix . ".version";
         $ver_time = stat($ver_file)["mtime"];
 
         if ($js_name == false || $ver_time > $js_time) {
-            $js_name = file_get_contents(WWW_ROOT . DS . "js" . DS . "ver");
+            $js_name = file_get_contents($ver_file);
             Cache::write('js_name', $js_name);
             Cache::write('js_time', $ver_time);
         }

@@ -41,7 +41,7 @@
       // and in not minified form when in development. 
     ?>
     
-    <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $js_name . ($debug ? '.js' : '.min.js')) ?>"></script>
+    <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $js_name) ?>"></script>
 
     <script>
         const Caps = new CapsController(

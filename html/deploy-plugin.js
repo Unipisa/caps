@@ -21,40 +21,42 @@ class CAPSDeployPlugin {
         compiler.hooks.done.tap(
             'CAPS Deploy Plugin',
             (stats) => {
-                this.deployJSFiles();
+                this.deployJSFiles(stats);
             }
         );
     }
 
-    deployJSFiles() {
-        var candidate_files = [ 'js/caps.js', 'js/caps.min.js' ]
-        var hash = crypto.createHash('md5');
+    async deployJSFiles(stats) {
+        const output_file =  stats.compilation.outputOptions.path + 
+            "/" + stats.compilation.outputOptions.filename;
+        const hash = stats.hash;
 
-        candidate_files.map((f) => {
-            if (fs.existsSync(f)) {
-                const data = fs.readFileSync('js/caps.js');
-                hash.update(data);
+        const name = 'caps-' + hash;
+        const version_file = stats.compilation.outputOptions.filename + '.version';        
+        
+        const extension = '.' + output_file.split('.').splice(1).join('.');
+
+        // Try to remove all the old files that have the same extension.
+        const files = fs.readdirSync('../app/webroot/js/');
+        for (const f of files) {
+            const fe = '.' + f.split('.').splice(1).join('.');
+            if (fe == extension) {
+                console.log(`Removing the old file ${f}`);
+                try {
+                    fs.unlinkSync('../app/webroot/js/' + f);
+                }
+                catch {
+                    console.log("Error during removal, ignoring");
+                }
             }
-        });
-
-        const name = 'caps-' + hash.digest('hex');
-
-        var copied_files = 0;
-
-        candidate_files.map((f) => {
-            if (fs.existsSync(f)) {
-                const extension = '.' + f.split('.').splice(1).join('.');
-                const fn = '../app/webroot/js/' + name + extension;
-                console.log(`Installing ${f} into ${fn}`);
-                fs.copyFileSync(f, fn);
-                copied_files++;
-            }
-        });
-
-        if (copied_files) {
-            console.log("Creating the file ../app/webroot/js/ver");
-            fs.writeFileSync('../app/webroot/js/ver', name);
         }
+
+        const fn = '../app/webroot/js/' + name + extension;
+        console.log(`Installing ${output_file} into ${fn}`);
+        fs.copyFileSync(output_file, fn);
+
+        console.log(`Creating the file ../app/webroot/js/${version_file}`);
+        fs.writeFileSync(`../app/webroot/js/${version_file}`, name + extension);
     }
 }
   
