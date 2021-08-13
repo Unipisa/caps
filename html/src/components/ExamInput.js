@@ -194,7 +194,7 @@ class ExamInput extends React.Component {
         return <li className="form-group row">
             <div className="col-9">
                 <select className="exam form-control"
-                    value={selected_exam} onChange={this.onExamSelected.bind(this)}>
+                    value={selected_exam} onChange={this.onExamSelected.bind(this)} disabled={ options.length == 1 }>
                     {options}
                 </select>
                 { note && <div className="col-9 mt-1 small text-muted" dangerouslySetInnerHTML={{__html: note}}></div> }

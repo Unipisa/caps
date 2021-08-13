@@ -54,10 +54,10 @@ $month = $proposal['modified']->month;
 if ($month <= 8)
 $year = $year - 1;
 ?>
-Anno Accademico <?= $year ?> / <?=  ($year + 1) ?><br>
+Anno Accademico <?= $year ?>/<?=  ($year + 1) ?><br>
 </p>
 
-<?php for ($year = 1; $year <= 3; $year++): ?>
+<?php for ($year = 1; $year <= $proposal['curriculum']['degree']['years']; $year++): ?>
 
     <?php
     $this_year_exams = array_filter($proposal['chosen_exams'],
@@ -70,7 +70,7 @@ Anno Accademico <?= $year ?> / <?=  ($year + 1) ?><br>
             return $e['chosen_year'] == $year;
         });
 
-    if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
+    ?>
         <div>
             <?php
             echo "<h3>";
@@ -157,5 +157,4 @@ Anno Accademico <?= $year ?> / <?=  ($year + 1) ?><br>
                 </tr>
             </table>
         </div>
-    <?php endif; ?>
 <?php endfor; ?>
