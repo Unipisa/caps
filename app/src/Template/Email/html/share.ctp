@@ -35,7 +35,7 @@
     sottomesso per approvazione dallo studente <?= $proposal['user']['name'] ?>
     (matricola: <?= $proposal['user']['number'] ?>). <br>
     Curriculum: <?= $proposal['curriculum']['name'] ?><br>
-    Anno di immatricolazione: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?><br>
+    Anno di immatricolazione: <?= $proposal['curriculum']['degree']->academic_years() ?><br>
     <?= $proposal['curriculum']['degree']['name'] ?><br>
     <?= $settings['department'] ?>
 </p>
