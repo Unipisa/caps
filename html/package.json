@@ -27,7 +27,6 @@
     "chart.js": "^2.9.4",
     "clean-css-cli": "^4.3.0",
     "concurrently": "^5.3.0",
-    "copy-webpack-output-plugin": "^0.1.6",
     "copyfiles": "^2.4.1",
     "css-loader": "^6.2.0",
     "jquery": "^3.6.0",

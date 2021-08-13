@@ -52,7 +52,7 @@
               '_csrfToken' => $this->request->getParam('_csrfToken'),
               'pass' => $this->request->getParam('pass'),
               '?' => $this->request->getQueryParams('?'),
-              'settings' => $settings
+              'cds' => $settings['cds']
             ]) 
           ?>);
     </script>

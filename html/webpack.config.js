@@ -1,5 +1,5 @@
 const path = require('path');
-const CopyWebpackOutputPlugin = require('copy-webpack-output-plugin');
+const CAPSDeployPlugin = require('./deploy-plugin');
 
 module.exports = {
   entry: './src/caps.js',
@@ -30,12 +30,7 @@ module.exports = {
     extensions: ['*', '.js', '.jsx'],
   },
   plugins: [
-    new CopyWebpackOutputPlugin([
-      {
-        src: './js/*.js',
-        dest: '../app/webroot/js'
-      }
-    ])
+    new CAPSDeployPlugin()
   ],
   output: {
     filename: 'caps.min.js',
