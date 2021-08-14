@@ -32,9 +32,19 @@ class CAPSDeployPlugin {
         const hash = stats.hash;
 
         const name = 'caps-' + hash;
+        const js_dir = '../app/webroot/js/';
         const version_file = stats.compilation.outputOptions.filename + '.version';        
         
         const extension = '.' + output_file.split('.').splice(1).join('.');
+
+        // Check that the directory ../app/webroot/js exists; if not, create it
+        try {
+            fs.accessSync(js_dir, fs.constants.W_OK);
+        } 
+        catch {
+            console.log(`Creating the missing directory ${js_dir}`);
+            fs.mkdirSync(js_dir);
+        }
 
         // Try to remove all the old files that have the same extension.
         const files = fs.readdirSync('../app/webroot/js/');
