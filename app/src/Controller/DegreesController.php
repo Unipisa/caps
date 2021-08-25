@@ -98,6 +98,9 @@ class DegreesController extends AppController
                     return;
                 }
 
+                $CompulsoryGroups = TableRegistry::getTableLocator()->get('CompulsoryGroups');
+                $FreeChoiceExams = TableRegistry::getTableLocator()->get('FreeChoiceExams');
+
                 foreach ($selected as $degree_id) {
                     $degree = $this->Degrees
                         ->findById($degree_id)
@@ -109,6 +112,7 @@ class DegreesController extends AppController
                     // automatically create new entities.
                     $degree['id'] = null;
                     $degree['academic_year'] = $year;
+                    $degree['enabled'] = false;
                     $degree->isNew(true);
 
                     foreach ($degree['curricula'] as $curriculum) {   
@@ -131,17 +135,51 @@ class DegreesController extends AppController
                     }
 
                     foreach($degree['groups'] as $group) {
+                        $group['old_id'] = $group['id'];
                         $group['id'] = null;
                         $group->isNew(true);
                     }
-                }
-                if (! $this->Degrees->save($degree)) {
-                    $this->Flash->error('Impossibile duplicare il corso: ' + $degree['name']);
-                    return $this->redirect([ 'action' => 'index' ]);
+
+                    if (! $this->Degrees->save($degree)) {
+                        $this->Flash->error('Impossibile duplicare il corso: ' . $degree['name']);
+                        return $this->redirect([ 'action' => 'index' ]);
+                    }
+
+                    // create mapping from old groups to new ones
+                    $map = [];
+                    foreach($degree['groups'] as $group) {
+                        $map[$group['old_id']] = $group['id'];
+                    }
+
+                    // assegna i gruppi nuovi ai curriculum nuovi
+                    foreach($degree['curricula'] as $curriculum) {
+                        foreach($curriculum['compulsory_groups'] as $item) {
+                            if (array_key_exists($item['group_id'], $map)) {
+                                $item['group_id'] = $map[$item['group_id']];
+                            } else {
+                                $this->Flash->error('esame a scelta non duplicato per incongruenza nel curriculum ' . $curriculum['name']);
+                            }
+                            if (!$CompulsoryGroups->save($item)) {
+                                $this->Flash->error('Errore database (885746)');
+                            }
+                        }
+                        foreach($curriculum['free_choice_exams'] as $item) {
+                            if ($item['group_id'] != null) {
+                                if (array_key_exists($item['group_id'], $map)) {
+                                    $item['group_id'] = $map[$item['group_id']];
+                                } else {
+                                    $this->Flash->error('esame a scelta non duplicato per incongruenza nel curriculum ' . $curriculum['name']);
+                                }
+                            }
+                            if (!$FreeChoiceExams->save($item)) {
+                                $this->Flash->error('Errore database (948435)');
+                            }
+                        }
+                    }
                 }
 
                 // debug($selected);
-                $this->Flash->success('Corsi duplicati correttamente');
+                $this->Flash->success('Corsi di Laurea duplicati');
 
                 return $this->redirect(['action' => 'index']);
             }
