@@ -88,10 +88,10 @@
                     <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) { ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
-                                <?php echo h($compulsory_exam['exam']['name']) ?>
+                                <?= $this->Html->link(h($compulsory_exam['exam']['name']), ['controller' => 'exams', 'action' => 'view', $compulsory_exam['exam']['id']]) ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year">
-                                <?php echo $compulsory_exam['year']; ?>
+                                <?= $compulsory_exam['year'] ?>
                             </td>
                         </tr>
                     <?php } ?>
@@ -116,10 +116,10 @@
                     <?php foreach ($curriculum['compulsory_groups'] as $compulsory_group) { ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
-                                <?php echo $compulsory_group['group']['name']?>
+                                <?= $this->Html->link(h($compulsory_group['group']['name']), ['controller' => 'groups', 'action' => 'view', $compulsory_group['group']['id']]) ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year">
-                                <?php echo $compulsory_group['year']; ?>
+                                <?= $compulsory_group['year']; ?>
                             </td>
                         </tr>
                     <?php } ?>
