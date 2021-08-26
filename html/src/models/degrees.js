@@ -18,6 +18,13 @@ class Degrees {
         return response["degrees"];
     }
 
+    async get(id) {
+        const response = await (
+            await fetch(Caps.root + 'degrees/view/' + id + '.json')
+        ).json();
+
+        return response;
+    }
 }
 
 module.exports = new Degrees();

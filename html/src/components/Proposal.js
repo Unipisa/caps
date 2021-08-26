@@ -26,23 +26,41 @@ class Proposal extends React.Component {
         };
 
         this.id_counter = 0;
+
+        // TODO: penso sarebbe meglio che fosse il controller a 
+        // prendere la querystring e passarla come parametro 
+        // alla componente React. 
+        //
+        // leggiamo i parametri degree_id e curriculum_id dalla querystring, se presenti
+        const urlParams = new URLSearchParams(window.location.search);
+        this.degree_id = parseInt(urlParams.get('degree_id'));
+        this.curriculum_id = parseInt(urlParams.get('curriculum_id'));
+        
         this.loadDegrees();
     }
 
     async loadDegrees() {
         if (this.state.degrees === null) {
-            this.setState({
-                degrees: (await Degrees.allActive()).sort((a, b) => {
-                    if (a.academic_year > b.academic_year) return -1;
-                    if (a.academic_year < b.academic_year) return 1;
-                    if (a.name < b.name) return -1;
-                    if (a.name > b.name) return 1;
-                    return 0;
+            let degrees = (await Degrees.allActive()).sort((a, b) => {
+                if (a.academic_year > b.academic_year) return -1;
+                if (a.academic_year < b.academic_year) return 1;
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+                return 0;
+                });
+            let selected_degree = null;
+            if (this.degree_id) {
+                selected_degree = degrees.filter(degree => (degree.id === this.degree_id))[0];
+                if (!selected_degree) {
+                    // il degree passato dalla querystring potrebbe non essere attivo
+                    // in tal caso lo aggiungiamo comunque alla lista
+                    selected_degree = await  Degrees.get(this.degree_id);
+                    degrees.push(selected_degree);
                 }
-                )
-            }, () => {
-                if (this.props.id !== undefined)
-                    this.loadProposal(this.props.id);
+            }
+
+            this.setState({degrees, selected_degree}, () => {
+                if (selected_degree) this.loadCurricula();
             });
         }
     }
@@ -73,9 +91,17 @@ class Proposal extends React.Component {
 
     async loadCurricula() {
         const degree = this.state.selected_degree;
-        this.setState({
-            curricula: await Curricula.forDegree(degree.id)
-        });
+        const curricula = await Curricula.forDegree(degree.id);
+        var chosen_exams = [];
+        let selected_curriculum = null;
+        if (this.curriculum_id) {
+            // seleziona il curriculum indicato nella querystring
+            selected_curriculum = await Curricula.get(this.curriculum_id);
+            if (selected_curriculum !== null) {
+                chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
+            }
+        }
+        this.setState({curricula, selected_curriculum, chosen_exams});
     }
 
     renderDegreeSelection() {
