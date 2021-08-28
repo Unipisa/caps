@@ -441,7 +441,7 @@ class Proposal extends React.Component {
         var found_exams = {};
         var duplicate_exams = [];
         this.state.chosen_exams.map((e) => {
-            if (e.selection) {
+            if (e.selection && e.selection.id) {
                 if (found_exams.hasOwnProperty(e.selection.id)) {
                     duplicate_exams.push(e.selection.name);
                 }
