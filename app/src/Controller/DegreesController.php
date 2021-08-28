@@ -200,6 +200,7 @@ class DegreesController extends AppController
         ]);
 
         $this->set('degree', $degree);
+        $this->set('_serialize', 'degree');
     }
 
     /**
