@@ -33,8 +33,10 @@
         echo $this->Form->control('name', ['label' => 'Nome', 'type' => 'text' ]);
         echo $this->Form->control('academic_year', ['label' => 'Anno accademico (solo anno di inizio)', 'type' => 'integer' ]);
         echo $this->Form->control('years', ['label' => 'Anni']);
-        echo $this->Form->control('enabled', ['label' => 'attivazione']);
-    ?>
+        ?>
+    <div class="form-check">
+        <?php  echo $this->Form->control('enabled', ['label' => 'Attivato']); ?>
+    </div>
 
     <div class="form-group">
         <label for="caps-degree-enable-sharing" class="caps-setting-header">Funzionalità opzionali</label>
