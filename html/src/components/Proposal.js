@@ -375,7 +375,7 @@ class Proposal extends React.Component {
         var blocks = [];
 
         if (this.state.degrees === null) {
-            blocks.push(<LoadingMessage key="loading-degrees">Caricamento cordi di laurea...</LoadingMessage>);
+            blocks.push(<LoadingMessage key="loading-degrees">Caricamento corsi di laurea...</LoadingMessage>);
         }
         else {
             blocks.push(this.renderDegreeSelection());
