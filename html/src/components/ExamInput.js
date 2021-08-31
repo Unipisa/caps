@@ -189,7 +189,7 @@ class ExamInput extends React.Component {
                 : -1;
         }
 
-        const note = this.props.exam.exam ? this.props.exam.exam.notes : "";
+        const note = this.props.exam.selection ? this.props.exam.selection.notes : "";
 
         return <li className="form-group row">
             <div className="col-9">
