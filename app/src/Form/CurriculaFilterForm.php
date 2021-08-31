@@ -42,6 +42,6 @@ class CurriculaFilterForm extends FilterForm
         $this->filterFieldEqual('Degrees.academic_year', 'academic_year');
         $this->filterFieldLike('Degrees.name', 'degree');
 
-        return true; // $this->query;
+        return true;
     }
 }

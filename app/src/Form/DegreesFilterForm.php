@@ -27,7 +27,7 @@ use App\Form\FilterForm;
 
 class DegreesFilterForm extends FilterForm
 {
-    protected function _buildSchema(Schema $schema)
+    protected function _buildSchema(Schema $schema) : Schema
     {
         return $schema
           ->addField('name', ['type' => 'string'])
@@ -36,7 +36,7 @@ class DegreesFilterForm extends FilterForm
           ->addField('enabled', ['type' => 'select', 'options' => [0, 1]]);
     }
 
-    protected function _execute(array $data)
+    protected function _execute(array $data) : bool
     {
         $this->setData($data);
         $this->filterFieldLike('Degrees.name', 'name');
@@ -44,6 +44,6 @@ class DegreesFilterForm extends FilterForm
         $this->filterFieldEqual('Degrees.years', 'years');
         $this->filterFieldBoolean('Degrees.enabled', 'enabled');
 
-        return $this->query;
+        return true;
     }
 }
