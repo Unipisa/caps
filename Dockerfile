@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
 	libzip-dev \
         postgresql-client \
 	sudo \
+        python3 \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
