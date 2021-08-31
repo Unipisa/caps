@@ -27,7 +27,7 @@ class ProposalYearNavBar extends React.Component {
             <div className="d-flex mt-4">
                 <div className="flex-fill"></div>
                 <button type="button" className="btn-primary btn btn-sm mr-2" onClick={this.onAddExamClicked.bind(this)}>
-                    Aggiungi esame di {cds}
+                    Aggiungi esame di {this.props.degree.default_group ? this.props.degree.default_group.name : cds}
                 </button>
                 <button type="button" className="btn-primary btn btn-sm" onClick={this.onAddFreeExamClicked.bind(this)}>
                     Aggiungi esame a scelta libera

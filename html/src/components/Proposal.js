@@ -409,6 +409,7 @@ class Proposal extends React.Component {
                 <ProposalYear key={"proposal-year-" + year}
                     year={year}
                     curriculum={this.state.selected_curriculum}
+                    degree={this.state.selected_degree}
                     onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)}
                     chosen_exams={chosen_exams} />
             );
