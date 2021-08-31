@@ -44,7 +44,10 @@
             <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta di parere abilitata']); ?>
         </div>
         <?= $this->Form->control('default_group_id',
-            [ 'label' => 'gruppo esami a scelta libera']) ?>
+            [
+                'label' => 'gruppo esami a scelta libera',
+                'options' => $groups
+            ]) ?>
 
     </div>
 

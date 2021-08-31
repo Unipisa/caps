@@ -226,10 +226,9 @@ class DegreesController extends AppController
         }
 
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
-        $groups = $groups_table->find('all', [
-            'conditions' => [
-                'Groups.degree_id' => $degree['id'],
-                'contains' => ['Degrees']]]);
+        $groups = $groups_table->find('list')
+            ->contain('Degrees')
+            ->where([ 'Groups.degree_id' => $degree['id'] ]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
