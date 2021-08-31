@@ -66,6 +66,9 @@ class DegreesTable extends Table
         $this->hasMany('Groups', [
             'foreignKey' => 'degree_id'
         ]);
+
+        $this->belongsTo('Groups')
+            ->setForeignKey('default_group_id');
     }
 
     /**

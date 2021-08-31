@@ -58,6 +58,10 @@
             <th>Richiesta parere</th>
             <td><?= $degree['enable_sharing'] ? 'Abilitata' : 'Non abilitata' ?></td>
         </tr>
+        <tr>
+            <th>Gruppo esami per la scelta libera</th>
+            <td><?= $degree['default_group'] ? $degree['default_group']['name'] : "tutti gli esami" ?></td>
+        </tr>
     </table>
 
 <?= $this->element('card-end'); ?>

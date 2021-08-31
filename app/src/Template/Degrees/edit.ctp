@@ -43,6 +43,9 @@
         <div class="form-check mb-2" id="caps-degree-enable-sharing">
             <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta di parere abilitata']); ?>
         </div>
+        <?= $this->Form->control('default_group_id',
+            [ 'label' => 'gruppo esami a scelta libera']) ?>
+
     </div>
 
     <div class="form-group">

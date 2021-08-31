@@ -213,7 +213,7 @@ class DegreesController extends AppController
     public function edit($id = null)
     {
         if ($id != null) {
-            $degree = $this->Degrees->get($id);
+            $degree = $this->Degrees->findById($id)->contain(['Groups'])->firstOrFail();
         } else {
             $degree = $this->Degrees->newEntity();
             // For new entities we set some reasonable default values in the text fields, to
@@ -225,6 +225,12 @@ class DegreesController extends AppController
             }
         }
 
+        $groups_table = TableRegistry::getTableLocator()->get('Groups');
+        $groups = $groups_table->find('all', [
+            'conditions' => [
+                'Groups.degree_id' => $degree['id'],
+                'contains' => ['Degrees']]]);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
 
@@ -235,8 +241,7 @@ class DegreesController extends AppController
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }
         }
-
-        $this->set(compact('degree'));
+        $this->set(compact('degree', 'groups'));
     }
 
     /**
