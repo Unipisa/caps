@@ -36,7 +36,7 @@ class GroupsController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
+        'sortableFields' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
             'Degrees.academic_year' => 'desc'
