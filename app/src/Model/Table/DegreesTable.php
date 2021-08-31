@@ -68,7 +68,8 @@ class DegreesTable extends Table
         ]);
 
         $this->belongsTo('Groups')
-            ->setForeignKey('default_group_id');
+            ->setForeignKey('default_group_id')
+            ->setProperty('default_group');
     }
 
     /**

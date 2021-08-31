@@ -60,7 +60,7 @@
         </tr>
         <tr>
             <th>Gruppo esami per la scelta libera</th>
-            <td><?= $degree['default_group'] ? $degree['default_group']['name'] : "tutti gli esami" ?></td>
+            <td><?= $degree['default_group_id'] ? $degree['default_group']['name'] : "tutti gli esami" ?></td>
         </tr>
     </table>
 

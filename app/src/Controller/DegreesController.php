@@ -196,7 +196,7 @@ class DegreesController extends AppController
     public function view($id = null)
     {
         $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula']
+            'contain' => ['Curricula', 'Groups']
         ]);
 
         $this->set('degree', $degree);
@@ -226,7 +226,7 @@ class DegreesController extends AppController
         }
 
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
-        $groups = $groups_table->find('list')
+        $default_groups = $groups_table->find('list')
             ->contain('Degrees')
             ->where([ 'Groups.degree_id' => $degree['id'] ]);
 
@@ -240,7 +240,7 @@ class DegreesController extends AppController
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }
         }
-        $this->set(compact('degree', 'groups'));
+        $this->set(compact('degree', 'default_groups'));
     }
 
     /**

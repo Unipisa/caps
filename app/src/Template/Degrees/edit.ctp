@@ -46,7 +46,8 @@
         <?= $this->Form->control('default_group_id',
             [
                 'label' => 'gruppo esami a scelta libera',
-                'options' => $groups
+                'options' => $default_groups,
+                'empty' => 'tutti gli esami'
             ]) ?>
 
     </div>

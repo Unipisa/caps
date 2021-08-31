@@ -91,6 +91,8 @@ class ProposalYear extends React.Component {
             {
                 "type": "free_choice_exam",
                 "id": "custom-" + this.props.year + "-" + this.id_counter,
+                "group_id": this.props.degree.default_group_id,
+                "group": this.props.degree.default_group,
                 "selection": null,
                 "year": this.props.year
             }
@@ -159,6 +161,7 @@ class ProposalYear extends React.Component {
                     <div className="card-body">
                         {exam_inputs}
                         <ProposalYearNavBar year={this.props.year}
+                            degree={this.props.degree}
                             onAddExamClicked={this.onAddExamClicked.bind(this)}
                             onAddFreeExamClicked={this.onAddFreeExamClicked.bind(this)} />
                     </div>
