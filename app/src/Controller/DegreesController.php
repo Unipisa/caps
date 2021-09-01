@@ -212,6 +212,10 @@ class DegreesController extends AppController
      */
     public function edit($id = null)
     {
+        if (!$this->user['admin']) {
+            throw new ForbiddenException();
+        }
+
         if ($id != null) {
             $degree = $this->Degrees->findById($id)->contain(['Groups'])->firstOrFail();
         } else {
