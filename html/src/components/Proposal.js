@@ -60,7 +60,11 @@ class Proposal extends React.Component {
             }
 
             this.setState({degrees, selected_degree}, () => {
-                if (selected_degree) this.loadCurricula();
+                if (this.props.id !== undefined) {
+                    this.loadProposal(this.props.id);
+                } else if (selected_degree) {
+                    this.loadCurricula();
+                }
             });
         }
     }
