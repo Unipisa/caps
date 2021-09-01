@@ -48,8 +48,11 @@ class DegreesControllerTest extends MyIntegrationTestCase
     {
         $this->enableCsrfToken();
         $this->enableSecurityToken();
+        $this->adminSession();
+        $this->get('degrees/edit');
+        $this->assertResponseOK();
         $this->studentSession();
-        $this->post('degrees/edit');
+        $this->get('degrees/edit');
         $this->assertResponseForbidden();
     }
 
