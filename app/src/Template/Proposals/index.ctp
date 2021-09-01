@@ -145,10 +145,40 @@
                   <?= $this->Caps->formatDate($proposal['modified']); ?>
                 </td>
                 <td>
-                    <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
-                    <button type="button" class="btn btn-sm btn-secondary">
-                        <i class="fas fa-eye mr-2"></i>Visualizza
-                    </button></a>
+                    <div class="d-none d-xl-inline-flex flex-row align-items-center">
+                        <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
+                        <button type="button" class="btn btn-sm btn-secondary mr-2">
+                            <i class="fas fa-eye mr-2"></i>
+                            Visualizza
+                        </button>
+                        </a>
+                        <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>">
+                            <button type="button" class="btn btn-sm btn-danger">
+                                <i class="fas fa-file-pdf mr-2"></i>
+                                Download
+                            </button>
+                        </a>
+                    </div>
+                    <div class="d-xl-none">
+                        <div class="dropdown">
+                            <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
+                                id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
+                                        <i class="fas fa-eye mr-2"></i>Visualizza
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>">
+                                    <i class="fas fa-file-pdf mr-2"></i>Scarica
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </td>
             </tr>
         <?php endforeach; ?>
