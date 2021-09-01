@@ -41,7 +41,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.1.12';
+    public static $_CAPSVERSION = '2.2.0';
 
     /**
      * application version number
@@ -71,7 +71,7 @@ class Application extends BaseApplication
             }
             else
             {
-                $version = trim(exec('git describe --tags --match *.*.*'));
+                $version = trim(exec('git describe --tags --match "*.*.*"'));
                 $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
                 $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
                 $commitDate = $commitDate->format('Y-m-d H:i:s');
