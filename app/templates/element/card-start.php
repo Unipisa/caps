@@ -27,6 +27,21 @@ if (isset($border)) {
 else {
     $border_class = "";
 }
+
+if (! isset($background)) {
+    $background = "bg-primary";
+}
+else {
+    $background = "bg-" . $background;
+}
+
+if (! isset($text)) {
+    $text = "text-white";
+}
+else {
+    $text = "text-" . $text;
+}
+
 ?>
 <div class="row my-2"
     <?php if (isset($style)) { echo "style=\"$style\""; } ?>"
@@ -38,7 +53,7 @@ else {
                 // We only generate a header if it has been explicitly passed to the variables for this element
             ?>
             <?php if (isset($header)): ?>
-            <div class="card-header bg-primary text-white">
+            <div class="card-header <?= $background ?> <?= $text ?>">
                 <h3 class="h5 mb-0">
                     <?= $header ?>
                 </h3>

@@ -57,7 +57,10 @@ if (Configure::read('debug')) :
     $this->end();
 endif;
 ?>
-<?= $this->element('card-start', [ 'header' => 'Error ' . $code . ': ' . h($message) ]); ?>
+<?= $this->element('card-start', [ 
+    'header' => 'Error ' . $code . ': ' . h($message),
+    'background' => 'danger'
+]); ?>
 
 <p>
     <strong><?= __d('cake', 'Errore') ?>: </strong>

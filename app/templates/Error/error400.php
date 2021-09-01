@@ -54,7 +54,11 @@ $this->end();
 endif;
 ?>
 
-<?= $this->element('card-start', [ 'header' => 'Error ' . $code . ': ' . h($message) ]); ?>
+<?= $this->element('card-start', [ 
+    'header' => 'Error ' . $code . ': ' . h($message),
+    'background' => 'warning',
+    'text' => 'primary'
+]); ?>
 
 <p>
     <strong><?= __d('cake', 'Pagina non trovata') ?>: </strong>
