@@ -13,6 +13,7 @@ jobs:
           npm install
           npm run test
           npm run deploy
+          npm run deploy:dev
       - name: PHP tests
         run: |
           cd app/
