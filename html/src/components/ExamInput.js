@@ -189,22 +189,26 @@ class ExamInput extends React.Component {
                 : -1;
         }
 
-        const note = this.props.exam.exam ? this.props.exam.exam.notes : "";
+        const note = this.props.exam.selection ? this.props.exam.selection.notes : "";
 
-        return <li className="form-group row">
-            <div className="col-9">
-                <select className="exam form-control"
-                    value={selected_exam} onChange={this.onExamSelected.bind(this)} disabled={ options.length == 1 }>
-                    {options}
-                </select>
+        return <li className="form-group exam-input">
+            <div className="row">
+                <div className="col-9">
+                    <select className="exam form-control"
+                        value={selected_exam} onChange={this.onExamSelected.bind(this)} disabled={ options.length == 1 }>
+                        {options}
+                    </select>
+                </div>
+                <div className={removable ? "col-2" : "col-3"}>
+                    <input className="credits form-control"
+                        value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
+                        readOnly={this.props.exam !== undefined ? "1" : "0"} />
+                </div>
+                {removable && <TrashIcon onClick={this.onDeleteClicked.bind(this)} />}
+            </div>
+            <div className="row">
                 { note && <div className="col-9 mt-1 small text-muted" dangerouslySetInnerHTML={{__html: note}}></div> }
             </div>
-            <div className={removable ? "col-2" : "col-3"}>
-                <input className="credits form-control"
-                    value={this.state.selected_exam ? this.state.selected_exam.credits : 0}
-                    readOnly={this.props.exam !== undefined ? "1" : "0"} />
-            </div>
-            {removable && <TrashIcon onClick={this.onDeleteClicked.bind(this)} />}
         </li>;
     }
 
