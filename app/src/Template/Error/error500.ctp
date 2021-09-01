@@ -57,7 +57,8 @@ if (Configure::read('debug')) :
     $this->end();
 endif;
 ?>
-<h2>500 <?= __d('cake', 'Errore interno') ?></h2>
+<?= $this->element('card-start', [ 'header' => 'Error ' . $code . ': ' . h($message) ]); ?>
+
 <p>
     <strong><?= __d('cake', 'Errore') ?>: </strong>
     <?= h($message) ?>
@@ -67,3 +68,5 @@ endif;
     Si è verificato un errore mentre CAPS elaborava dei dati; probabilmente si tratta di un bug. 
       Se possibile, è consigliabile riportare il malfunzionamento  all'indirizzo <a href="https://github.com/Unipisa/caps/issues">
         https://github.com/Unipisa/caps/issues</a>, includendo il maggior numero di informazioni possibili su come si è verificato. 
+
+<?= $this->element('card-end') ?>        

@@ -22,7 +22,8 @@
  */
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,36 +36,62 @@
     <!-- Custom fonts for this template-->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-    <!-- Custom styles for this template-->
-    <link href="css/style.min.css" rel="stylesheet">
-    <script type="text/javascript" src="<?= $this->Url->assetUrl($debug ? 'js/caps.js' : 'js/caps.min.js') . '?v=' . $js_hash ?>"></script>
+    <?php
+      // The following script loads all the JS compiled; it is loaded in minified form when in production, 
+      // and in not minified form when in development. 
+    ?>
+    
+    <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
+
+    <script>
+        const Caps = new CapsController(
+          '<?= $this->Url->build('/') ?>', 
+          '<?= $this->request->getParam('controller') ?>', 
+          '<?= $this->request->getParam('action') ?>',
+          <?= json_encode([
+              '_csrfToken' => $this->request->getParam('_csrfToken'),
+              'pass' => $this->request->getParam('pass'),
+              '?' => $this->request->getQueryParams('?'),
+              'cds' => $settings['cds']
+            ]) 
+          ?>);
+    </script>
 </head>
 
-<body class="bg-primary">
+<body id="page-top">
 
-<div class="container">
+<!-- Page Wrapper -->
+<div id="wrapper">
 
-    <!-- Outer Row -->
-    <div class="row justify-content-center">
-            <div class="card shadow-lg my-5">
-				<div class="card-header br-secondary text-primary">
-					<div class="d-flex justify-content-between">
-                        <img src="img/cherubino_black.png" height="60" class="my-auto">
-						<div>
-							<h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v2.1.9</span></h1>
-							<h6>Compilazione Assistita<br>Piani di Studio</h6>
-						</div>
-					</div>
-				</div>
-                <div class="card-body p-3">
-					<?php echo $this->Flash->render(); ?>
-					<?php echo $this->fetch('content'); ?>
-                </div>
+    <?= $this->element('sidebar'); ?>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+            <?= $this->element('topbar') ?>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <?php echo $this->Flash->render(); ?>
+                <?php echo $this->fetch('content'); ?>
             </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+
+        <?= $this->element('footer'); ?>
     </div>
+    <!-- End of Content Wrapper -->
 
 </div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
 
 </body>
-
 </html>
