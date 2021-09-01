@@ -6,15 +6,18 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\TestCase;
+use Cake\TestSuite\IntegrationTestTrait;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\ORM\TableRegistry;
 
 /**
  * ExamsControllerTest class
  */
-class ExamsControllerTest extends IntegrationTestCase
+class ExamsControllerTest extends TestCase
 {
+    use IntegrationTestTrait;
+    
     public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
 
     public function setUp()

@@ -19,15 +19,18 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\TestCase;
+use Cake\TestSuite\IntegrationTestTrait;
 use Cake\View\Exception\MissingTemplateException;
 use Cake\ORM\TableRegistry;
 
 /**
  * UsersControllerTest class
  */
-class UsersControllerTest extends IntegrationTestCase
+class UsersControllerTest extends TestCase
 {
+    use IntegrationTestTrait;
+    
     public $fixtures = ['app.Users', 'app.Proposals', 'app.Curricula', 'app.CurriculaProposals'];
 
     public function setUp()
