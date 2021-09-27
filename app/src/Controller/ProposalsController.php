@@ -111,7 +111,11 @@ class ProposalsController extends AppController
             ->setTo($this->user['email'])
             ->setSubject('Piano di studi sottomesso');
         $email->viewBuilder()->setTemplate('submission');
-        $email->send();
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the submission confirmation email: " . $e->getMessage());
+        }
     }
 
     private function notifyApproval($id)
@@ -128,7 +132,12 @@ class ProposalsController extends AppController
             ->setTo($proposal['user']['email'])
             ->setSubject('Piano di studi approvato');
         $email->viewBuilder()->setTemplate('approval');
-        $email->send();
+
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the approval email: " . $e->getMessage());
+        }
     }
 
     private function notifyRejection($id)
@@ -146,7 +155,11 @@ class ProposalsController extends AppController
             ->setTo($proposal['user']['email'])
             ->setSubject('Piano di studi rigettato');
         $email->viewBuilder()->setTemplate('rejection');
-        $email->send();
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the rejection email: " . $e->getMessage());
+        }    
     }
 
     /** 
@@ -671,7 +684,13 @@ class ProposalsController extends AppController
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
                 $email->setViewVars(['proposal_auth' => $proposal_auth]);
                 $email->viewBuilder()->setTemplate('share');
-                $email->send();
+                
+                try {
+                    $email->send();
+                } catch (\Exception $e) {
+                    $this->log("Could not send the email: " . $e->getMessage());
+                }
+
                 $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
             } else {
                 debug(var_export($proposal_auth->errors(), true));

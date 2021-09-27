@@ -9,6 +9,7 @@ use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
 use Cake\Mailer\Transport\DebugTransport;
+use Cake\Mailer\Transport\SmtpTransport;
 
 return [
     /**
@@ -223,17 +224,17 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => DebugTransport::class,
+            'className' => @MAIL_TRANSPORT@,
             /*
              * The following keys are used in SMTP transports:
              */
-            'host' => 'localhost',
-            'port' => 25,
+            'host' => @SMTP_HOST@,
+            'port' => @SMTP_PORT@,
             'timeout' => 30,
-            'username' => null,
-            'password' => null,
+            'username' => @SMTP_USER@,
+            'password' => @SMTP_PASSWORD@,
             'client' => null,
-            'tls' => null,
+            'tls' => @SMTP_TLS@,
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
     ],
@@ -250,7 +251,7 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => 'you@localhost',
+            'from' => '@MAIL_FROM@',
             //'charset' => 'utf-8',
             //'headerCharset' => 'utf-8',
         ],
