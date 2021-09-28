@@ -11,6 +11,10 @@ services:
       # is created, which is harmless. Otherwise, this should be
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa"
+      # Useful to preserve PHP session across container restarts. 
+      - ./tmp:/tmp 
+      # This can be used to access logs outside the container.
+      - ./logs:/app/logs
     env_file:
       - caps.env
     environment:

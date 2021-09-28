@@ -186,11 +186,11 @@ class UsersController extends AppController {
                 ]);
 
                 if ($this->Users->save($user)) {
-                    Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
+                    Log::write('debug', 'User ' . $authuser['username'] . ' logged in and has been updated in the database');
                 }
                 else {
                     Log::write('error',
-                        'Error adding user ' . $authuser['username'] . ' to the database');
+                        'Error updating user ' . $authuser['username'] . ' to the database');
                 }
 
                 // We redirect the user to the redirectUrl, if any. Otherwise, the user will be redirected again to

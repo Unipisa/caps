@@ -17,6 +17,7 @@ services:
       - "../app/src:/app/src:ro"
       - "../app/webroot:/app/webroot:ro"
       - "../app/config/Migrations:/app/config/Migrations"
+      - "./logs:/app/logs"
     env_file:
       - caps.env
     environment:
