@@ -184,7 +184,7 @@ class AppController extends Controller
         $this->handleSecrets();
 
         if ($Caps['readonly']) {
-            if (!$this->request->is("get")) {
+            if (!$this->request->is("get") && $this->request->getParam('controller') != 'Users') {
                 throw new ForbiddenException();
             }
         }
