@@ -29,8 +29,12 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use App\Application;
 use Cake\I18n\FrozenTime;
+use Cake\Mailer\TransportFactory;
 use stdClass;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\UnauthorizedException;
+use Cake\Routing\Exception\RedirectException;
+use Cake\Event\EventInterface;
 
 function is_associative_array($item)
 {
@@ -168,25 +172,30 @@ class AppController extends Controller
             $this->user = null;
         }
 
-        $Caps = Configure::Read('Caps');
+        // Check if the email backend is enabled
+        $email_configured = TransportFactory::getConfig('default')["host"] != "";
+        $this->set('email_configured', $email_configured);
+
+        $this->Caps = Configure::Read('Caps');
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
-        $this->set('Caps', $Caps);
+        $this->set('Caps', $this->Caps);
         $this->set('debug', Configure::read('debug'));
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
 
         $this->handleSecrets();
 
-        if ($Caps['readonly']) {
-            if (!$this->request->is("get")) {
+    }
+
+    public function beforeFilter(EventInterface $event) {
+        if ($this->Caps['readonly']) {
+            if (!$this->request->is("get") && !($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'login')) {
                 $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
-                return $this->redirect($this->referer());
-//                throw new ForbiddenException();
+                return($this->redirect($this->referer()));
             }
         }
     }
-
 
 
     /**

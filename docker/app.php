@@ -30,7 +30,8 @@ return [
         'cds' => '@CAPS_CDS',
         'disclaimer' => '@CAPS_DISCLAIMER@',
         'timezone' => '@CAPS_TIMEZONE@',
-        'psv_api' => '@CAPS_PSV_API@'
+        'psv_api' => '@CAPS_PSV_API@',
+        'readonly' => '@CAPS_READONLY@' == '' ? false : '@CAPS_READONLY@'
     ],
 
     'UnipiAuthenticate' => [

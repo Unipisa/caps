@@ -117,6 +117,7 @@ sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
 sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
 sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
 sed -i "s|@CAPS_PSV_API@|${CAPS_PSV_API:-}|g" /app/config/app.php
+sed -i "s|@CAPS_READONLY@|${CAPS_READONLY:-}|g" /app/config/app.php
 
 msg "Generating security salt"
 SALT=$(openssl rand -hex 32)
