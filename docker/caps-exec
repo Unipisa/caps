@@ -13,6 +13,9 @@ msg "Starting the CAPS Docker manager"
 msg "Adjust permissions of directory /app/logs"
 chown www-data:www-data /app/logs -R
 
+msg "Making sure that /tmp is 777"
+chmod 777 /tmp
+
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
