@@ -29,6 +29,12 @@
         <i class="fa fa-bars"></i>
     </button>
 
+    <?php if ($Caps['readonly']): ?>
+    <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
+        Modalità sola lettura<?= is_string($Caps['readonly']) ? ": " . $Caps['readonly'] : "" ?>
+    </div>
+    <?php endif; ?>
+
     <?php if (trim($settings['disclaimer']) != "" ): ?>
     <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
         <?= $settings['disclaimer'] ?>

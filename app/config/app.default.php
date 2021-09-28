@@ -31,7 +31,11 @@ return [
         'timezone' => 'Europe/Rome',
         // See:  https://github.com/robol/pdf-signature-verifier
         // If set to '', or not set, PDF signatures verification is disabled.
-        // 'psv_api' => 'https://my-psv-server:8081/validate'
+        // 'psv_api' => 'https://my-psv-server:8081/validate',
+        
+        // if evaluates True only allows GET requests
+        // and if a string it will be inserted as a message in every page
+        'readonly' => False
     ],
 
     'UnipiAuthenticate' => [

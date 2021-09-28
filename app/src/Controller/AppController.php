@@ -30,6 +30,7 @@ use Cake\ORM\TableRegistry;
 use App\Application;
 use Cake\I18n\FrozenTime;
 use stdClass;
+use Cake\Http\Exception\ForbiddenException;
 
 function is_associative_array($item)
 {
@@ -167,14 +168,21 @@ class AppController extends Controller
             $this->user = null;
         }
 
+        $Caps = Configure::Read('Caps');
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
-        $this->set('Caps', Configure::read('Caps'));
+        $this->set('Caps', $Caps);
         $this->set('debug', Configure::read('debug'));
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
 
         $this->handleSecrets();
+
+        if ($Caps['readonly']) {
+            if (!$this->request->is("get")) {
+                throw new ForbiddenException();
+            }
+        }
     }
 
 
