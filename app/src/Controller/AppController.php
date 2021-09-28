@@ -180,7 +180,9 @@ class AppController extends Controller
 
         if ($Caps['readonly']) {
             if (!$this->request->is("get")) {
-                throw new ForbiddenException();
+                $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
+                return $this->redirect($this->referer());
+//                throw new ForbiddenException();
             }
         }
     }
