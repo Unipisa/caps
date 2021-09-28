@@ -29,6 +29,7 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use App\Application;
 use Cake\I18n\FrozenTime;
+use Cake\Mailer\TransportFactory;
 use stdClass;
 
 function is_associative_array($item)
@@ -166,6 +167,10 @@ class AppController extends Controller
         } else {
             $this->user = null;
         }
+
+        // Check if the email backend is enabled
+        $email_configured = TransportFactory::getConfig('default')["host"] != "";
+        $this->set('email_configured', $email_configured);
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());

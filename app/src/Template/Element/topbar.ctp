@@ -29,8 +29,9 @@
         <i class="fa fa-bars"></i>
     </button>
 
-    <?php if (trim($settings['disclaimer']) != "" ): ?>
+    <?php if (trim($settings['disclaimer']) != "" || !$email_configured ): ?>
     <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
+        <strong>Attenzione</strong>: le notifiche e-mail non sono disponibili.
         <?= $settings['disclaimer'] ?>
     </div>
     <?php endif; ?>
