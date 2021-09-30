@@ -34,7 +34,9 @@
         <? if ($Caps['readonly']): ?>
                 Modalità sola lettura<?= is_string($Caps['readonly']) ? ": " . $Caps['readonly'] : "" ?><br/>
         <? endif; ?>
-        <strong>Attenzione</strong>: le notifiche e-mail non sono disponibili.
+        <? if (! $email_configured): ?>
+            <strong>Attenzione</strong>: le notifiche e-mail non sono disponibili.
+        <? endif; ?>
         <?= $settings['disclaimer'] ?>
     </div>
     <?php endif; ?>

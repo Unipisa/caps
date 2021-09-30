@@ -12,7 +12,7 @@ services:
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa"
       # Useful to preserve PHP session across container restarts. 
-      - ./tmp:/tmp 
+      - tmp:/tmp 
       # This can be used to access logs outside the container.
       - ./logs:/app/logs
     env_file:
@@ -30,3 +30,6 @@ services:
       - caps.env    
     cap_add:
       - SYS_NICE  # CAP_SYS_NICE to avoid mbind messages in the logs
+
+volumes:
+  tmp:
