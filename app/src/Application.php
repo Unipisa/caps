@@ -41,64 +41,19 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.1.13';
+    public static $_CAPSVERSION = '2.3.0';
 
     /**
      * application version number
      */
     public static function getVersion()
     {
-        // Try to get the answer from Cache, if possible; we ensure that
-        // we clean the cache on restart, so we always get fresh information
-        // on the application version
-        $version = Cache::read('caps-version');
-        $shortVersion = Cache::read('caps-short-version');
-
-        if ($shortVersion != Application::$_CAPSVERSION) {
-            // either cache is empty or hard coded version has changed
-
-            // We try to run git, but we are aware that:
-            // - git may not be installed.
-            // - this build might not be inside a git repository
-            // Hence, in case of failure we fall back to the static version numbers
-            // that we have set here.
-            $branch = trim(exec('git rev-parse --abbrev-ref HEAD'));
-
-            if ($branch == "")
-            {
-                $version = Application::$_CAPSVERSION;
-                $shortVersion = Application::$_CAPSVERSION;
-            }
-            else
-            {
-                $version = trim(exec('git describe --tags'));
-                $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
-                $commitDate->setTimezone(new \DateTimeZone('Europe/Rome'));
-                $commitDate = $commitDate->format('Y-m-d H:i:s');
-                $shortVersion = explode('-', $version)[0];
-                if ($shortVersion != Application::$_CAPSVERSION) {
-                    $version .= sprintf(" [version mismatch: %s]", Application::$_CAPSVERSION);
-                }
-
-                if ($branch === "master") {
-                    $version = sprintf('%s [%s]', $version, $commitDate);
-                } else {
-                    $version = sprintf('%s-%s [%s]', $version, $branch, $commitDate);
-                }
-            }
-
-            Cache::write('caps-version', $version);
-            Cache::write('caps-short-version', $shortVersion);
-        }
-
-        return $version;
+        return Application::$_CAPSVERSION;
     }
 
     public static function getShortVersion()
     {
-        self::getVersion();
-
-        return Cache::read('caps-short-version');
+        return Application::$_CAPSVERSION;
     }
 
     /**

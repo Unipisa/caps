@@ -65,6 +65,10 @@
             <th>Tags</th>
             <td><?php echo $exam->tagsToString(); ?></td>
         </tr>
+        <tr>
+            <th>Note</th>
+            <td><?php echo $exam['notes']; ?></td>
+        </tr>
     </table>
 
     <?= $this->element('card-end') ?>

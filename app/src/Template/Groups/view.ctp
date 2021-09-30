@@ -36,6 +36,16 @@
             <button type="button" class="btn btn-sm btn-danger">Elimina</button>
         </a>
     </div>
+    <table class="table">
+        <tr>
+            <th>Laurea</th>
+            <td><?php echo h($group['degree']['name'] . " " . $group['degree']->academic_years()); ?></td>
+        </tr>
+        <tr>
+            <th>Nome</th>
+            <td><?php echo h($group['name']); ?></td>
+        </tr>
+    </table>
 
     <table class="table">
         <tr><thead>

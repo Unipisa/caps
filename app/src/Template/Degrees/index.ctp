@@ -23,10 +23,23 @@
 ?>
 <h1>Corsi di Laurea</h1>
 
-<?= $this->element('card-start'); ?>
-    <?php echo $this->Form->create(null, ['id' => 'form-degree']); ?>
+<?php echo $this->element('card-start') ?>
+    <div class="d-flex mb-2">
+        <?= $this->element('filter-button', ['items' => [
+                    'academic_year' => __('anno'),
+                    'name' => __('nome'),
+                    'years' => __('anni'),
+                    'enabled' => [
+                        'label' => __('attivazione'),
+                        'type' => 'select',
+                        'options' => [
+                            '' => __('tutti'),
+                            '1' => __('attivo'),
+                            '0' => __('disattivo')
+                        ]]                    
+                    ]]) 
+        ?>
 
-    <div class="mb-2 d-flex">
         <a href="<?= $this->Url->build([ 'action' => 'edit']); ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i><span class="d-none d-md-inline ml-2">Aggiungi corso di laurea</span>
@@ -43,22 +56,47 @@
         <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
             <i class="fas fa-download"></i><span class="ml-2 d-none d-md-inline">Esporta in CSV</span>
         </button>
+
+        <a><button class="btn btn-sm btn-primary mr-2"
+                id="caps-duplicate-btn">
+                <i class="fas fa-copy"></i><span class="ml-2 d-none d-lg-inline">Duplica per un nuovo anno</span>
+            </button></a>
+
+        <div class="form-inline" style="width: 75px;">
+            <!-- <label for="anno" class="mr-2">Anno dei nuovi degree: </label> //-->
+            <input type="text"  style="width: 75px;" class="form-control form-control-sm"
+                    name="year" id="clone-year" placeholder="Anno"/>
+        </div>
+
     </div>
+
+    <?php echo $this->element('filter_badges', [
+                  'fields' => [ 'name', 'academic_year', 'years', 'enabled' ]
+                ]); ?>
+
+    <?php echo $this->Form->create(null, ['id' => 'form-degree']); ?>
 
     <div class="table-responsive-sm">
     <table class="table">
         <thead>
         <tr>
             <th></th>
-            <th>Nome</th>
-            <th>Anni</th>
-            <th>Richiesta parere</th>
+            <th><?= $this->Paginator->sort('Degrees.enabled', 'Attivo'); ?></th>
+            <th><?= $this->Paginator->sort('Degrees.academic_year', 'Anno'); ?></th>
+            <th><?= $this->Paginator->sort('Degrees.name', 'Nome'); ?></th>
+            <th><?= $this->Paginator->sort('Degrees.years', 'Anni'); ?></th>
         </tr>
         </thead>
-        <?php foreach ($degrees as $degree): ?>
+        <?php foreach ($paginated_degrees as $degree): ?>
             <tr>
                 <td >
                     <input type=checkbox name="selection[]" value="<?php echo $degree['id']; ?>">
+                </td>
+                <td>
+                    <?= $degree['enabled'] ? "attivo" : "disattivo" ?>
+                </td>
+                <td>
+                    <?= $degree['academic_year'] ?>
                 </td>
                 <td>
                     <?php
@@ -73,20 +111,13 @@
                 <td>
                     <?php echo ($degree['years']) ?>
                 </td>
-                <td>
-                    <?php
-                    if ($degree['enable_sharing']) {
-                        echo "Abilitata";
-                    }
-                    else {
-                        echo "Non abilitata";
-                    }
-                    ?>
-                </td>
             </tr>
         <?php endforeach ?>
     </table>
     </div>
+
+    <?php echo $this->element('pagination'); ?>
+
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end'); ?>
 

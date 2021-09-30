@@ -119,7 +119,7 @@ if ($message != "") {
         </tr>
         <tr>
             <th>Anno di immatricolazione</th>
-            <td><?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?></td>
+            <td><?= $proposal['curriculum']['degree']->academic_years() ?></td>
         </tr>
     </table>
 <?= $this->element('card-end'); ?>

@@ -23,11 +23,10 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
-use App\Controller\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Form\ExamsFilterForm;
+use Cake\Http\Exception\NotFoundException;
 
 class ExamsController extends AppController
 {
@@ -134,7 +133,7 @@ class ExamsController extends AppController
             ->select([
                 'count' => $query->func()->count('proposal_id'),
                 'curriculum_id' => 'Proposals.curriculum_id',
-                'academic_year' => 'Curricula.academic_year',
+                'academic_year' => 'Degrees.academic_year',
                 'curriculum_name' => 'Curricula.name',
                 'degree_name' => 'Degrees.name'
                 ])
@@ -205,6 +204,8 @@ class ExamsController extends AppController
                     $exam['tags'][] = $t;
                 }
             }
+
+
 
             // If the code is '', make it null => this works on MySQL that allows
             // multiple null keys even when forced to be unique.

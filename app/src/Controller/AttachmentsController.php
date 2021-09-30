@@ -25,7 +25,6 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Core\Configure;
 
 /**
  * Attachment Controller

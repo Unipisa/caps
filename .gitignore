@@ -2,7 +2,11 @@ docker/id_rsa
 docker/database
 docker/caps.env
 app/webroot/css/style.min.css
-app/webroot/js/caps.js
+app/webroot/js/caps.js.version
+app/webroot/js/caps-*.js
 app/webroot/js/caps.min.js
+app/webroot/js/caps-*.min.js
+app/webroot/js/ver
 app/webroot/css/style.min.css.map
+app/webroot/node_modules
 caps.sqlite

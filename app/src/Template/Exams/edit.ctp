@@ -57,10 +57,18 @@
         'label' => 'Nuovi tag (separati da virgola)',
         'class' => 'tags-entry'
     ]);
+
     echo $this->Form->control(
         'groups._ids',
         ['label' => 'Gruppi',
             'size' => 20]);
+
+    echo $this->element('html-input', [
+      'field' => 'notes', 'title' => 'Note', 
+      'description' => "Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.",
+      'value' => $exam['notes']
+    ]);
+
     if ($exam->isNew()):
         echo $this->Form->submit('Salva esame');
     else:

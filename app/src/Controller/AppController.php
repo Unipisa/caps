@@ -26,13 +26,15 @@ use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use App\Auth;
 use App\Application;
 use Cake\I18n\FrozenTime;
+use Cake\Mailer\TransportFactory;
 use stdClass;
-use Cake\I18n\I18n;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\UnauthorizedException;
+use Cake\Routing\Exception\RedirectException;
+use Cake\Event\EventInterface;
 
 function is_associative_array($item)
 {
@@ -164,55 +166,38 @@ class AppController extends Controller
                 ->find()
                 ->where(['username' => $authuser['username']])
                 ->firstOrFail();
+            // can fail if the user has a valid authentication cookie but has been removed from the database 
+            // TODO: should logout instead of failing...
         } else {
             $this->user = null;
         }
 
+        // Check if the email backend is enabled
+        $email_configured = TransportFactory::getConfig('default')["host"] != "";
+        $this->set('email_configured', $email_configured);
+
+        $this->Caps = Configure::Read('Caps');
+        if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
-        $this->set('Caps', Configure::read('Caps'));
+        $this->set('Caps', $this->Caps);
         $this->set('debug', Configure::read('debug'));
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
 
         $this->handleSecrets();
-        $this->computeAssetVersioning();
+
     }
 
-    /**
-     * Compute an MD5 sum of the static assets (JS and CSS) files that
-     * will be served with the applications.
-     *
-     * Since these change frequently in production, we server them with
-     * a short query string that forces a cache refresh when an update
-     * is pushed.
-     *
-     * The information is cached, so this is only computed at the first
-     * call to this function, or after the cache has been manually cleared.
-     *
-     * @return void
-     */
-    private function computeAssetVersioning()
-    {
-        $css_hash = Cache::read('css_hash');
-        $js_hash  = Cache::read('js_hash');
-
-        if ($css_hash == false)
-        {
-            $css_file = WWW_ROOT . DS . "css" . DS . "style.min.css";
-            $css_hash = file_exists($css_file) ? md5_file($css_file) : "";
-            Cache::write('css_hash', $css_hash);
+    public function beforeFilter(Event $event) {
+        if ($this->Caps['readonly']) {
+            if (!$this->request->is("get") && !($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'login')) {
+                $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
+                return($this->redirect($this->referer()));
+            }
         }
-
-        if ($js_hash == false)
-        {
-            $js_file = WWW_ROOT . DS . "js" . DS . "caps.min.js";
-            $js_hash = file_exists($js_file) ? md5_file($js_file) : "";
-            Cache::write('js_hash', $js_hash);
-        }
-
-        $this->set(compact('css_hash', 'js_hash'));
     }
+
 
     /**
      * Look for a query parameter secret=XXXX, and saves it into an array of

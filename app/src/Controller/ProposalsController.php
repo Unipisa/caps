@@ -23,7 +23,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
 use App\Caps\Utils;
 use App\Form\ProposalsFilterForm;
 use App\Model\Entity\ProposalAuth;
@@ -31,8 +30,6 @@ use Cake\Core\Configure;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
-use Cake\ORM\TableRegistry;
-use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\I18n\Time;
 use Cake\Utility\Security;
@@ -114,7 +111,11 @@ class ProposalsController extends AppController
             ->setTo($this->user['email'])
             ->setSubject('Piano di studi sottomesso');
         $email->viewBuilder()->setTemplate('submission');
-        $email->send();
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the submission confirmation email: " . $e->getMessage());
+        }
     }
 
     private function notifyApproval($id)
@@ -131,7 +132,12 @@ class ProposalsController extends AppController
             ->setTo($proposal['user']['email'])
             ->setSubject('Piano di studi approvato');
         $email->viewBuilder()->setTemplate('approval');
-        $email->send();
+
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the approval email: " . $e->getMessage());
+        }
     }
 
     private function notifyRejection($id)
@@ -149,7 +155,11 @@ class ProposalsController extends AppController
             ->setTo($proposal['user']['email'])
             ->setSubject('Piano di studi rigettato');
         $email->viewBuilder()->setTemplate('rejection');
-        $email->send();
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the rejection email: " . $e->getMessage());
+        }    
     }
 
     /** 
@@ -367,7 +377,7 @@ class ProposalsController extends AppController
         $proposal->attachments = null;
         $this->set('proposal_json', json_encode($proposal));
         $proposal->attachments = $save_attachments;
-        $this->set('_serialize', [ 'proposal' ]);
+        $this->set('_serialize', 'proposal');
     }
 
     public function pdf($id)
@@ -533,7 +543,7 @@ class ProposalsController extends AppController
                 ->firstOrFail();
 
             // Check if the user is the right user
-            if ($proposal['user']['id'] != $this->user['id']) {
+            if ($proposal['user']['id'] != $this->user['id'] && !$this->user['admin']) {
                 throw new ForbiddenException();
             }
         } else {
@@ -674,7 +684,13 @@ class ProposalsController extends AppController
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
                 $email->setViewVars(['proposal_auth' => $proposal_auth]);
                 $email->viewBuilder()->setTemplate('share');
-                $email->send();
+                
+                try {
+                    $email->send();
+                } catch (\Exception $e) {
+                    $this->log("Could not send the email: " . $e->getMessage());
+                }
+
                 $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
             } else {
                 debug(var_export($proposal_auth->errors(), true));

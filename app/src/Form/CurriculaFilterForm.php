@@ -31,7 +31,7 @@ class CurriculaFilterForm extends FilterForm
     {
         return $schema
           ->addField('name', ['type' => 'string'])
-          ->addField('academic_year', ['type' => 'string'])
+          ->addField('academic_year', ['type' => 'integer'])
           ->addField('degree', ['type' => 'string']);
     }
 
@@ -39,7 +39,7 @@ class CurriculaFilterForm extends FilterForm
     {
         $this->setData($data);
         $this->filterFieldLike('Curricula.name', 'name');
-        $this->filterFieldEqual('Curricula.academic_year', 'academic_year');
+        $this->filterFieldEqual('Degrees.academic_year', 'academic_year');
         $this->filterFieldLike('Degrees.name', 'degree');
 
         return $this->query;

@@ -25,6 +25,7 @@ use Cake\Error\Debugger;
 
 $this->layout = 'error';
 
+
 if (Configure::read('debug')) :
     $this->layout = 'dev_error';
 
@@ -52,7 +53,9 @@ endif;
 $this->end();
 endif;
 ?>
-<h2>400 <?= h($message) ?></h2>
+
+<?= $this->element('card-start', [ 'header' => 'Error ' . $code . ': ' . h($message) ]); ?>
+
 <p>
     <strong><?= __d('cake', 'Pagina non trovata') ?>: </strong>
     <?= __d('cake', 'La risorsa richiesta non è presente su questo server.', "<strong>'{$url}'</strong>") ?>
@@ -76,3 +79,5 @@ endif;
      $this->Html->link('qui', [ 'controller' => 'users', 'action' => 'login' ]) 
   ?> per tornare 
   alla pagina principale.
+
+  <?= $this->element('card-end'); ?>

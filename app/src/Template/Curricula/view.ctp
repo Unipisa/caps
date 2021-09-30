@@ -21,7 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<h1>Curriculum</h1>
+<h1>Curriculum <?= $curriculum['name']?> <?= $curriculum['degree']['name'] ?> <?= $curriculum['degree']->academic_years() ?></h1>
 
 <div class="row my-2">
     <div class="col">
@@ -34,6 +34,10 @@
                     <a href="<?= $this->Url->build(['action' => 'edit', $curriculum['id']]) ?>">
                         <button type="button" class="btn btn-sm mr-2 btn-primary">Modifica</button>
                     </a>
+                    <a href="<?= $this->Url->build(['controller' => 'proposals', 'action' => 'add',
+                        '?' => ['degree_id' => $curriculum['degree_id'], 'curriculum_id' => $curriculum['id']]]) ?>">
+                        <button type="button" class="btn btn-sm mr-2 btn-primary">Aggiungi piano</button>
+                    </a>
                     <a href="<?= $this->Url->build(['action' => 'delete', $curriculum['id']]) ?>"
                        onclick="return confirm('Sei sicuro di voler cancellare questo curriculum?')">
                         <button type="button" class="btn btn-sm mr-2 btn-danger">Elimina</button>
@@ -43,15 +47,11 @@
                 <table class="table">
                     <tr>
                         <th>Laurea</th>
-                        <td><?php echo h($curriculum['degree']['name']); ?></td>
+                        <td><?php echo h($curriculum['degree']['name'] . " " . $curriculum['degree']->academic_years()); ?></td>
                     </tr>
                     <tr>
                         <th>Nome</th>
                         <td><?php echo h($curriculum['name']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Anno</th>
-                        <td><?= $curriculum['academic_year'] ?>/<?= $curriculum['academic_year']+1 ?></td>
                     </tr>
                 </table>
 
@@ -92,10 +92,10 @@
                     <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) { ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
-                                <?php echo h($compulsory_exam['exam']['name']) ?>
+                                <?= $this->Html->link(h($compulsory_exam['exam']['name']), ['controller' => 'exams', 'action' => 'view', $compulsory_exam['exam']['id']]) ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year">
-                                <?php echo $compulsory_exam['year']; ?>
+                                <?= $compulsory_exam['year'] ?>
                             </td>
                         </tr>
                     <?php } ?>
@@ -120,10 +120,10 @@
                     <?php foreach ($curriculum['compulsory_groups'] as $compulsory_group) { ?>
                         <tr>
                             <td class="caps-admin-curriculum-exam-name">
-                                <?php echo $compulsory_group['group']['name']?>
+                                <?= $this->Html->link(h($compulsory_group['group']['name']), ['controller' => 'groups', 'action' => 'view', $compulsory_group['group']['id']]) ?>
                             </td>
                             <td class="caps-admin-curriculum-exam-year">
-                                <?php echo $compulsory_group['year']; ?>
+                                <?= $compulsory_group['year']; ?>
                             </td>
                         </tr>
                     <?php } ?>

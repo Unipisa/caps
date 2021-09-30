@@ -29,10 +29,8 @@
     <?php
     // debug($group);
     echo $this->Form->create($group);
-    echo $this->Form->input(
-        'name',
-        ['label' => 'Nome']
-    );
+    echo $this->Form->input('name', ['label' => 'Nome']);
+    echo $this->Form->control('degree_id', ['label' => 'Corso']);
     echo $this->Form->control('exams._ids', [ 'label' => 'Esami', 'size' => 15 ]);
     if ($group->isNew()):
         echo $this->Form->submit('Salva gruppo');

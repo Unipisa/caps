@@ -24,6 +24,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
+use Cake\Http\Exception\ForbiddenException;
+use App\Form\DegreesFilterForm;
 
 /**
  * Degrees Controller
@@ -34,6 +36,15 @@ use Cake\ORM\TableRegistry;
  */
 class DegreesController extends AppController
 {
+    public $paginate = [
+//        'contain' => [ 'Degrees' ],
+        'sortWhitelist' => [ 'academic_year', 'name' ],
+        'limit' => 10,
+        'order' => [
+            'academic_year' => 'desc'
+        ]
+    ];
+
     /**
      * Index method
      *
@@ -43,19 +54,27 @@ class DegreesController extends AppController
     {
         $degrees = $this->Degrees->find();
 
+        $filterForm = new DegreesFilterForm($degrees);
+        $degrees = $filterForm->validate_and_execute($this->request->getQuery());
+        $this->set('filterForm', $filterForm);
+
+        $this->set('degrees', $degrees);
+        $this->set('_serialize', [ 'degrees' ]);
+        $this->set('paginated_degrees', $this->paginate($degrees->cleanCopy()));
+
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
                 throw new ForbiddenException();
             }
+            
+            $selected = $this->request->getData('selection');
+            if (!$selected) {
+                $this->Flash->error(__('nessun corso selezionato'));
+
+                return $this->redirect(['action' => 'index']);
+            }
 
             if ($this->request->getData('delete')) {
-                $selected = $this->request->getData('selection');
-                if (!$selected) {
-                    $this->Flash->error(__('nessun corso selezionato'));
-
-                    return $this->redirect(['action' => 'index']);
-                }
-
                 $delete_count = 0;
                 foreach ($selected as $degree_id) {
                     if ($this->deleteIfNotUsed($degree_id)) {
@@ -71,12 +90,100 @@ class DegreesController extends AppController
                 }
 
                 return $this->redirect(['action' => 'index']);
+            } else if ($this->request->getData('clone')) {
+                $year = intval($this->request->getData('year'));
+
+                if ($year <= 0) {
+                    $this->Flash->error('Anno non valido specificato');
+                    return;
+                }
+
+                $CompulsoryGroups = TableRegistry::getTableLocator()->get('CompulsoryGroups');
+                $FreeChoiceExams = TableRegistry::getTableLocator()->get('FreeChoiceExams');
+
+                foreach ($selected as $degree_id) {
+                    $degree = $this->Degrees
+                        ->findById($degree_id)
+                        ->contain([
+                            'Curricula' => ['CompulsoryGroups', 'CompulsoryExams', 'FreeChoiceExams'],
+                            'Groups' => ['Exams']])
+                        ->firstOrFail();
+                    // We set the id and the id of all the children entities to null, so that a call to save will
+                    // automatically create new entities.
+                    $degree['id'] = null;
+                    $degree['academic_year'] = $year;
+                    $degree['enabled'] = false;
+                    $degree->isNew(true);
+
+                    foreach ($degree['curricula'] as $curriculum) {   
+                        $curriculum['id'] = null;
+                        $curriculum->isNew(true);
+
+                        foreach ($curriculum['compulsory_groups'] as $cg) {
+                            $cg['id'] = null;
+                            $cg->isNew(true);
+                        }
+                        foreach ($curriculum['compulsory_exams'] as $ce) {
+                            $ce['id'] = null;
+                            $ce->isNew(true);
+                        }
+                        foreach ($curriculum['free_choice_exams'] as $fce) {
+                            $fce['id'] = null;
+                            $fce->isNew(true);
+                        }
+
+                    }
+
+                    foreach($degree['groups'] as $group) {
+                        $group['old_id'] = $group['id'];
+                        $group['id'] = null;
+                        $group->isNew(true);
+                    }
+
+                    if (! $this->Degrees->save($degree)) {
+                        $this->Flash->error('Impossibile duplicare il corso: ' . $degree['name']);
+                        return $this->redirect([ 'action' => 'index' ]);
+                    }
+
+                    // create mapping from old groups to new ones
+                    $map = [];
+                    foreach($degree['groups'] as $group) {
+                        $map[$group['old_id']] = $group['id'];
+                    }
+
+                    // assegna i gruppi nuovi ai curriculum nuovi
+                    foreach($degree['curricula'] as $curriculum) {
+                        foreach($curriculum['compulsory_groups'] as $item) {
+                            if (array_key_exists($item['group_id'], $map)) {
+                                $item['group_id'] = $map[$item['group_id']];
+                            } else {
+                                $this->Flash->error('esame a scelta non duplicato per incongruenza nel curriculum ' . $curriculum['name']);
+                            }
+                            if (!$CompulsoryGroups->save($item)) {
+                                $this->Flash->error('Errore database (885746)');
+                            }
+                        }
+                        foreach($curriculum['free_choice_exams'] as $item) {
+                            if ($item['group_id'] != null) {
+                                if (array_key_exists($item['group_id'], $map)) {
+                                    $item['group_id'] = $map[$item['group_id']];
+                                } else {
+                                    $this->Flash->error('esame a scelta non duplicato per incongruenza nel curriculum ' . $curriculum['name']);
+                                }
+                            }
+                            if (!$FreeChoiceExams->save($item)) {
+                                $this->Flash->error('Errore database (948435)');
+                            }
+                        }
+                    }
+                }
+
+                // debug($selected);
+                $this->Flash->success('Corsi di Laurea duplicati');
+
+                return $this->redirect(['action' => 'index']);
             }
         }
-
-        $paginated_degrees = $this->paginate($degrees->cleanCopy());
-        $this->set(compact('degrees', 'paginated_degrees'));
-        $this->set('_serialize', [ 'degrees' ]);
     }
 
     /**
@@ -89,10 +196,11 @@ class DegreesController extends AppController
     public function view($id = null)
     {
         $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula']
+            'contain' => ['Curricula', 'Groups']
         ]);
 
         $this->set('degree', $degree);
+        $this->set('_serialize', 'degree');
     }
 
     /**
@@ -104,8 +212,12 @@ class DegreesController extends AppController
      */
     public function edit($id = null)
     {
+        if (!$this->user['admin']) {
+            throw new ForbiddenException();
+        }
+
         if ($id != null) {
-            $degree = $this->Degrees->get($id);
+            $degree = $this->Degrees->findById($id)->contain(['Groups'])->firstOrFail();
         } else {
             $degree = $this->Degrees->newEntity();
             // For new entities we set some reasonable default values in the text fields, to
@@ -117,6 +229,11 @@ class DegreesController extends AppController
             }
         }
 
+        $groups_table = TableRegistry::getTableLocator()->get('Groups');
+        $default_groups = $groups_table->find('list')
+            ->contain('Degrees')
+            ->where([ 'Groups.degree_id' => $degree['id'] ]);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
 
@@ -127,8 +244,7 @@ class DegreesController extends AppController
                 $this->Flash->error(__('Impossibile salvare il corso di laurea'));
             }
         }
-
-        $this->set(compact('degree'));
+        $this->set(compact('degree', 'default_groups'));
     }
 
     /**
@@ -175,5 +291,14 @@ class DegreesController extends AppController
         }
 
         return true;
+    }
+
+    public function curricula($id) {
+        $degree = $this->Degrees->get($id, [
+            'contain' => ['Curricula']
+        ]);
+
+        $this->set('curricula', $degree['curricula']);
+        $this->set('_serialize', [ 'curricula' ]);
     }
 }

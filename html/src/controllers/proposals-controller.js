@@ -2,6 +2,10 @@ const CapsAppController = require('./app-controller');
 const { loadDashboardData } = require('../modules/dashboard');
 const caps_proposals_add = require('../modules/proposals-add');
 
+const React = require('react');
+const ReactDOM = require('react-dom');
+const Proposal = require('../components/Proposal');
+
 class CapsProposalsController extends CapsAppController {
 
     dashboard() {
@@ -9,14 +13,20 @@ class CapsProposalsController extends CapsAppController {
     }
 
     add(params) {
+        var id = undefined;
         if (params.pass.length > 0) {
             // FIXME: We may use this to initialize the proposal for drafts, 
             // instead of the current hack passing data through CakePHP in an 
             // embedded script in the page. 
-            const id = params.pass[0];
+            id = params.pass[0];
         }
-        
-        caps_proposals_add();
+
+        // caps_proposals_add();
+
+        ReactDOM.render(
+            <Proposal root={this.root} id={id} csrfToken={params._csrfToken}></Proposal>,
+            document.querySelector('#app')
+        );
     }
 
     index(params) {

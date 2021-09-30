@@ -126,7 +126,7 @@
 </div>
 <div class="data">
     <strong>Curriculum</strong>: <?php echo h($proposal['curriculum']['name']); ?><br>
-    <strong>Anno di immatricolazione</strong>: <?= $proposal['curriculum']['academic_year'] ?>/<?= $proposal['curriculum']['academic_year']+1 ?><br>
+    <strong>Anno di immatricolazione</strong>: <?= $proposal['curriculum']['degree']->academic_years() ?><br>
     <strong>Nome e cognome</strong>: <?php echo h($proposal['user']['name']); ?></strong><br>
     <strong>Matricola</strong>: <?php echo h($proposal['user']['number']); ?><br>
     <strong>Email</strong>: <?= h($proposal['user']['email']) ?><br>
@@ -135,7 +135,7 @@
     <p>chiede l'approvazione del seguente Piano di Studio:</p>
 </div>
 
-<?php for ($year = 1; $year <= 3; $year++): ?>
+<?php for ($year = 1; $year <= $proposal['curriculum']['degree']['years']; $year++): ?>
 
     <?php
     $this_year_exams = array_filter($proposal['chosen_exams'],
@@ -147,98 +147,96 @@
         function ($e) use ($year) {
             return $e['chosen_year'] == $year;
         });
+    ?>
+    <div>
+        <?php
+        echo "<h4>";
+        switch ($year) {
+            case 1:
+                echo "Primo anno";
+                break;
+            case 2:
+                echo "Secondo anno";
+                break;
+            case 3:
+                echo "Terzo anno";
+                break;
+            default:
+                echo "Anno " . $year;
+                break;
+        }
+        echo "</h4>";
+        $year_credits = 0;
+        ?>
 
-    if (max(count($this_year_exams), count($this_year_free_choice_exams)) > 0): ?>
-        <div>
-            <?php
-            echo "<h4>";
-            switch ($year) {
-                case 1:
-                    echo "Primo anno";
-                    break;
-                case 2:
-                    echo "Secondo anno";
-                    break;
-                case 3:
-                    echo "Terzo anno";
-                    break;
-                default:
-                    echo "Anno " . $year;
-                    break;
-            }
-            echo "</h4>";
-            $year_credits = 0;
-            ?>
-
-            <table class="table">
-                <thead>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Codice</th>
+                <th>Nome</th>
+                <th>Settore</th>
+                <th>Crediti</th>
+                <th>Gruppo</th>
+            </tr>
+            </thead>
+            <?php foreach ($this_year_exams as $chosen_exam): ?>
+                <?php
+                $exam = $chosen_exam['exam'];
+                $code = $exam['code'];
+                $name = $exam['name'];
+                $sector = $exam['sector'];
+                $year_credits = $year_credits + $chosen_exam['credits'];
+                ?>
                 <tr>
-                    <th>Codice</th>
-                    <th>Nome</th>
-                    <th>Settore</th>
-                    <th>Crediti</th>
-                    <th>Gruppo</th>
-                </tr>
-                </thead>
-                <?php foreach ($this_year_exams as $chosen_exam): ?>
-                    <?php
-                    $exam = $chosen_exam['exam'];
-                    $code = $exam['code'];
-                    $name = $exam['name'];
-                    $sector = $exam['sector'];
-                    $year_credits = $year_credits + $chosen_exam['credits'];
-                    ?>
-                    <tr>
-                        <td><?php echo h($code) ?></td>
-                        <td><?php echo h($name) ?>
-                            <?php if (count($exam['tags']) > 0): ?>
-                                <div class="badge">
-                                    <?php echo $exam->tagsToString(); ?>
-                                </div>
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo h($sector) ?></td>
-                        <td><?php echo h($chosen_exam['credits']); ?></td>
-                        <td><?php
-                            $cg = $chosen_exam['compulsory_group'];
-                            $ce = $chosen_exam['compulsory_exam'];
-                            $cf = $chosen_exam['free_choice_exam'];
+                    <td><?php echo h($code) ?></td>
+                    <td><?php echo h($name) ?>
+                        <?php if (count($exam['tags']) > 0): ?>
+                            <div class="badge">
+                                <?php echo $exam->tagsToString(); ?>
+                            </div>
+                        <?php endif; ?>
+                    </td>
+                    <td><?php echo h($sector) ?></td>
+                    <td><?php echo h($chosen_exam['credits']); ?></td>
+                    <td><?php
+                        $cg = $chosen_exam['compulsory_group'];
+                        $ce = $chosen_exam['compulsory_exam'];
+                        $cf = $chosen_exam['free_choice_exam'];
 
-                            if ($cg != null) {
-                                echo h($cg['group']['name']);
-                            }
-                            else if ($ce != null) {
-                                echo "Obbligatorio";
-                            }
-                            else if ($cf != null) {
-                                echo "A scelta libera";
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                <?php unset($chosen_exam); ?>
-                <?php foreach ($this_year_free_choice_exams as $exam): ?>
-                    <tr>
-                        <td></td>
-                        <td><?php echo h($exam['name']); ?></td>
-                        <td></td>
-                        <td><?php echo $exam['credits']; ?></td>
-                        <?php $year_credits = $year_credits + $exam['credits']; ?>
-                        <td></td>
-                    </tr>
-                <?php endforeach; ?>
-                <?php unset($exam); ?>
+                        if ($cg != null) {
+                            echo h($cg['group']['name']);
+                        }
+                        else if ($ce != null) {
+                            echo "Obbligatorio";
+                        }
+                        else if ($cf != null) {
+                            echo "A scelta libera";
+                        }
+                        ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <?php unset($chosen_exam); ?>
+            <?php foreach ($this_year_free_choice_exams as $exam): ?>
                 <tr>
                     <td></td>
+                    <td><?php echo h($exam['name']); ?></td>
                     <td></td>
-                    <td></td>
-                    <td><strong><?php echo $year_credits; ?></strong></td>
+                    <td><?php echo $exam['credits']; ?></td>
+                    <?php $year_credits = $year_credits + $exam['credits']; ?>
                     <td></td>
                 </tr>
-            </table>
-        </div>
-    <?php endif; ?>
+            <?php endforeach; ?>
+            <?php unset($exam); ?>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong><?php echo $year_credits; ?></strong></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
 <?php endfor; ?>
 
 <div class="bottom">

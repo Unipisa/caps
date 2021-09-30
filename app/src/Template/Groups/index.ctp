@@ -25,6 +25,10 @@
 
 <?= $this->element('card-start') ?>
     <div class="d-flex mb-2">
+        <?= $this->element('filter-button', ['items' => [
+                        'academic_year' => __('anno'),
+                        'name' => __('nome')]]) ?>
+
         <a href="<?= $this->Url->build([ 'action' => 'edit' ]); ?>" class="mr-2">
             <button type="button" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i><span class="d-none d-md-inline ml-2">Aggiungi gruppo</span>
@@ -38,24 +42,36 @@
 
         <div class="flex-fill"></div>
 
-        <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
+        <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
             <i class="fas fa-download"></i><span class="d-none d-md-inline ml-2">Esporta in CSV</span>
-        </div>
+        </button>
 
     </div>
+
+    <?php echo $this->element('filter_badges', [
+                  'fields' => [ 'name', 'academic_year', 'years' ]
+                ]); ?>
 
     <?php echo $this->Form->create(null, [ 'id' => 'groups-form' ]); ?>
     <div class="table-responsive-md">
     <table class="table">
         <tr>
             <th></th>
-            <th>Nome</th>
+            <th><?= $this->Paginator->sort('Degrees.academic_year', 'Anno'); ?></th>
+            <th><?= $this->Paginator->sort('Degrees.name', 'Laurea'); ?></th>
+            <th><?= $this->Paginator->sort('name', 'Nome'); ?></th>
             <th>Numerosità</th>
             <th>Esami</th>
         </tr>
-        <?php foreach ($groups as $group): ?>
+        <?php foreach ($paginated_groups as $group): ?>
             <tr>
                 <td class="caps-admin-groups-id"><input type=checkbox name="selection[]" value="<?php echo $group['id']; ?>"></td>
+                <td>
+                    <?= $group['degree']['academic_year'] ?>
+                </td>
+                <td>
+                    <?= $group['degree']['name'] ?>
+                </td>
                 <td class="caps-admin-groups-name">
                     <?php
                     echo $this->Html->link(
@@ -75,6 +91,9 @@
         <?php endforeach ?>
     </table>
     </div>
+
+    <?php echo $this->element('pagination'); ?>
+
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end') ?>
 

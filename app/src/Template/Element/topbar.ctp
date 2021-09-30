@@ -29,8 +29,14 @@
         <i class="fa fa-bars"></i>
     </button>
 
-    <?php if (trim($settings['disclaimer']) != "" ): ?>
+    <?php if (trim($settings['disclaimer']) != "" || !$email_configured || $Caps['readonly']): ?>
     <div class="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
+        <? if ($Caps['readonly']): ?>
+                Modalità sola lettura<?= is_string($Caps['readonly']) ? ": " . $Caps['readonly'] : "" ?><br/>
+        <? endif; ?>
+        <? if (! $email_configured): ?>
+            <strong>Attenzione</strong>: le notifiche e-mail non sono disponibili.
+        <? endif; ?>
         <?= $settings['disclaimer'] ?>
     </div>
     <?php endif; ?>

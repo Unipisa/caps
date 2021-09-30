@@ -31,14 +31,25 @@
 <?= $this->element('card-start'); ?>
     <?php
         echo $this->Form->control('name', ['label' => 'Nome', 'type' => 'text' ]);
+        echo $this->Form->control('academic_year', ['label' => 'Anno accademico (solo anno di inizio)', 'type' => 'integer' ]);
         echo $this->Form->control('years', ['label' => 'Anni']);
-    ?>
+        ?>
+    <div class="form-check">
+        <?php  echo $this->Form->control('enabled', ['label' => 'Attivato']); ?>
+    </div>
 
     <div class="form-group">
         <label for="caps-degree-enable-sharing" class="caps-setting-header">Funzionalità opzionali</label>
         <div class="form-check mb-2" id="caps-degree-enable-sharing">
             <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta di parere abilitata']); ?>
         </div>
+        <?= $this->Form->control('default_group_id',
+            [
+                'label' => 'gruppo esami a scelta libera',
+                'options' => $default_groups,
+                'empty' => 'tutti gli esami'
+            ]) ?>
+
     </div>
 
     <div class="form-group">

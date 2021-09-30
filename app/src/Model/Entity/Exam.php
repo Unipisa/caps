@@ -50,7 +50,8 @@ class Exam extends Entity
         'sector' => true,
         'credits' => true,
         'tags' => true,
-        'groups' => true
+        'groups' => true,
+        'notes' => true
     ];
 
     // Get a string representation of the tags

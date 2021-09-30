@@ -10,6 +10,12 @@ export HOME=/var/www
 
 msg "Starting the CAPS Docker manager"
 
+msg "Adjust permissions of directory /app/logs"
+chown www-data:www-data /app/logs -R
+
+msg "Making sure that /tmp is 777"
+chmod 777 /tmp
+
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
@@ -61,8 +67,51 @@ if [ "$CAPS_SSH_TUNNEL" != "" ]; then
   CAPS_VERIFY_CERT="false"
 fi
 
-msg "Adjusting configuration file"
 cp -v /app/config/app.php.template /app/config/app.php
+
+msg "Handling Email configuration"
+if [ "${SMTP_HOST}" = "" ]; then
+  MAIL_TRANSPORT="DebugTransport::class"
+else
+  MAIL_TRANSPORT="SmtpTransport::class"
+fi
+
+sed -i "s|@MAIL_TRANSPORT@|${MAIL_TRANSPORT}|g" /app/config/app.php
+
+# We handle username and password separately, because
+# they need to be null if not needed.
+if [ "${SMTP_USER}" = "" ]; then
+  sed -i "s|@SMTP_USER@|null|" /app/config/app.php
+else
+  sed -i "s|@SMTP_USER@|'${SMTP_USER}'|" /app/config/app.php
+fi
+
+if [ "${SMTP_PASSWORD}" = "" ]; then
+  sed -i "s|@SMTP_PASSWORD@|null|" /app/config/app.php
+else
+  sed -i "s|@SMTP_PASSWORD@|'${SMTP_PASSWORD}'|" /app/config/app.php
+fi
+
+if [ "${SMTP_PORT}" = "" ]; then
+  SMTP_PORT="25"
+fi
+
+if [ "${SMTP_TLS}" = "" ]; then
+  SMTP_TLS="false"
+  if [ "${SMTP_PORT}" = "587" ]; then
+    SMTP_TLS="true"
+  fi
+fi
+
+sed -i "s|@SMTP_HOST@|'${SMTP_HOST}'|g" /app/config/app.php
+sed -i "s|@SMTP_PORT@|'${SMTP_PORT}'|g" /app/config/app.php
+sed -i "s|@SMTP_TLS@|${SMTP_TLS}|g" /app/config/app.php
+
+sed -i "s|@MAIL_FROM@|${MAIL_FROM:-noreply@caps}|" /app/config/app.php
+
+msg " -> SMTP server: ${SMTP_HOST}:${SMTP_PORT}"
+
+msg "Adjusting configuration file"
 sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_PASSWORD@|${CAPS_DB_PASSWORD:-secret}|g" /app/config/app.php
@@ -74,6 +123,7 @@ sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
 sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
 sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
 sed -i "s|@CAPS_PSV_API@|${CAPS_PSV_API:-}|g" /app/config/app.php
+sed -i "s|@CAPS_READONLY@|${CAPS_READONLY:-}|g" /app/config/app.php
 
 msg "Generating security salt"
 SALT=$(openssl rand -hex 32)
@@ -90,6 +140,9 @@ if [ ! -L /var/www/html ]; then
   rm -r /var/www/html
   ln -s /app/webroot /var/www/html
 fi
+
+# msg "Dumping configuration"
+# cat /app/config/app.php
 
 msg "Running migrations"
 bin/cake migrations migrate

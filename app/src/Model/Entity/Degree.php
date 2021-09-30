@@ -45,8 +45,11 @@ class Degree extends Entity
      */
     protected $_accessible = [
         'name' => true,
+        'academic_year' => true,
         'curricula' => true,
         'years' => true,
+        'enabled' => true,
+        'default_group_id' => true,
         'enable_sharing' => true,
         'approval_message' => true,
         'submission_message' => true,
@@ -56,4 +59,8 @@ class Degree extends Entity
         'rejection_confirmation' => true,
         'free_choice_message' => true,
     ];
+
+    public function academic_years() {
+        return $this['academic_year'] . "/" . ($this['academic_year'] % 100 + 1);
+    }
 }

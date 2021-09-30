@@ -1,19 +1,13 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\ExamsController;
-use Cake\Core\App;
-use Cake\Core\Configure;
-use Cake\Http\Response;
-use Cake\Http\ServerRequest;
-use Cake\TestSuite\IntegrationTestCase;
-use Cake\View\Exception\MissingTemplateException;
+use App\Test\TestCase\Controller\MyIntegrationTestCase;
 use Cake\ORM\TableRegistry;
 
 /**
  * ExamsControllerTest class
  */
-class ExamsControllerTest extends IntegrationTestCase
+class ExamsControllerTest extends MyIntegrationTestCase
 {
     public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
 
@@ -34,45 +28,20 @@ class ExamsControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('?redirect=%2Fexams%2Findex');
 
-        // test that students are not allowed to access
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 1,
-                    'username' => 'mario.rossi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'MARIO ROSSI',
-                    'number' => '123456',
-                    'admin' => false,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
-        $this->post('/exams/index');
-        $this->assertResponseError(); // ma dovrebbe essere ResponseFailure?
+        $this->enableCsrfToken();
+        $this->enableSecurityToken();
 
-        // test that admin can access
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => 2,
-                    'username' => 'alice.verdi', // see UsersFixture.php
-                    'ldap_dn' => '',
-                    'name' => 'ALICE VERDI',
-                    'number' => '24680',
-                    'admin' => true,
-                    'surname' => '',
-                    'givenname' => ''
-                ]
-            ]
-        ]);
+        // test that students are not allowed to POST
+        $this->studentSession();
+        $this->post('/exams/index');
+        $this->assertResponseForbidden(); 
+
+        // test that admin can access (but also students can!)
+        $this->adminSession();
         $this->get('/exams/index');
         $this->assertResponseOk();
 
         // load page to add new axam
-        $this->enableCsrfToken();
-        $this->enableSecurityToken();
         $this->get('/exams/edit');
         $this->assertResponseOk();
 
@@ -93,7 +62,6 @@ class ExamsControllerTest extends IntegrationTestCase
         $this->get("/exams/edit/$exam_id");
         $this->assertResponseOk();
 
-        // $this->disableErrorHandlerMiddleware();        // test that page requires authentication
-        // fwrite(STDERR,'****'.print_r($this->_flashMessages,true));
+        // debug($this->_response);
     }
 }
