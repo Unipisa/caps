@@ -177,6 +177,7 @@ class AppController extends Controller
         $this->set('email_configured', $email_configured);
 
         $this->Caps = Configure::Read('Caps');
+        if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', $this->Caps);
