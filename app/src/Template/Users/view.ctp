@@ -100,28 +100,24 @@ $num_proposals = 0;
                                 </a>
                                 <div class="dropdown-menu">
                                 <?php
-                                switch ($proposal['state']) {
-                                    case "draft":
-                                        // We don't allow administrators to edit the proposals as the user: the edit button
-                                        // is only displayed if the username of the logged-in user matches the owner of the
-                                        // proposal.
-                                        if ($user['username'] == $proposal['user']['username']) {
-                                            echo $this->Html->link('Modifica', [
-                                                'controller' => 'proposals', 'action' => 'add', $proposal['id']
-                                            ], [
-                                                'class' => 'dropdown-item'
-                                            ]);
-                                        }
-                                        break;
-                                    case "submitted":
-                                    case "approved":
-                                    case "rejected":
-                                    default:
-                                        echo $this->Html->link('Visualizza', [
-                                            'controller' => 'proposals', 'action' => 'view',$proposal['id']
+                                 
+                                echo $this->Html->link('Visualizza', [
+                                    'controller' => 'proposals', 'action' => 'view',$proposal['id']
+                                ], [
+                                    'class' => 'dropdown-item'
+                                ]);
+
+                                if ($proposal['state'] == 'draft') {
+                                    // We don't allow administrators to edit the proposals as the user: the edit button
+                                    // is only displayed if the username of the logged-in user matches the owner of the
+                                    // proposal.
+                                    if ($user['username'] == $proposal['user']['username']) {
+                                        echo $this->Html->link('Modifica', [
+                                            'controller' => 'proposals', 'action' => 'add', $proposal['id']
                                         ], [
                                             'class' => 'dropdown-item'
                                         ]);
+                                    }
                                 }
 
                                 if ($proposal['state'] == 'submitted' && $proposal['curriculum']['degree']->isSharingEnable($user)) {
