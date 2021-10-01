@@ -39,10 +39,15 @@
     </div>
 
     <div class="form-group">
-        <label for="caps-degree-enable-sharing" class="caps-setting-header">Funzionalità opzionali</label>
-        <div class="form-check mb-2" id="caps-degree-enable-sharing">
-            <?php echo $this->Form->control('enable_sharing', ['label' => 'Richiesta di parere abilitata']); ?>
+        <div class="caps-setting-header">Funzionalità opzionali</div>
+        
+        <div class="form-group">
+            <label for="caps-degree-enable-sharing">Richiesta parere</label>
+            <?php echo $this->Form->select('enable_sharing', [ 
+                0 => 'Disabilitata', 1 => 'Abilitata', 2 => 'Solo per amministratori'
+            ]); ?>
         </div>
+        
         <?= $this->Form->control('default_group_id',
             [
                 'label' => 'gruppo esami a scelta libera',
