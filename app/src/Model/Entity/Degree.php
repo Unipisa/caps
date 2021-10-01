@@ -63,4 +63,17 @@ class Degree extends Entity
     public function academic_years() {
         return $this['academic_year'] . "/" . ($this['academic_year'] % 100 + 1);
     }
+
+    public function isSharingEnabled($user = null) {
+        switch ($this->enable_sharing) {
+            case 0:
+                return false;
+            case 1:
+                return true;
+            case 2:
+                return ($user != null && $user['admin']);
+            default:
+                return false;
+        }
+    }
 }

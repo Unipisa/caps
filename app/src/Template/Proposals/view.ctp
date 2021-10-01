@@ -50,7 +50,7 @@ if ($message != "") {
     </a>
 <?php endif; ?>
 
-<?php if ($proposal['curriculum']['degree']['enable_sharing']): ?>
+<?php if ($proposal['curriculum']['degree']->isSharingEnabled($user)): ?>
     <?php if (($proposal['state'] == 'submitted') && ($proposal['user_id'] == $user['id'] || $user['admin'])): ?>
     <div class="dropdown">
         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">

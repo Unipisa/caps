@@ -660,7 +660,7 @@ class ProposalsController extends AppController
             throw new ForbiddenException('Si può chiedere un parere solo su piani sottomessi.');
         }
 
-        if (! $proposal['curriculum']['degree']['enable_sharing']) {
+        if (! $proposal['curriculum']['degree']->isSharingEnabled($this->user)) {
             throw new ForbiddenException('Richiesta parere disabilitata per questo corso di Laurea');
         }
 

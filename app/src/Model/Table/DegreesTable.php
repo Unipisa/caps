@@ -97,8 +97,11 @@ class DegreesTable extends Table
             ->greaterThanOrEqual('years',1)
             ->lessThanOrEqual('years', 5);
 
+        // 0: not enabled
+        // 1: enabled
+        // 2: only admins
         $validator
-            ->boolean('enable_sharing');
+            ->inList('enable_sharing', [ 0, 1, 2 ]);
 
         return $validator;
     }
