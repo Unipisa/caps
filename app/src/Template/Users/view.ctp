@@ -120,7 +120,7 @@ $num_proposals = 0;
                                     }
                                 }
 
-                                if ($proposal['state'] == 'submitted' && $proposal['curriculum']['degree']->isSharingEnable($user)) {
+                                if ($proposal['state'] == 'submitted' && $proposal['curriculum']['degree']->isSharingEnabled($user)) {
                                     echo $this->Html->link('Richiedi parere', [
                                         'controller' => 'proposals', 'action' => 'share', $proposal['id']
                                     ], [
