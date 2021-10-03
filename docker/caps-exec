@@ -19,14 +19,14 @@ chmod 777 /tmp
 # We check for MySQL twice, because it could get the temporary server sometimes,
 # and we need to make sure that the complete server is up and running before
 # doing migrations.
-while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
 done
 
 sleep 5
 
-while ! mysqladmin ping -h "${CAPS_DB_HOST}" -u "${CAPS_DB_USERNAME}" -p="{CAPS_DB_PASSWORD}" --silent; do
+while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do 
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
 done
