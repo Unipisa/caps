@@ -174,6 +174,7 @@ class AppController extends Controller
         $this->set('email_configured', $email_configured);
 
         $this->Caps = Configure::Read('Caps');
+        if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', $this->Caps);
@@ -185,7 +186,7 @@ class AppController extends Controller
 
     }
 
-    public function beforeFilter(EventInterface $event) {
+    public function beforeFilter(Event $event) {
         if ($this->Caps['readonly']) {
             if (!$this->request->is("get") && !($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'login')) {
                 $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
