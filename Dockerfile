@@ -1,5 +1,8 @@
 FROM php:7.4-apache
 
+ENV NODE_VERSION=14.18.0
+ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
+
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -7,11 +10,8 @@ RUN apt-get update && apt-get install -y \
 	libldap2-dev \
 	libsasl2-dev \
         libicu-dev \
-        mariadb-client \
         wget \
         ssh \
-	npm \
-	git \
         libcurl4-openssl-dev \
 	libzip-dev \
 	sudo \
@@ -27,11 +27,16 @@ COPY ./docker/caps-exec /app/
 COPY ./scripts/ssh-tunnel-wrapper.sh /app/
 
 RUN rm -rf /html/node_modules /app/webroot/css/* /app/webroot/js/* \
-    && npm install npm@latest -g \
+    && wget -q https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
+    && tar xJf ./node-v${NODE_VERSION}-linux-x64.tar.xz -C / \
+    && rm node-v${NODE_VERSION}-linux-x64.tar.xz \
     && cd /app && php /usr/local/bin/composer.phar install \
     && chown www-data:www-data /app /html /var/www -R \
-    && cd /html && sudo -u www-data npm install && sudo -u www-data npm run deploy
+    && cd /html \ 
+    && sudo -u www-data env PATH=${PATH} npm install \ 
+    && sudo -u www-data env PATH=${PATH} npm run deploy
 
 WORKDIR /app
 
 CMD './caps-exec'
+
