@@ -71,6 +71,9 @@
                         onclick="Caps.submitForm('proposal-form', { 'delete': 1 }, 'Confermi di voler eliminare i piani di studio selezionati?')">
                     🗑 Elimina i piani di studio selezionati
                 </button>
+                <button class="my-1 btn btn-primary" id="proposals-massive-download-button" style="width: 100%">
+                    🡇 Scarica i piani selezionati in PDF
+                </button>
             </div>
         </div>
 
