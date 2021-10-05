@@ -71,6 +71,9 @@
                         onclick="Caps.submitForm('proposal-form', { 'delete': 1 }, 'Confermi di voler eliminare i piani di studio selezionati?')">
                     🗑 Elimina i piani di studio selezionati
                 </button>
+                <button class="my-1 btn btn-primary" id="proposals-massive-download-button" style="width: 100%">
+                    🡇 Scarica i piani selezionati in PDF
+                </button>
             </div>
         </div>
 
@@ -147,13 +150,13 @@
                 <td>
                     <div class="d-none d-xl-inline-flex flex-row align-items-center">
                         <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
-                        <button type="button" class="btn btn-sm btn-secondary mr-2">
+                        <button type="button" class="btn btn-sm btn-primary mr-2">
                             <i class="fas fa-eye mr-2"></i>
                             Visualizza
                         </button>
                         </a>
                         <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>">
-                            <button type="button" class="btn btn-sm btn-danger">
+                            <button type="button" class="btn btn-sm btn-primary">
                                 <i class="fas fa-file-pdf mr-2"></i>
                                 Download
                             </button>

@@ -1,8 +1,15 @@
 #!/bin/bash
 #
 
+NODE_VERSION=$(grep "NODE_VERSION=" Dockerfile | cut -d '=' -f2)
+
 function shutdown {
     kill ${watch_pid}
+}
+
+function die {
+    echo $*
+    exit 3
 }
 
 trap shutdown INT
@@ -20,21 +27,46 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Check if composer is installed
-type composer 2> /dev/null > /dev/null
+type php 2> /dev/null > /dev/null
 if [ $? -ne 0 ]; then
-  echo "Composer not found, please install it, go to https://getcomposer.org/"
-  echo "or run sudo apt-get install composer (on Ubuntu)"
-  exit 2
+  echo "PHP not found, please install it."
+  exit 1
 fi
 
 # Check if composer is installed
-type npm 2> /dev/null > /dev/null
-if [ $? -ne 0 ]; then
-  echo "NPM not found, please install it, go to https://www.npmjs.com/"
-  echo "or run sudo apt-get install npm (on Ubuntu)"
-  exit 2
+if [ ! -x app/composer.phar ]; then
+  echo "Composer not found, downloading it"
+  cd app/
+
+  # Adapted from: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+  EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
+  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+
+  if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
+  then
+    >&2 echo 'Composer Installer: Invalid installer checksum'
+    rm composer-setup.php
+    exit 1
+  fi
+
+  php composer-setup.php --quiet
+  rm composer-setup.php
+
+  cd ..
 fi
+
+# Check if NPM is installed
+type npm 2> /dev/null > /dev/null
+if [ ! -d node-v${NODE_VERSION}-linux-x64 ]; then 
+  echo "NPM not found, downloading it"
+  wget -q https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz || die "Could not download NodeJS"
+  tar xJf node-v${NODE_VERSION}-linux-x64.tar.xz || die "Could not unpack NodeJS"
+  rm node-v${NODE_VERSION}-linux-x64.tar.xz
+fi
+
+# Make sure the downloaded NPM / Node is used first
+export PATH="$(pwd)/node-v${NODE_VERSION}-linux-x64/bin:$PATH"
 
 # Check if we can run docker without root privileges
 if [ -z	$DOCKER ]; then
@@ -51,7 +83,7 @@ echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 set -e
 
 cd app
-composer -n install
+php ./composer.phar -n install
 cd ..
 
 cd html
@@ -73,6 +105,11 @@ if [ "$ANS" = "y" ]; then
   ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
 fi
 ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
+
+echo "Node Configuration"
+echo "  > Using NodeJS $(node --version)"
+echo "  > Using NPM $(npm --version)"
+echo ""
 
 (cd html && npm run watch )&
 watch_pid=$!
