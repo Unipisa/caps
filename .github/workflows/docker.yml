@@ -36,20 +36,20 @@ jobs:
             type=semver,pattern={{version}}
       - name: Login to DockerHub
         uses: docker/login-action@v1 
-        if: ${{ !github.event.issue.pull_request }}
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
-        if: ${{ !github.event.issue.pull_request }}
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Trigger update on Watchtower
-        if: ${{ !github.event.issue.pull_request }}
+        if: ${{ github.event_name != 'pull_request' }}
         run: | 
           curl -H "Authorization: Bearer ${{ secrets.WATCHTOWER_CAPS_SECRET }}" https://watchtower.caps.dm.unipi.it/v1/update
           curl -H "Authorization: Bearer ${{ secrets.WATCHTOWER_SECRET }}" https://watchtower.pi.cs.dm.unipi.it/v1/update
