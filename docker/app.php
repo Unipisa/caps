@@ -31,7 +31,7 @@ return [
         'disclaimer' => '@CAPS_DISCLAIMER@',
         'timezone' => '@CAPS_TIMEZONE@',
         'psv_api' => '@CAPS_PSV_API@',
-        'readonly' => '@CAPS_READONLY@' == '' ? false : '@CAPS_READONLY@'
+        'readonly' => ('@CAPS_READONLY@' == '') ? false : '@CAPS_READONLY@'
     ],
 
     'UnipiAuthenticate' => [
