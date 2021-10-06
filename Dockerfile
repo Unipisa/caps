@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
     && docker-php-ext-install gd ldap pdo_mysql intl zip curl
 
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+	&& sed -i "s|session.gc_maxlifetime = .*|session.gc_maxlifetime = 86400|g" "$PHP_INI_DIR/php.ini"
+
 COPY app /app
 COPY html /html
 COPY ./docker/app.php /app/config/app.php.template

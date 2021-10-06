@@ -102,7 +102,7 @@ echo -n "Do you wish to regenerate the images now? [yn]: "
 read ANS
 sudo true
 if [ "$ANS" = "y" ]; then
-  ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build
+  ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps
 fi
 ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml up &
 
