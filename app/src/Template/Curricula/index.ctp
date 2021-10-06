@@ -70,7 +70,7 @@
                     <?php foreach ($paginated_curricula as $curriculum): ?>
                         <tr>
                             <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
-                            <td class="caps-admin-curricula-year"><?php echo $curriculum['degree']['academic_year']; ?></td>
+                            <td class="caps-admin-curricula-year"><?php echo $curriculum['degree']->academic_years(); ?></td>
                             <td class="caps-admin-curricula-degree"><?php echo h($curriculum['degree']['name']); ?></td>
                             <td class="caps-admin-curricula-name">
                                 <?php

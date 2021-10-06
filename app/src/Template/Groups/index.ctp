@@ -67,7 +67,7 @@
             <tr>
                 <td class="caps-admin-groups-id"><input type=checkbox name="selection[]" value="<?php echo $group['id']; ?>"></td>
                 <td>
-                    <?= $group['degree']['academic_year'] ?>
+                    <?= $group['degree']->academic_years(); ?>
                 </td>
                 <td>
                     <?= $group['degree']['name'] ?>

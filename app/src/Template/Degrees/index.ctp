@@ -96,7 +96,7 @@
                     <?= $degree['enabled'] ? "attivo" : "disattivo" ?>
                 </td>
                 <td>
-                    <?= $degree['academic_year'] ?>
+                    <?= $degree->academic_years(); ?>
                 </td>
                 <td>
                     <?php
