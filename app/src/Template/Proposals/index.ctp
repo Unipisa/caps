@@ -114,9 +114,9 @@
             <tr>
                 <td class="caps-admin-proposal-id"><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
                 <td class="caps-admin-proposal-state">
-                    <?php
-                      echo $this->Caps->badge($proposal);
-                    ?>
+                    <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
+                        <?= $this->Caps->badge($proposal) ?>
+                    </a>
                     </td>
                 <td class="caps-admin-proposal-name">
                     <?php echo $this->Html->link(
@@ -156,9 +156,15 @@
                         </button>
                         </a>
                         <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>">
-                            <button type="button" class="btn btn-sm btn-primary">
+                            <button type="button" class="btn btn-sm btn-secondary mr-2">
                                 <i class="fas fa-file-pdf mr-2"></i>
-                                Download
+                                Scarica
+                            </button>
+                        </a>
+                        <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>?show_comments=1">
+                            <button type="button" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-file-pdf mr-2"></i>
+                                Commenti
                             </button>
                         </a>
                     </div>
@@ -177,6 +183,11 @@
                                 <li>
                                     <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>">
                                     <i class="fas fa-file-pdf mr-2"></i>Scarica
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'pdf', $proposal['id'] ]) ?>?show_comments=1">
+                                    <i class="fas fa-file-pdf mr-2"></i>Scarica (con commenti)
                                     </a>
                                 </li>
                             </ul>
