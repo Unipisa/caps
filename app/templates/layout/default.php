@@ -49,7 +49,7 @@
           '<?= $this->request->getParam('controller') ?>', 
           '<?= $this->request->getParam('action') ?>',
           <?= json_encode([
-              '_csrfToken' => $this->request->getParam('_csrfToken'),
+              '_csrfToken' => $this->request->getAttribute('csrfToken'),
               'pass' => $this->request->getParam('pass'),
               '?' => $this->request->getQueryParams('?'),
               'cds' => $settings['cds']
