@@ -76,4 +76,24 @@ class Degree extends Entity
                 return false;
         }
     }
+
+    /**
+     * Return a string representation of the current enable_sharing value. 
+     */
+    public function sharingMode() {
+        switch ($this['enable_sharing']) {
+            case 0:
+                return 'Non abilitata';
+                break;
+            case 1:
+                return 'Abilitata';
+                break;
+            case 2:
+                return 'Solo per gli amministratori';
+                break;
+            default:
+                return 'Valore non corretto nel database';
+                break;
+            }
+    }
 }

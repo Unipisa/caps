@@ -6,11 +6,11 @@ const Proposals = require('../models/proposals');
 
 const submitForm = require('../modules/form-submission');
 
+const AttachmentBlock = require('./AttachmentBlock');
 const React = require('react');
 const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
 const ProposalYear = require('./ProposalYear');
-const CapsAppController = require('../controllers/app-controller');
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -416,6 +416,12 @@ class Proposal extends React.Component {
                     degree={this.state.selected_degree}
                     onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)}
                     chosen_exams={chosen_exams} />
+            );
+        }
+
+        if (this.state.proposal !== null) {
+            rows.push(
+                <AttachmentBlock key="attachments" attachments={this.state.proposal.attachments} auths={this.state.proposal.auths}></AttachmentBlock>
             );
         }
 

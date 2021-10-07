@@ -93,10 +93,10 @@
                     <input type=checkbox name="selection[]" value="<?php echo $degree['id']; ?>">
                 </td>
                 <td>
-                    <?= $degree['enabled'] ? "attivo" : "disattivo" ?>
+                    <?= $degree->sharingMode(); ?>
                 </td>
                 <td>
-                    <?= $degree['academic_year'] ?>
+                    <?= $degree->academic_years(); ?>
                 </td>
                 <td>
                     <?php

@@ -56,22 +56,7 @@
         </tr>
         <tr>
             <th>Richiesta parere</th>
-            <td><?
-                switch ($degree['enable_sharing']) {
-                    case 0:
-                        echo 'Non abilitata';
-                        break;
-                    case 1:
-                        echo 'Abilitata';
-                        break;
-                    case 2:
-                        echo 'Solo per gli amministratori';
-                        break;
-                    default:
-                        echo 'Valore non corretto nel database';
-                        break;
-                }
-                ?></td>
+            <td><?=  $degree->sharingMode(); ?></td>
         </tr>
         <tr>
             <th>Gruppo esami per la scelta libera</th>
