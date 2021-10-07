@@ -170,7 +170,7 @@ class AppController extends Controller
 
     }
 
-    public function beforeFilter(Event $event) {
+    public function beforeFilter(EventInterface $event) {
         if ($this->Caps['readonly']) {
             if (!$this->request->is("get") && !($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'login')) {
                 $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
