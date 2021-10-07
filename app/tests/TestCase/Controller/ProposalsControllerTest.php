@@ -26,8 +26,8 @@ class ProposalsControllerTest extends TestCase
             'app.Degrees',
             'app.Exams',
             'app.Groups',
-                        'app.Settings',
-                        'app.Tags'
+            'app.Settings',
+            'app.Tags'
     ];
 
     public function setUp(): void
