@@ -428,6 +428,42 @@ class Proposal extends React.Component {
         return rows;
     }
 
+    /**
+     * Find the any exam that has been repeteated (at least) twice in the proposal;
+     * for exams in the database, this is determined by matching their IDs, whereas
+     * for free choice exams we compare their names.
+     *
+     * @returns A list of names of duplicate exams.
+     */
+    getDuplicateExams() {
+        var found_exams = {};
+        var duplicate_exams = [];
+
+        this.state.chosen_exams.map((e) => {
+            if (e.selection) {
+                // This is the case of an exam in the database
+                if (e.selection.id) {
+                    if (found_exams.hasOwnProperty(e.selection.id)) {
+                        duplicate_exams.push(e.selection.name);
+                    }
+
+                    found_exams[e.selection.id] = true;
+                }
+                else if (e.type == "free_exam" && e.selection.name != "") {
+                    // ... whereas in this case we handle free choice exams,
+                    // that are only specified through their names.
+                    if (found_exams.hasOwnProperty(e.selection.name)) {
+                        duplicate_exams.push(e.selection.name);
+                    }
+
+                    found_exams[e.selection.name] = true;
+                }
+            }
+        });
+
+        return duplicate_exams;
+    }
+
     renderSubmitBlock() {
         if (this.state.saving) {
             return <LoadingMessage>
@@ -448,17 +484,7 @@ class Proposal extends React.Component {
         ).reduce((se1, se2) => se1 + se2, 0);
         const required_credits = this.state.selected_curriculum.credits.reduce(sum);
 
-        // Check for duplicate exams
-        var found_exams = {};
-        var duplicate_exams = [];
-        this.state.chosen_exams.map((e) => {
-            if (e.selection && e.selection.id) {
-                if (found_exams.hasOwnProperty(e.selection.id)) {
-                    duplicate_exams.push(e.selection.name);
-                }
-                found_exams[e.selection.id] = true;
-            }
-        });
+        const duplicate_exams = this.getDuplicateExams();
         const duplicate_list = duplicate_exams.reduce((a, e) => {
             return a + (a == "" ? "" : ", ") + e;
         }, "");
