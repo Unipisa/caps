@@ -26,16 +26,6 @@ class AttachmentsControllerTest extends TestCase
     ];
 
     /**
-     * Test index method
-     *
-     * @return void
-     */
-    public function testIndex()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test view method
      *
      * @return void

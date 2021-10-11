@@ -98,7 +98,11 @@ class ApplicationTest extends IntegrationTestCase
     {
         $app = $this->getApp();
         $version = $app->getVersion();
-        // Temporarily disabled. LR.
-        // $this->assertFalse(str_contains($version,"mismatch"), "version mismatch detected: " . $version);
+
+        // Check the format of the version number
+        $this->assertTrue(
+            is_string($version) && 
+            preg_match('/\d+\.\d+\.\d+/', $version)
+        );
     }
 }
