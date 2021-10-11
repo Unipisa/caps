@@ -369,19 +369,12 @@ class ProposalsController extends AppController
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
-        $this->set('proposal', $proposal);
+        $this->set('proposal', $proposal->removeSecrets());
         $this->set('secrets', $secrets);
 
         // Having this is apparently the only way to enforce validation on
         // the e-mail given in the input.
         $this->set('proposal_auth', new ProposalAuth());
-
-        // json_encode is not able to serialize resources.
-        // hence we remove attachments before serializing
-        $save_attachments = $proposal->attachments;
-        $proposal->attachments = null;
-        $this->set('proposal_json', json_encode($proposal));
-        $proposal->attachments = $save_attachments;
         $this->viewBuilder()->setOption('serialize', 'proposal');
     }
 
