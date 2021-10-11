@@ -60,22 +60,26 @@ class AttachmentsControllerTest extends MyIntegrationTestCase
     }
 
     /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test delete method
      *
      * @return void
      */
     public function testDelete()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->studentSession(1);
+        $this->post('/attachments/delete/1');
+
+        $this->assertRedirect();
+    }
+
+    public function testAdminDelete() {
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->adminSession(1);
+        $this->post('/attachments/delete/1');
+
+        $this->assertRedirect();
     }
 }
