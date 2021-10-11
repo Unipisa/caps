@@ -10,7 +10,7 @@ use Cake\TestSuite\TestCase;
  *
  * @uses \App\Controller\AttachmentsController
  */
-class AttachmentsControllerTest extends TestCase
+class AttachmentsControllerTest extends MyIntegrationTestCase
 {
     use IntegrationTestTrait;
 
@@ -20,9 +20,10 @@ class AttachmentsControllerTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Attachment',
+        'app.Attachments',
         'app.Users',
-        'app.Proposals'
+        'app.Proposals',
+        'app.Settings'
     ];
 
     /**
@@ -30,9 +31,22 @@ class AttachmentsControllerTest extends TestCase
      *
      * @return void
      */
-    public function testView()
+    public function testViewFromOwnerAndAdmin()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // Ok because this is the owner
+        $this->studentSession();
+        $this->get('/attachments/view/1');
+        $this->assertResponseOk();
+
+        $this->adminSession();
+        $this->get('/attachments/view/1');
+        $this->assertResponseOk();
+    }
+
+    public function testViewFromOther() {
+        $this->studentSession(3);
+        $this->get('/attachments/view/1');
+        $this->assertResponseForbidden();
     }
 
     /**

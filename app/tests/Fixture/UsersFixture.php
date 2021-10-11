@@ -51,6 +51,14 @@ class UsersFixture extends TestFixture
                 'number' => '24680',
                 'email' => 'alice.verdi@aol.com',
                 'admin' => true
+            ],
+            [
+                'id' => 3,
+                'username' => 'giovanni.blu',
+                'name' => 'GIOVANNI BLU',
+                'number' => '24681',
+                'email' => 'giovanni.blu@email.com',
+                'admin' => false
             ]
         ];
         parent::init();

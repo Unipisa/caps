@@ -13,9 +13,9 @@ class MyIntegrationTestCase extends TestCase
         return $this->assertResponseCode(403, $msg);
     }
 
-    function studentSession()
+    function studentSession(int $id = 1)
     {
-        $user = TableRegistry::getTableLocator()->get('Users')->get(1);
+        $user = TableRegistry::getTableLocator()->get('Users')->get($id);
         $this->session([ 'Auth' => $user ]);
     }
 

@@ -23,7 +23,7 @@ class AttachmentsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Attachment',
+        'app.Attachments',
         'app.Users',
         'app.Proposals'
     ];
