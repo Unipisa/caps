@@ -114,8 +114,12 @@ if ($message != "") {
             <td><?= $this->Caps->badge($proposal); ?></td>
         </tr>
         <tr>
-            <th>Curriculum</th>
+            <th>Corso di Laurea</th>
             <td><?= h($proposal['curriculum']['degree']['name']) ?></td>
+        </tr>
+        <tr>
+            <th>Curriculum</th>
+            <td><?= h($proposal['curriculum']['name']) ?></td>
         </tr>
         <tr>
             <th>Anno di immatricolazione</th>
