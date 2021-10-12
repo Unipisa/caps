@@ -12,7 +12,6 @@
     "ckeditor5": "^29.1.0",
     "esm": "^3.2.25",
     "jquery-easing": "0.0.1",
-    "object-hash": "^2.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.9",

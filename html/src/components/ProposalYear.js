@@ -4,8 +4,6 @@ const React = require('react');
 const ExamInput = require('./ExamInput');
 const ProposalYearNavBar = require('./ProposalYearNavBar');
 
-var hash = require('object-hash');
-
 
 /**
  * Tracks one year of the proposal; it contains in the state an array of 
