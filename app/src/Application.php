@@ -33,6 +33,7 @@ use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -107,6 +108,11 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime')
+            ]))
+
+            // Add CSRF protection
+            ->add(new CsrfProtectionMiddleware([
+                'httponly' => true
             ]))
 
             // Add routing middleware.
