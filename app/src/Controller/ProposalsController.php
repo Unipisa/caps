@@ -467,7 +467,6 @@ class ProposalsController extends AppController
             $this->Flash->success('Piano eliminato');
         } else {
             $this->log('Errore nella cancellazione del piano con ID = ' . $proposal['id']);
-            $this->log(var_export($proposal->errors(), true));
             $this->Flash->error('Impossibile eliminare il piano');
         }
 
@@ -519,7 +518,14 @@ class ProposalsController extends AppController
             return $this->redirect([ 'action' => 'add', $newp['id'] ]);
         } else {
             $this->Flash->error('Errore nel salvataggio del piano');
-            $this->log(var_export($newp->errors(), true));
+            $this->log('Errore nel salvataggio del piano con id = ' . $proposal['id'] . '\n');
+
+            if ($proposal->hasErrors()) {
+                $this->log(var_export($proposal->getErrors(), true));
+            }
+            else {
+                $this->log("Il piano non contiene errori.");
+            }
 
             return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
         }
@@ -624,10 +630,26 @@ class ProposalsController extends AppController
                         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                     }
                 } else {
-                    debug(var_export($proposal->errors(), true));
-                    $this->Flash->error(Utils::error_to_string($proposal->errors()));
+                    $this->Flash->error("Errore nel salvataggio del piano.");
 
-                    return $this->redirect(['action' => 'add', $proposal['id']]);
+                    $this->log('Errore nel salvataggio del piano con id = ' . $proposal['id'] . '\n');
+
+                    if ($proposal->hasErrors()) {
+                        $this->log(var_export($proposal->getErrors(), true));
+                    }
+                    else {
+                        $this->log("Il piano non contiene errori.");
+                    }
+
+                    if ($proposal['id'])
+                    {
+                        return $this->redirect(['action' => 'add', $proposal['id']]);
+                    }
+                    else
+                    {
+                        return $this->redirect(['controller' => 'users', 'action' => 'view' ]);
+                    }
+                    
                 }
             }
 
@@ -693,8 +715,7 @@ class ProposalsController extends AppController
 
                 $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
             } else {
-                debug(var_export($proposal_auth->errors(), true));
-                $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
+                $this->Flash->error("Errore nella condivisione del piano ");
             }
 
             return $this->redirect(['action' => 'view', $proposal['id']]);
