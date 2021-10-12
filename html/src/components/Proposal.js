@@ -249,6 +249,11 @@ class Proposal extends React.Component {
             }
         }
 
+        // Remove free exams that have not been selected. 
+        /* chosen_exams = chosen_exams.filter(
+            (e) => (e.type != "free_choice_exam") || (e.selection)
+        ); */
+
         while (free_exams.length > 0) {
             const e = free_exams.pop();
 

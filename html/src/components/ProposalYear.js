@@ -141,7 +141,8 @@ class ProposalYear extends React.Component {
             const removable = exam.type == "free_choice_exam" || exam.type == "free_exam";
             const deleteCallback = () => this.handleExamDelete(exam);
             const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
-            return <ExamInput exam={exam} key={"exam-input-" + hash(exam)}
+
+            return <ExamInput exam={exam} key={"exam-input-" + exam.id}
                 deleteCallback={removable ? deleteCallback : undefined}
                 freeChoiceMessage={this.props.curriculum.degree.free_choice_message}
                 onChange={onChangeCallback} />;
