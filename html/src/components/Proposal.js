@@ -491,7 +491,7 @@ class Proposal extends React.Component {
 
         // Find if there is any exam with an invalid number of credits
         const invalid_credits_exams = this.state.chosen_exams.filter(
-            (e) => (e.type == "free_exam") && (e.selection.credits <= 0)
+            (e) => (e.type == "free_exam") && (e.selection) && (e.selection.credits <= 0)
         );
         const invalid_credits_exams_names = invalid_credits_exams.map(
             (e) => e.selection.name
