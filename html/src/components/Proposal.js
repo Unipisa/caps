@@ -249,11 +249,6 @@ class Proposal extends React.Component {
             }
         }
 
-        // Remove free exams that have not been selected. 
-        /* chosen_exams = chosen_exams.filter(
-            (e) => (e.type != "free_choice_exam") || (e.selection)
-        ); */
-
         while (free_exams.length > 0) {
             const e = free_exams.pop();
 
@@ -267,6 +262,19 @@ class Proposal extends React.Component {
                 "id": "custom-" + this.id_counter++,
                 "year": e.chosen_year
             });
+
+            // At this point, if there are still free_choice_exams that have 
+            // not been selected, and we have additional free_exams, we drop
+            // the latter in place of the former. Note that we impose that the
+            // chosen_year matches for this choice. 
+            const re = chosen_exams.filter(
+                (ex) => (ex.year == e.chosen_year) && (ex.type == "free_choice_exam") && (!ex.selection)
+            );
+            
+            if (re.length > 0) {
+                const idx = chosen_exams.indexOf(re[0]);
+                chosen_exams.splice(idx, 1);
+            }
         }
 
         return chosen_exams;
