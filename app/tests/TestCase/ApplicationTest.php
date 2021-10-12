@@ -91,7 +91,7 @@ class ApplicationTest extends IntegrationTestCase
         $middleware->next();
         $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
         $middleware->next();
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(\Cake\Http\Middleware\CsrfProtectionMiddleware::class, $middleware->current());
     }
 
     public function testGetVersion()
