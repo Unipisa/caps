@@ -492,6 +492,8 @@ class ProposalsController extends AppController
 
         // Create a copy of the proposal, and set the corresponding data
         $newp = new Proposal($proposal->toArray());
+        
+        $newp['id'] = null;
 
         // Set the user to NULL so that it won't be saved
         $newp->user = null;
