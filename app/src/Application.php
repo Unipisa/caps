@@ -33,7 +33,7 @@ use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
-use Cake\Http\Middleware\CsrfProtectionMiddleware;
+use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -111,9 +111,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]))
 
             // Add CSRF protection
-            ->add(new CsrfProtectionMiddleware([
-                'httponly' => true
-            ]))
+            ->add(new SessionCsrfProtectionMiddleware())
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes
