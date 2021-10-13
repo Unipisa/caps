@@ -33,10 +33,11 @@ class UsersFixture extends TestFixture
      *
      * @return void
      */
-    public function init()
+    public function init() : void
     {
         $this->records = [
             [
+                'id' => 1,
                 'username' => 'mario.rossi',
                 'name' => 'Mario Rossi',
                 'number' => '123456',
@@ -44,11 +45,20 @@ class UsersFixture extends TestFixture
                 'admin' => false
             ],
             [
+                'id' => 2,
                 'username' => 'alice.verdi',
                 'name' => 'ALICE VERDI',
                 'number' => '24680',
                 'email' => 'alice.verdi@aol.com',
                 'admin' => true
+            ],
+            [
+                'id' => 3,
+                'username' => 'giovanni.blu',
+                'name' => 'GIOVANNI BLU',
+                'number' => '24681',
+                'email' => 'giovanni.blu@email.com',
+                'admin' => false
             ]
         ];
         parent::init();

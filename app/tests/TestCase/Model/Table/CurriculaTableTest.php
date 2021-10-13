@@ -32,7 +32,7 @@ class CurriculaTableTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $config = TableRegistry::getTableLocator()->exists('Curricula') ? [] : ['className' => CurriculaTable::class];
@@ -44,7 +44,7 @@ class CurriculaTableTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->Curricula);
 

@@ -83,8 +83,8 @@ return [
         'jsBaseUrl' => 'js/',
         'paths' => [
             'plugins' => [ROOT . DS . 'plugins' . DS],
-            'templates' => [APP . 'Template' . DS],
-            'locales' => [APP . 'Locale' . DS],
+            'templates' => [ROOT . DS . 'templates' . DS],
+            'locales' => [RESOURCES . 'locales' . DS],
         ],
     ],
 
@@ -274,7 +274,7 @@ return [
     'Datasources' => [
         'default' => [
             'className' => Connection::class,
-            'driver' => Mysql::class,
+            'driver' => @CAPS_DB_DRIVER@::class,
             'persistent' => false,
             'host' => '@CAPS_DB_HOST@',
             /*

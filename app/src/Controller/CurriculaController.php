@@ -23,6 +23,9 @@
 
 namespace App\Controller;
 
+use App\Auth\UnipiAuthenticate;
+use App\Controller\Event;
+use App\Model\Entity\Curriculum;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Caps\Utils;
@@ -33,24 +36,23 @@ class CurriculaController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
+        'sortableFields' => [ 'academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
             'Degrees.academic_year' => 'desc'
         ]
     ];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->loadComponent('Paginator');
         $this->loadComponent('RequestHandler');
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->deny();
     }
 
     public function index()
@@ -63,7 +65,7 @@ class CurriculaController extends AppController
         $this->set('filterForm', $filterForm);
 
         $this->set('curricula', $curricula);
-        $this->set('_serialize', [ 'curricula' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'curricula' ]);
         $this->set('paginated_curricula', $this->paginate($curricula->cleanCopy()));
 
         if ($this->request->is(['post', 'put'])) {
@@ -119,7 +121,7 @@ class CurriculaController extends AppController
         }
 
         $this->set('curriculum', $curriculum);
-        $this->set('_serialize', 'curriculum');
+        $this->viewBuilder()->setOption('serialize', 'curriculum');
     }
 
     public function edit($id = null)
@@ -137,7 +139,7 @@ class CurriculaController extends AppController
             }
             $success_message = __('Curriculum aggiornato con successo.');
         } else {
-            $curriculum = $this->Curricula->newEntity();
+            $curriculum = new Curriculum();
             $success_message = __('Curriculum creato con successo: aggiungere gli obblighi');
             $curriculum['compulsory_exams'] = [];
             $curriculum['compulsory_groups'] = [];

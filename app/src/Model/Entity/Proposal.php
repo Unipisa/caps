@@ -118,4 +118,12 @@ class Proposal extends Entity
         return false;
     }
 
+    public function removeSecrets() {
+        foreach ($this['auths'] as $auth) {
+            $auth['secret'] = null;
+        }
+
+        return $this;
+    }
+
 }

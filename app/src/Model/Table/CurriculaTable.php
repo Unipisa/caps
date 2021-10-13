@@ -53,7 +53,7 @@ class CurriculaTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
 
@@ -85,7 +85,7 @@ class CurriculaTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): \Cake\Validation\Validator
     {
         $validator
             ->integer('id')
@@ -106,12 +106,12 @@ class CurriculaTable extends Table
     }
 
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
-      if (array_key_exists('credits_per_year', $data)) {
+      if (array_key_exists('credits_per_year', $data->getArrayCopy())) {
         $this->transformCreditsPerYear($data);
       }
     }
 
-    public function beforeSave(Event $event, Entity $entity) {
+    public function beforeSave(\Cake\Event\EventInterface $event, Entity $entity) {
       if (!$entity->has('credits_per_year') || $entity['credits_per_year'] == null) {
         $degrees = TableRegistry::getTableLocator()->get('Degrees');
         $degree = $degrees->get($entity['degree_id']);

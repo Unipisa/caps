@@ -25,6 +25,7 @@ namespace App\Controller;
 
 use App\Caps\Utils;
 use App\Form\ProposalsFilterForm;
+use App\Model\Entity\Proposal;
 use App\Model\Entity\ProposalAuth;
 use Cake\Core\Configure;
 use Cake\Database\Expression\QueryExpression;
@@ -41,24 +42,23 @@ class ProposalsController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
-        'sortWhitelist' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
+        'sortableFields' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
         'limit' => 10,
         'order' => [
             'modified' => 'desc'
         ]
     ];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->loadComponent('Paginator');
         $this->loadComponent('RequestHandler');
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->deny();
     }
 
     private function get_proposal($id)
@@ -202,17 +202,22 @@ class ProposalsController extends AppController
         // is older than the most recent request.
         $conn = $this->Proposals->getConnection();
         $proposal_comments = $conn->execute(
-            'SELECT * FROM (SELECT proposals.id AS id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req,
-                    proposals.user_id AS user_id, curricula.id AS curriculum_id, curricula.name AS curriculum_name,
-                    users.name as user_name,
+            'SELECT proposals.id AS id, 
+                    users.name AS user_name, 
+                    users.id AS user_id,
+                    req_date,
+                    curricula.name AS curriculum_name 
+                    FROM (SELECT proposals.id AS id, COUNT(attachments.id) AS att, COUNT(proposal_auths.id) AS req, 
                     MAX(proposal_auths.created) AS req_date,
-                    MAX(attachments.created) AS att_date,
-                    proposals.state AS state
-                    FROM proposals INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
+                    MAX(attachments.created) AS att_date 
+                    FROM proposals 
+                    INNER JOIN proposal_auths ON proposals.id = proposal_auths.proposal_id
                     LEFT JOIN attachments ON proposals.id = attachments.proposal_id
+                    GROUP BY proposals.id) proposals_counts
+                    LEFT JOIN proposals ON proposals_counts.id = proposals.id
                     LEFT JOIN curricula ON proposals.curriculum_id = curricula.id
                     LEFT JOIN users ON proposals.user_id = users.id
-                    GROUP BY proposals.id) proposals WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
+                    WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
                     ORDER BY req_date ASC'
         );
 
@@ -229,7 +234,7 @@ class ProposalsController extends AppController
         $approval_counts = $this->get_submission_counts('approved_date');
 
         $this->set(compact('submission_counts', 'approval_counts'));
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'submission_counts', 'approval_counts'
         ]);
     }
@@ -348,7 +353,7 @@ class ProposalsController extends AppController
         }
 
         $this->set('data', $proposals);
-        $this->set('_serialize', 'data');
+        $this->viewBuilder()->setOption('serialize', 'data');
         $this->set('filterForm', $filterForm);
         $this->set('proposals', $this->paginate($proposals->cleanCopy()));
         $this->set('selected', 'index');
@@ -364,20 +369,13 @@ class ProposalsController extends AppController
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
-        $this->set('proposal', $proposal);
+        $this->set('proposal', $proposal->removeSecrets());
         $this->set('secrets', $secrets);
 
         // Having this is apparently the only way to enforce validation on
         // the e-mail given in the input.
         $this->set('proposal_auth', new ProposalAuth());
-
-        // json_encode is not able to serialize resources.
-        // hence we remove attachments before serializing
-        $save_attachments = $proposal->attachments;
-        $proposal->attachments = null;
-        $this->set('proposal_json', json_encode($proposal));
-        $proposal->attachments = $save_attachments;
-        $this->set('_serialize', 'proposal');
+        $this->viewBuilder()->setOption('serialize', 'proposal');
     }
 
     public function pdf($id)
@@ -395,7 +393,7 @@ class ProposalsController extends AppController
         }
 
         $builder = $this->viewBuilder();
-        $builder->setLayout(false);
+        $builder->disableAutoLayout();
         $builder->setTemplate('Proposals/pdf');
         $user = $this->user;
         $pdf = true;
@@ -469,7 +467,6 @@ class ProposalsController extends AppController
             $this->Flash->success('Piano eliminato');
         } else {
             $this->log('Errore nella cancellazione del piano con ID = ' . $proposal['id']);
-            $this->log(var_export($proposal->errors(), true));
             $this->Flash->error('Impossibile eliminare il piano');
         }
 
@@ -494,7 +491,9 @@ class ProposalsController extends AppController
         }
 
         // Create a copy of the proposal, and set the corresponding data
-        $newp = $this->Proposals->newEntity($proposal->toArray());
+        $newp = new Proposal($proposal->toArray());
+        
+        $newp['id'] = null;
 
         // Set the user to NULL so that it won't be saved
         $newp->user = null;
@@ -521,7 +520,14 @@ class ProposalsController extends AppController
             return $this->redirect([ 'action' => 'add', $newp['id'] ]);
         } else {
             $this->Flash->error('Errore nel salvataggio del piano');
-            $this->log(var_export($newp->errors(), true));
+            $this->log('Errore nel salvataggio del piano con id = ' . $proposal['id'] . '\n');
+
+            if ($proposal->hasErrors()) {
+                $this->log(var_export($proposal->getErrors(), true));
+            }
+            else {
+                $this->log("Il piano non contiene errori.");
+            }
 
             return $this->redirect([ 'controller' => 'users', 'action' => 'index' ]);
         }
@@ -547,7 +553,7 @@ class ProposalsController extends AppController
                 throw new ForbiddenException();
             }
         } else {
-            $proposal = $this->Proposals->newEntity();
+            $proposal = new Proposal();
             $proposal->user = $user;
         }
 
@@ -583,8 +589,10 @@ class ProposalsController extends AppController
 
                 // If the proposal was already submitted, we may have the data set in chosen_exams and
                 // chosen_free_choice_exams: we need to get rid of it to replace with the new one.
-                $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
-                $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                if ($proposal['id'] != null) {
+                    $this->Proposals->ChosenExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                    $this->Proposals->ChosenFreeChoiceExams->deleteAll([ 'proposal_id' => $proposal['id'] ]);
+                }
 
                 $proposal['chosen_exams'] = [];
                 $proposal['chosen_free_choice_exams'] = [];
@@ -624,10 +632,26 @@ class ProposalsController extends AppController
                         return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                     }
                 } else {
-                    debug(var_export($proposal->errors(), true));
-                    $this->Flash->error(Utils::error_to_string($proposal->errors()));
+                    $this->Flash->error("Errore nel salvataggio del piano.");
 
-                    return $this->redirect(['action' => 'add', $proposal['id']]);
+                    $this->log('Errore nel salvataggio del piano con id = ' . $proposal['id'] . '\n');
+
+                    if ($proposal->hasErrors()) {
+                        $this->log(var_export($proposal->getErrors(), true));
+                    }
+                    else {
+                        $this->log("Il piano non contiene errori.");
+                    }
+
+                    if ($proposal['id'])
+                    {
+                        return $this->redirect(['action' => 'add', $proposal['id']]);
+                    }
+                    else
+                    {
+                        return $this->redirect(['controller' => 'users', 'action' => 'view' ]);
+                    }
+                    
                 }
             }
 
@@ -664,7 +688,7 @@ class ProposalsController extends AppController
             throw new ForbiddenException('Richiesta parere disabilitata per questo corso di Laurea');
         }
 
-        $proposal_auth = $this->Proposals->ProposalAuths->newEntity();
+        $proposal_auth = new ProposalAuth();
 
         if ($this->request->is('post')) {
             $proposal_auth['proposal_id'] = $proposal['id'];
@@ -693,8 +717,7 @@ class ProposalsController extends AppController
 
                 $this->Flash->success("inviato email a <{$proposal_auth['email']}> con richiesta di parere");
             } else {
-                debug(var_export($proposal_auth->errors(), true));
-                $this->Flash->error("ERROR: " . Utils::error_to_string($proposal->errors()));
+                $this->Flash->error("Errore nella condivisione del piano ");
             }
 
             return $this->redirect(['action' => 'view', $proposal['id']]);

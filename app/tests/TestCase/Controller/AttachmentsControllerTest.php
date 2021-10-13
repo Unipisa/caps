@@ -10,7 +10,7 @@ use Cake\TestSuite\TestCase;
  *
  * @uses \App\Controller\AttachmentsController
  */
-class AttachmentsControllerTest extends TestCase
+class AttachmentsControllerTest extends MyIntegrationTestCase
 {
     use IntegrationTestTrait;
 
@@ -20,29 +20,33 @@ class AttachmentsControllerTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Attachment',
         'app.Users',
-        'app.Proposals'
+        'app.Proposals',
+        'app.Settings',
+        'app.Attachments'
     ];
-
-    /**
-     * Test index method
-     *
-     * @return void
-     */
-    public function testIndex()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
 
     /**
      * Test view method
      *
      * @return void
      */
-    public function testView()
+    public function testViewFromOwnerAndAdmin()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // Ok because this is the owner
+        $this->studentSession();
+        $this->get('/attachments/view/1');
+        $this->assertResponseOk();
+
+        $this->adminSession();
+        $this->get('/attachments/view/1');
+        $this->assertResponseOk();
+    }
+
+    public function testViewFromOther() {
+        $this->studentSession(3);
+        $this->get('/attachments/view/1');
+        $this->assertResponseForbidden();
     }
 
     /**
@@ -56,22 +60,26 @@ class AttachmentsControllerTest extends TestCase
     }
 
     /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test delete method
      *
      * @return void
      */
     public function testDelete()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->studentSession(1);
+        $this->post('/attachments/delete/1');
+
+        $this->assertRedirect();
+    }
+
+    public function testAdminDelete() {
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->adminSession(1);
+        $this->post('/attachments/delete/1');
+
+        $this->assertRedirect();
     }
 }

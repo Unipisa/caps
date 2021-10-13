@@ -1,0 +1,50 @@
+# This is essentially the same file, but it mounts the source files
+# for CAPS into the image directly, so that develpoment can be carried
+# out without rebuilding the image. 
+version: '2.3'
+
+services:
+  caps:
+    build: ..
+    container_name: caps
+    ports:
+      - 8765:80
+    volumes:
+      # This is set anyway, in case it does not exists a folder
+      # is created, which is harmless. Otherwise, this should be
+      # a file with a private RSA key for SSH authentication
+      - "./id_rsa:/app/id_rsa:ro"
+      - "../app/src:/app/src:ro"
+      - "../app/templates:/app/templates:ro"
+      - "../app/webroot:/app/webroot:ro"
+      - "../app/config/Migrations:/app/config/Migrations"
+    env_file:
+      - caps.env
+    environment:
+      # Enable DebugKit on the development server
+      DEBUG: "true"
+      CAPS_DB_DRIVER: "Postgres"
+    security_opt:
+      - apparmor:unconfined
+      - seccomp:unconfined
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN # For fuse
+      
+  caps-db:
+    image: postgres:latest
+    container_name: caps-db
+    volumes: 
+      - ./psql:/var/lib/postgresql/data
+    env_file:
+      - caps.env    
+
+  ldap-server:
+    image: osixia/openldap:1.5.0
+    container_name: ldap-server
+    command: [ '--copy-service' ]
+    volumes:
+      - ./ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    environment:
+      LDAP_LOG_LEVEL: "0"

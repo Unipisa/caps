@@ -33,7 +33,7 @@ class CompulsoryGroupsTableTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $config = TableRegistry::getTableLocator()->exists('CompulsoryGroups') ? [] : ['className' => CompulsoryGroupsTable::class];
@@ -45,7 +45,7 @@ class CompulsoryGroupsTableTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->CompulsoryGroups);
 

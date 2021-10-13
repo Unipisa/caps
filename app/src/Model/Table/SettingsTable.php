@@ -69,7 +69,7 @@ class SettingsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
 
@@ -85,7 +85,7 @@ class SettingsTable extends Table
      *
      * @return array
      */
-    public function getSettings()
+    public function getSettings() : array
     {
         if ($this->settingsInstance == null) {
             $this->settingsInstance = [];
@@ -107,7 +107,7 @@ class SettingsTable extends Table
      * @param null $default A default value if the given setting is not set
      * @return mixed|null
      */
-    public function getSetting($field, $default = null)
+    public function getSetting(string $field, $default = null) : string
     {
         $settings = $this->getSettings();
 
@@ -124,7 +124,7 @@ class SettingsTable extends Table
      *
      * @return void
      */
-    private function initData()
+    private function initData() : void
     {
         $this->settingsInstance = [];
         $settings_data = $this->find('all')->toArray();
@@ -156,7 +156,7 @@ class SettingsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): \Cake\Validation\Validator
     {
         $validator
             ->integer('id')

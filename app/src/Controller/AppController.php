@@ -136,7 +136,7 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
+    public function initialize() : void
     {
         parent::initialize();
 
@@ -144,30 +144,13 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
             'viewClassMap' => ['csv' => 'CsvView.Csv']
         ]);
+        $this->loadComponent('Authentication.Authentication', [
+            'logoutRedirect' => '/users/login'  // Default is false
+        ]);
         $this->loadComponent('Flash');
 
-        $this->loadComponent('Auth', [
-          'authenticate' => [
-            'Unipi' => Configure::read('UnipiAuthenticate')
-          ],
-          'authError' => false
-        ]);
-
+        $this->user = $this->Authentication->getIdentity() ?? null;
         $this->settingsTable = TableRegistry::getTableLocator()->get('Settings');
-
-        $authuser = $this->Auth->user();
-
-        // Find the user in the database and set it as the user field in the controller
-        if ($authuser != null) {
-            $this->user = TableRegistry::getTableLocator()->get('Users')
-                ->find()
-                ->where(['username' => $authuser['username']])
-                ->firstOrFail();
-            // can fail if the user has a valid authentication cookie but has been removed from the database 
-            // TODO: should logout instead of failing...
-        } else {
-            $this->user = null;
-        }
 
         // Check if the email backend is enabled
         $email_configured = TransportFactory::getConfig('default')["host"] != "";
@@ -175,6 +158,7 @@ class AppController extends Controller
 
         $this->Caps = Configure::Read('Caps');
         if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
+
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
         $this->set('Caps', $this->Caps);
@@ -186,7 +170,7 @@ class AppController extends Controller
 
     }
 
-    public function beforeFilter(Event $event) {
+    public function beforeFilter(EventInterface $event) {
         if ($this->Caps['readonly']) {
             if (!$this->request->is("get") && !($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'login')) {
                 $this->Flash->error(__("modalità sola lettura: impossibile eseguire la richiesta"));
@@ -209,7 +193,7 @@ class AppController extends Controller
      *
      * @return void
      */
-    private function handleSecrets()
+    private function handleSecrets() : void
     {
         $request = $this->getRequest();
         $secret = $request->getQuery('secret');
@@ -236,7 +220,7 @@ class AppController extends Controller
      *
      * @return array
      */
-    protected function getSecrets()
+    protected function getSecrets() : array
     {
         $session = $this->getRequest()->getSession();
         if ($session->check('caps_secrets')) {
@@ -255,7 +239,7 @@ class AppController extends Controller
      *
      * @return array
      */
-    public function getSettings()
+    public function getSettings() : array
     {
         return $this->settingsTable->getSettings();
     }
@@ -270,20 +254,20 @@ class AppController extends Controller
      * @param null $default An optional default value
      * @return mixed
      */
-    public function getSetting($field, $default = null)
+    public function getSetting(string $field, mixed $default = null) : string
     {
         return $this->settingsTable->getSetting($field, $default);
     }
 
-    public function beforeRender(Event $event)
+    public function beforeRender(\Cake\Event\EventInterface $event)
     {
         if ($this->request->is('csv')) {
-            $_serialize = $this->viewVars['_serialize'];
+            $_serialize = $this->viewBuilder()->getVar("_serialize");
             if (!is_array($_serialize)) {
                 $_serialize = [ $_serialize ];
             }
             foreach ($_serialize as $var) {
-                $data = $this->viewVars[$var];
+                $data = $this->viewBuilder()->getVar($var);
                 $data = flatten($data);
                 $this->set($var, $data);
             }

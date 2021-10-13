@@ -15,6 +15,7 @@ services:
       # a file with a private RSA key for SSH authentication
       - "./id_rsa:/app/id_rsa:ro"
       - "../app/src:/app/src:ro"
+      - "../app/templates:/app/templates:ro"
       - "../app/webroot:/app/webroot:ro"
       - "../app/config/Migrations:/app/config/Migrations"
       - "./logs:/app/logs"
@@ -23,6 +24,7 @@ services:
     environment:
       # Enable DebugKit on the development server
       DEBUG: "true"
+      CAPS_DB_DRIVER: "Mysql"
     security_opt:
       - apparmor:unconfined
       - seccomp:unconfined
@@ -34,7 +36,7 @@ services:
   caps-db:
     image: mysql:8
     container_name: caps-db
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes: 
       - ./database:/var/lib/mysql
     env_file:

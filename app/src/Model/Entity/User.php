@@ -22,6 +22,7 @@
  */
 namespace App\Model\Entity;
 
+use Authentication\IdentityInterface;
 use Cake\ORM\Entity;
 use App\Model\Entity\Proposal;
 use App\Model\Entity\Attachment;
@@ -36,7 +37,7 @@ use App\Model\Entity\Attachment;
  *
  * @property \App\Model\Entity\Proposal[] $proposals
  */
-class User extends Entity
+class User extends Entity implements IdentityInterface
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().

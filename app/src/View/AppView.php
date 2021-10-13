@@ -33,7 +33,6 @@ use Cake\View\View;
  */
 class AppView extends View
 {
-
     /**
      * Initialization hook method.
      *
@@ -43,7 +42,7 @@ class AppView extends View
      *
      * @return void
      */
-    public function initialize()
+    public function initialize() : void
     {
         $this->loadHelper('Form', [
             'templates' => 'caps_form',

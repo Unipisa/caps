@@ -24,6 +24,9 @@
 
 namespace App\Controller;
 
+use App\Auth\UnipiAuthenticate;
+use App\Controller\Event;
+use App\Model\Entity\Group;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
@@ -33,22 +36,21 @@ class GroupsController extends AppController
 {
     public $paginate = [
         'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
+        'sortableFields' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
             'Degrees.academic_year' => 'desc'
         ]
     ];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
     }
 
-    public function beforeFilter($event)
+    public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->deny();
     }
 
     public function index()
@@ -112,6 +114,22 @@ class GroupsController extends AppController
             }
         }
 
+        $this->set('groups', $groups);
+        if ($this->request->is('csv')) {
+            $data = [];
+            foreach ($groups as $group) {
+                $exams = $group->exams;
+                $bare_group = $group;
+                unset($bare_group->exams);
+                foreach ($exams as $exam) {
+                    $data[] = ['group' => $bare_group, 'exam' => $exam];
+                }
+            }
+            $this->set('data', $data);
+            $this->viewBuilder()->setOption('serialize', 'data');
+        } else {
+            $this->viewBuilder()->setOption('serialize', ['groups']);
+        }
     }
 
     public function view($id = null)
@@ -125,7 +143,7 @@ class GroupsController extends AppController
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
         $this->set('group', $group);
-        $this->set('_serialize', 'group');
+        $this->viewBuilder()->setOption('serialize', 'group');
     }
 
     public function edit($id = null)
@@ -142,7 +160,7 @@ class GroupsController extends AppController
             $success_message = __('Gruppo aggiornato con successo.');
             $failure_message = __('Errore: gruppo non aggiornato.');
         } else {
-            $group = $this->Groups->newEntity();
+            $group = new Group();
             $success_message = __('Gruppo creato con successo.');
             $failure_message = __('Errore: gruppo non creato.');
         }

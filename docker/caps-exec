@@ -16,20 +16,29 @@ chown www-data:www-data /app/logs -R
 msg "Making sure that /tmp is 777"
 chmod 777 /tmp
 
-# We check for MySQL twice, because it could get the temporary server sometimes,
-# and we need to make sure that the complete server is up and running before
-# doing migrations.
-while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
+if [ "${CAPS_DB_DRIVER}" = "Postgres" ]; then
+  # Wait for Postgres
+  while ! pg_isready --host ${CAPS_DB_HOST} --dbname ${CAPS_DB_DATABASE}; do
+    msg "Waiting for Postgres server ${CAPS_DB_HOST} to be ready ..."
+    sleep 2
+  done
+else
+  # ... or for Mysql, depending on the user choice
+  while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
-done
+  done
 
-sleep 5
+  # We check for MySQL twice, because it could get the temporary server sometimes,
+  # and we need to make sure that the complete server is up and running before
+  # doing migrations.
+  sleep 5
 
-while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do 
+  while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do 
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
     sleep 5
-done
+  done
+fi
 
 
 if [ "$CAPS_SSH_TUNNEL" != "" ]; then
@@ -112,6 +121,7 @@ sed -i "s|@MAIL_FROM@|${MAIL_FROM:-noreply@caps}|" /app/config/app.php
 msg " -> SMTP server: ${SMTP_HOST}:${SMTP_PORT}"
 
 msg "Adjusting configuration file"
+sed -i "s|@CAPS_DB_DRIVER@|${CAPS_DB_DRIVER:-Mysql}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
 sed -i "s|@CAPS_DB_PASSWORD@|${CAPS_DB_PASSWORD:-secret}|g" /app/config/app.php
@@ -169,4 +179,4 @@ if [ "$DEBUG" = "true" ]; then
   msg "user1 an administrator"
 fi
 
-apache2 -DFOREGROUND
+apache2 -DFOREGROUND || exit 0

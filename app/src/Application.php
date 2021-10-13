@@ -22,13 +22,22 @@
  */
 namespace App;
 
+use App\Identifier\Resolver\UnipiResolver;
+use Authentication\AuthenticationService;
+use Authentication\AuthenticationServiceInterface;
+use Authentication\AuthenticationServiceProviderInterface;
+use Authentication\Identifier\IdentifierInterface;
+use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
+use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use Cake\Routing\Router;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -38,10 +47,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * This defines the bootstrapping logic and middleware layers you
  * want to use in your application.
  */
-class Application extends BaseApplication
+class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.3.3';
+    public static $_CAPSVERSION = '2.4.0';
 
     /**
      * application version number
@@ -59,14 +68,14 @@ class Application extends BaseApplication
     /**
      * {@inheritDoc}
      */
-    public function bootstrap()
+    public function bootstrap(): void
     {
-        $this->addPlugin('CsvView');
-
-        $this->addPlugin('Migrations');
-
         // Call parent to load bootstrap from files.
         parent::bootstrap();
+
+        $this->addPlugin('CsvView');
+        $this->addPlugin('Migrations');
+        $this->addPlugin('Authentication');
 
         if (PHP_SAPI === 'cli') {
             $this->bootstrapCli();
@@ -89,17 +98,20 @@ class Application extends BaseApplication
      * @param \Cake\Http\MiddlewareQueue $middlewareQueue The middleware queue to setup.
      * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
      */
-    public function middleware($middlewareQueue)
+    public function middleware($middlewareQueue): \Cake\Http\MiddlewareQueue
     {
         $middlewareQueue
             // Catch any exceptions in the lower layers,
             // and make an error page/response
-            ->add(new ErrorHandlerMiddleware(null, Configure::read('Error')))
+            ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
 
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime')
             ]))
+
+            // Add CSRF protection
+            ->add(new SessionCsrfProtectionMiddleware())
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes
@@ -107,7 +119,8 @@ class Application extends BaseApplication
             // creating the middleware instance specify the cache config name by
             // using it's second constructor argument:
             // `new RoutingMiddleware($this, '_cake_routes_')`
-            ->add(new RoutingMiddleware($this));
+            ->add(new RoutingMiddleware($this))
+            ->add(new AuthenticationMiddleware($this));
 
         return $middlewareQueue;
     }
@@ -115,7 +128,7 @@ class Application extends BaseApplication
     /**
      * @return void
      */
-    protected function bootstrapCli()
+    protected function bootstrapCli(): void
     {
         try {
             $this->addPlugin('Bake');
@@ -127,4 +140,44 @@ class Application extends BaseApplication
 
         // Load more plugins here
     }
+
+    public function getAuthenticationService(ServerRequestInterface $request) : AuthenticationServiceInterface
+    {
+        $service = new AuthenticationService();
+
+        // Define where users should be redirected to when they are not authenticated
+        $service->setConfig([
+            'unauthenticatedRedirect' => Router::url([
+                    'prefix' => false,
+                    'plugin' => null,
+                    'controller' => 'Users',
+                    'action' => 'login',
+            ]),
+            'queryParam' => 'redirect',
+        ]);
+
+        $fields = [
+            IdentifierInterface::CREDENTIAL_USERNAME => 'username',
+            IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
+        ];
+
+        // Load the authenticators. Session should be first.
+        $service->loadAuthenticator('Authentication.Session');
+        $service->loadAuthenticator('Authentication.Form', [
+            'fields' => $fields,
+            'loginUrl' => Router::url([
+                'prefix' => false,
+                'plugin' => null,
+                'controller' => 'Users',
+                'action' => 'login',
+            ]),
+        ]);
+
+        // Load identifiers
+        $service->loadIdentifier('App\Authentication\Identifier\UnipiAuthenticate', 
+            Configure::read('UnipiAuthenticate'));
+
+        return $service;
+    }
+
 }

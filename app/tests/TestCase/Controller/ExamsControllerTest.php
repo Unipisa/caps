@@ -11,7 +11,7 @@ class ExamsControllerTest extends MyIntegrationTestCase
 {
     public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->Exams = TableRegistry::getTableLocator()->get('Exams');
@@ -34,10 +34,11 @@ class ExamsControllerTest extends MyIntegrationTestCase
         // test that students are not allowed to POST
         $this->studentSession();
         $this->post('/exams/index');
-        $this->assertResponseForbidden(); 
+        $this->assertResponseForbidden();
 
         // test that admin can access (but also students can!)
         $this->adminSession();
+
         $this->get('/exams/index');
         $this->assertResponseOk();
 

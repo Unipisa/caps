@@ -29,11 +29,18 @@ class AddCommentToAttachments extends AbstractMigration
             'null' => true,
             'default' => null
         ]);
+        if ($this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql") {
+            $table->changeColumn('data', 'blob', [
+                'null' => true,
+                'limit' => MysqlAdapter::BLOB_LONG
+            ]);
+        }
+        else {
+            $table->changeColumn('data', 'blob', [
+                'null' => true,
+            ]);
 
-        $table->changeColumn('data', 'blob', [
-            'null' => true,
-            'limit' => MysqlAdapter::BLOB_LONG
-        ]);
+        }
 
         $table->changeColumn('mimetype', 'string',[
             'null' => true,

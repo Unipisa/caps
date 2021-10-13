@@ -23,6 +23,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Attachment;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 
@@ -42,7 +43,7 @@ class AttachmentsController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view(string $id = null) : \Cake\Http\Response
     {
         $attachment = $this->Attachments->get($id, [
             'contain' => ['Users', 'Proposals', 'Proposals.Users' ]
@@ -65,7 +66,7 @@ class AttachmentsController extends AppController
      */
     public function add()
     {
-        $attachment = $this->Attachments->newEntity();
+        $attachment = new Attachment();
 
         if ($this->request->is('post')) {
             $user = $this->Attachments->Users->find()->where([ 'username' => $this->user['username'] ])->firstOrFail();
@@ -76,7 +77,7 @@ class AttachmentsController extends AppController
             $secrets = $this->getSecrets();
             $data = $this->request->getData('data');
 
-            if ($data['tmp_name'] == "" && $attachment['comment'] == "") {
+            if ($data->getClientFilename() == "" && $attachment['comment'] == "") {
                 $this->Flash->error('Selezionare un file da caricare, o inserire un commento');
 
                 return $this->redirect([
@@ -86,8 +87,8 @@ class AttachmentsController extends AppController
                 ]);
             }
 
-            if ($data['tmp_name'] != "") {
-                $attachment['data'] = fopen($data['tmp_name'], 'r');
+            if ($data->getClientFilename() != "") {
+                $attachment['data'] = $data->getStream()->getContents();
 
                 if ($attachment['data'] == "") {
                     $this->Flash->error('Impossibile caricare un file vuoto');
@@ -99,8 +100,8 @@ class AttachmentsController extends AppController
                     ]);
                 }
 
-                $attachment['mimetype'] = $data['type'];
-                $attachment['filename'] = $data['name'];
+                $attachment['mimetype'] = $data->getClientMediaType();
+                $attachment['filename'] = $data->getClientFilename();
             }
 
             // Check that the user owns the given proposal, or is an adminstrator
@@ -170,6 +171,6 @@ class AttachmentsController extends AppController
 
         $signatures = $attachment->signatures();
         $this->set('signatures', $signatures);
-        $this->set('_serialize', [ 'signatures' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'signatures' ]);
     }
 }

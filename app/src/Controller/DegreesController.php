@@ -23,6 +23,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Degree;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\ForbiddenException;
 use App\Form\DegreesFilterForm;
@@ -184,6 +185,10 @@ class DegreesController extends AppController
                 return $this->redirect(['action' => 'index']);
             }
         }
+
+        $paginated_degrees = $this->paginate($degrees->cleanCopy());
+        $this->set(compact('degrees', 'paginated_degrees'));
+        $this->viewBuilder()->setOption('serialize', [ 'degrees' ]);
     }
 
     /**
@@ -219,7 +224,7 @@ class DegreesController extends AppController
         if ($id != null) {
             $degree = $this->Degrees->findById($id)->contain(['Groups'])->firstOrFail();
         } else {
-            $degree = $this->Degrees->newEntity();
+            $degree = new Degree();
             // For new entities we set some reasonable default values in the text fields, to
             // give an indication to the user of what would be sensible to put there.
             if ($degree->isNew()) {
@@ -230,9 +235,10 @@ class DegreesController extends AppController
         }
 
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
-        $default_groups = $groups_table->find('list')
-            ->contain('Degrees')
-            ->where([ 'Groups.degree_id' => $degree['id'] ]);
+        $default_groups = $groups_table->find('list')->contain('Degrees');
+        if ($degree['id']) {
+            $default_groups = $default_groups->where([ 'Groups.degree_id' => $degree['id']]);
+        }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $degree = $this->Degrees->patchEntity($degree, $this->request->getData());
