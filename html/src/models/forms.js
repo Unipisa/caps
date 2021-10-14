@@ -12,4 +12,4 @@ class Forms {
 
 }
 
-module.exports = new Proposals();
+module.exports = new Forms();
