@@ -82,6 +82,7 @@
         <tr>
             <th></th>
             <th><?= $this->Paginator->sort('Degrees.enabled', 'Attivo'); ?></th>
+            <th><?= $this->Paginator->sort('Degrees.enable_sharing', 'Richiesta parere'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.academic_year', 'Anno'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.name', 'Nome'); ?></th>
             <th><?= $this->Paginator->sort('Degrees.years', 'Anni'); ?></th>
@@ -93,7 +94,20 @@
                     <input type=checkbox name="selection[]" value="<?php echo $degree['id']; ?>">
                 </td>
                 <td>
-                    <?= $degree->sharingMode(); ?>
+                    <?= $degree->enabled ? "Attivo" : "Non attivo" ?>
+                </td>
+                <td>
+                    <?php switch($degree->enable_sharing) {
+                        case 0:
+                            echo "Non abilitata";
+                            break;
+                        case 1:
+                            echo "Abilitata";
+                            break;
+                        case 2:
+                            echo "Solo per gli amministratori";
+                            break;
+                    } ?>
                 </td>
                 <td>
                     <?= $degree->academic_years(); ?>

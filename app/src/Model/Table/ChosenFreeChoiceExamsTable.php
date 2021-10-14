@@ -79,9 +79,10 @@ class ChosenFreeChoiceExamsTable extends Table
             ->maxLength('name', 255)
             ->notEmptyString('name');
 
+        // We allow zero credits as well, mainly for drafts
         $validator
             ->integer('credits')
-            ->naturalNumber('credits');
+            ->nonNegativeInteger('credits');
 
         return $validator;
     }

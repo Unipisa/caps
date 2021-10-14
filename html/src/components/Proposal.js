@@ -262,6 +262,19 @@ class Proposal extends React.Component {
                 "id": "custom-" + this.id_counter++,
                 "year": e.chosen_year
             });
+
+            // At this point, if there are still free_choice_exams that have 
+            // not been selected, and we have additional free_exams, we drop
+            // the latter in place of the former. Note that we impose that the
+            // chosen_year matches for this choice. 
+            const re = chosen_exams.filter(
+                (ex) => (ex.year == e.chosen_year) && (ex.type == "free_choice_exam") && (!ex.selection)
+            );
+            
+            if (re.length > 0) {
+                const idx = chosen_exams.indexOf(re[0]);
+                chosen_exams.splice(idx, 1);
+            }
         }
 
         return chosen_exams;
@@ -489,9 +502,18 @@ class Proposal extends React.Component {
             return a + (a == "" ? "" : ", ") + e;
         }, "");
 
+        // Find if there is any exam with an invalid number of credits
+        const invalid_credits_exams = this.state.chosen_exams.filter(
+            (e) => (e.type == "free_exam") && (e.selection) && (e.selection.credits <= 0)
+        );
+        const invalid_credits_exams_names = invalid_credits_exams.map(
+            (e) => e.selection.name
+        ).join(",");
+
         const submit_enabled = (missing_selections == 0) &&
             (total_credits >= required_credits) &&
-            (duplicate_exams.length == 0);
+            (duplicate_exams.length == 0) &&
+            (invalid_credits_exams.length == 0);
 
         return <div>
             { submit_enabled || <div>Il piano non può essere sottomesso per i seguenti motivi:</div>}
@@ -503,6 +525,8 @@ class Proposal extends React.Component {
                     <li>Sono stati selezionati esami per <strong>{total_credits}</strong> crediti su <strong>{required_credits}</strong>.</li>}
                 {duplicate_exams.length > 0 &&
                     <li>Sono presenti i seguenti <strong>esami duplicati</strong>: {duplicate_list}.</li>}
+                {invalid_credits_exams.length > 0 && 
+                    <li>Sono presenti esami con un numero non valido di crediti: <strong>{invalid_credits_exams_names}</strong></li>}
             </ul>
             <div className="form-group btn-group">
                 <button className="btn btn-success" disabled={!submit_enabled} onClick={this.onSubmit.bind(this)}>Sottometti piano di studio</button>
