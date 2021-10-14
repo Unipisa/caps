@@ -118,9 +118,21 @@ class Proposal extends Entity
         return false;
     }
 
-    public function removeSecrets() {
+    /**
+     * Remove all secrets in the proposal that are not in the given
+     * array. This is used to clean the authorizations granted to
+     * different users, and avoid them to be exposed.
+     *
+     * @param array $except Secrets to ignore in this operations.
+     * @return Proposal the redacted proposal.
+     */
+    public function removeSecrets(array $except = []) : Proposal {
         foreach ($this['auths'] as $auth) {
-            $auth['secret'] = null;
+            if (! in_array($auth['secret'], $except))
+            {
+                unset($auth['secret']);
+            }
+            
         }
 
         return $this;
