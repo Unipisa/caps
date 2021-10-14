@@ -48,9 +48,9 @@ $num_proposals = 0;
 </div>
 
 
-<?php if ($instructions != ""): ?>
+<?php if ($settings['user-instructions']): ?>
 <?= $this->element('card-start', [ 'border' => 'primary' ]); ?>
-    <?= $instructions ?>
+    <?= $settings['user-instructions'] ?>
 <?= $this->element('card-end'); ?>
 <?php endif; ?>
 

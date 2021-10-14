@@ -112,23 +112,23 @@
             $curriculum = $proposal['curriculum'];
             ?>
             <tr>
-                <td class="caps-admin-proposal-id"><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
-                <td class="caps-admin-proposal-state">
+                <td><input type=checkbox name="selection[]" value="<?php echo $proposal['id']; ?>"></td>
+                <td>
                     <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'view', $proposal['id'] ]) ?>">
                         <?= $this->Caps->badge($proposal) ?>
                     </a>
                     </td>
-                <td class="caps-admin-proposal-name">
+                <td>
                     <?php echo $this->Html->link(
                         $proposal['user']['name'],
                         ['controller' => 'users', 'action' => 'view', $proposal['user']['id']]);
                     ?></td>
-                <td class="caps-admin-proposal-year">
+                <td>
                     <?php
                     echo $curriculum['degree']['academic_year'];
                     ?>
                 </td>
-                <td class="caps-admin-proposal-degree">
+                <td>
                     <?php
                     echo $this->Html->link(
                         $curriculum['degree']['name'],
@@ -136,7 +136,7 @@
                     );
                     ?>
                 </td>
-                <td class="caps-admin-proposal-pds">
+                <td>
                     <?php
                     echo $this->Html->link(
                         $curriculum['name'],

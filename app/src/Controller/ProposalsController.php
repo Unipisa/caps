@@ -369,7 +369,11 @@ class ProposalsController extends AppController
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
-        $this->set('proposal', $proposal->removeSecrets());
+        // Remove secrets that the user does not own, otherwise they may
+        // be exposed, and in general they belong to different users.
+        $proposal = $proposal->removeSecrets($secrets);
+
+        $this->set('proposal', $proposal);
         $this->set('secrets', $secrets);
 
         // Having this is apparently the only way to enforce validation on

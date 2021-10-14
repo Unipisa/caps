@@ -42,37 +42,20 @@ class UsersController extends AppController {
     }
 
     public function view($id = null) {
-        $user = $this->Users->find()
-            ->contain([ 'Documents', 'Documents.Users', 'Documents.Owners' ])
-            ->where([ 'username' => $this->user['username'] ])
-            ->first();
-
-        if ($id == null || $id == $user['id']) {
-            $user_entry = $user;
+        if ($id == null) $id = $this->user['id']; 
+        if ($id != $this->user['id'] && !$this->user['admin']) {
+            throw new ForbiddenException('Cannot access another user profile');
         }
-        else {
-            $user_entry = $this->Users->find()
-                ->contain([
-                    'Documents',
-                    'Documents.Users',
-                    'Documents.Owners'
-                ])
-                ->where([ 'id' => $id ])
-                ->first();
-        }
-
-        if ($id != null && !$this->user['admin'] && $id != $this->user['id'])
-            throw new  ForbiddenException('Cannot access another user profile');
-
-        $instructions = $this->getSetting('user-instructions');
-        $this->set('instructions', ($instructions != null) ? $instructions : "");
-
-        $proposals = $this->Users->Proposals->find()
-            ->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Users.id' => $user_entry['id'] ])
-            ->order([ 'Proposals.modified' => 'DESC' ]);
+        $user_entry = $this->Users->get($id, 
+            ['contain' => ['Documents', 'Documents.Users', 'Documents.Owners']]);
 
         $this->set('user_entry', $user_entry);
+            
+        $proposals = $this->Users->Proposals->find()
+            ->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
+            ->where([ 'Users.id' => $id ])
+            ->order([ 'Proposals.modified' => 'DESC' ]);
+            
         $this->set('proposals', $proposals);
     }
 
