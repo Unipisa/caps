@@ -369,7 +369,12 @@ class ProposalsController extends AppController
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 
-        $this->set('proposal', $proposal->removeSecrets());
+        // Remove secrets for JSON requests, otherwise they may be exposed. 
+        if ($this->request->getParam('_ext') == 'json') {
+            $proposal = $proposal->removeSecrets();
+        }
+
+        $this->set('proposal', $proposal);
         $this->set('secrets', $secrets);
 
         // Having this is apparently the only way to enforce validation on
