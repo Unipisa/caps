@@ -1,6 +1,6 @@
 FROM php:8-apache
 
-ENV NODE_VERSION=14.18.0
+ENV NODE_VERSION=14.18.1
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN apt-get update && apt-get install -y \
