@@ -61,31 +61,31 @@
     </tr>
 <?php foreach ($paginated_users as $user): ?>
     <tr>
-        <td class="caps-admin-user-id"><input type=checkbox name="selection[]" value="<?php echo $user['id']; ?>"></td>
-        <td class="caps-admin-user-matricola">
+        <td><input type=checkbox name="selection[]" value="<?php echo $user['id']; ?>"></td>
+        <td>
             <?php echo $this->Html->link(
                 $user['number'],
                 ['action' => 'view', $user['id']]);
             ?></td>
-        <td class="caps-admin-user-username">
+        <td>
             <?php echo $this->Html->link(
                 $user['username'],
                 ['action' => 'view', $user['id']]);
             ?></td>
-        <td class="caps-admin-user-email">
+        <td>
             <?php echo h($user['email']) ?>
         </td>
-        <td class="caps-admin-user-surname">
+        <td>
             <?php echo $this->Html->link(
                 $user['surname'],
                 ['action' => 'view', $user['id']]);
             ?></td>
-        <td class="caps-admin-user-givenname">
+        <td>
             <?php echo $this->Html->link(
                 $user['givenname'],
                 ['action' => 'view', $user['id']]);
             ?></td>
-        <td class="caps-admin-user-admin">
+        <td>
             <?php
                 echo $user['admin'] ? "admin" : "";
             ?>
