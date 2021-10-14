@@ -10,6 +10,8 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class CurriculaFixture extends TestFixture
 {
+    public $table = 'curricula';
+
     /**
      * Fields
      *

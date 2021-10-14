@@ -38,6 +38,7 @@ class GroupsFixture extends TestFixture
     public function init() : void
     {
         $this->records = [
+            [ 'id' => 1, 'degree_id' => 1, 'name' => 'Gruppo di prova' ]
         ];
         parent::init();
     }
