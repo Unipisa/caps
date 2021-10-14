@@ -109,11 +109,11 @@ $num_proposals = 0;
 
                                 if ($proposal['state'] == 'draft') {
                                     // We don't allow administrators to edit the proposals as the user: the edit button
-                                    // is only displayed if the username of the logged-in user matches the owner of the
+                                    // is only displayed if logged-in user is the owner of the
                                     // proposal.
-                                    if ($user['username'] == $proposal['user']['username']) {
+                                    if ($user['id'] == $proposal['user']['id']) {
                                         echo $this->Html->link('Modifica', [
-                                            'controller' => 'proposals', 'action' => 'add', $proposal['id']
+                                            'controller' => 'proposals', 'action' => 'edit', $proposal['id']
                                         ], [
                                             'class' => 'dropdown-item'
                                         ]);
@@ -170,8 +170,8 @@ $num_proposals = 0;
 ?>
 
 <?= $this->element('card-start', [ 'header' => 'Documenti dello studente' ]); ?>
-    <p>I documenti e le annotazioni inserite in questa sezione sono associate a questo utente, e non sono
-      visibili per lo studente. </p>
+    <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, 
+    ma sono visibili solo per gli amministratori. </p>
     <?php
       if (count($user_entry['documents']) == 0) {
           echo "<p>Non è stato caricato alcun allegato.</p>";

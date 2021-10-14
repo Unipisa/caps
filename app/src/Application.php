@@ -33,6 +33,7 @@ use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -49,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.3.3';
+    public static $_CAPSVERSION = '2.4.0';
 
     /**
      * application version number
@@ -108,6 +109,9 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime')
             ]))
+
+            // Add CSRF protection
+            ->add(new SessionCsrfProtectionMiddleware())
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes

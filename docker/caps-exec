@@ -179,4 +179,4 @@ if [ "$DEBUG" = "true" ]; then
   msg "user1 an administrator"
 fi
 
-apache2 -DFOREGROUND
+apache2 -DFOREGROUND || exit 0

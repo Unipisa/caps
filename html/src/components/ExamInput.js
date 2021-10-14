@@ -107,7 +107,7 @@ class ExamInput extends React.Component {
             </div>
             <div className="col-2">
                 <input className="form-control credits"
-                    type="number" min="1" required=""
+                    type="number" min="1" required
                     value={this.state.credits}
                     onChange={this.onFreeExamCreditsChanged.bind(this)} />
             </div>

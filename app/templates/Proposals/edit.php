@@ -23,6 +23,6 @@
 ?>
 
 <div>
-    <h2>Nuovo piano di studio</h2>
+    <h2><?= $proposal['id']?"Modifica":"Nuovo" ?> piano di studio</h2>
     <div id="app"></div>
 </div>

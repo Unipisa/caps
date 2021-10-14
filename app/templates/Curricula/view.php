@@ -34,7 +34,7 @@
                     <a href="<?= $this->Url->build(['action' => 'edit', $curriculum['id']]) ?>">
                         <button type="button" class="btn btn-sm mr-2 btn-primary">Modifica</button>
                     </a>
-                    <a href="<?= $this->Url->build(['controller' => 'proposals', 'action' => 'add',
+                    <a href="<?= $this->Url->build(['controller' => 'proposals', 'action' => 'edit',
                         '?' => ['degree_id' => $curriculum['degree_id'], 'curriculum_id' => $curriculum['id']]]) ?>">
                         <button type="button" class="btn btn-sm mr-2 btn-primary">Aggiungi piano</button>
                     </a>
