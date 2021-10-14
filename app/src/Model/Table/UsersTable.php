@@ -22,7 +22,6 @@
  */
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -58,6 +57,10 @@ class UsersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->hasMany('Proposals', [
+            'foreignKey' => 'user_id'
+        ]);
+
+        $this->hasMany('Forms', [
             'foreignKey' => 'user_id'
         ]);
 

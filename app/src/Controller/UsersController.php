@@ -52,11 +52,17 @@ class UsersController extends AppController {
         $this->set('user_entry', $user_entry);
             
         $proposals = $this->Users->Proposals->find()
-            ->contain([	'Users', 'Curricula', 'Curricula.Degrees' ])
-            ->where([ 'Users.id' => $id ])
-            ->order([ 'Proposals.modified' => 'DESC' ]);
+            ->contain(['Users', 'Curricula', 'Curricula.Degrees'])
+            ->where(['Users.id' => $id])
+            ->order(['Proposals.modified' => 'DESC']);
             
         $this->set('proposals', $proposals);
+
+        $forms = $this->Users->Forms->find()
+            ->contain(['Users', 'FormTemplates'])
+            ->where(['Users.id' => $id]);
+        
+        $this->set('forms', $forms);
     }
 
     public function index() {
