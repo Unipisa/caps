@@ -602,7 +602,7 @@ class ProposalsController extends AppController
                 // Before saving, if the action is 'action-close', we need to check if the user has already submitted
                 // other proposals. If that's the case, we save it as draft and throw an error.
                 $previous_proposals = $this->Proposals->find()->contain(['Users'])
-                    ->where(['Users.username' => $username, 'state' => 'submitted'])
+                    ->where(['Users.username' => $this->user->username, 'state' => 'submitted'])
                     ->count();
 
                 if ($previous_proposals > 0) {
