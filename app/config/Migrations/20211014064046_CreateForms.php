@@ -35,7 +35,6 @@ class CreateForms extends AbstractMigration
             'null' => true,
         ]);
         $table->addColumn('data', 'json', [
-            'default' => '[]',
             'null' => false,
         ]);
         $table->addForeignKey('user_id', 'users', 'id');
