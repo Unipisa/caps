@@ -83,8 +83,8 @@ $num_proposals = 0;
                 ?>
 
                     <tr>
-                        <td><?php echo h($proposal['curriculum']['name']); ?></td>
-                        <td><?php echo $proposal['curriculum']['degree']->academic_years(); ?></td>
+                        <td><?= h($proposal['curriculum']['name']); ?></td>
+                        <td><?= $proposal['curriculum']['degree']->academic_years(); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
@@ -92,7 +92,6 @@ $num_proposals = 0;
                             <?= $this->Caps->badge($proposal); ?>
                         </td>
                         <td>
-
                             <div class="dropdown">
                                 <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
                                     id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -163,6 +162,60 @@ $num_proposals = 0;
     <p>Al momento non è stato presentato alcun piano di studio.</p>
 <?= $this->element('card-end'); ?>
 <?php endif; ?>
+
+<?= $this->element('card-start', [ 'header' => "Modelli compilati" ]); ?>
+<?php if ($forms->count()): ?>
+    <div class="table-responsive-xl">
+            <table class='table table'>
+                <tr><thead>
+                    <th>Modello</th>
+                    <th>Stato</th>
+                    <th></th>
+                    </thead>
+                </tr>
+            <?php foreach ($forms as $form) { ?>
+                <tr>
+                    <td><?= h($form['form_template']['name']) ?></td> 
+                    <td><?= $form['state'] ?></td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
+                                id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                            <?php
+                                
+                            echo $this->Html->link('Visualizza', [
+                                'controller' => 'forms', 'action' => 'view',$form['id']
+                            ], [
+                                'class' => 'dropdown-item'
+                            ]);
+
+                            if ($form['state'] == 'draft') {
+                                // We don't allow administrators to edit forms as the user: the edit button
+                                // is only displayed if logged-in user is the owner of the
+                                // proposal.
+                                if ($user['id'] == $form['user']['id']) {
+                                    echo $this->Html->link('Modifica', [
+                                        'controller' => 'forms', 'action' => 'edit', $form['id']
+                                    ], [
+                                        'class' => 'dropdown-item'
+                                    ]);
+                                }
+                            }
+                            ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php } ?>
+            </table>
+    </div>
+<?php else: ?>
+    <p>Al momento non è stato compilato nessun modulo.</p>
+<?php endif ?>
+<?= $this->element('card-end'); ?>
 
 <?php
  // This part is only visible to administrators

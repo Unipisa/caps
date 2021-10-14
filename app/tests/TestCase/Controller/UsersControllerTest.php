@@ -25,7 +25,14 @@ class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
     
-    public $fixtures = ['app.Users', 'app.Proposals', 'app.Curricula', 'app.CurriculaProposals'];
+    public $fixtures = [
+        'app.Users', 
+        'app.Proposals', 
+        'app.Curricula', 
+        'app.CurriculaProposals',
+        'app.Forms',
+        'app.FormTemplates'
+    ];
 
     public function setUp(): void
     {

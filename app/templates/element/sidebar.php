@@ -45,10 +45,12 @@ $actionName = $this->request->getParam('action');
         <!-- Divider -->
         <hr class="sidebar-divider">
 
+        <?php if (isset($user) && $user != null && $user['admin']): ?>
         <!-- Heading -->
         <div class="sidebar-heading">
-            Piani di studio
+            Utente
         </div>
+        <?php endif ?>
 
         <!-- Nav Item  -->
         <li class="nav-item<?= $controllerName == 'Users' ? ' active' : '' ?>">
@@ -57,7 +59,7 @@ $actionName = $this->request->getParam('action');
             ]); ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
                 <span>
-                    I miei piani
+                    I miei documenti
                 </span>
             </a>
         </li>
@@ -68,7 +70,17 @@ $actionName = $this->request->getParam('action');
                 'controller' => 'proposals', 'action' => 'edit'
             ]); ?>">
                 <i class="fas fa-fw fa-plus-square"></i>
-                <span>Nuovo piano</span>
+                <span>Nuovo piano di studio</span>
+            </a>
+        </li>
+
+        <!-- Nav Item - Utilities Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link" href="<?= $this->Url->build([
+                'controller' => 'forms', 'action' => 'edit'
+            ]); ?>">
+                <i class="fas fa-fw fa-plus-square"></i>
+                <span>Nuovo modulo</span>
             </a>
         </li>
 
@@ -100,6 +112,16 @@ $actionName = $this->request->getParam('action');
             ]) ?>">
                 <i class="fas fa-fw fa-file-alt"></i>
                 <span>Piani di studio</span>
+            </a>
+        </li>
+
+        <li class="nav-item<?= $controllerName == 'Forms' ? ' active' : '' ?>">
+            <a class="nav-link caps-proposal-link" href="<?= $this->Url->build([
+                'controller' => 'forms',
+                'action' => 'index'
+            ]) ?>">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Moduli</span>
             </a>
         </li>
 
@@ -146,6 +168,15 @@ $actionName = $this->request->getParam('action');
             ]); ?>">
                 <i class="fas fa-fw fa-tasks"></i>
                 <span>Esami</span>
+            </a>
+        </li>
+
+        <li class="nav-item<?= $controllerName == 'FormTemplates' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build([
+                'controller' => 'formTemplates', 'action' => 'index'
+            ]); ?>">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Modelli</span>
             </a>
         </li>
 
