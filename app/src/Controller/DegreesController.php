@@ -217,6 +217,8 @@ class DegreesController extends AppController
      */
     public function edit($id = null)
     {
+        throw new Exception();
+
         if (!$this->user['admin']) {
             throw new ForbiddenException();
         }
