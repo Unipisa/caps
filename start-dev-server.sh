@@ -5,6 +5,7 @@ NODE_VERSION=$(grep "NODE_VERSION=" Dockerfile | cut -d '=' -f2)
 
 function shutdown {
     kill ${watch_pid}
+    kill ${watch_pid2}
 }
 
 function die {
@@ -116,7 +117,10 @@ echo "  > Using NodeJS $(node --version)"
 echo "  > Using NPM $(npm --version)"
 echo ""
 
-(cd html && npm run watch )&
+(cd html && npm run watch:dev )&
 watch_pid=$!
+
+(cd html && npm run watch )&
+watch_pid2=$!
 
 wait

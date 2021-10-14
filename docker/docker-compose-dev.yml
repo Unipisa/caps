@@ -24,7 +24,6 @@ services:
     environment:
       # Enable DebugKit on the development server
       DEBUG: "true"
-      CAPS_DB_DRIVER: "Mysql"
     security_opt:
       - apparmor:unconfined
       - seccomp:unconfined

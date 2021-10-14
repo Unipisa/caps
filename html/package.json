@@ -59,7 +59,8 @@
     "js:dev": "webpack --config webpack.config.dev.js",
     "deploy": "npm run js",
     "deploy:dev": "npm run js:dev",
-    "watch": "webpack --watch --config webpack.config.dev.js"
+    "watch:dev": "webpack --watch --config webpack.config.dev.js",
+    "watch": "webpack --watch --config webpack.config.js"
   },
   "keywords": [],
   "author": "",
