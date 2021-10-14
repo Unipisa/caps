@@ -11,6 +11,13 @@ use Cake\TestSuite\Fixture\TestFixture;
 class FormTemplatesFixture extends TestFixture
 {
     /**
+    * Table name
+    *
+    * @var string
+    */
+    public $table = 'form_templates';
+
+    /**
      * Fields
      *
      * @var array

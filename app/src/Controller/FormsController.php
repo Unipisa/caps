@@ -5,7 +5,6 @@ use App\Model\Entity\Form;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-
 class FormsController extends AppController
 {    
 
@@ -41,8 +40,11 @@ class FormsController extends AppController
             if ($this->Forms->save($form)) {
                 return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
             } else {
-                $this->Flash->error(Utils::error_to_string($form->errors()));
-
+                foreach ($form->errors() as $field => $errors) {
+                    foreach ($errors as $error) {
+                        $this->Flash->error('Errore nel campo "' . $field . '" del modulo: ' . $error);
+                    }
+                }
                 return $this->redirect(['action' => 'edit', $form['id']]);
             }
         }   
