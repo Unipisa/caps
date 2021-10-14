@@ -79,17 +79,15 @@ class FreeChoiceExamsController extends AppController
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
 
-        if ($this->request->is(['post', 'put'])) {
+        if ($this->request->is([ 'post', 'put' ])) {
             if ($this->FreeChoiceExams->delete($free_choice_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
-
-                return $this->redirect(
-                    $this->request->referer()
-                );
+            }
+            else {
+                $this->log(var_export($free_choice_exam->getErrors(), true));
+                $this->Flash->error('Could not delete the free choice exam');
             }
         }
-
-        $this->Flash->error(Utils::error_to_string($free_choice_exam->errors()));
 
         return $this->redirect(
             $this->request->referer()
