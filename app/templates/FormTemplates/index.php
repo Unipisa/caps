@@ -21,7 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<h1>Redazione Moduli</h1>
+<h1>Modelli</h1>
 
 <div class="row">
     <div class="col">
@@ -30,45 +30,48 @@
                 <div class="d-flex mb-3">
                     <a href="<?= $this->Url->build([ 'action' => 'edit' ]) ?>">
                         <button class="btn btn-sm btn-primary mr-2">
-                            <i class="fas fa-plus"></i><span class="ml-2 d-none d-lg-inline">Aggiungi modulo</span>
+                            <i class="fas fa-plus"></i><span class="ml-2 d-none d-lg-inline">Aggiungi modello</span>
                         </button>
                     </a>
 
+                    <?php if ($form_templates->count()>0): ?>
                     <a href="#" >
                         <button class="btn btn-sm btn-danger mr-2"
                                 onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i moduli selezionati?')">
-                            <i class="fas fa-times"></i><span class="d-none d-lg-inline ml-2">Elimina modulo</span>
+                            <i class="fas fa-times"></i><span class="d-none d-lg-inline ml-2">Elimina modello</span>
                         </button>
                     </a>
+                    <?php endif ?>
 
                 </div>
 
                 <?php echo $this->Form->create(null, [ 'id' => 'form-templates-form' ]); ?>
 
-                <div class="table-responsive-sm">
-                <table class="table">
-                    <tr><thead>
-                        <th></th>
-                        <th><?= $this->Paginator->sort('FormTemplates.title', 'titolo'); ?></th>
-                    </thead></tr>
-                    <?php foreach ($paginated_form_templates as $form_template): ?>
-                        <tr>
-                            <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $curriculum['id']; ?>"></td>
-                            <td class="caps-admin-curricula-name">
-                                <?php
-                                echo $this->Html->link(
-                                    $form_template['name'],
-                                    [   'controller' => 'form_templates',
-                                        'action' => 'view',
-                                        $form_template['id']]
-                                );
-                                ?>
-                            </td>
-                        </tr>
-                    <?php endforeach ?>
-                </table>
-                </div>
+                <?php if ($form_templates->count() == 0): ?>
+                  Nessun modello inserito.
+                <?php else: ?>
+                    <div class="table-responsive-sm">
+                    <table class="table">
+                        <tr><thead>
+                            <th></th>
+                            <th><?= $this->Paginator->sort('FormTemplates.title', 'titolo'); ?></th>
+                        </thead></tr>
+                        <?php foreach ($paginated_form_templates as $form_template): ?>
+                            <tr>
+                                <td><input type=checkbox name="selection[]" value="<?php echo $form_template['id']; ?>"></td>
+                                <td>
+                                    <?= $this->Html->link(
+                                        $form_template['name'],
+                                        [   'controller' => 'form_templates',
+                                            'action' => 'view',
+                                            $form_template['id']])?>
+                                </td>
+                            </tr>
+                        <?php endforeach ?>
+                    </table>
+                    </div>
                 <?php echo $this->element('pagination'); ?>
+                <?php endif ?>
 
                 <?php echo $this->Form->end(); ?>
             </div>

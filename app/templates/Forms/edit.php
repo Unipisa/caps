@@ -21,21 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<h1><?= $form->form_template->name ?></h1>
-
-<div class="row my-2">
-    <div class="col">
-        <div class="card shadow">
-            <div class="card-body">
-                <?php
-                echo $this->Form->create($form);
-                ?>
-                <?= $form->form_template->text ?>
-                <?php
-                echo $this->Form->submit($form->isNew() ? 'Salva bozza' : 'Aggiorna bozza');
-                echo $this->Form->end();
-                ?>
-            </div>
-        </div>
-    </div>
+<div>
+    <h2><?= $form['id']?"Modifica":"Nuovo" ?> modulo</h2>
+    <div id="app"></div>
 </div>
