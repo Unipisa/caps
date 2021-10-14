@@ -12,7 +12,7 @@ class CapsProposalsController extends CapsAppController {
         loadDashboardData();
     }
 
-    add(params) {
+    edit(params) {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
         ReactDOM.render(

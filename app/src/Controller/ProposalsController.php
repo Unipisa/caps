@@ -516,7 +516,7 @@ class ProposalsController extends AppController
 
         // Save the proposal and redirect the user to the new plan
         if ($this->Proposals->save($newp)) {
-            return $this->redirect([ 'action' => 'add', $newp['id'] ]);
+            return $this->redirect([ 'action' => 'edit', $newp['id'] ]);
         } else {
             $this->Flash->error('Errore nel salvataggio del piano');
             $this->log(var_export($newp->errors(), true));
@@ -525,7 +525,7 @@ class ProposalsController extends AppController
         }
     }
 
-    public function add($proposal_id = null)
+    public function edit($proposal_id = null)
     {
         $username = $this->user['username'];
 
@@ -627,7 +627,7 @@ class ProposalsController extends AppController
                     debug(var_export($proposal->errors(), true));
                     $this->Flash->error(Utils::error_to_string($proposal->errors()));
 
-                    return $this->redirect(['action' => 'add', $proposal['id']]);
+                    return $this->redirect(['action' => 'edit', $proposal['id']]);
                 }
             }
 

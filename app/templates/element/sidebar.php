@@ -65,7 +65,7 @@ $actionName = $this->request->getParam('action');
         <!-- Nav Item - Utilities Collapse Menu -->
         <li class="nav-item">
             <a class="nav-link" href="<?= $this->Url->build([
-                'controller' => 'proposals', 'action' => 'add'
+                'controller' => 'proposals', 'action' => 'edit'
             ]); ?>">
                 <i class="fas fa-fw fa-plus-square"></i>
                 <span>Nuovo piano</span>

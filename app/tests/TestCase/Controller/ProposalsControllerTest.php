@@ -39,7 +39,7 @@ class ProposalsControllerTest extends TestCase
     public function testProposalPage()
     {
         // test that page requires authentication
-        foreach (['/proposals/add', '/exams.json'] as $url) {
+        foreach (['/proposals/edit', '/exams.json'] as $url) {
             $this->get($url);
             $this->assertRedirect();
         }
@@ -48,7 +48,7 @@ class ProposalsControllerTest extends TestCase
         $user = TableRegistry::getTableLocator()->get('Users')->get(1);
         $this->session([ 'Auth' => $user ]);
 
-        $this->get('/proposals/add');
+        $this->get('/proposals/edit');
         $this->assertResponseOk();
 
         $this->get('/exams.json');
