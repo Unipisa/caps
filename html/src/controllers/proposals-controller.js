@@ -1,6 +1,5 @@
 const CapsAppController = require('./app-controller');
 const { loadDashboardData } = require('../modules/dashboard');
-const caps_proposals_add = require('../modules/proposals-add');
 
 const React = require('react');
 const ReactDOM = require('react-dom');

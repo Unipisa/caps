@@ -57,8 +57,6 @@ class UsersController extends AppController {
             ->order([ 'Proposals.modified' => 'DESC' ]);
             
         $this->set('proposals', $proposals);
-
-        $this->set('instructions', $this->getSetting('user-instructions'));
     }
 
     public function index() {
