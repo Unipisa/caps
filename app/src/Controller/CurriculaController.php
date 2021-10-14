@@ -164,10 +164,16 @@ class CurriculaController extends AppController
         $groups_table = TableRegistry::getTableLocator()->get('Groups');
 
         $exams = $exams_table->find('all');
-        $groups = $groups_table->find('all', [
-            'conditions' => [
-                'Groups.degree_id' => $curriculum['degree_id']],
-            'contains' => ['Degrees']]);
+
+        if ($curriculum['degree_id']) {
+            $groups = $groups_table->find('all', [
+                'conditions' => [
+                    'Groups.degree_id' => $curriculum['degree_id']],
+                'contains' => ['Degrees']]);
+        }
+        else {
+            $groups = [];
+        }
 
         $this->set('curriculum', $curriculum);
         $this->set('exams', $exams);
@@ -180,9 +186,12 @@ class CurriculaController extends AppController
                 ['order' => ['Exams.name' => 'ASC']]
             )
         );
-        $this->set('groupsList', $groups_table->find('list',
-            ['conditions' => ['Groups.degree_id' => $curriculum['degree_id']]]
-        ));
+
+        if ($curriculum['degree_id']) {
+            $this->set('groupsList', $groups_table->find('list',
+                ['conditions' => ['Groups.degree_id' => $curriculum['degree_id']]]
+            ));
+        }
 
         if (! $this->request->getData('curriculum')) {
             $this->set(compact('curriculum'));
