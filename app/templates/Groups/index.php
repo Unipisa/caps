@@ -65,14 +65,14 @@
         </tr>
         <?php foreach ($paginated_groups as $group): ?>
             <tr>
-                <td class="caps-admin-groups-id"><input type=checkbox name="selection[]" value="<?php echo $group['id']; ?>"></td>
+                <td><input type=checkbox name="selection[]" value="<?php echo $group['id']; ?>"></td>
                 <td>
                     <?= $group['degree']->academic_years(); ?>
                 </td>
                 <td>
                     <?= $group['degree']['name'] ?>
                 </td>
-                <td class="caps-admin-groups-name">
+                <td>
                     <?php
                     echo $this->Html->link(
                         $group['name'],
@@ -81,10 +81,10 @@
                     );
                     ?>
                 </td>
-                <td class="caps-admin-groups-number">
+                <td>
                     <?php echo count($group['exams']); ?>
                 </td>
-                <td class="caps-admin-groups-exams">
+                <td>
                     <?php echo $group->shortExamList(); ?>
                 </td>
             </tr>

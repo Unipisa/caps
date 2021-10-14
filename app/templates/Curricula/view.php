@@ -91,10 +91,10 @@
                     </tr>
                     <?php foreach ($curriculum['compulsory_exams'] as $compulsory_exam) { ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-name">
+                            <td>
                                 <?= $this->Html->link(h($compulsory_exam['exam']['name']), ['controller' => 'exams', 'action' => 'view', $compulsory_exam['exam']['id']]) ?>
                             </td>
-                            <td class="caps-admin-curriculum-exam-year">
+                            <td>
                                 <?= $compulsory_exam['year'] ?>
                             </td>
                         </tr>
@@ -119,10 +119,10 @@
                     </tr>
                     <?php foreach ($curriculum['compulsory_groups'] as $compulsory_group) { ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-name">
+                            <td>
                                 <?= $this->Html->link(h($compulsory_group['group']['name']), ['controller' => 'groups', 'action' => 'view', $compulsory_group['group']['id']]) ?>
                             </td>
-                            <td class="caps-admin-curriculum-exam-year">
+                            <td>
                                 <?= $compulsory_group['year']; ?>
                             </td>
                         </tr>
@@ -147,8 +147,8 @@
                     </tr>
                     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-name">Esame a scelta libera</td>
-                            <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
+                            <td>Esame a scelta libera</td>
+                            <td><?php echo $free_choice_exam['year']; ?></td>
                         </tr>
                     <?php } ?>
                 </table>
