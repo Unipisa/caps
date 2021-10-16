@@ -76,8 +76,8 @@ $num_proposals = 0;
                     <th>Curriculum</th>
                     <th>Anno</th>
                     <th>Ultima modifica</th>
-                    <th>Data di sottomissione</th>
-                    <th>Data di approvazione</th>
+                    <th>Data invio</th>
+                    <th>Data approvazione</th>
                     <th>Stato</th>
                     <th></th>
                     </thead>
@@ -96,7 +96,7 @@ $num_proposals = 0;
                         <td><?= h($proposal['curriculum']['name']); ?></td>
                         <td><?= $proposal['curriculum']['degree']->academic_years(); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
-                        <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
+                        <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non inviato'); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
                         <td>
                             <?= $this->Caps->badge($proposal); ?>
@@ -180,6 +180,8 @@ $num_proposals = 0;
             <table class='table table'>
                 <tr><thead>
                     <th>Modello</th>
+                    <th>Data invio</th>
+                    <th>Data gestione</th>
                     <th>Stato</th>
                     <th></th>
                     </thead>
@@ -187,6 +189,8 @@ $num_proposals = 0;
             <?php foreach ($forms as $form) { ?>
                 <tr>
                     <td><?= h($form['form_template']['name']) ?></td> 
+                    <td><?= $this->Caps->formatDate($form['date_submitted'], 'non inviato'); ?></td>
+                    <td><?= $this->Caps->formatDate($form['date_managed'], 'non visionato'); ?></td>
                     <td><?= $this->Caps->badge($form); ?></td>
                     <td>
                         <div class="dropdown">

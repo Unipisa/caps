@@ -32,7 +32,7 @@ class Form extends React.Component {
         if (form === null && this.props.id !== undefined) {
             form = await Forms.get(this.props.id);
             form_template = form.form_template;
-            html = this.compile_html(form_template.text, form.data);
+            html = this.compile_html(form_template.text, form.data, form.state);
         }
         if (form === null && form_templates === null) {
             form_templates = await FormTemplates.all();
@@ -46,12 +46,12 @@ class Form extends React.Component {
             const form_template = this.state.form_templates[idx]
             this.setState({
                 'form_template': form_template,
-                'html': this.compile_html(form_template.text, {})
+                'html': this.compile_html(form_template.text, {}, 'draft')
             });
         }
     }
 
-    compile_html(s, data) {
+    compile_html(s, data, form_state) {
         const user = Caps.params.user;
         const user_data = {
             'firstname': user['givenname'],
@@ -88,11 +88,16 @@ class Form extends React.Component {
         s = s.replace(/{\s*([A-Za-z_]*):([A-Za-z_]*)\s*}/g, (match, name, kind) => input_replacer(name, kind));
         s = s.replace(/{\s*([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s));
         s = `<form id="form-form">
-             <div id="form-div" class="form-form">${s}</div>
-             <input type="submit" name="save" value="salva bozza">
-             <input type="submit" name="submit" value="invia">
-             </form>`
-        return s; //
+             <div id="form-div" class="form-form">${s}</div>`;
+        if (this.props.edit) {
+            // possibile salvare bozza solo in EDIT
+            s += `<input type="submit" name="save" value="salva bozza">`;
+        }
+        if (form_state == 'draft') {
+            s += `<input type="submit" name="submit" value="invia">
+                </form>`
+        }
+        return s;
     }
 
     componentDidUpdate() {
@@ -103,40 +108,60 @@ class Form extends React.Component {
         if (!this.state.form) return; // this is a new form, no data needs to be injected
         const form_div = document.getElementById("form-div");
         const inputs = form_div.getElementsByTagName('input');
-        for(let i=0; i<inputs.length; ++i) {
-            let el = inputs[i];
+        const input_list = [];
+        for(let i=0; i<inputs.length; ++i) input_list.push(inputs[i]);
+        input_list.forEach(el => {
             if (el.type === "radio") {
-                if (this.state.form.data[el.name] === el.value) {
-                    el.checked = true;
+                const checked = (this.state.form.data[el.name] === el.value);
+                if (this.props.edit) {
+                    el.checked = checked;
                 } else {
-                    el.checked = false;
+                    let newElement = document.createElement('span');
+                    newElement.className = checked?"form-freezed-checked-radio":"form-freezed-unchecked-radio";
+                    newElement.innerHTML = checked?'<b>X</b>':'o';
+                    el.parentNode.replaceChild(newElement, el);
                 }
             } else {
                 el.value = this.state.form.data[el.name];
+                if (!this.props.edit) {
+                    let newElement = document.createElement('b');
+                    newElement.className = "form-freezed-input";
+                    newElement.innerText = el.value;
+                    el.parentNode.replaceChild(newElement, el);
+                }
             }
-        }
+        });
         const texts = form_div.getElementsByTagName('textarea');
         for(let i=0; i<texts.length; ++i) {
             let el = texts[i];
-            el.value = this.state.form.data[el.name];
+            if (!this.props.edit) {
+                el.setAttribute("readonly", "readonly");
+            }
         }
     }
 
     onSave(evt) {
         evt.preventDefault();
-        const formData = new FormData(evt.target);
-        const data = [...formData.entries()]
-          .reduce((all, entry) => {
-            all[entry[0]] = entry[1]
-            return all
-          }, {});
         let payload = new URLSearchParams();
-        payload.append("form_template_id", this.state.form_template.id);
-        payload.append("data", JSON.stringify(data));
+        if (this.props.edit) {
+            const formData = new FormData(evt.target);
+            const data = [...formData.entries()]
+            .reduce((all, entry) => {
+                all[entry[0]] = entry[1]
+                return all
+            }, {});
+            payload.append("form_template_id", this.state.form_template.id);
+            payload.append("data", JSON.stringify(data));
+        }
         payload.append("action", evt.submitter.name);
         payload.append('_csrfToken', this.props.csrfToken);
 
-        submitForm(window.location.href, 'post', payload);
+        if (this.props.edit) {
+            submitForm(window.location.href, 'post', payload);
+        } else {
+            // USE the "edit" url instead of "view"
+            submitForm(`../edit/${this.state.form.id}`, 'post', payload);
+        }
         return false;
     }
 
