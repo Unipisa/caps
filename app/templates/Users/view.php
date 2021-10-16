@@ -187,7 +187,7 @@ $num_proposals = 0;
             <?php foreach ($forms as $form) { ?>
                 <tr>
                     <td><?= h($form['form_template']['name']) ?></td> 
-                    <td><?= $form['state'] ?></td>
+                    <td><?= $this->Caps->badge($form); ?></td>
                     <td>
                         <div class="dropdown">
                             <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
@@ -213,6 +213,13 @@ $num_proposals = 0;
                                     ], [
                                         'class' => 'dropdown-item'
                                     ]);
+                                    echo $this->Html->link('Elimina', [
+                                        'controller' => 'forms', 'action' => 'delete', $form['id']
+                                    ], [
+                                        'class' => 'dropdown-item',
+                                        'confirm' => __('Sei sicuro di voler cancellare il modulo?')
+                                    ]);
+
                                 }
                             }
                             ?>
