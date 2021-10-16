@@ -57,6 +57,10 @@ class FormTemplatesTable extends Table
     public function validationDefault(Validator $validator): Validator
     {
         $validator
+            ->boolean('enabled')
+            ->notEmptyString('enabled');
+
+        $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
 

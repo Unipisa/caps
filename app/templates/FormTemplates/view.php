@@ -42,6 +42,10 @@
 
                 <table class="table">
                     <tr>
+                        <th>Attivato</th>
+                        <td><?= $form_template['enabled'] ? 'Attivo' : 'Non attivo' ?></td>
+                    </tr>
+                    <tr>
                         <th>Nome</th>
                         <td><?php echo h($form_template['name']); ?></td>
                     </tr>
