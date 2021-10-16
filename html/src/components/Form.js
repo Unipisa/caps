@@ -123,12 +123,14 @@ class Form extends React.Component {
 
         const selects = array_to_list(form_div.getElementsByTagName('select'));
         selects.forEach(el => {
-            if (this.props.edit) {
-                el.value = data[el.name];
-            } else {
+            el.value = data[el.name];
+            if (!this.props.edit) {
                 let new_el = document.createElement('b');
                 new_el.className = "form-freezed-select";
-                new_el.innerText = el.options[data[el.name]].text;
+                let option = el.options[el.selectedIndex];
+                if (option) {
+                    new_el.innerText = option.text;
+                }
                 el.parentNode.replaceChild(new_el, el);
         }
         });
