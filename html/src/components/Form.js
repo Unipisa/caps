@@ -19,43 +19,9 @@ class Form extends React.Component {
             'html': ""
         };
 
-        this.fields = [];
         this.edit = this.props.edit || false;
 
         this.load();
-    }
-
-    compile_html(s, data) {
-        const user = Caps.params.user;
-        const user_data = {
-            'firstname': user['givenname'],
-            'lastname': user['surname'],
-            'code': user['number'],
-            'email': user['email'],
-            'username': user['username']
-        }
-        s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
-        
-        let input_replacer = (name, kind) => {
-            kind = kind || "string";
-            const value = data[name] || "";
-            this.fields.push(name);
-            if (kind === "text") {
-                return (this.edit 
-                    ? `<textarea id='form_input_${name}'>${value}</textarea>`
-                    : `<p>${value}</p>`);
-            } else if (kind === "string") {
-                return (this.edit 
-                    ? `<input id="form_input_${name}" value="${encodeURIComponent(value)}">`
-                    : `<span>${value}</span>`);
-            } else {
-                return "[invalid type]";
-            }
-        }
-
-        s = s.replace(/{\s*([A-Za-z_]*):([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s, kind));
-        s = s.replace(/{\s*([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s));
-        return s;
     }
 
     async load() {
@@ -85,19 +51,93 @@ class Form extends React.Component {
         }
     }
 
+    compile_html(s, data) {
+        const user = Caps.params.user;
+        const user_data = {
+            'firstname': user['givenname'],
+            'lastname': user['surname'],
+            'code': user['number'],
+            'email': user['email'],
+            'username': user['username']
+        }
+        s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
+        
+        let input_replacer = (name, kind) => {
+            kind = kind || "string";
+            const value = data[name] || "";
+            this.fields[name]="input";
+            if (kind === "text") {
+                return (this.edit 
+                    ? `<textarea id='form_input_${name}'>${value}</textarea>`
+                    : `<p>${value}</p>`);
+            } else if (kind === "string") {
+                return (this.edit 
+                    ? `<input id="form_input_${name}" value="${encodeURIComponent(value)}">`
+                    : `<span>${value}</span>`);
+            } else {
+                return "[invalid type]";
+            }
+        }
+
+        let radio_replacer = (name, value) => {
+            this.fields["name"] = "radio";
+            return `<input type="radio" name="${name}" value="${value}">`;
+        }
+
+        s = s.replace(/{\s*([A-Za-z_]*)=([A-Za-z_]*)\s*}/g, (match, name, value) => radio_replacer(name, value));
+        s = s.replace(/{\s*([A-Za-z_]*):([A-Za-z_]*)\s*}/g, (match, name, kind) => input_replacer(name, kind));
+        s = s.replace(/{\s*([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s));
+        s = `<form id="form-form">
+             <div id="form-div" class="form-form">${s}</div>
+             <input type="submit" name="save" value="salva bozza">
+             <input type="submit" name="submit" value="invia">
+             </form>`
+        return s; //
+    }
+
+    componentDidUpdate() {
+        this.fields = {};
+        const form = document.getElementById("form-form");
+        if (!form) return; // the form has not been rendered yet
+        form.addEventListener('submit', this.onSave.bind(this));
+        if (!this.state.form) return; // this is a new form, no data needs to be injected
+        const form_div = document.getElementById("form-div");
+        const inputs = form_div.getElementsByTagName('input');
+        for(let i=0; i<inputs.length; ++i) {
+            let el = inputs[i];
+            if (el.type === "radio") {
+                if (this.state.form.data[el.name] === el.value) {
+                    el.checked = true;
+                } else {
+                    el.checked = false;
+                }
+            } else {
+                el.value = this.state.form.data[el.name];
+            }
+        }
+        const texts = form_div.getElementsByTagName('textarea');
+        for(let i=0; i<texts.length; ++i) {
+            let el = texts[i];
+            el.value = this.state.form.data[el.name];
+        }
+    }
+
     onSave(evt) {
-        if (this.state.form_template === null) return;
+        evt.preventDefault();
+        const formData = new FormData(evt.target);
+        const data = [...formData.entries()]
+          .reduce((all, entry) => {
+            all[entry[0]] = entry[1]
+            return all
+          }, {});
         let payload = new URLSearchParams();
-        let data = this.state.form ? this.state.form.data : {};
-        this.fields.forEach(name => {
-            data[name] = document.getElementById('form_input_' + name).value;
-        });
         payload.append("form_template_id", this.state.form_template.id);
         payload.append("data", JSON.stringify(data));
-        payload.append("action", evt.target.name);
+        payload.append("action", evt.submitter.name);
         payload.append('_csrfToken', this.props.csrfToken);
 
         submitForm(window.location.href, 'post', payload);
+        return false;
     }
 
     renderTemplateSelection() {
@@ -124,14 +164,10 @@ class Form extends React.Component {
     }    
 
     renderForm() {
-        let blocks = [];
-        blocks.push(<h1 key="form-h1">{ this.state.form_template.name }</h1>);
-        blocks.push(<div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>);
-        if (this.edit) {
-            blocks.push(<button key="form-save-button" type="submit" name="save" onClick={this.onSave.bind(this)}>salva bozza</button>);
-            blocks.push(<button key="form-submit-button" type="submit" name="submit" onClick={this.onSave.bind(this)}>invia modulo</button>);
-        }
-        return blocks;
+        return [
+            <h1 key="form-h1">{ this.state.form_template.name }</h1>,
+            <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
+        ];
     }
 
     render() {
