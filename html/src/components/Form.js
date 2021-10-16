@@ -60,33 +60,9 @@ class Form extends React.Component {
             'email': user['email'],
             'username': user['username']
         }
+
         s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
         
-        let input_replacer = (name, kind) => {
-            kind = kind || "string";
-            const value = data[name] || "";
-            this.fields[name]="input";
-            if (kind === "text") {
-                return (this.edit 
-                    ? `<textarea id='form_input_${name}'>${value}</textarea>`
-                    : `<p>${value}</p>`);
-            } else if (kind === "string") {
-                return (this.edit 
-                    ? `<input id="form_input_${name}" value="${encodeURIComponent(value)}">`
-                    : `<span>${value}</span>`);
-            } else {
-                return "[invalid type]";
-            }
-        }
-
-        let radio_replacer = (name, value) => {
-            this.fields["name"] = "radio";
-            return `<input type="radio" name="${name}" value="${value}">`;
-        }
-
-        s = s.replace(/{\s*([A-Za-z_]*)=([A-Za-z_]*)\s*}/g, (match, name, value) => radio_replacer(name, value));
-        s = s.replace(/{\s*([A-Za-z_]*):([A-Za-z_]*)\s*}/g, (match, name, kind) => input_replacer(name, kind));
-        s = s.replace(/{\s*([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s));
         s = `<form id="form-form">
              <div id="form-div" class="form-form">${s}</div>`;
         if (this.props.edit) {
@@ -107,37 +83,55 @@ class Form extends React.Component {
         form.addEventListener('submit', this.onSave.bind(this));
         if (!this.state.form) return; // this is a new form, no data needs to be injected
         const form_div = document.getElementById("form-div");
-        const inputs = form_div.getElementsByTagName('input');
-        const input_list = [];
-        for(let i=0; i<inputs.length; ++i) input_list.push(inputs[i]);
-        input_list.forEach(el => {
+        const array_to_list = arr => {
+            var lst = [];
+            for (let i=0; i<arr.length; ++i) lst.push(arr[i]);
+            return lst;
+        } 
+        const data = this.state.form.data;
+        const inputs = array_to_list(form_div.getElementsByTagName('input'))
+        inputs.forEach(el => {
             if (el.type === "radio") {
-                const checked = (this.state.form.data[el.name] === el.value);
+                const checked = (data[el.name] === el.value);
                 if (this.props.edit) {
                     el.checked = checked;
                 } else {
-                    let newElement = document.createElement('span');
-                    newElement.className = checked?"form-freezed-checked-radio":"form-freezed-unchecked-radio";
-                    newElement.innerHTML = checked?'<b>X</b>':'o';
-                    el.parentNode.replaceChild(newElement, el);
+                    let new_el = document.createElement('span');
+                    new_el.className = checked?"form-freezed-checked-radio":"form-freezed-unchecked-radio";
+                    new_el.innerHTML = checked?'<b>X</b>':'o';
+                    el.parentNode.replaceChild(new_el, el);
                 }
             } else {
-                el.value = this.state.form.data[el.name];
+                el.value = data[el.name];
                 if (!this.props.edit) {
-                    let newElement = document.createElement('b');
-                    newElement.className = "form-freezed-input";
-                    newElement.innerText = el.value;
-                    el.parentNode.replaceChild(newElement, el);
+                    let new_el = document.createElement('b');
+                    new_el.className = "form-freezed-input";
+                    new_el.innerText = data[el.name];
+                    el.parentNode.replaceChild(new_el, el);
                 }
             }
         });
-        const texts = form_div.getElementsByTagName('textarea');
-        for(let i=0; i<texts.length; ++i) {
-            let el = texts[i];
-            if (!this.props.edit) {
+
+        const texts = array_to_list(form_div.getElementsByTagName('textarea'));
+        texts.forEach(el => {
+            if (this.props.edit) {
+                el.value = data[el.name];
+            } else {
                 el.setAttribute("readonly", "readonly");
             }
+        });
+
+        const selects = array_to_list(form_div.getElementsByTagName('select'));
+        selects.forEach(el => {
+            if (this.props.edit) {
+                el.value = data[el.name];
+            } else {
+                let new_el = document.createElement('b');
+                new_el.className = "form-freezed-select";
+                new_el.innerText = el.options[data[el.name]].text;
+                el.parentNode.replaceChild(new_el, el);
         }
+        });
     }
 
     onSave(evt) {
