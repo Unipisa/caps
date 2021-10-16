@@ -53,7 +53,7 @@
 
                 <h4>Modello</h4>
                 <p>
-                    <?php echo h($form_template['text']); ?>
+                    <?= $form_template['text'] ?>
                 </p>
             </div>
         </div>
