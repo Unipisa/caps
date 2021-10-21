@@ -42,10 +42,10 @@ function recurseFlattenObject($object)
 {
     // error_log("recurseFlattenObject (" . gettype($object) . ") " . json_encode($object));
     $obj = new stdClass(); // empty object
-    if (method_exists($object, "toArray")) {
-        $properties = $object->toArray();
-    } elseif (is_array($object)) {
+    if (is_array($object)) {
         $properties = $object;
+    } elseif (method_exists($object, "toArray")) {
+        $properties = $object->toArray();
     } else {
         $properties = get_object_vars($object);
     }
@@ -262,11 +262,11 @@ class AppController extends Controller
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         if ($this->request->is('csv')) {
-            $_serialize = $this->viewBuilder()->getVar("_serialize");
-            if (!is_array($_serialize)) {
-                $_serialize = [ $_serialize ];
+            $serialize = $this->viewBuilder()->getOption("serialize");
+            if (!is_array($serialize)) {
+                $serialize = [ $serialize ];
             }
-            foreach ($_serialize as $var) {
+            foreach ($serialize as $var) {
                 $data = $this->viewBuilder()->getVar($var);
                 $data = flatten($data);
                 $this->set($var, $data);
