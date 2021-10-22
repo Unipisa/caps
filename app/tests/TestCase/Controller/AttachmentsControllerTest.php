@@ -23,7 +23,8 @@ class AttachmentsControllerTest extends MyIntegrationTestCase
         'app.Users',
         'app.Proposals',
         'app.Settings',
-        'app.Attachments'
+        'app.Attachments',
+        'app.FormTemplates'
     ];
 
     /**

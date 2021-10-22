@@ -35,25 +35,14 @@ class CapsHelper extends Helper {
     }
 
     public function badge($proposal, $class = "") {
+        // $proposal can also be a Form instance (not only Proposal)
         $statusclass = $this->proposalColor($proposal);
-
-        switch ($proposal['state']) {
-            case 'draft':
-                $status = 'Bozza';
-                break;
-            case 'submitted':
-                $status = 'Sottomesso';
-                break;
-            case 'approved':
-                $status = "Approvato";
-                break;
-            case 'rejected':
-                $status = 'Rigettato';
-                break;
-            default:
-                $status = $proposal['state'];
-                break;
-        }
+        $status = [
+            'draft' => 'Bozza',
+            'submitted' => 'Inviato',
+            'approved' => 'Approvato',
+            'rejected' => 'Rifiutato'
+        ][$proposal['state']];
 
         $cl = "badge" . " " . $class;
         return "<span class=\"$cl badge-$statusclass\">$status</span>";

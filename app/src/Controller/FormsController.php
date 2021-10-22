@@ -5,6 +5,7 @@ use App\Model\Entity\Form;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\Time;
 class FormsController extends AppController
 {    
 
@@ -36,6 +37,12 @@ class FormsController extends AppController
             $data = $this->request->getData();
             $form = $this->Forms->patchEntity($form, $data);
             $form->user_id = $this->user['id'];
+            if ($data['action'] == 'submit') {
+                $form->date_submitted = Time::now();
+                $form->state = "submitted";
+            } else {
+                $form->state = "draft";
+            }
 
             if ($this->Forms->save($form)) {
                 return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
@@ -56,7 +63,6 @@ class FormsController extends AppController
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
-
         $form = $this->Forms->get($id, ['contain' => 'FormTemplates']);
 
         if ($form['user_id'] != $this->user['id'] && !$this->user['admin']) {
@@ -67,4 +73,33 @@ class FormsController extends AppController
         $_serialize = [ 'form' ];
         $this->set('_serialize', $_serialize);
     }
+
+    public function delete($id)
+    {
+        if (! $id) {
+            throw new NotFoundException();
+        }
+
+        $form = $this->Forms->get($id, ['contain' => [ 'Users' ]]);
+
+        // Check that the user matches, otherwise he/she may not be allowed to see, let alone delete
+        // the given form.
+        if ($form['user']['id'] != $this->user['id'] && !$this->user['admin']) {
+            throw new ForbiddenException('Utente non autorizzato a eliminare questo modulo');
+        }
+
+        if ($form['state'] != 'draft') {
+            throw new ForbiddenException('Impossibile eliminare un modulo se non è in stato \'bozza\'');
+        }
+
+        if ($this->Forms->delete($form)) {
+            $this->Flash->success('Modulo eliminato');
+        } else {
+            $this->log('Errore nella cancellazione del modulo con ID = ' . $form['id']);
+            $this->Flash->error('Impossibile eliminare il modulo');
+        }
+
+        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
+    }
 }
+

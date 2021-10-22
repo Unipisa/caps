@@ -53,6 +53,10 @@ class AttachmentsController extends AppController
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
 
+        if ($attachment['data']===null) {
+            throw new NotFoundException();
+        }
+
         return $this->response
             ->withStringBody(stream_get_contents($attachment['data']))
             ->withType($attachment['mimetype'])

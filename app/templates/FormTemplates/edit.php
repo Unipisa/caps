@@ -27,15 +27,14 @@
     <div class="col">
         <div class="card shadow">
             <div class="card-body">
-                <?php
-                echo $this->Form->create($form_template);
-                echo $this->Form->control('name', [ 'label' => 'Nome' ]);
-                echo $this->Form->control('text');
-                ?>
-                <?php
-                echo $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna');
-                echo $this->Form->end();
-                ?>
+                <?= $this->Form->create($form_template) ?>
+                <div class="form-check">
+                    <?= $this->Form->control('enabled', ['label' => 'Attivato']); ?>
+                </div>
+                <?= $this->Form->control('name', [ 'label' => 'Nome' ]) ?>
+                <?= $this->Form->control('text') ?>
+                <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
+                <?= $this->Form->end() ?>
             </div>
         </div>
     </div>

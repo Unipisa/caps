@@ -46,22 +46,20 @@ class UsersController extends AppController {
         if ($id != $this->user['id'] && !$this->user['admin']) {
             throw new ForbiddenException('Cannot access another user profile');
         }
+
         $user_entry = $this->Users->get($id, 
             ['contain' => ['Documents', 'Documents.Users', 'Documents.Owners']]);
-
         $this->set('user_entry', $user_entry);
             
         $proposals = $this->Users->Proposals->find()
             ->contain(['Users', 'Curricula', 'Curricula.Degrees'])
             ->where(['Users.id' => $id])
             ->order(['Proposals.modified' => 'DESC']);
-            
         $this->set('proposals', $proposals);
 
         $forms = $this->Users->Forms->find()
             ->contain(['Users', 'FormTemplates'])
             ->where(['Users.id' => $id]);
-        
         $this->set('forms', $forms);
     }
 

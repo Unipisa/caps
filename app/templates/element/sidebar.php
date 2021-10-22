@@ -74,6 +74,7 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <?php if ($form_templates_enabled): ?>
         <!-- Nav Item - Utilities Collapse Menu -->
         <li class="nav-item">
             <a class="nav-link" href="<?= $this->Url->build([
@@ -83,6 +84,7 @@ $actionName = $this->request->getParam('action');
                 <span>Nuovo modulo</span>
             </a>
         </li>
+        <?php endif; ?>
 
     <?php endif; ?>
 

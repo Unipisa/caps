@@ -19,43 +19,9 @@ class Form extends React.Component {
             'html': ""
         };
 
-        this.fields = [];
         this.edit = this.props.edit || false;
 
         this.load();
-    }
-
-    compile_html(s, data) {
-        const user = Caps.params.user;
-        const user_data = {
-            'firstname': user['givenname'],
-            'lastname': user['surname'],
-            'code': user['number'],
-            'email': user['email'],
-            'username': user['username']
-        }
-        s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
-        
-        let input_replacer = (name, kind) => {
-            kind = kind || "string";
-            const value = data[name] || "";
-            this.fields.push(name);
-            if (kind === "text") {
-                return (this.edit 
-                    ? `<textarea id='form_input_${name}'>${value}</textarea>`
-                    : `<p>${value}</p>`);
-            } else if (kind === "string") {
-                return (this.edit 
-                    ? `<input id="form_input_${name}" value="${encodeURIComponent(value)}">`
-                    : `<span>${value}</span>`);
-            } else {
-                return "[invalid type]";
-            }
-        }
-
-        s = s.replace(/{\s*([A-Za-z_]*):([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s, kind));
-        s = s.replace(/{\s*([A-Za-z_]*)\s*}/g, (match, s, kind) => input_replacer(s));
-        return s;
     }
 
     async load() {
@@ -66,7 +32,7 @@ class Form extends React.Component {
         if (form === null && this.props.id !== undefined) {
             form = await Forms.get(this.props.id);
             form_template = form.form_template;
-            html = this.compile_html(form_template.text, form.data);
+            html = this.compile_html(form_template.text, form.data, form.state);
         }
         if (form === null && form_templates === null) {
             form_templates = await FormTemplates.all();
@@ -80,24 +46,119 @@ class Form extends React.Component {
             const form_template = this.state.form_templates[idx]
             this.setState({
                 'form_template': form_template,
-                'html': this.compile_html(form_template.text, {})
+                'html': this.compile_html(form_template.text, {}, 'draft')
             });
         }
     }
 
-    onSave(evt) {
-        if (this.state.form_template === null) return;
-        let payload = new URLSearchParams();
-        let data = this.state.form ? this.state.form.data : {};
-        this.fields.forEach(name => {
-            data[name] = document.getElementById('form_input_' + name).value;
+    compile_html(s, data, form_state) {
+        const user = Caps.params.user;
+        const user_data = {
+            'firstname': user['givenname'],
+            'lastname': user['surname'],
+            'code': user['number'],
+            'email': user['email'],
+            'username': user['username']
+        }
+
+        s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
+        
+        s = `<form id="form-form">
+             <div id="form-div" class="form-form">${s}</div>`;
+        if (this.props.edit) {
+            // possibile salvare bozza solo in EDIT
+            s += `<input type="submit" name="save" value="salva bozza">`;
+        }
+        if (form_state == 'draft') {
+            s += `<input type="submit" name="submit" value="invia">
+                </form>`
+        }
+        return s;
+    }
+
+    componentDidUpdate() {
+        this.fields = {};
+        const form = document.getElementById("form-form");
+        if (!form) return; // the form has not been rendered yet
+        form.addEventListener('submit', this.onSave.bind(this));
+        if (!this.state.form) return; // this is a new form, no data needs to be injected
+        const form_div = document.getElementById("form-div");
+        const array_to_list = arr => {
+            var lst = [];
+            for (let i=0; i<arr.length; ++i) lst.push(arr[i]);
+            return lst;
+        } 
+        const data = this.state.form.data;
+        const inputs = array_to_list(form_div.getElementsByTagName('input'))
+        inputs.forEach(el => {
+            if (el.type === "radio") {
+                const checked = (data[el.name] === el.value);
+                if (this.props.edit) {
+                    el.checked = checked;
+                } else {
+                    let new_el = document.createElement('span');
+                    new_el.className = checked?"form-freezed-checked-radio":"form-freezed-unchecked-radio";
+                    new_el.innerHTML = checked?'<b>X</b>':'o';
+                    el.parentNode.replaceChild(new_el, el);
+                }
+            } else {
+                el.value = data[el.name];
+                if (!this.props.edit) {
+                    let new_el = document.createElement('b');
+                    new_el.className = "form-freezed-input";
+                    new_el.innerText = data[el.name];
+                    el.parentNode.replaceChild(new_el, el);
+                }
+            }
         });
-        payload.append("form_template_id", this.state.form_template.id);
-        payload.append("data", JSON.stringify(data));
-        payload.append("action", evt.target.name);
+
+        const texts = array_to_list(form_div.getElementsByTagName('textarea'));
+        texts.forEach(el => {
+            if (this.props.edit) {
+                el.value = data[el.name];
+            } else {
+                el.setAttribute("readonly", "readonly");
+            }
+        });
+
+        const selects = array_to_list(form_div.getElementsByTagName('select'));
+        selects.forEach(el => {
+            el.value = data[el.name];
+            if (!this.props.edit) {
+                let new_el = document.createElement('b');
+                new_el.className = "form-freezed-select";
+                let option = el.options[el.selectedIndex];
+                if (option) {
+                    new_el.innerText = option.text;
+                }
+                el.parentNode.replaceChild(new_el, el);
+        }
+        });
+    }
+
+    onSave(evt) {
+        evt.preventDefault();
+        let payload = new URLSearchParams();
+        if (this.props.edit) {
+            const formData = new FormData(evt.target);
+            const data = [...formData.entries()]
+            .reduce((all, entry) => {
+                all[entry[0]] = entry[1]
+                return all
+            }, {});
+            payload.append("form_template_id", this.state.form_template.id);
+            payload.append("data", JSON.stringify(data));
+        }
+        payload.append("action", evt.submitter.name);
         payload.append('_csrfToken', this.props.csrfToken);
 
-        submitForm(window.location.href, 'post', payload);
+        if (this.props.edit) {
+            submitForm(window.location.href, 'post', payload);
+        } else {
+            // USE the "edit" url instead of "view"
+            submitForm(`../edit/${this.state.form.id}`, 'post', payload);
+        }
+        return false;
     }
 
     renderTemplateSelection() {
@@ -124,14 +185,10 @@ class Form extends React.Component {
     }    
 
     renderForm() {
-        let blocks = [];
-        blocks.push(<h1 key="form-h1">{ this.state.form_template.name }</h1>);
-        blocks.push(<div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>);
-        if (this.edit) {
-            blocks.push(<button key="form-save-button" type="submit" name="save" onClick={this.onSave.bind(this)}>salva bozza</button>);
-            blocks.push(<button key="form-submit-button" type="submit" name="submit" onClick={this.onSave.bind(this)}>invia modulo</button>);
-        }
-        return blocks;
+        return [
+            <h1 key="form-h1">{ this.state.form_template.name }</h1>,
+            <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
+        ];
     }
 
     render() {

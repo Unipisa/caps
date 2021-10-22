@@ -54,11 +54,15 @@
                     <table class="table">
                         <tr><thead>
                             <th></th>
+                            <th><?= $this->Paginator->sort('FormTemplates.enabled', 'Attivo'); ?></th>
                             <th><?= $this->Paginator->sort('FormTemplates.title', 'titolo'); ?></th>
                         </thead></tr>
                         <?php foreach ($paginated_form_templates as $form_template): ?>
                             <tr>
                                 <td><input type=checkbox name="selection[]" value="<?php echo $form_template['id']; ?>"></td>
+                                <td>
+                                    <?= $form_template->enabled ? "Attivo" : "Non attivo" ?>
+                                </td>
                                 <td>
                                     <?= $this->Html->link(
                                         $form_template['name'],

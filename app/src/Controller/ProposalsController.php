@@ -462,8 +462,8 @@ class ProposalsController extends AppController
             throw new ForbiddenException('Utente non autorizzato a eliminare questo piano');
         }
 
-        if ($proposal['state'] == 'approved' || $proposal['state'] == 'submitted' || $proposal['state'] == 'rejected') {
-            throw new ForbiddenException('Impossibile eliminare un piano non in stato \'bozza\'');
+        if ($proposal['state'] != 'draft' && !$this->user['admin']) {
+            throw new ForbiddenException('Impossibile eliminare un piano se non è in stato \'bozza\'');
         }
 
         if ($this->Proposals->delete($proposal)) {

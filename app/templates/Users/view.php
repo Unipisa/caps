@@ -37,13 +37,23 @@ $num_proposals = 0;
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between">
     <h1><?php echo $user_entry['name']; ?> <span class="text-muted h5 ml-2">matricola: <?php echo $user_entry['number']; ?></span></h1>
-    <?php if ($user['username'] == $user_entry['username']): ?>
-    <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'add' ]) ?>">
+    <?php if ($user['id'] == $user_entry['id']): ?>
+    <div>
+    <a href="<?= $this->Url->build([ 'controller' => 'proposals', 'action' => 'edit' ]) ?>">
         <button class="btn btn-sm btn-primary shadow-sm">
             <i class="fw fas fa-plus-square"></i>
-            Nuovo piano
+            Compila un nuovo piano di studi
         </button>
     </a>
+        <?php if ($form_templates_enabled):?>
+        <a href="<?= $this->Url->build([ 'controller' => 'forms', 'action' => 'edit' ]) ?>">
+            <button class="btn btn-sm btn-primary shadow-sm">
+                <i class="fw fas fa-plus-square"></i>
+                Compila un nuovo modulo
+            </button>
+        </a>
+        <?php endif; ?>
+    </div>
     <?php endif; ?>
 </div>
 
@@ -66,8 +76,8 @@ $num_proposals = 0;
                     <th>Curriculum</th>
                     <th>Anno</th>
                     <th>Ultima modifica</th>
-                    <th>Data di sottomissione</th>
-                    <th>Data di approvazione</th>
+                    <th>Data invio</th>
+                    <th>Data approvazione</th>
                     <th>Stato</th>
                     <th></th>
                     </thead>
@@ -86,7 +96,7 @@ $num_proposals = 0;
                         <td><?= h($proposal['curriculum']['name']); ?></td>
                         <td><?= $proposal['curriculum']['degree']->academic_years(); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['modified']); ?></td>
-                        <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non sottomesso'); ?></td>
+                        <td><?= $this->Caps->formatDate($proposal['submitted_date'], 'non inviato'); ?></td>
                         <td><?= $this->Caps->formatDate($proposal['approved_date'], 'non approvato'); ?></td>
                         <td>
                             <?= $this->Caps->badge($proposal); ?>
@@ -163,12 +173,15 @@ $num_proposals = 0;
 <?= $this->element('card-end'); ?>
 <?php endif; ?>
 
+<?php if ($form_templates_enabled): ?>
 <?= $this->element('card-start', [ 'header' => "Modelli compilati" ]); ?>
 <?php if ($forms->count()): ?>
     <div class="table-responsive-xl">
             <table class='table table'>
                 <tr><thead>
                     <th>Modello</th>
+                    <th>Data invio</th>
+                    <th>Data gestione</th>
                     <th>Stato</th>
                     <th></th>
                     </thead>
@@ -176,7 +189,9 @@ $num_proposals = 0;
             <?php foreach ($forms as $form) { ?>
                 <tr>
                     <td><?= h($form['form_template']['name']) ?></td> 
-                    <td><?= $form['state'] ?></td>
+                    <td><?= $this->Caps->formatDate($form['date_submitted'], 'non inviato'); ?></td>
+                    <td><?= $this->Caps->formatDate($form['date_managed'], 'non visionato'); ?></td>
+                    <td><?= $this->Caps->badge($form); ?></td>
                     <td>
                         <div class="dropdown">
                             <a class="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
@@ -202,6 +217,13 @@ $num_proposals = 0;
                                     ], [
                                         'class' => 'dropdown-item'
                                     ]);
+                                    echo $this->Html->link('Elimina', [
+                                        'controller' => 'forms', 'action' => 'delete', $form['id']
+                                    ], [
+                                        'class' => 'dropdown-item',
+                                        'confirm' => __('Sei sicuro di voler cancellare il modulo?')
+                                    ]);
+
                                 }
                             }
                             ?>
@@ -216,6 +238,7 @@ $num_proposals = 0;
     <p>Al momento non è stato compilato nessun modulo.</p>
 <?php endif ?>
 <?= $this->element('card-end'); ?>
+<?php endif; ?>
 
 <?php
  // This part is only visible to administrators
