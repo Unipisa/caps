@@ -23,7 +23,11 @@ services:
     environment:
       # Enable DebugKit on the development server
       DEBUG: "true"
-      CAPS_DB_DRIVER: "Postgres"
+      CAPS_DB_DRIVER: "postgres"
+      CAPS_DB_HOST: "caps-db"
+      CAPS_DB_USERNAME: "caps"
+      CAPS_DB_PASSWORD: "secret"
+      CAPS_DB_DATABASE: "caps"
     security_opt:
       - apparmor:unconfined
       - seccomp:unconfined
@@ -38,7 +42,7 @@ services:
     volumes: 
       - ./psql:/var/lib/postgresql/data
     env_file:
-      - caps.env    
+      - caps.env
 
   ldap-server:
     image: osixia/openldap:1.5.0

@@ -16,9 +16,9 @@ function die {
 trap shutdown INT
 
 if [ ! -r docker/caps.env ]; then
-  echo "Using the default configuration for CAPS, spawning a test LDAP server."
+  echo "Using the default configuration for CAPS."
   echo "You may want to configure docker/caps.env based on your setup."
-  cp docker/caps.env.template docker/caps.env
+  cp example.env docker/caps.env
 fi
 
 # Check if docker is installed

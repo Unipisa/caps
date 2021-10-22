@@ -299,15 +299,15 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => DebugTransport::class,
+            'className' => getenv('SMTP_HOST') ? SmtpTransport::class : DebugTransport::class,
             /*
              * The following keys are used in SMTP transports:
              */
             'host' => env('SMTP_HOST', 'localhost'),
             'port' => env('SMTP_PORT', 25),
             'timeout' => 30,
-            'username' => env('SMTP_USER', ''),
-            'password' => env('SMTP_PASSWORD', ''),
+            'username' => env('SMTP_USER', null),
+            'password' => env('SMTP_PASSWORD', null),
             'client' => null,
             'tls' => filter_var(env('SMTP_TLS', False), FILTER_VALIDATE_BOOLEAN),
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
