@@ -70,7 +70,7 @@ class Form extends React.Component {
             s += `<input type="submit" name="save" value="salva bozza">`;
         }
         if (form_state == 'draft') {
-            s += `<input type="submit" name="submit" value="invia">
+            s += `<input className="btn btn-success" type="submit" name="submit" value="invia">
                 </form>`
         }
         return s;
@@ -186,7 +186,7 @@ class Form extends React.Component {
 
     renderForm() {
         return [
-            <h1 key="form-h1">{ this.state.form_template.name }</h1>,
+//            <h1 key="form-h1">{ this.state.form_template.name }</h1>,
             <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
         ];
     }

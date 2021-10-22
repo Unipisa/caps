@@ -22,6 +22,8 @@
  */
 ?>
 <div>
-    <h2>visualizza modulo</h2>
+    <!--h2>visualizza modulo</h2-->
+    <?= $this->element('card-start'); ?>
     <div id="app"></div>
+    <?= $this->element('card-end'); ?>
 </div>

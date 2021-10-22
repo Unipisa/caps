@@ -118,7 +118,7 @@ $actionName = $this->request->getParam('action');
         </li>
 
         <li class="nav-item<?= $controllerName == 'Forms' ? ' active' : '' ?>">
-            <a class="nav-link caps-proposal-link" href="<?= $this->Url->build([
+            <a class="nav-link caps-form-link" href="<?= $this->Url->build([
                 'controller' => 'forms',
                 'action' => 'index'
             ]) ?>">
