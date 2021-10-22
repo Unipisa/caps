@@ -42,10 +42,10 @@ function recurseFlattenObject($object)
 {
     // error_log("recurseFlattenObject (" . gettype($object) . ") " . json_encode($object));
     $obj = new stdClass(); // empty object
-    if (is_array($object)) {
-        $properties = $object;
-    } elseif (method_exists($object, "toArray")) {
+    if (is_object($object) && method_exists($object, "toArray")) {
         $properties = $object->toArray();
+    } elseif (is_array($object)) {
+        $properties = $object;
     } else {
         $properties = get_object_vars($object);
     }
@@ -80,7 +80,7 @@ function flatten($object)
 {
     // error_log("flatten(" . json_encode($object) . ")");
     // error_log("flatten type " . gettype($object));
-    if (is_array($object) || method_exists($object, "count")) {
+    if (is_array($object) || (is_object($object) && method_exists($object, "count"))) {
         $array = $object;
     } else {
         $array = [$object];
@@ -142,7 +142,6 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
-            'viewClassMap' => ['csv' => 'CsvView.Csv']
         ]);
         $this->loadComponent('Authentication.Authentication', [
             'logoutRedirect' => '/users/login'  // Default is false
@@ -262,13 +261,13 @@ class AppController extends Controller
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         if ($this->request->is('csv')) {
-            $serialize = $this->viewBuilder()->getOption("serialize");
-            if (!is_array($serialize)) {
-                $serialize = [ $serialize ];
+            $vars = $this->viewBuilder()->getOption('serialize');
+            if (! is_array($vars)) {
+                $vars = [ $vars ];
             }
-            foreach ($serialize as $var) {
-                $data = $this->viewBuilder()->getVar($var);
-                $data = flatten($data);
+
+            foreach ($vars as $var) {
+                $data = flatten($this->viewBuilder()->getVar($var));
                 $this->set($var, $data);
             }
         }
