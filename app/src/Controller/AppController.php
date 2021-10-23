@@ -40,9 +40,11 @@ function is_associative_array($item)
 
 function recurseFlattenObject($object)
 {
-    // error_log("recurseFlattenObject (" . gettype($object) . ") " . json_encode($object));
+    // error_log("recurseFlattenObject (" . gettype($object) . " ) " . json_encode($object));
     $obj = new stdClass(); // empty object
+    $class_name = "";
     if (is_object($object) && method_exists($object, "toArray")) {
+        $class_name = get_class($object);    
         $properties = $object->toArray();
     } elseif (is_array($object)) {
         $properties = $object;
@@ -62,6 +64,11 @@ function recurseFlattenObject($object)
         } elseif (is_array($val)) {
             // sequential array
             $obj->{$key} = implode(",", array_map('json_encode', $val));
+        } else if ($class_name == "App\\Model\\Entity\\Form" && $key == "data") {
+            $subobj = recurseFlattenObject(json_decode($val));
+            foreach ($subobj as $k => $v) {
+                $obj->{$key . "_" . $k} = $v;
+            }
         } else {
             $obj->{$key} = $val;
         }
@@ -79,7 +86,7 @@ function recurseFlattenObject($object)
 function flatten($object)
 {
     // error_log("flatten(" . json_encode($object) . ")");
-    // error_log("flatten type " . gettype($object));
+    // error_log("\nflatten type " . gettype($object));
     if (is_array($object) || (is_object($object) && method_exists($object, "count"))) {
         $array = $object;
     } else {
