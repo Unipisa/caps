@@ -9,6 +9,7 @@ use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
 use Cake\Mailer\Transport\DebugTransport;
+use Cake\Mailer\Transport\SmtpTransport;
 
 function my_explode(string $c, string $s) {
     if ($s === "") return [];
