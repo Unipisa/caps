@@ -20,11 +20,11 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-$this->extend('/Email/html/proposal_base');
+$this->extend('/email/html/proposal_base');
 ?>
-<h3>Piano di studi rigettato</h3>
+<h3>Piano di studi approvato</h3>
 <p>
     Il piano di studi presentato per la <?= $proposal['curriculum']['degree']['name'] ?>,
     <?= $settings['department'] ?>, curriculum <?= $proposal['curriculum']['name'] ?>
-    è stato <strong>rigettato</strong>.
+    è stato <strong>approvato</strong>.
 </p>
