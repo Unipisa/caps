@@ -22,7 +22,9 @@ if [ "${CAPS_DB_DRIVER}" = "Postgres" ]; then
     msg "Waiting for Postgres server ${CAPS_DB_HOST} to be ready ..."
     sleep 2
   done
-else
+fi 
+
+if [ "${CAPS_DB_DRIVER}" = "Mysql" ]; then
   # ... or for Mysql, depending on the user choice
   while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
@@ -56,13 +58,6 @@ if [ "$CAPS_SSH_TUNNEL" != "" ]; then
 
   /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa.key ${CAPS_LDAP_URI} &
 
-  # We now create a fake host entry to point to the LDAP server:
-  LDAP_HOST=$(echo "${CAPS_LDAP_URI}" | sed "s|ldap\(s\)\?:\/\/||")
-  LDAP_HOST=$(echo ${LDAP_HOST} | cut -d ':' -f1)
-
-  # msg "Adding fake pointer ${LDAP_HOST} -> 127.0.0.1 to /etc/hosts"
-  # echo "${LDAP_HOST}\t127.0.0.1" >> /etc/hosts
-
   msg "We are rewriting the configuration to point to the local forward:"
   msg ${CAPS_LDAP_URI} | grep ldaps: > /dev/null
   if [ $? -eq 0 ]; then
@@ -74,70 +69,14 @@ if [ "$CAPS_SSH_TUNNEL" != "" ]; then
   msg "New CAPS_LDAP_URI: ${CAPS_LDAP_URI}"
   msg "Disabling certificate verification, as it cannot be guaranteed in this setting"
   CAPS_VERIFY_CERT="false"
+  export CAPS_LDAP_URI
+  export CAPS_VERIFY_CERT
 fi
-
-cp -v /app/config/app.php.template /app/config/app.php
-
-msg "Handling Email configuration"
-if [ "${SMTP_HOST}" = "" ]; then
-  MAIL_TRANSPORT="DebugTransport::class"
-else
-  MAIL_TRANSPORT="SmtpTransport::class"
-fi
-
-sed -i "s|@MAIL_TRANSPORT@|${MAIL_TRANSPORT}|g" /app/config/app.php
-
-# We handle username and password separately, because
-# they need to be null if not needed.
-if [ "${SMTP_USER}" = "" ]; then
-  sed -i "s|@SMTP_USER@|null|" /app/config/app.php
-else
-  sed -i "s|@SMTP_USER@|'${SMTP_USER}'|" /app/config/app.php
-fi
-
-if [ "${SMTP_PASSWORD}" = "" ]; then
-  sed -i "s|@SMTP_PASSWORD@|null|" /app/config/app.php
-else
-  sed -i "s|@SMTP_PASSWORD@|'${SMTP_PASSWORD}'|" /app/config/app.php
-fi
-
-if [ "${SMTP_PORT}" = "" ]; then
-  SMTP_PORT="25"
-fi
-
-if [ "${SMTP_TLS}" = "" ]; then
-  SMTP_TLS="false"
-  if [ "${SMTP_PORT}" = "587" ]; then
-    SMTP_TLS="true"
-  fi
-fi
-
-sed -i "s|@SMTP_HOST@|'${SMTP_HOST}'|g" /app/config/app.php
-sed -i "s|@SMTP_PORT@|'${SMTP_PORT}'|g" /app/config/app.php
-sed -i "s|@SMTP_TLS@|${SMTP_TLS}|g" /app/config/app.php
-
-sed -i "s|@MAIL_FROM@|${MAIL_FROM:-noreply@caps}|" /app/config/app.php
 
 msg " -> SMTP server: ${SMTP_HOST}:${SMTP_PORT}"
 
-msg "Adjusting configuration file"
-sed -i "s|@CAPS_DB_DRIVER@|${CAPS_DB_DRIVER:-Mysql}|g" /app/config/app.php
-sed -i "s|@CAPS_DB_HOST@|${CAPS_DB_HOST:-caps-db}|g" /app/config/app.php
-sed -i "s|@CAPS_DB_USERNAME@|${CAPS_DB_USERNAME:-caps}|g" /app/config/app.php
-sed -i "s|@CAPS_DB_PASSWORD@|${CAPS_DB_PASSWORD:-secret}|g" /app/config/app.php
-sed -i "s|@CAPS_DB_DATABASE@|${CAPS_DB_DATABASE:-caps}|g" /app/config/app.php
-sed -i "s|@CAPS_LDAP_URI@|${CAPS_LDAP_URI}|g" /app/config/app.php
-sed -i "s|@CAPS_LDAP_BASE@|${CAPS_LDAP_BASE}|g" /app/config/app.php
-sed -i "s|@CAPS_VERIFY_CERT@|${CAPS_VERIFY_CERT:-true}|g" /app/config/app.php
-sed -i "s|@CAPS_CDS@|${CAPS_CDS:-}|g" /app/config/app.php
-sed -i "s|@CAPS_TIMEZONE@|${CAPS_TIMEZONE:-Europe/Rome}|g" /app/config/app.php
-sed -i "s|@CAPS_DISCLAIMER@|${CAPS_DISCLAIMER:-}|g" /app/config/app.php
-sed -i "s|@CAPS_PSV_API@|${CAPS_PSV_API:-}|g" /app/config/app.php
-sed -i "s|@CAPS_READONLY@|${CAPS_READONLY:-}|g" /app/config/app.php
-
 msg "Generating security salt"
-SALT=$(openssl rand -hex 32)
-sed -i "s|__SALT__|${SALT}|" /app/config/app.php
+export SECURITY_SALT=$(openssl rand -hex 32)
 
 export APACHE_PID_FILE=/var/run/apache2/apache2.pid
 export APACHE_RUN_DIR=/var/run/apache2
@@ -168,15 +107,26 @@ if [ "$DEBUG" = "true" ]; then
   PORT=":8765"
 fi
 
+msg ""
+msg "************************************************"
+msg "************************************************"
 msg "Starting Apache2, go to http://localhost${PORT}/"
 
 if [ "$DEBUG" = "true" ]; then
+
   msg ""
+  if [ "$CAPS_ADMIN" = "" ] ; then
+      msg "Run sudo docker exec -it caps /app/bin/cake grant-admin USER to make"
+      msg "USER an administrator"
+  else
+      msg "Admins defined in environment configuration: ${CAPS_ADMIN}" 
+  fi
+      
   msg "If you started the development server with the default caps.env, "
-  msg "you may login using user1 / user1 or user2 / user2 as credentials."
-  msg ""
-  msg "Run sudo docker exec -it caps /app/bin/cake grant-admin user1 to make"
-  msg "user1 an administrator"
+  msg "you may login using user / user or admin / admin as credentials."
 fi
+msg "************************************************"
+msg "************************************************"
+msg ""
 
 apache2 -DFOREGROUND || exit 0

@@ -107,27 +107,16 @@ class UnipiAuthenticate extends AbstractIdentifier {
             'email' => 'unknown@nodomain.no'
         ];
 
-        if (array_key_exists('fakes', $config))
+        if (array_key_exists('passwds', $config))
         {
-            foreach ($config['fakes'] as $fake) {
-                if (is_array($fake)) {
-                    // configuration contains user info
-                    if ($data['username'] == $fake['user'] && $data['password'] == $fake['password']) {
-                        foreach ($user as $key => $val) {
-                            if (array_key_exists($key, $fake)) {
-                                $user[$key] = $fake[$key];
-                            }
+            foreach ($config['passwds'] as $auth) {
+                if ($data['username'] == $auth['username'] && $auth['password'] == $auth['password']) {
+                    foreach ($user as $key => $val) {
+                        if (array_key_exists($key, $auth)) {
+                            $user[$key] = $auth[$key];
                         }
-
-                        return $user;
                     }
-                } else {
-                    // configuration only contains username
-                    if ($data['username'] == $fake && $data['password'] == $fake) {
-                        $user['username'] = $fake;
-
-                        return $user;
-                    }
+                    return $user;
                 }
             }
         }

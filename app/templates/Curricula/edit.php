@@ -91,13 +91,13 @@
                         }
                         ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-name">
+                            <td>
                                 <?php
                                 echo h($exam['name']);
                                 ?>
                             </td>
-                            <td class="caps-admin-curriculum-exam-year"><?php echo $compulsory_exam['year']; ?></td>
-                            <td class="caps-admin-curriculum-exam-actions">
+                            <td><?php echo $compulsory_exam['year']; ?></td>
+                            <td>
                                 <?php
                                 echo $this->Form->postLink(
                                     __('Cancella'),
@@ -134,8 +134,7 @@
                 );
                 echo $this->Form->control(
                     'exam_id',
-                    ['class' => 'caps-admin-curriculum-exam-name-choose',
-                        'label' => 'Esame',
+                    [   'label' => 'Esame',
                         'options' => $examsList]
                 );
                 echo $this->Form->control(
@@ -146,14 +145,11 @@
                 echo $this->Form->control(
                     'year',
                     [
-                        'class' => 'caps-admin-curriculum-exam-year-choose',
                         'label' => 'Anno',
                         'options' => $years
                     ]
                 );
-                echo $this->Form->submit('Aggiungi esame',
-                    ['class' => 'caps-admin-curriculum-exam-submit']
-                );
+                echo $this->Form->submit('Aggiungi esame');
                 echo $this->Form->end();
                 ?>
             </div>
@@ -176,7 +172,7 @@
                     </tr>
                     <?php foreach ($curriculum['compulsory_groups'] as $compulsory_group) { ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-name">
+                            <td>
                                 <?php
                                     $name = "*** gruppo non più disponibile ***";
                                     // XXX(jacquerie): Terrible, terrible fix.
@@ -189,8 +185,8 @@
                                     echo $name;
                                 ?>
                             </td>
-                            <td class="caps-admin-curriculum-exam-year"><?php echo $compulsory_group['year']; ?></td>
-                            <td class="caps-admin-curriculum-exam-actions">
+                            <td><?php echo $compulsory_group['year']; ?></td>
+                            <td>
                                 <?php
                                     echo $this->Form->postLink(
                                         __('Cancella'),
@@ -226,8 +222,7 @@
                     );
                     echo $this->Form->control(
                         'group_id',
-                        ['class' => 'caps-admin-curriculum-group-name-choose',
-                            'label' => 'Gruppo',
+                        [   'label' => 'Gruppo',
                             'options' => $groupsList]
                     );
                     echo $this->Form->control(
@@ -238,14 +233,11 @@
                     echo $this->Form->control(
                         'year',
                         [
-                            'class' => 'caps-admin-curriculum-group-year-choose',
                             'label' => 'Anno',
                             'options' => $years
                         ]
                     );
-                    echo $this->Form->submit('Aggiungi esame in un gruppo',
-                        ['class' => 'caps-admin-curriculum-group-submit']
-                    );
+                    echo $this->Form->submit('Aggiungi esame in un gruppo');
                     echo $this->Form->end();
                 ?>
             </div>
@@ -268,9 +260,9 @@
                     </tr>
                     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
                         <tr>
-                            <td class="caps-admin-curriculum-exam-group"><?php echo $free_choice_exam['group']?$free_choice_exam['group']['name']:"esame qualunque"; ?></td>
-                            <td class="caps-admin-curriculum-exam-year"><?php echo $free_choice_exam['year']; ?></td>
-                            <td class="caps-admin-curriculum-exam-actions">
+                            <td><?php echo $free_choice_exam['group']?$free_choice_exam['group']['name']:"esame qualunque"; ?></td>
+                            <td><?php echo $free_choice_exam['year']; ?></td>
+                            <td>
                                         <?php
                                             echo $this->Form->postLink(
                                                 __('Cancella'),
@@ -311,7 +303,7 @@
                     );
                     echo $this->Form->control(
                         'group_id',
-                        ['class' => 'caps-admin-curriculum-group-name-choose',
+                        [
                             'label' => 'Gruppo',
                             'default' => null,
                             'options' => ["" => "un esame qualunque"] + $groupsList->toArray()
@@ -325,14 +317,11 @@
                     echo $this->Form->control(
                         'year',
                         [
-                            'class' => 'caps-admin-curriculum-exam-year-choose',
                             'label' => 'Anno',
                             'options' => $year_list
                         ]
                     );
-                    echo $this->Form->submit('Aggiungi esame',
-                        ['class' => 'caps-admin-curriculum-exam-submit']
-                    );
+                    echo $this->Form->submit('Aggiungi esame');
                     echo $this->Form->end();
                 ?>
             </div>

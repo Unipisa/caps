@@ -53,7 +53,7 @@
                 <i class="fas fa-upload"></i><span class="ml-2 d-none d-lg-inline">Importa da CSV</span>
             </button>
             <div class="dropdown-menu p-2 shadow" style="width: 800px; max-height: 500px; overflow-y: scroll;">
-                <div id="caps-admin-actions-csv" class="caps-admin-actions-csv">
+                <div>
                     <form>
                         <h3 class="h5">Caricamento esami da CSV</h3>
                     <p>Carica elenco di esami da un file CSV; si potranno selezionare gli esami da caricare, e quelli da ignorare
@@ -128,8 +128,8 @@
         </tr>
         <?php foreach ($paginated_exams as $exam): ?>
             <tr>
-                <td class="caps-admin-curricula-id"><input type=checkbox name="selection[]" value="<?php echo $exam['id']; ?>"></td>
-                <td class="caps-admin-exams-name">
+                <td><input type=checkbox name="selection[]" value="<?php echo $exam['id']; ?>"></td>
+                <td>
                     <?php
                     echo $this->Html->link(
                         $exam['name'],
@@ -138,10 +138,10 @@
                     );
                     ?>
                 </td>
-                <td class="caps-admin-exams-credits"><?php echo $exam->tagsToString(); ?></td>
-                <td class="caps-admin-exams-code"><?php echo h($exam['code']); ?></td>
-                <td class="caps-admin-exams-sector"><?php echo h($exam['sector']); ?></td>
-                <td class="caps-admin-exams-credits"><?php echo $exam['credits']; ?></td>
+                <td><?php echo $exam->tagsToString(); ?></td>
+                <td><?php echo h($exam['code']); ?></td>
+                <td><?php echo h($exam['sector']); ?></td>
+                <td><?php echo $exam['credits']; ?></td>
             </tr>
         <?php endforeach; ?>
     </table>

@@ -21,7 +21,7 @@ class ProposalYearNavBar extends React.Component {
     }
 
     render() {
-        const cds = Caps.params.cds;
+        const cds = Caps.params.settings.cds;
 
         return <nav>
             <div className="d-flex mt-4">

@@ -38,19 +38,11 @@ class ErrorController extends AppController
      */
     public function initialize(): void
     {
+        parent::initialize();
+
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
         ]);
-    }
-
-    /**
-     * beforeFilter callback.
-     *
-     * @param \Cake\Event\Event $event Event.
-     * @return \Cake\Http\Response|null|void
-     */
-    public function beforeFilter(\Cake\Event\EventInterface $event)
-    {
     }
 
     /**
@@ -62,17 +54,6 @@ class ErrorController extends AppController
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);
-
         $this->viewBuilder()->setTemplatePath('Error');
-    }
-
-    /**
-     * afterFilter callback.
-     *
-     * @param \Cake\Event\Event $event Event.
-     * @return \Cake\Http\Response|null|void
-     */
-    public function afterFilter(\Cake\Event\EventInterface $event)
-    {
     }
 }

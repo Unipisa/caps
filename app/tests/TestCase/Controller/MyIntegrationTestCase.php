@@ -16,12 +16,14 @@ class MyIntegrationTestCase extends TestCase
     function studentSession(int $id = 1)
     {
         $user = TableRegistry::getTableLocator()->get('Users')->get($id);
+        $this->assertFalse($user['admin']);
         $this->session([ 'Auth' => $user ]);
     }
 
     function adminSession()
     {
         $user = TableRegistry::getTableLocator()->get('Users')->get(2);
+        $this->assertTrue($user['admin']);
         $this->session([ 'Auth' => $user ]);
     }
 }

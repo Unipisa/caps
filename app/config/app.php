@@ -9,6 +9,58 @@ use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
 use Cake\Mailer\Transport\DebugTransport;
+use Cake\Mailer\Transport\SmtpTransport;
+
+function my_explode(string $c, string $s) {
+    if ($s === "") return [];
+    return explode($c, $s);
+}
+
+function my_single_convert_passwd(string $s) {
+    /**
+     * 'user:passwd:lastname:firstname'
+     */
+    if ($s === "") return [];
+    $fields = explode(':', $s);
+    $r = [
+            'user' => null, 
+            'password' => null,
+            'name' => 'No Name',
+            'number' => '000000',
+            'surname' => 'Name',
+            'givenname' => 'No'
+        ];
+    if (count($fields) > 0) {
+        $r['username'] = $fields[0];
+        $r['name'] = $fields[0];
+        $r['surname'] = $fields[0];
+        $r['givenname'] = $fields[0];
+    }
+    if (count($fields) > 1) {
+        $r['password'] = $fields[1];
+    }
+    if (count($fields) > 2) {
+        $r['surname'] = $fields[2];
+        $r['givenname'] = $fields[2];
+        $r['name'] = $fields[2];
+    }
+    if (count($fields) > 3) {
+        $r['givenname'] = $fields[3];
+        $r['name'] = r['givenname'] . ' ' . r['surname'];
+    }
+    if (count($fields) == 0 || count($fields) > 4) throw RuntimeException('invalid username:password specification [' . $s . ']');
+    return $r;
+}
+
+function my_users_passwd_convert(string $str) {
+    /**
+     * "user1:pass1,user2:pass2" => [
+     *  ['username' => 'user1, 'password' => 'pass1'],
+     *  ['username' => 'user2, 'password' => 'pass2']]
+     */
+    $r = array_map('my_single_convert_passwd', my_explode(',', $str));
+    return $r;
+}
 
 return [
     /**
@@ -26,49 +78,40 @@ return [
      * Configure CAPS application.
      */
     'Caps' => [
-        'cds' => 'Testing',
-        'disclaimer' => 'Server di testing: i dati su questo server non vengono salvati!',
+        'cds' => env('CAPS_CDS', 'Testing'),
+        'disclaimer' => env('CAPS_DISCLAIMER', 'This is a testing insecure instance'),
         'timezone' => 'Europe/Rome',
         // See:  https://github.com/robol/pdf-signature-verifier
         // If set to '', or not set, PDF signatures verification is disabled.
+        'psv_api' => env('CAPS_PSV_API', ''),
         // 'psv_api' => 'https://my-psv-server:8081/validate',
         
-        // if evaluates True only allows GET requests
+        // if not empty only allows GET requests
         // and if a string it will be inserted as a message in every page
-        'readonly' => False
+        'readonly' => env('CAPS_READONLY', '')
     ],
 
     'UnipiAuthenticate' => [
       // URI del server LDAP da interrogare
-      'ldap_server_uri' => 'ldaps://127.0.0.1:1636/',
+      'ldap_server_uri' => env('CAPS_LDAP_URI', 'ldaps://127.0.0.1:1636/'),
 
       // DN con cui autenticarsi sul server LDAP
-      'base_dn' => "ou=people,dc=unipi,dc=it",
-
-      // LISTA DEGLI UTENTI AMMINISTRATORE
-      'admins' => [],
+      'base_dn' => env('CAPS_LDAP_BASE', "ou=people,dc=unipi,dc=it"),
 
       // True if the verification of the SSL certificate of the LDAP server
       // is enforced. The values false might be useful in development environments.
-      'verify_cert' => true,
+      'verify_cert' => filter_var(env('CAPS_VERIFY_CERT', true), FILTER_VALIDATE_BOOLEAN),
 
-      // LISTA DEGLI UTENTI "FAKE"
-      // utile per accedere al server durante lo sviluppo
-      // senza dover configurare LDAP
-      // per dare i privilegi di amministratore dare il comando:
-      // bin/cake grant_admin <username>
-      'fakes' => [
-        /*
-        [
-            'user' => 'rossi',
-            'password' => 'cambiami',
-            'name' => 'Mario Rossi',
-            'number' => '000000',
-            'surname' => 'Rossi',
-            'givenname' => 'Mario'
-        ],
-        */
-      ]
+      // LISTA DI PASSWORD HARD-CODED
+      // example: 
+      // CAPS_USERS_PASSWD="my-admin-user:my-admin-password,my-fake-user,my-fake-password"
+      'passwds' => my_users_passwd_convert(env('CAPS_USERS_PASSWD', '')),
+
+
+      // LISTA DI UTENTI AMMINISTRATORE
+      // CAPS_ADMINS="my-admin-user"
+      'admins' => my_explode(',', env('CAPS_ADMINS', '')),
+
     ],
 
     /**
@@ -257,17 +300,17 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => DebugTransport::class,
+            'className' => getenv('SMTP_HOST') ? SmtpTransport::class : DebugTransport::class,
             /*
              * The following keys are used in SMTP transports:
              */
-            'host' => 'localhost',
-            'port' => 25,
+            'host' => env('SMTP_HOST', 'localhost'),
+            'port' => env('SMTP_PORT', 25),
             'timeout' => 30,
-            'username' => null,
-            'password' => null,
+            'username' => env('SMTP_USER', null),
+            'password' => env('SMTP_PASSWORD', null),
             'client' => null,
-            'tls' => null,
+            'tls' => filter_var(env('SMTP_TLS', False), FILTER_VALIDATE_BOOLEAN),
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
     ],
@@ -284,7 +327,7 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => 'you@localhost',
+            'from' => env('MAIL_FROM', 'you@localhost'),
             //'charset' => 'utf-8',
             //'headerCharset' => 'utf-8',
         ],
@@ -307,18 +350,22 @@ return [
         'default' => [
             'className' => Connection::class,
             //'driver' => Mysql::class,
-            'driver' => Sqlite::class,
+            'driver' => [
+                'sqlite' => Sqlite::class,
+                'mysql' => Mysql::class,
+                'postgres' => Postgres::class,
+                ][strtolower(env('CAPS_DB_DRIVER', 'sqlite'))],
             'persistent' => false,
-            'host' => 'localhost',
+            'host' => env('CAPS_DB_HOST', 'localhost'),
             /*
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username' => 'caps',
-            'password' => 'secret',
-            'database' => 'caps.sqlite',
+            'username' => env('CAPS_DB_USERNAME', 'caps'),
+            'password' => env('CAPS_DB_PASSWORD', 'secret'),
+            'database' => env('CAPS_DB_DATABASE', 'caps.sqlite'),
             /*
              * You do not need to set this flag to use full utf-8 encoding (internal default since CakePHP 3.6).
              */

@@ -14,14 +14,8 @@
  */
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\UsersController;
-use Cake\Core\App;
-use Cake\Core\Configure;
-use Cake\Http\Response;
-use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
 use Cake\TestSuite\IntegrationTestTrait;
-use Cake\View\Exception\MissingTemplateException;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -31,7 +25,14 @@ class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
     
-    public $fixtures = ['app.Users', 'app.Proposals', 'app.Curricula', 'app.CurriculaProposals'];
+    public $fixtures = [
+        'app.Users', 
+        'app.Proposals', 
+        'app.Curricula', 
+        'app.CurriculaProposals',
+        'app.Forms',
+        'app.FormTemplates'
+    ];
 
     public function setUp(): void
     {

@@ -19,10 +19,11 @@
  * This program is based on the CakePHP framework, which is released under
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
- */ 
+ */
 ?>
-
 <div>
-    <h2>Nuovo piano di studio</h2>
+    <!--h2><?= $form['id']?"Modifica":"Nuovo" ?> modulo</h2-->
+    <?= $this->element('card-start'); ?>
     <div id="app"></div>
+    <?= $this->element('card-end'); ?>
 </div>
