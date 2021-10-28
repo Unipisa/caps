@@ -5,12 +5,21 @@
     use App\Controller\AppController;
     use Cake\Http\Exception\ForbiddenException;
     use Cake\Http\Exception\NotFoundException;
+    use App\Form\FormTemplatesFilterForm;
 
     class FormTemplatesController extends AppController
     {
         public function index()
         {
             $form_templates = $this->FormTemplates->find('all');
+            if (!$this->user['admin']) {
+                // avoid to make public information which is not yet marked as enabled
+                $form_templates = $form_templates->where(['enabled' => true]);
+            }
+
+            $filterForm = new FormTemplatesFilterForm($form_templates);
+            $form_templates = $filterForm->validate_and_execute($this->request->getQuery());
+            $this->set('filterForm', $filterForm);    
 
             $this->set('form_templates', $form_templates);
             $this->viewBuilder()->setOption('serialize', [ 'form_templates' ]);

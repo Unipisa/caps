@@ -54,7 +54,11 @@ class DegreesController extends AppController
     public function index()
     {
         $degrees = $this->Degrees->find();
-
+        if (!$this->user['admin']) {
+            // avoid to make public information which is not yet marked as enabled
+            $form_templates = $form_templates->where(['enabled' => true]);
+        }
+        
         $filterForm = new DegreesFilterForm($degrees);
         $degrees = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);

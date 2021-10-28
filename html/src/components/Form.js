@@ -35,7 +35,7 @@ class Form extends React.Component {
             html = this.compile_html(form_template.text, form.data, form.state);
         }
         if (form === null && form_templates === null) {
-            form_templates = await FormTemplates.all();
+            form_templates = await FormTemplates.allActive();
         }
         this.setState({form, form_template, form_templates, html});
     }
