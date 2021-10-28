@@ -73,10 +73,10 @@ class DuplicateDegrees extends AbstractMigration
             }
         }
         
-        print "DUPLICATING DEGREES:\n";
+        # print "DUPLICATING DEGREES:\n";
         foreach($new_degrees as $old_degree_id => $map) {
             foreach($map as $academic_year => $new_degree_id) {
-                print $old_degree_id . ", " . $academic_year . " => " . $new_degree_id . "\n";
+                print "duplicating degree: " . $old_degree_id . ", " . $academic_year . " => " . $new_degree_id . "\n";
             }
         }
         echo "\n";
@@ -178,10 +178,9 @@ class DuplicateDegrees extends AbstractMigration
             }
         }
 
-        print "DUPLICATING GROUPS:\n";
         foreach($new_groups as $old_group_id => $map) {
             foreach($map as $academic_year => $new_group_id) {
-                print $old_group_id . ", " . $academic_year . " => " . $new_group_id . "\n";
+                print "duplicating group: " . $old_group_id . ", " . $academic_year . " => " . $new_group_id . "\n";
             }
         }
         print "\n";
@@ -212,9 +211,9 @@ class DuplicateDegrees extends AbstractMigration
             }
         }
 
-        print "GRUPPI RIMOSSI:\n";
+        # print "GRUPPI RIMOSSI:\n";
         foreach ($removed_groups as $group_id) {
-            print $group_id . "\n";
+            print "gruppo rimosso: " . $group_id . "\n";
         }
         print "\n";
     }

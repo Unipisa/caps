@@ -7,6 +7,7 @@ const CapsDegreesController = require('./controllers/degrees-controller');
 const CapsExamsController = require('./controllers/exams-controller');
 const CapsProposalsController = require('./controllers/proposals-controller');
 const CapsSettingsController = require('./controllers/settings-controller');
+const CapsFormsController = require('./controllers/forms-controller');
 
 'use strict'
 
@@ -20,7 +21,8 @@ const routes = {
     "Proposals": CapsProposalsController,
     "Settings": CapsSettingsController,
     "Exams": CapsExamsController,
-    "Degrees": CapsDegreesController
+    "Degrees": CapsDegreesController,
+    "Forms": CapsFormsController
 }
 
 /**

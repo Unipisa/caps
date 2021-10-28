@@ -33,6 +33,14 @@ bin/cake grant-admin username
 Una volta che è presente il primo amministratore, gli altri possono essere creati
 tramite interfaccia web. 
 
+Se non si vuole configurare l'autenticazione LDAP si possono inserire gli username e password
+degli utenti in una variabile d'ambiente. 
+Ad esempio per avere due utenti con password uguale allo username:
+```
+export LDAP_ADMINS=admin
+export LDAP_USERS_PASSWD=admin:admin,user:user
+```
+
 ## Inoltro dell'LDAP in locale
 
 Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''caps.dm.unipi.it''')
@@ -55,7 +63,8 @@ Questa procedura viene gestita in automatico dall'immagine [Docker](docker/READM
 
 ## Creazione files HTML e JS
 
-Per compilare i file JS e CSS è necessario entrare nella cartella ```html``` ed usare ```npm```. 
+Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. 
+Per compilare i file JS e CSS è necessario entrare nella cartella ed usare ```npm```. 
 
 ```bash
 cd html/
@@ -65,9 +74,20 @@ npm run deploy # compiles js and css files
 npm run deploy:dev # as above but for development
 ```
 
-Dopo la prima compilazione, può essere conveniente usare il comando ```npm run watch``` per ricompilare 
-automaticamente i file JS e SCSS quando vengono modificati. I file sorgente si trovano rispettivamente 
+Dopo la prima compilazione, può essere conveniente usare il comando 
+per ricompilare automaticamente i file JS e SCSS quando vengono modificati:
+
+```
+npm run watch
+``` 
+
+I file sorgente si trovano rispettivamente 
 nelle cartelle ```html/scss``` e ```html/src```.
+
+Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che compilano e 
+copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
+già compilati sono inclusi nel repository. 
+
 
 ## Esecuzione del backend
 
@@ -93,25 +113,6 @@ vendor/bin/phpunit --filter testLoginPage # run a single test
 tail -f logs/*.log # display error messages 
 bin/cake server & # run a development server
 ```
-
-## Istruzioni varie per CakePHP
-
-Per aggiungere nuove migrazioni (un esempio):
-```bash
-bin/cake bake migration CreateProposals approved:boolean submitted:boolean frozen:boolean user_id:integer modified:datetime
-```
-
-## Template
-
-Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. È possibile compilarlo con i comandi:
-```bash
-cd html/
-npm install
-npm run deploy
-```
-Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che compilano e 
-copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
-già compilati sono inclusi nel repository. 
 
 ## Upgrade da CAPS < 1.0.0
 
@@ -195,7 +196,6 @@ bin/cake migrations migrate
         <- Curricula
         <- Group
 
-
     Exam [exams]
         id
         name
@@ -210,6 +210,21 @@ bin/cake migrations migrate
         position
         curriculum -> Curriculum [curriculum_id]
         group -> Group [group_id, NULL]
+
+    Form [forms]
+        id
+        form_template -> FormTemplate
+        user > User
+        state
+        date_submitted
+        date_managed
+        data
+
+    FormTemplate [form_templates]
+        id
+        name
+        text
+        enabled
 
     Group [groups]
         id
