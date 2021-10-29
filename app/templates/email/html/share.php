@@ -20,7 +20,7 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-    $this->extend('/Email/html/proposal_base');
+    $this->extend('/email/html/proposal_base');
     $url = $this->Url->build([
         "controller" => "proposals",
         "action" => "view",
