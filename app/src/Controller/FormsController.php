@@ -184,7 +184,7 @@ class FormsController extends AppController
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
-        $form = $this->Forms->get($id, ['contain' => 'FormTemplates']);
+        $form = $this->Forms->get($id, ['contain' => ['FormTemplates', 'Users']]);
 
         if ($form['user_id'] != $this->user['id'] && !$this->user['admin']) {
             throw new ForbiddenException();

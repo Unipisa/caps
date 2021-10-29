@@ -5,6 +5,7 @@ const Card = require('./Card');
 const LoadingMessage = require('./LoadingMessage');
 const FormTemplates = require('../models/form_templates');
 const Forms = require('../models/forms');
+const Users = require('../models/users');
 
 const submitForm = require('../modules/form-submission');
 
@@ -32,7 +33,7 @@ class Form extends React.Component {
         if (form === null && this.props.id !== undefined) {
             form = await Forms.get(this.props.id);
             form_template = form.form_template;
-            html = this.compile_html(form_template.text, form.data, form.state);
+            html = this.compile_html(form_template.text, form.data, form.state, form.user);
         }
         if (form === null && form_templates === null) {
             form_templates = await FormTemplates.allActive();
@@ -46,13 +47,12 @@ class Form extends React.Component {
             const form_template = this.state.form_templates[idx]
             this.setState({
                 'form_template': form_template,
-                'html': this.compile_html(form_template.text, {}, 'draft')
+                'html': this.compile_html(form_template.text, {}, 'draft', Caps.params.user)
             });
         }
     }
 
-    compile_html(s, data, form_state) {
-        const user = Caps.params.user;
+    compile_html(s, data, form_state, user) {
         const user_data = {
             'firstname': user['givenname'],
             'lastname': user['surname'],
@@ -64,15 +64,18 @@ class Form extends React.Component {
         s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
         
         s = `<form id="form-form">
-             <div id="form-div" class="form-form">${s}</div>`;
+             <div id="form-div" class="form-form">${s}</div>
+             <div class="form-group btn-group mt-4">`;
+
+        if (form_state == 'draft') {
+            s += `<button class="btn btn-success" type="submit" name="submit">Invia</button>`;
+        }             
         if (this.props.edit) {
             // possibile salvare bozza solo in EDIT
-            s += `<input type="submit" name="save" value="salva bozza">`;
+            s += `<button class="btn btn-primary" type="submit" name="save">Salva bozza</button>`;
         }
-        if (form_state == 'draft') {
-            s += `<input className="btn btn-success" type="submit" name="submit" value="invia">
-                </form>`
-        }
+        s += `</div></form>`;
+
         return s;
     }
 
@@ -114,9 +117,8 @@ class Form extends React.Component {
 
         const texts = array_to_list(form_div.getElementsByTagName('textarea'));
         texts.forEach(el => {
-            if (this.props.edit) {
-                el.value = data[el.name];
-            } else {
+            el.value = data[el.name];
+            if (! this.props.edit) {
                 el.setAttribute("readonly", "readonly");
             }
         });
