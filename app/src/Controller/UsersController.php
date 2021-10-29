@@ -61,6 +61,8 @@ class UsersController extends AppController {
             ->contain(['Users', 'FormTemplates'])
             ->where(['Users.id' => $id]);
         $this->set('forms', $forms);
+
+        $this->viewBuilder()->setOption('serialize', ['user' => 'user_entry']);
     }
 
     public function index() {
