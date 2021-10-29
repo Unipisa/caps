@@ -117,9 +117,8 @@ class Form extends React.Component {
 
         const texts = array_to_list(form_div.getElementsByTagName('textarea'));
         texts.forEach(el => {
-            if (this.props.edit) {
-                el.value = data[el.name];
-            } else {
+            el.value = data[el.name];
+            if (! this.props.edit) {
                 el.setAttribute("readonly", "readonly");
             }
         });
