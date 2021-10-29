@@ -64,15 +64,18 @@ class Form extends React.Component {
         s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
         
         s = `<form id="form-form">
-             <div id="form-div" class="form-form">${s}</div>`;
+             <div id="form-div" class="form-form">${s}</div>
+             <div class="form-group btn-group mt-4">`;
+
+        if (form_state == 'draft') {
+            s += `<button class="btn btn-success" type="submit" name="submit">Invia</button>`;
+        }             
         if (this.props.edit) {
             // possibile salvare bozza solo in EDIT
-            s += `<input type="submit" name="save" value="salva bozza">`;
+            s += `<button class="btn btn-primary" type="submit" name="save">Salva bozza</button>`;
         }
-        if (form_state == 'draft') {
-            s += `<input className="btn btn-success" type="submit" name="submit" value="invia">
-                </form>`
-        }
+        s += `</div></form>`;
+
         return s;
     }
 
