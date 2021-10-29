@@ -35,7 +35,11 @@ class Form extends React.Component {
             form_template = form.form_template;
             html = this.compile_html(form_template.text, form.data, form.state, form.user);
         }
-        if (form === null && form_templates === null) {
+        if (form_template === null && this.props.form_template_id) {
+            form_template = await FormTemplates.get(this.props.form_template_id);
+            html = this.compile_html(form_template.text, {}, 'draft', Caps.params.user);
+        }
+        if (form_template === null && form_templates === null) {
             form_templates = await FormTemplates.allActive();
         }
         this.setState({form, form_template, form_templates, html});
