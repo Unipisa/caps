@@ -36,7 +36,7 @@
                     </a>
                     <a href="<?= $this->Url->build(['controller' => 'proposals', 'action' => 'edit',
                         '?' => ['degree_id' => $curriculum['degree_id'], 'curriculum_id' => $curriculum['id']]]) ?>">
-                        <button type="button" class="btn btn-sm mr-2 btn-primary">Aggiungi piano</button>
+                        <button type="button" class="btn btn-sm mr-2 btn-primary">Inserisci piano</button>
                     </a>
                     <a href="<?= $this->Url->build(['action' => 'delete', $curriculum['id']]) ?>"
                        onclick="return confirm('Sei sicuro di voler cancellare questo curriculum?')">
