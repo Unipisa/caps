@@ -24,7 +24,7 @@ services:
     environment:
       # Enable DebugKit on the development server
       DEBUG: "true"
-      CAPS_DB_DRIVER: "mysql"
+      CAPS_DB_DRIVER: "Mysql"
       CAPS_DB_HOST: "caps-db"
       CAPS_DB_USERNAME: "caps"
       CAPS_DB_PASSWORD: "secret"

@@ -2,6 +2,10 @@
 
 set -e
 
+# Make sure that CAPS_DB_DRIVER is lower-case, as it is
+# case-insensitive in our documentation.
+CAPS_DB_DRIVER=$(echo ${CAPS_DB_DRIVER} | tr '[:upper:]' '[:lower:]')
+
 function msg {
   echo -e "\033[32;1mCAPS::DOCKER\033[34;0m $* \033[0m"
 }
@@ -16,7 +20,7 @@ chown www-data:www-data /app/logs -R
 msg "Making sure that /tmp is 777"
 chmod 777 /tmp
 
-if [ "${CAPS_DB_DRIVER}" = "Postgres" ]; then
+if [ "${CAPS_DB_DRIVER}" = "postgres" ]; then
   # Wait for Postgres
   while ! pg_isready --host ${CAPS_DB_HOST} --dbname ${CAPS_DB_DATABASE}; do
     msg "Waiting for Postgres server ${CAPS_DB_HOST} to be ready ..."
@@ -24,7 +28,7 @@ if [ "${CAPS_DB_DRIVER}" = "Postgres" ]; then
   done
 fi 
 
-if [ "${CAPS_DB_DRIVER}" = "Mysql" ]; then
+if [ "${CAPS_DB_DRIVER}" = "mysql" ]; then
   # ... or for Mysql, depending on the user choice
   while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
     msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
