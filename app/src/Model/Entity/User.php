@@ -90,4 +90,8 @@ class User extends Entity implements IdentityInterface
         return $this['admin'] ||
             $this['id'] == $attachment['user_id'];
     }
+
+    public function getDisplayName() {
+        return $this->givenname . " " . $this->surname;
+    }
 }
