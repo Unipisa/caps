@@ -94,4 +94,11 @@ class User extends Entity implements IdentityInterface
     public function getDisplayName() {
         return $this->givenname . " " . $this->surname;
     }
+
+    protected function _setPassword(string $password) : ?string
+    {
+        if (strlen($password) > 0) {
+            return (new DefaultPasswordHasher())->hash($password);
+        }
+    }
 }

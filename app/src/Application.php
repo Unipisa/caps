@@ -174,6 +174,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         ]);
 
         // Load identifiers
+        $service->loadIdentifier('Authentication.Password', [
+            'fields' => [
+                'username' => 'email',
+                'password' => 'password',
+            ]
+        ]);
+
         $service->loadIdentifier('App\Authentication\Identifier\UnipiAuthenticate', 
             Configure::read('UnipiAuthenticate'));
 

@@ -174,6 +174,17 @@ class UsersController extends AppController {
         );
     }
 
+    public function changePassword($id = null) {
+            if ($id == null) $id = $this->user['id']; 
+            if ($id != $this->user['id'] && !$this->user['admin']) {
+                throw new ForbiddenException('Cannot change password of another user profile');
+            }
+    
+            $user_entry = $this->Users->get($id);
+            $this->set('user_entry', $user_entry);
+
+    }
+
 }
 
 ?>
