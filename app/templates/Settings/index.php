@@ -38,16 +38,16 @@
 
         <div class="form-group">
             <label for="caps-setting-cds" class="caps-setting-header">Corso di studi</label>
-            <input type="text" class="form-control" name="cds" value="<?= h($settings['cds']); ?>">
+            <input id="caps-setting-cds" type="text" class="form-control" name="cds" value="<?= h($settings['cds']); ?>">
         </div>
 
         <div class="form-group">
             <label for="caps-setting-department" class="caps-setting-header">Dipartimento</label>
-            <input type="text" class="form-control" name="department" value="<?= h($settings['department']); ?>">
+            <input id="caps-setting-department" type="text" class="form-control" name="department" value="<?= h($settings['department']); ?>">
         </div>
 
         <div class="form-group">
-            <label class="caps-setting-header" for="caps-setting-user-instructions">Istruzioni per l'utente</label>
+            <label for="caps-setting-user-instructions" class="caps-setting-header">Istruzioni per l'utente</label>
             <div class="caps-setting-description">Queste istruzioni vengono mostrate all'utente appena dopo il login, nella pagina
                 dove sono visibili tutti i piani di studio presentati.</div>
             <textarea id="caps-setting-user-instructions"
@@ -66,14 +66,14 @@
                 Questo campo contiene una lista di indirizzi e-mail, separati da virgole, che vengono
                 notificati ad ogni nuova sottomissione e approvazione di un piano di studio.
             </div>
-            <input type="text" class="form-control" name="notified-emails" value="<?= h($settings['notified-emails']); ?>">
+            <input id="caps-setting-notified-emails" type="text" class="form-control" name="notified-emails" value="<?= h($settings['notified-emails']); ?>">
         </div>
 
         <div class="form-group">
             <label for="caps-setting-signature-text" class="caps-setting-header">Firma per i piani</label>
             <div class="caps-setting-description">Questa firma viene apposta su ogni piano approvato, quando si
             seleziona il pulsante "Stampa piano".</div>
-            <input type="text" class="form-control" name="approval-signature-text" value="<?= h($settings['approval-signature-text']); ?>">
+            <input id="caps-setting-signature-text" type="text" class="form-control" name="approval-signature-text" value="<?= h($settings['approval-signature-text']); ?>">
         </div>
 
         <div class="form-group">
@@ -83,7 +83,7 @@
                 '%n' e '%c' vengono sostituite con la data di ultima modifica, il cognome, il nome, e il curriculum,
                 rispettivamente. Non è necessario includere l'estensione .pdf.
               </div>
-            <input type="text" class="form-control" name="pdf-name" value="<?= h($settings['pdf-name']); ?>">
+            <input id="caps-setting-pdf-name" type="text" class="form-control" name="pdf-name" value="<?= h($settings['pdf-name']); ?>">
         </div>
 
     <?= $this->element('card-end') ?>
