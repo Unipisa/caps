@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,26 +20,12 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-namespace App\Model\Entity;
+$this->extend('/email/html/form_base');
+?>
 
-use Cake\ORM\Entity;
-use Cake\Event\Event;
-
-class FormTemplate extends Entity
-{
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @var array
-     */
-    protected $_accessible = [
-        'enabled' => true,
-        'name' => true,
-        'text' => true,
-        'notify_emails' => true,
-    ];
-}
+<h3>Modulo approvato</h3>
+<p>
+    Il modulo è stato approvato:
+    <?= $this->Html->link("Visualizza modulo", 
+        ['controller' => 'Forms', 'action' => 'view', '_full' => 'true', $form['id']]) ?>
+</p>

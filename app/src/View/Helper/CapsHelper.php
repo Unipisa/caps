@@ -4,6 +4,7 @@ namespace App\View\Helper;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\View\Helper;
+use Cake\Chronos\Date;
 
 
 class CapsHelper extends Helper {
@@ -70,10 +71,15 @@ class CapsHelper extends Helper {
     public function formatDate($d, $fallback = "nessuna data") {
       $Caps = Configure::read('Caps');
 
-      if ($d != null)
+      if ($d instanceof Date) {
+        return $d->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy');
+      } 
+      
+      if ($d != null) {
         return $d->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy, HH:mm');
-      else
-        return $fallback;
+      } 
+
+      return $fallback;
     }
 
         /**

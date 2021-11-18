@@ -82,7 +82,7 @@
 
     <?php endif; ?>
 
-    <?php echo $this->Form->create(null, [ 'id' => 'proposal-form' ]); ?>
+    <?php echo $this->Form->create(null, [ 'id' => 'form-form' ]); ?>
 
     <?php echo $this->element('filter_badges', [
       'fields' => [ 'state', 'surname', 'form_template', 'name' ]
@@ -95,7 +95,8 @@
             <th><a href="#">Stato</a></th>
             <th><?= $this->Paginator->sort('Users.surname', 'Nome'); ?></th>
             <th><?= $this->Paginator->sort('FormTemplates.name', 'Modello'); ?></th>
-            <th><?= $this->Paginator->sort('modified', 'Ultima modifica'); ?></th>
+            <th><?= $this->Paginator->sort('modified', 'inviato'); ?></th>
+            <th><?= $this->Paginator->sort('modified', 'gestito'); ?></th>
             <th></th>
             </thead>
         </tr>
@@ -124,15 +125,10 @@
                     ?>
                 </td>
                 <td>
-                    <?php
-                    echo $this->Html->link(
-                        $form_template['name'],
-                        ['controller' => 'form_templates', 'action' => 'view', $form_template['id']]
-                    );
-                    ?>
+                    <?= $this->Caps->formatDate($form['date_submitted']); ?>
                 </td>
                 <td>
-                  <?= $this->Caps->formatDate($form['modified']); ?>
+                    <?= $this->Caps->formatDate($form['date_managed']); ?>
                 </td>
                 <td>
                     <div class="d-none d-xl-inline-flex flex-row align-items-center">

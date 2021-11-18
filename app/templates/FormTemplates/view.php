@@ -51,7 +51,11 @@
                     </tr>
                     <tr>
                         <th>Nome</th>
-                        <td><?php echo h($form_template['name']); ?></td>
+                        <td><?= h($form_template['name']) ?></td>
+                    </tr>
+                    <tr>
+                        <th>Notifiche</th>
+                        <td><?= h($form_template['notify_emails']) ?></td>
                     </tr>
                 </table>
 

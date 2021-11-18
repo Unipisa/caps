@@ -80,7 +80,6 @@
     
                 if ($this->FormTemplates->save($form_template)) {
                     $this->Flash->success($success_message);
-    
                     return $this->redirect(['action' => 'view', $form_template['id']]);
                 } else {
                     $this->Flash->error(__('Errore: modulo non aggiornato.'));

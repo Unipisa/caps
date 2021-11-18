@@ -78,7 +78,8 @@ Dopo la prima compilazione, può essere conveniente usare il comando
 per ricompilare automaticamente i file JS e SCSS quando vengono modificati:
 
 ```
-npm run watch
+npm run watch  
+npm run watch:dev
 ``` 
 
 I file sorgente si trovano rispettivamente 
@@ -225,6 +226,7 @@ bin/cake migrations migrate
         name
         text
         enabled
+        notify_emails
 
     Group [groups]
         id
@@ -272,5 +274,6 @@ bin/cake migrations migrate
         surname
         email
         admin (bool)
+        password (encrypted)
 
 (!) nel database manca il constraint!!
