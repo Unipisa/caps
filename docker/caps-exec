@@ -117,17 +117,10 @@ msg "************************************************"
 msg "Starting Apache2, go to http://localhost${PORT}/"
 
 if [ "$DEBUG" = "true" ]; then
-
   msg ""
-  if [ "$CAPS_ADMIN" = "" ] ; then
-      msg "Run sudo docker exec -it caps /app/bin/cake grant-admin USER to make"
-      msg "USER an administrator"
-  else
-      msg "Admins defined in environment configuration: ${CAPS_ADMIN}" 
-  fi
-      
-  msg "If you started the development server with the default caps.env, "
-  msg "you may login using user / user or admin / admin as credentials."
+  msg "Run "
+  msg "    sudo docker exec -it caps /app/bin/cake grant-admin USER [--force] [--password PASSWD]"
+  msg "to make USER an administrator"
 fi
 msg "************************************************"
 msg "************************************************"

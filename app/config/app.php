@@ -11,57 +11,6 @@ use Cake\Mailer\Transport\MailTransport;
 use Cake\Mailer\Transport\DebugTransport;
 use Cake\Mailer\Transport\SmtpTransport;
 
-function my_explode(string $c, string $s) {
-    if ($s === "") return [];
-    return explode($c, $s);
-}
-
-function my_single_convert_passwd(string $s) {
-    /**
-     * 'user:passwd:lastname:firstname'
-     */
-    if ($s === "") return [];
-    $fields = explode(':', $s);
-    $r = [
-            'user' => null, 
-            'password' => null,
-            'name' => 'No Name',
-            'number' => '000000',
-            'surname' => 'Name',
-            'givenname' => 'No'
-        ];
-    if (count($fields) > 0) {
-        $r['username'] = $fields[0];
-        $r['name'] = $fields[0];
-        $r['surname'] = $fields[0];
-        $r['givenname'] = $fields[0];
-    }
-    if (count($fields) > 1) {
-        $r['password'] = $fields[1];
-    }
-    if (count($fields) > 2) {
-        $r['surname'] = $fields[2];
-        $r['givenname'] = $fields[2];
-        $r['name'] = $fields[2];
-    }
-    if (count($fields) > 3) {
-        $r['givenname'] = $fields[3];
-        $r['name'] = r['givenname'] . ' ' . r['surname'];
-    }
-    if (count($fields) == 0 || count($fields) > 4) throw RuntimeException('invalid username:password specification [' . $s . ']');
-    return $r;
-}
-
-function my_users_passwd_convert(string $str) {
-    /**
-     * "user1:pass1,user2:pass2" => [
-     *  ['username' => 'user1, 'password' => 'pass1'],
-     *  ['username' => 'user2, 'password' => 'pass2']]
-     */
-    $r = array_map('my_single_convert_passwd', my_explode(',', $str));
-    return $r;
-}
-
 return [
     /**
      * Debug Level:
@@ -101,17 +50,6 @@ return [
       // True if the verification of the SSL certificate of the LDAP server
       // is enforced. The values false might be useful in development environments.
       'verify_cert' => filter_var(env('CAPS_VERIFY_CERT', true), FILTER_VALIDATE_BOOLEAN),
-
-      // LISTA DI PASSWORD HARD-CODED
-      // example: 
-      // CAPS_USERS_PASSWD="my-admin-user:my-admin-password,my-fake-user,my-fake-password"
-      'passwds' => my_users_passwd_convert(env('CAPS_USERS_PASSWD', '')),
-
-
-      // LISTA DI UTENTI AMMINISTRATORE
-      // CAPS_ADMINS="my-admin-user"
-      'admins' => my_explode(',', env('CAPS_ADMINS', '')),
-
     ],
 
     /**

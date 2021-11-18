@@ -90,39 +90,6 @@ class UnipiAuthenticate extends AbstractIdentifier {
     {
         $config = $this->getConfig();
 
-        $admin_usernames = [];
-        if (array_key_exists('admins', $config)) {
-            $admin_usernames = $config['admins'];
-        }
-
-        $user = [
-            'ldap_dn' => '',
-            'username' => $data['username'],
-            'name' => 'Utente Dimostrativo',
-            'number' => '000000',
-            'admin' => in_array($data['username'], $admin_usernames),
-            'surname' => '',
-            'givenname' => '',
-            'email' => 'unknown@nodomain.no'
-        ];
-
-        // First try: users/passwd in environment variable CAPS_USERS_PASSWD
-        if (array_key_exists('passwds', $config))
-        {
-            foreach ($config['passwds'] as $auth) {
-                if ($data['username'] == $auth['username'] && $auth['password'] == $auth['password']) {
-                    foreach ($user as $key => $val) {
-                        if (array_key_exists($key, $auth)) {
-                            $user[$key] = $auth[$key];
-                        }
-                    }
-                    return $user;
-                }
-            }
-        }
-
-        // Second try: LDAP authentication
-
         // If the user requested it, we do not validate the SSL certificate
         // given from the LDAP server (if any). Since this used to be the default
         // before the 'verify_cert' config option existed, we behave in a backward
@@ -166,10 +133,9 @@ class UnipiAuthenticate extends AbstractIdentifier {
 
         // no authentication passed
 
-        error_log("Invalid credentials. If you need an admin login: 'export CAPS_USERS_PASSWD=admin:secret' and 'export CAPS_ADMINS=admin'");
+        error_log("Invalid credentials. If you need an admin login check the command 'bin/cake grant_admin'");
         return false;
     }
-
 }
 
 ?>
