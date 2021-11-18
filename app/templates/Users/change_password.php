@@ -30,11 +30,9 @@
 <?= $this->element('card-start', [ 'header' => 'Generali' ]) ?>
 
 <?= $this->Form->create() ?>
-<?php if ($user_entry['password']): ?>
-    <div class="form-group">
-        <label for="caps-user-old-password">vecchia password</label>
-        <input id="caps-user-old-password" type="password" class="form-control" name="old_password" value="">
-    </div>
+<?php if ($user['password'] === null): ?>
+    <p>Attualmente le tue credenziali sono memorizzate altrove. 
+    Puoi inserire una password che sarà valida solamente su questo sito</p>
 <?php endif; ?>
 
 <div class="form-group">

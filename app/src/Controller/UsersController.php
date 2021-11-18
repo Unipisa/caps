@@ -175,14 +175,25 @@ class UsersController extends AppController {
     }
 
     public function changePassword($id = null) {
-            if ($id == null) $id = $this->user['id']; 
-            if ($id != $this->user['id'] && !$this->user['admin']) {
-                throw new ForbiddenException('Cannot change password of another user profile');
-            }
-    
-            $user_entry = $this->Users->get($id);
-            $this->set('user_entry', $user_entry);
+        if ($id == null) $id = $this->user['id']; 
+        if ($id != $this->user['id'] && !$this->user['admin']) {
+            throw new ForbiddenException('Cannot change password of another user profile');
+        }
 
+        $user_entry = $this->Users->get($id);
+        $this->set('user_entry', $user_entry);
+        $data = $this->request->getData();
+
+        if (isset($data['new_password'])) {
+            if (isset($data['check_password']) && $data['check_password'] == $data['new_password']) {
+                $user_entry->password = $data['new_password'];
+                $this->Users->save($user_entry);
+                $this->Flash->success(__('password modificata'));
+                $this->redirect(['action' => 'view']);
+            } else {
+                $this->Flash->error(__('la password ripetuta non corrisponde'));
+            }
+        }        
     }
 
 }

@@ -79,7 +79,7 @@
                     ?>
                         <a class="dropdown-item" href="<?= $this->Url->build(['controller' => 'users', 'action' => 'change_password', $user['id']])?>">
                             <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
-                            <?= $user->password ? "cambia password" : "crea password" ?>
+                            <?= $user->password ? "cambia password" : "imposta password" ?>
                         </a>
                     <?php endif; ?>
                     <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'logout' ])?>">
