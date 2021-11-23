@@ -124,7 +124,7 @@ class UnipiAuthenticate extends AbstractIdentifier {
                         'surname' => $m['sn'][0],
                         'name' => $m['cn'][0],
                         'number' => $user['matricola'] = array_get($m, 'unipistudentematricola', [$data['username']])[0],
-                        'admin' => in_array($data['username'], $admin_usernames),
+                        'admin' => False,
                         'email' => $m['mail'][0]
                     ];
                 }
