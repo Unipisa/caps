@@ -113,7 +113,7 @@ class FormsController extends AppController
                     $this->Flash->success(__('Nessun modulo {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirect($this->referer());
+                return $this->redirect([]);
             }
         }
 
@@ -221,7 +221,7 @@ class FormsController extends AppController
             $this->Flash->error('Impossibile eliminare il modulo');
         }
 
-        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
+        return $this->redirect([ 'controller' => 'forms', 'action' => 'view' ]);
     }
 
     private function get_form($id)

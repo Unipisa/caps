@@ -39,6 +39,10 @@
 <?= $this->fetch('content') ?>
 
 <p>
+<?= $this->Html->link("Visualizza modulo", 
+        ['controller' => 'Forms', 'action' => 'view', '_full' => true, $form['id']]) ?>
+</p>
+<p>
     Nome e cognome: <?= $form['user']['name'] ?><br>
     Matricola: <?= $form['user']['number'] ?><br>
     Modello: <?= $form['form_template']['name'] ?><br>

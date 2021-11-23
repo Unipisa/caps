@@ -54,7 +54,7 @@
                 </button>
                 <button class="my-1 btn btn-danger" style="width: 100%"
                         onclick="Caps.submitForm('form-form', { 'reject' : 1 }, 'Confermi di voler rifiutare i moduli selezionati?');">
-                    ✗ Rifiuta i modulli selezionati
+                    ✗ Rifiuta i moduli selezionati
                 </button>
                 <button class="my-1 btn btn-warning" style="width: 100%"
                         onclick="Caps.submitForm('form-form', { 'resubmit': 1}, 'Confermi di voler riportare in valutazione i moduli selezionati?')">

@@ -25,7 +25,5 @@ $this->extend('/email/html/form_base');
 
 <h3>Modulo non approvato</h3>
 <p>
-    Il modulo non è stato approvato:
-    <?= $this->Html->link("Visualizza modulo", 
-        ['controller' => 'Forms', 'action' => 'view', '_full' => 'true', $form['id']]) ?>
+    Il modulo non è stato approvato.
 </p>

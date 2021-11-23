@@ -25,7 +25,5 @@ $this->extend('/email/html/form_base');
 
 <h3>Modulo inviato</h3>
 <p>
-    Il modulo è stato sottoposto ad approvazione:
-    <?= $this->Html->link("Visualizza modulo", 
-        ['controller' => 'Forms', 'action' => 'view', '_full' => 'true', $form['id']]) ?>
+    Il modulo è stato sottoposto ad approvazione.
 </p>
