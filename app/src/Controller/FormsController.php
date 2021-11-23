@@ -89,7 +89,7 @@ class FormsController extends AppController
                         switch ($context['state']) {
                             case 'approved': // cascade
                             case 'rejected':
-                                $form['managed_date'] = Time::now();
+                                $form['date_managed'] = Time::now();
                                 break;
                         }
 
