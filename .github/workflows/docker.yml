@@ -46,6 +46,7 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         with:
           push: true
+          cache-from: type=registry,ref=getcaps/caps:develop
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Trigger update on Watchtower
