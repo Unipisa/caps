@@ -407,6 +407,7 @@ class ProposalsController extends AppController
         $builder->disableAutoLayout();
         $builder->setTemplate('Proposals/pdf');
         $pdf = true;
+        $user = $this->user;
         $view = $builder->build(compact('proposal', 'settings', 'Caps', 'app_path', 'secrets', 'user', 'pdf', 'show_comments'));
 
         // Generate the PDF

@@ -87,7 +87,7 @@ if ($message != "") {
         </button>
     </a>
     <a class="d-none d-md-inline"
-       href="<?= $this->Url->build([ 'action' => 'pdf', 'show_comments' => True, $proposal['id']]) ?>">
+       href="<?= $this->Url->build([ 'action' => 'pdf', '?' => ['show_comments' => True], $proposal['id']]) ?>">
         <button type="button" class="btn btn-sm btn-primary">
             <i class="fas fa-file-pdf mr-2"></i>PDF inclusi i commenti
         </button>
