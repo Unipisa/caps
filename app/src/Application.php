@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.5.0';
+    public static $_CAPSVERSION = '2.5.4';
 
     /**
      * application version number
@@ -174,6 +174,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         ]);
 
         // Load identifiers
+        $service->loadIdentifier('Authentication.Password', [
+            'fields' => [
+                'username' => 'username',
+                'password' => 'password',
+            ]
+        ]);
+
         $service->loadIdentifier('App\Authentication\Identifier\UnipiAuthenticate', 
             Configure::read('UnipiAuthenticate'));
 

@@ -65,12 +65,22 @@
                     </div>
                     <div class="dropdown-divider"></div>
 
-                    <?php if ($user && !$user['admin']): ?>
+                    <?php if ($user): ?>
                         <a class="dropdown-item" href="<?= $this->Url->build(['controller' => 'users', 'action' => 'view', $user['id']])?>">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                            I miei piani
+                            I miei documenti
                         </a>
                         <div class="dropdown-divider"></div>
+                    <?php endif; ?>
+
+                    <?php if ($user 
+                        && $user->password // meglio non suggerire agli utenti di creare una password se non ce n'è bisogno
+                        ): 
+                    ?>
+                        <a class="dropdown-item" href="<?= $this->Url->build(['controller' => 'users', 'action' => 'change_password', $user['id']])?>">
+                            <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                            <?= $user->password ? "cambia password" : "imposta password" ?>
+                        </a>
                     <?php endif; ?>
                     <a class="dropdown-item" href="<?= $this->Url->build([ 'controller' => 'users', 'action' => 'logout' ])?>">
                         <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>

@@ -27,14 +27,25 @@
     <div class="col">
         <div class="card shadow">
             <div class="card-body">
-                <?= $this->Form->create($form_template) ?>
+
+            <?= $this->Form->create($form_template) ?>
                 <div class="form-check">
-                    <?= $this->Form->control('enabled', ['label' => 'Attivato']); ?>
+                    <?= $this->Form->control('enabled', ['label' => 'Attivato']) ?>
                 </div>
+
                 <?= $this->Form->control('name', [ 'label' => 'Nome' ]) ?>
-                <?= $this->Form->control('text') ?>
-                <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
-                <?= $this->Form->end() ?>
+
+                <?= $this->Form->control('notify_emails', ['label' => 'Email a cui inviare le notifiche']) ?>
+
+                <div class="form-group">
+                    <label for="text">Testo del modello</label>
+                    <div>Inserire il testo formattato del modello. E' possibile usare le stringhe 
+                        { user.firstname } { user.lastname } { user.code } { user.email}
+                    </div>
+                    <textarea id="text" name="text" class="form-control" rows="20"><?= h($form_template['text']) ?></textarea>
+                    <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
+                    <?= $this->Form->end() ?>
+                </div>
             </div>
         </div>
     </div>

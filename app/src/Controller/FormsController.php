@@ -3,10 +3,12 @@ namespace App\Controller;
 
 use App\Model\Entity\Form;
 use App\Controller\AppController;
+use App\Form\FormsFilterForm;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
-use App\Form\FormsFilterForm;
+use Cake\Mailer\Email;
+
 
 class FormsController extends AppController
 {    
@@ -76,35 +78,27 @@ class FormsController extends AppController
 
                 $count = 0;
                 foreach ($selected as $form_id) {
-                    $form = $this->Proposals->findById($form_id)
-                      ->firstOrFail();
+                    $form = $this->Forms->get($form_id);
                     if ($action === 'delete') {
-                        if ($this->Proposals->delete($form)) {
+                        if ($this->Forms->delete($form)) {
                             $count++;
                         }
                     } else {
                         $form['state'] = $context['state'];
 
                         switch ($context['state']) {
-                            case 'approved':
-                                $form['approved_date'] = Time::now();
-                                break;
-                            case 'submitted':
-                                $form['submitted_date'] = Time::now();
-                                break;
+                            case 'approved': // cascade
                             case 'rejected':
-                                $form['approved_date'] = null;
-                                break;
-                            default:
+                                $form['date_managed'] = Time::now();
                                 break;
                         }
 
                         if ($this->Forms->save($form)) {
                             if ($context['state'] == 'approved') {
-                                // $this->notifyApproval($form['id']);
+                                $this->notifyApproval($form['id']);
                             }
                             if ($context['state'] == 'rejected') {
-                                // $this->notifyRejection($form['id']);
+                                $this->notifyRejection($form['id']);
                             }
 
                             $count++;
@@ -119,7 +113,7 @@ class FormsController extends AppController
                     $this->Flash->success(__('Nessun modulo {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirect($this->referer());
+                return $this->redirect([]);
             }
         }
 
@@ -166,6 +160,13 @@ class FormsController extends AppController
             }
 
             if ($this->Forms->save($form)) {
+                if ($form['state'] == "submitted") {
+                    if ($this->notifySubmission($form['id'])) {
+                        $this->Flash->success("Ho inviato un email di notifica");
+                    } else {
+                        $this->Flash->error("Non sono riuscito ad inviare l'email di notifica");
+                    }
+                }
                 return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
             } else {
                 foreach ($form->errors() as $field => $errors) {
@@ -184,7 +185,7 @@ class FormsController extends AppController
         if (!$id) {
             throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
         }
-        $form = $this->Forms->get($id, ['contain' => 'FormTemplates']);
+        $form = $this->Forms->get($id, ['contain' => ['FormTemplates', 'Users']]);
 
         if ($form['user_id'] != $this->user['id'] && !$this->user['admin']) {
             throw new ForbiddenException();
@@ -220,7 +221,72 @@ class FormsController extends AppController
             $this->Flash->error('Impossibile eliminare il modulo');
         }
 
-        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
+        return $this->redirect([ 'controller' => 'forms', 'action' => 'view' ]);
     }
+
+    private function get_form($id)
+    {
+        return $this->Forms->get($id, [
+            "contain" => [ 'Users', 'FormTemplates']
+            ]);
+    }
+
+    private function createEmail($form)
+    {
+        $email = new Email();
+
+        // Find the address that need to be notified in Cc, if any
+        $cc_addresses = array_map(
+            function ($address) {
+                return trim($address);
+            },
+            explode(',', $form['form_template']['notify_emails'])
+        );
+        $cc_addresses = array_filter($cc_addresses, function ($address) {
+            return trim($address) != "";
+        });
+        if (count($cc_addresses) > 0) {
+            $email->addCc($cc_addresses);
+        }
+
+        $email->setViewVars([ 'settings' => $this->getSettings(), 'form' => $form ])
+            ->setEmailFormat('html');
+
+        return $email;
+    }
+
+    private function notify($form_id, $template_name, $subject): bool
+    {
+        $form = $this->get_form($form_id);
+
+        if ($form['user']['email'] == "" || $form['user']['email'] == null) {
+            return False;
+        }
+
+        $email = $this->createEmail($form)
+            ->setTo($form['user']['email'])
+            ->setSubject($subject);
+        $email->viewBuilder()->setTemplate($template_name);
+        try {
+            $email->send();
+            return True;
+        } catch (\Exception $e) {
+            $this->log("Could not send email: " . $e->getMessage());
+            return False;
+        }
+    }
+
+    private function notifySubmission($form_id): bool {
+        return $this->notify($form_id, 'form_submission', 'modulo inviato');
+    }
+
+    private function notifyApproval($form_id): bool {
+        return $this->notify($form_id, 'form_approval', 'richiesta approvata');
+    }
+
+    private function notifyRejection($form_id): bool {
+        return $this->notify($form_id, 'form_rejection', 'modulo inviato');
+    }
+
 }
 

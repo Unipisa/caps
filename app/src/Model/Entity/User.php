@@ -22,8 +22,9 @@
  */
 namespace App\Model\Entity;
 
-use Authentication\IdentityInterface;
 use Cake\ORM\Entity;
+use Cake\Auth\DefaultPasswordHasher;
+use Authentication\IdentityInterface;
 use App\Model\Entity\Proposal;
 use App\Model\Entity\Attachment;
 
@@ -89,5 +90,20 @@ class User extends Entity implements IdentityInterface
     {
         return $this['admin'] ||
             $this['id'] == $attachment['user_id'];
+    }
+
+    public function getDisplayName() {
+        return $this->givenname . " " . $this->surname;
+    }
+
+    protected function _setPassword(string $password) : ?string
+    {
+        if (strlen($password) > 0) {
+            return (new DefaultPasswordHasher())->hash($password);
+        }
+    }
+
+    public function checkPassword(string $password): bool {
+        return (new DefaultPasswordHasher())->hash($password) == $this->password;
     }
 }

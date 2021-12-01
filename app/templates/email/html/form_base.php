@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,26 +20,31 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-namespace App\Model\Entity;
+?>
+<style>
+    table, td, tr, th {
+        text-align: left;
+    }
+    .proposal-tag {
+        display: inline-block;
+        border-radius: 2px;
+        border: 1px solid black;
+        padding: 1px 4px 1px 4px;
+        font-size: 80%;
+        margin-left: 6px;
+        font-weight: bold;
+    }
+</style>
 
-use Cake\ORM\Entity;
-use Cake\Event\Event;
+<?= $this->fetch('content') ?>
 
-class FormTemplate extends Entity
-{
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @var array
-     */
-    protected $_accessible = [
-        'enabled' => true,
-        'name' => true,
-        'text' => true,
-        'notify_emails' => true,
-    ];
-}
+<p>
+<?= $this->Html->link("Visualizza modulo", 
+        ['controller' => 'Forms', 'action' => 'view', '_full' => true, $form['id']]) ?>
+</p>
+<p>
+    Nome e cognome: <?= $form['user']['name'] ?><br>
+    Matricola: <?= $form['user']['number'] ?><br>
+    Modello: <?= $form['form_template']['name'] ?><br>
+    <?= $settings['department'] ?><br>
+<p>

@@ -80,7 +80,6 @@
     
                 if ($this->FormTemplates->save($form_template)) {
                     $this->Flash->success($success_message);
-    
                     return $this->redirect(['action' => 'view', $form_template['id']]);
                 } else {
                     $this->Flash->error(__('Errore: modulo non aggiornato.'));
@@ -99,15 +98,15 @@
                 throw new NotFoundException(__('Richiesta non valida: manca l\'id.'));
             }
 
-            $form_template = $this->FormTemplates->findById($id)
-                ->firstOrFail();
+            $form_templates = $this->FormTemplates;
 
-            if (!$form_template) {
-                throw new NotFoundException(__('Errore: il modulo non esistente.'));
+            if (!$this->user['admin']) {
+                $form_templates = $form_templates->where(["enabled" => true]);
             }
+
+            $form_template = $form_templates->get($id);
 
             $this->set('form_template', $form_template);
             $this->viewBuilder()->setOption('serialize', 'form_template');
         }
-
     }

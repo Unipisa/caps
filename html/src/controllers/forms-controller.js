@@ -11,7 +11,12 @@ class CapsFormsController extends CapsAppController {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
         ReactDOM.render(
-            <Form root={this.root} id={id} csrfToken={params._csrfToken} edit={true}></Form>,
+            <Form 
+                root={this.root} 
+                id={id} 
+                csrfToken={params._csrfToken} 
+                edit={true}
+                form_template_id={params["?"]["form_template_id"] || null}></Form>,
             document.querySelector('#app')
         );
     }
@@ -20,7 +25,11 @@ class CapsFormsController extends CapsAppController {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
         ReactDOM.render(
-            <Form root={this.root} id={id} csrfToken={params._csrfToken} edit={false}></Form>,
+            <Form 
+                root={this.root} 
+                id={id} 
+                csrfToken={params._csrfToken} 
+                edit={false}></Form>,
             document.querySelector('#app')
         );
     }

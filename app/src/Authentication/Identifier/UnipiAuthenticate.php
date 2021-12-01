@@ -90,37 +90,6 @@ class UnipiAuthenticate extends AbstractIdentifier {
     {
         $config = $this->getConfig();
 
-        $admin_usernames = [];
-        if (array_key_exists('admins', $config)) {
-            $admin_usernames = $config['admins'];
-        }
-
-        // Allow admins to browse as a student.
-        $user = [
-            'ldap_dn' => '',
-            'username' => $data['username'],
-            'name' => 'Utente Dimostrativo',
-            'number' => '000000',
-            'admin' => in_array($data['username'], $admin_usernames),
-            'surname' => '',
-            'givenname' => '',
-            'email' => 'unknown@nodomain.no'
-        ];
-
-        if (array_key_exists('passwds', $config))
-        {
-            foreach ($config['passwds'] as $auth) {
-                if ($data['username'] == $auth['username'] && $auth['password'] == $auth['password']) {
-                    foreach ($user as $key => $val) {
-                        if (array_key_exists($key, $auth)) {
-                            $user[$key] = $auth[$key];
-                        }
-                    }
-                    return $user;
-                }
-            }
-        }
-
         // If the user requested it, we do not validate the SSL certificate
         // given from the LDAP server (if any). Since this used to be the default
         // before the 'verify_cert' config option existed, we behave in a backward
@@ -129,46 +98,44 @@ class UnipiAuthenticate extends AbstractIdentifier {
             putenv("LDAPTLS_REQCERT=never");
 
         // We need to connect to the LDAP Unipi server to authenticate the user.
+        $r = null;
         $ds = ldap_connect($config['ldap_server_uri']);
 
-        if (! $ds) {
-            return false;
+        if ($ds) {
+            ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+            $base_dn = array_get($config, 'base_dn', array_get($config, 'admin_base_dn'));
+            $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
+            $r = @ldap_bind($ds, $bind_dn, $data['password']);
+            if ($r) {
+                // Search for the user in the tree
+                $results = ldap_search($ds, $base_dn, "uid=" . $data['username']);
+
+                if (ldap_count_entries($ds, $results) > 0) {
+                    $matches = ldap_get_entries($ds, $results);
+                    $m = $matches[0];
+
+                    // If we got till here then the user can be logged in. Just make sure that we build up
+                    // an array of its properties so we can use them later
+                    return [
+                        'ldap_dn' => $m['dn'],
+                        'username' => $data['username'],
+                        'givenname' => $m['givenname'][0],
+                        'surname' => $m['sn'][0],
+                        'name' => $m['cn'][0],
+                        'number' => $user['matricola'] = array_get($m, 'unipistudentematricola', [$data['username']])[0],
+                        'admin' => False,
+                        'email' => $m['mail'][0]
+                    ];
+                }
+            }
         }
 
-        ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+        // no authentication passed
 
-        $base_dn = array_get($config, 'base_dn', array_get($config, 'admin_base_dn'));
-        $bind_dn = "uid=" . $data['username'] . "," . $base_dn;
-        $r = @ldap_bind($ds, $bind_dn, $data['password']);
-
-        if (! $r) {
-            return false;
-        }
-
-        // Search for the user in the tree
-        $results = ldap_search($ds, $base_dn, "uid=" . $data['username']);
-
-        if (ldap_count_entries($ds, $results) == 0) {
-            return false;
-        }
-
-        $matches = ldap_get_entries($ds, $results);
-        $m = $matches[0];
-
-        // If we got till here then the user can be logged in. Just make sure that we build up
-        // an array of its properties so we can use them later
-        return [
-            'ldap_dn' => $m['dn'],
-            'username' => $data['username'],
-            'givenname' => $m['givenname'][0],
-            'surname' => $m['sn'][0],
-            'name' => $m['cn'][0],
-            'number' => $user['matricola'] = array_get($m, 'unipistudentematricola', [$data['username']])[0],
-            'admin' => in_array($data['username'], $admin_usernames),
-            'email' => $m['mail'][0]
-        ];
+        error_log("Invalid credentials. If you need an admin login check the command 'bin/cake grant_admin'");
+        return false;
     }
-
 }
 
 ?>

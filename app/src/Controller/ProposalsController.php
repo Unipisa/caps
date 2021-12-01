@@ -28,6 +28,7 @@ use App\Form\ProposalsFilterForm;
 use App\Model\Entity\Proposal;
 use App\Model\Entity\ProposalAuth;
 use Cake\Core\Configure;
+use Cake\Log\Log;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
@@ -330,9 +331,15 @@ class ProposalsController extends AppController
 
                         if ($this->Proposals->save($proposal)) {
                             if ($context['state'] == 'approved') {
+                                Log::write('debug', 
+                                    'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
+                                    . ' approved the proposal with ID = ' . $proposal->id);
                                 $this->notifyApproval($proposal['id']);
                             }
                             if ($context['state'] == 'rejected') {
+                                Log::write('debug', 
+                                    'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
+                                    . ' rejected the proposal with ID = ' . $proposal->id);
                                 $this->notifyRejection($proposal['id']);
                             }
 
@@ -728,14 +735,23 @@ class ProposalsController extends AppController
         }
 
         $proposal = $this->Proposals->get($id);
-        if (!$proposal) {
+        if (! $proposal) {
             throw new NotFoundException(__('Errore: il piano richiesto non esiste.'));
         }
 
         $proposal['state'] = 'approved';
         $proposal['approved_date'] = Time::now();
-        $this->Proposals->save($proposal);
-        $this->notifyApproval($proposal['id']);
+
+        if (! $this->Proposals->save($proposal)) {
+            $this->log('Failed to save proposal with ID = ' . $proposal->id);
+            $this->Flash->error('Impossibile approvare il piano.');
+        }
+        else {
+            Log::write('debug', 
+                'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
+                . ' approved the proposal with ID = ' . $proposal->id);
+            $this->notifyApproval($proposal['id']);
+        }
 
         return $this->redirect(
             [ 'controller' => 'proposals', 'action' => 'view', $id ]
@@ -762,6 +778,9 @@ class ProposalsController extends AppController
         $proposal['state'] = 'rejected';
         $proposal['approved_date'] = null;
         $this->Proposals->save($proposal);
+        Log::write('debug', 
+            'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
+            . ' rejected the proposal with ID = ' . $proposal->id);
         $this->notifyRejection($proposal['id']);
 
         return $this->redirect(

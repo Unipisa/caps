@@ -34,6 +34,10 @@
                     <a href="<?= $this->Url->build(['action' => 'edit', $form_template['id']]) ?>">
                         <button type="button" class="btn btn-sm mr-2 btn-primary">Modifica</button>
                     </a>
+                    <a href="<?= $this->Url->build(['controller' => 'forms', 'action' => 'edit',
+                        '?' => ['form_template_id' => $form_template['id']]]) ?>">
+                        <button type="button" class="btn btn-sm mr-2 btn-primary">Inserisci modulo</button>
+                    </a>
                     <a href="<?= $this->Url->build(['action' => 'delete', $form_template['id']]) ?>"
                        onclick="return confirm('Sei sicuro di voler cancellare questo modello?')">
                         <button type="button" class="btn btn-sm mr-2 btn-danger">Elimina</button>
@@ -47,7 +51,11 @@
                     </tr>
                     <tr>
                         <th>Nome</th>
-                        <td><?php echo h($form_template['name']); ?></td>
+                        <td><?= h($form_template['name']) ?></td>
+                    </tr>
+                    <tr>
+                        <th>Notifiche</th>
+                        <td><?= h($form_template['notify_emails']) ?></td>
                     </tr>
                 </table>
 

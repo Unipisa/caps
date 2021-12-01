@@ -39,6 +39,10 @@
 <?= $this->fetch('content') ?>
 
 <p>
+<?= $this->Html->link("Vai al piano di studi", 
+        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id']]) ?>
+</p>
+<p>
     Nome e cognome: <?= $proposal['user']['name'] ?><br>
     Matricola: <?= $proposal['user']['number'] ?><br>
     Curriculum: <?= $proposal['curriculum']['name'] ?><br>

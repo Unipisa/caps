@@ -27,6 +27,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use App\Model\Entity\User;
 
 class GrantAdminCommand extends Command {
 
@@ -48,6 +49,11 @@ class GrantAdminCommand extends Command {
             'help' => 'Create user even if not existing'
         ]);
 
+        $parser->addOption('password', [
+            'default' => null,
+            'required' => false,
+            'help' => 'Set/change password'
+        ]);
         
         return $parser;
     }
@@ -55,6 +61,7 @@ class GrantAdminCommand extends Command {
     public function execute(Arguments $args, ConsoleIo $io)
     {
         $username = $args->getArgument('username');
+        $password = $args->getOption('password');
         
         $users = $this->Users->find()->where([ 'username' => $username ]);
         
@@ -63,13 +70,13 @@ class GrantAdminCommand extends Command {
             $io->error("User '$username' not found in the database!");
             $io->info("This may mean that the user has never logged in.");
             if ($args->getOption('force')) {
-                $user = $this->Users->newEntity();
+                $user = new User;
+                //$user = $this->Users->newEntity();
                 $user['username'] = $username;
-                $user['admin'] = true;
-                $user['name'] = '';
+                $user['name'] = $username;
                 $user['givenname'] = '';
-                $user['surname'] = '';
-                $user['number'] = '';
+                $user['surname'] = $username;
+                $user['number'] = '000000';
                 if ($this->Users->save($user)) {
                     $io->info("New user $username created");
                 } else {
@@ -77,12 +84,20 @@ class GrantAdminCommand extends Command {
                 }
             } else {
                 $io->info("You can use the flag '--force' to create a new user with the given username.");
+                $user = null;
             }
         }
         else
         {
             $user = $users->first();
+        }   
+
+        if ($user) {
             $user['admin'] = true;
+            if ($args->getOption('password')) {
+                $user['password'] = $password;
+                $io->info("password set");
+            }
             if (! $this->Users->save($user))
             {
                 $io->error("Database error while saving user $username.");
@@ -91,6 +106,6 @@ class GrantAdminCommand extends Command {
             {
                 $io->success("The user $username has been granted administrator rights.");
             }
-        }   
+        }
     }
 } 
