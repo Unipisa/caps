@@ -141,8 +141,6 @@ class UsersController extends AppController {
     }
 
     private function login_user($authuser) {
-        $this->Auth->setUser($authuser);
-
         // Try to find the user in the database
         $user = $this->Users->find()
             ->where([ 'username' => $authuser['username'] ])
@@ -168,6 +166,7 @@ class UsersController extends AppController {
         ]);
 
         if ($this->Users->save($user)) {
+            $this->Authentication->setIdentity($user);
             Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
         }
         else {
@@ -216,8 +215,7 @@ class UsersController extends AppController {
     }
 
     private function isOAuth2Enabled() {
-        return Configure::read('UnipiAuthenticate.microsoft_oauth2_appid') != "" && 
-               Configure::read('UnipiAuthenticate.microsoft_oauth2_client_secret') != "";
+        return !!getenv('OAUTH2_APPID');
     }
 
     public function logout() {
@@ -250,8 +248,8 @@ class UsersController extends AppController {
     }
         
     private function getOAuth2Client() {
-        $appid = Configure::read('UnipiAuthenticate.microsoft_oauth2_appid');
-        $client_secret = Configure::read('UnipiAuthenticate.microsoft_oauth2_client_secret');
+        $appid = getenv('OAUTH2_APPID') ?? '';
+        $client_secret = getenv('OAUTH2_CLIENT_SECRET') ?? '';
 
         if ($appid == "" || $client_secret == "") {
             return null;
@@ -261,10 +259,10 @@ class UsersController extends AppController {
             'clientId'                => $appid,
             'clientSecret'            => $client_secret,
             'redirectUri'             => Router::url([ 'controller' => 'users', 'action' => 'oauth2Callback' ], true),
-            'urlAuthorize'            => 'https://login.microsoftonline.com/c7456b31-a220-47f5-be52-473828670aa1/oauth2/v2.0/authorize',
-            'urlAccessToken'          => 'https://login.microsoftonline.com/c7456b31-a220-47f5-be52-473828670aa1/oauth2/v2.0/token',
-            'urlResourceOwnerDetails' => '',
-            'scopes'                  => 'User.read'
+            'urlAuthorize'            => getenv('OAUTH2_URL_AUTHORIZE'),
+            'urlAccessToken'          => getenv('OAUTH2_URL_TOKEN'),
+            'urlResourceOwnerDetails' => getenv('OAUTH2_URL_USERINFO'),
+            'scopes'                  => 'openid profile email'
         ]);
     }
 
@@ -305,34 +303,46 @@ class UsersController extends AppController {
             $accessToken = $client->getAccessToken('authorization_code', [
               'code' => $authCode
             ]);
-            
-            $graph = new Graph();
-            $graph->setAccessToken($accessToken->getToken());
-            
-            $user = $graph->createRequest('GET', '/me?$select=displayName,mail,employeeId,onPremisesImmutableId,givenName,surname')
-                ->setReturnType(Model\User::class)
-                ->execute();
 
-            $username = $user->getOnPremisesImmutableId();
-            $number = $user->getEmployeeId();
+            $resourceOwner = $client->getResourceOwner($accessToken);
 
-            if ($number == "") {
-                $number = $username;
+            $data = $resourceOwner->toArray();
+            $uid = explode('@', $data['sub'])[0];
+            $fiscalNumber = $data['fiscalNumber'];
+
+            // Query the UniPI API to obtain the user number ("matricola") 
+            // of the current degree. 
+            try {
+                $request = $client->getAuthenticatedRequest(
+                    'GET',
+                    'https://api.unipi.it:443/authPds/api/Carriera/studente/cod_fiscale/' . $fiscalNumber, 
+                    $accessToken,
+                    [ 'headers' => [ 'accept' => 'application/json' ] ]
+                );
+
+                $api_data = $client->getParsedResponse($request);
+                $number = $api_data['Corsi'][0]['Matricola'];
+            } catch (\Error $e) {
+                $number = $uid;
             }
 
+            // Make sure that if we have no information on the user id 
+            // in the system, we fall back to using the user id. 
+            $number = $number == "" ? $uid : $number;
+
             $authuser = [ 
-                'username' => $username,
-                'givenname' => $user->getGivenName(),
-                'surname' => $user->getSurname(),
-                'name' => $user->getDisplayName(),
-                'number' => $number, // FIXME: This is not the right number, currently
+                'username' => $uid,
+                'givenname' => $data['given_name'],
+                'surname' => $data['family_name'],
+                'name' => $data['given_name'] . ' ' . $data['family_name'],
+                'number' => $number,
                 'admin' => false,
-                'email' => $user->getMail()
+                'email' => $data['email']
             ];
 
             $this->login_user($authuser);
     
-            return  $this->redirect($this->Auth->redirectUrl());
+            return  $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
         }
         catch (IdentityProviderException $e) {
             $this->Flash->error('Error requesting the Access Token: ' . $e->getMessage());

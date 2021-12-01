@@ -76,12 +76,9 @@
                                 <?php
                                     echo $this->Form->submit('Login', [ 'class' => 'mr-auto' ]);    
                                 ?>
-                                <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
-                                    Login Unipi
-                                </a>
                                 <?php if ($oauth2_enabled): ?>
                                     <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
-                                    <i class="fas fa-key mr-2"></i> Login Shibboleth
+                                    <i class="fas fa-key mr-2"></i> Login UniPi
                                     </a>
                                 <?php endif; ?>
                                 </div>
