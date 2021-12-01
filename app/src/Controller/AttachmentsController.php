@@ -118,9 +118,13 @@ class AttachmentsController extends AppController
             }
 
             if ($this->Attachments->save($attachment)) {
-                $this->Flash->success(__('The attachment has been saved.'));
+                if ($attachment['filename']) {
+                    $this->Flash->success(__('L\'allegato è stato salvato'));
+                } else {
+                    $this->Flash->success(__('Il commento è stato salvato'));
+                }
             } else {
-                $this->Flash->error(__('The attachment could not be saved. Please, try again.'));
+                $this->Flash->error(__('Impossibile salvare il commento/allegato'));
             }
 
             return $this->redirect(
