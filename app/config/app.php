@@ -41,6 +41,9 @@ return [
     ],
 
     'UnipiAuthenticate' => [
+      'microsoft_oauth2_appid' => '',
+      'microsoft_oauth2_client_secret' => '',
+
       // URI del server LDAP da interrogare
       'ldap_server_uri' => env('CAPS_LDAP_URI', 'ldaps://127.0.0.1:1636/'),
 
