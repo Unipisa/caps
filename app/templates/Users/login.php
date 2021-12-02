@@ -56,7 +56,7 @@
                         <div class="col-lg-12">
                             <div class="p-5">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <img src="img/cherubino_black.png" height="60" class="my-auto">
+                                    <img src="<?= $this->Url->assetUrl('img/cherubino_black.png') ?>" height="60" class="my-auto">
                                     <div>
                                         <h1 class="h3 my-auto font-weight-bold text-gray-900">CAPS <span class="text-muted h6">v<?= $capsShortVersion ?></span></h1>
                                         <h6>Compilazione Assistita<br>Piani di Studio</h6>
@@ -66,14 +66,55 @@
                                 <div class="text-center">
                                 </div>
                                 <?php echo $this->Flash->render(); ?>
-                                <p>Effettua il login usando le credenziali di Ateneo.</p>
-                                <?php
-                                    echo $this->Form->create(null, [ 'class' => 'user' ]);
-                                    echo $this->Form->control('username');
-                                    echo $this->Form->control('password');
-                                    echo $this->Form->submit('Login');
-                                    echo $this->Form->end();
-                                ?>
+
+                                
+
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        Credenziali di Ateneo
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Effettua il login usando le credenziali di Ateneo.</p>
+                                        <?php if ($oauth2_enabled): ?>
+                                            <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
+                                            <i class="fas fa-key mr-2"></i> Login
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header"  data-toggle="collapse" href="#local-login" role="button" aria-expanded="false" aria-controls="local-login">
+                                        <div class="d-flex flex-row">
+                                            <i class="mr-3 mt-auto mb-auto fa fa-chevron-down"></i>
+                                            <div>Credenziali locali</div>
+                                        </div>
+                                    </div>
+                                    <div id="local-login" class="collapse">
+                                        <div class="card-body">
+                                            <?php
+                                                echo $this->Form->create(null, [ 'class' => 'user' ]);
+                                                echo $this->Form->control('username');
+                                                echo $this->Form->control('password');
+                                            ?>
+                                            <div>
+                                            <small class="form-text text-muted mb-2">
+                                                Le credenziali locali sono disponibili solo per gli utenti 
+                                                creati manualmente sul server. 
+                                            </small>
+                                            <?php
+                                                echo $this->Form->submit('Login', [ 'class' => 'mr-auto' ]);    
+                                            ?>
+                                            </div>
+                                            <?php
+                                                echo $this->Form->end();
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                   
                             </div>
                         </div>
                     </div>

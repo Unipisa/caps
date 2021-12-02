@@ -26,6 +26,10 @@ namespace App\Controller;
 use Cake\Http\Exception\ForbiddenException;
 use App\Form\UsersFilterForm;
 use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
+use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 class UsersController extends AppController {
 
@@ -38,7 +42,7 @@ class UsersController extends AppController {
 
     public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated([ 'login' ]);
+        $this->Authentication->allowUnauthenticated([ 'login', 'oauth2Login', 'oauth2Callback' ]);
     }
 
     public function view($id = null) {
@@ -136,6 +140,41 @@ class UsersController extends AppController {
         $this->set('paginated_users', $this->paginate($users->cleanCopy()));
     }
 
+    private function login_user($authuser) {
+        // Try to find the user in the database
+        $user = $this->Users->find()
+            ->where([ 'username' => $authuser['username'] ])
+            ->first();
+
+        if (! $user) {
+            // ... otherwise create a new user
+            $user = $this->Users->newEntity();
+        }
+
+        // We save the user data no matter what, just in case it has changed
+        // since the last update.
+        $user = $this->Users->patchEntity($user, [
+            'name' => ucwords(strtolower($authuser['name'])),
+            'username' => $authuser['username'],
+            'number' => $authuser['number'],
+            'surname' => $authuser['surname'],
+            'givenname' => $authuser['givenname'],
+            'email' => $authuser['email'],
+            'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
+                // if the user is not found; otherwise a user might have been granted admin privileges
+                // locally and we respect that.
+        ]);
+
+        if ($this->Users->save($user)) {
+            $this->Authentication->setIdentity($user);
+            Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
+        }
+        else {
+            Log::write('error',
+                'Error adding user ' . $authuser['username'] . ' to the database');
+        }
+    }
+
     public function login() {
         $this->viewBuilder()->disableAutoLayout();
 
@@ -149,6 +188,8 @@ class UsersController extends AppController {
                 );
             }
             else {
+                $this->login_user($authuser); 
+                
                 // We redirect the user to the redirectUrl, if any. Otherwise, the user will be redirected again to
                 // this page with a valid session, which will send him/her to the index or admin/index depending on
                 // their status.
@@ -164,7 +205,17 @@ class UsersController extends AppController {
                     return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
             }
+            
+            if ($this->request->getQuery('oauth2') == '1') {
+                return $this->oauth2Login();
+            }
         }
+
+        $this->set('oauth2_enabled', $this->isOAuth2Enabled());
+    }
+
+    private function isOAuth2Enabled() {
+        return !!getenv('OAUTH2_APPID');
     }
 
     public function logout() {
@@ -193,7 +244,113 @@ class UsersController extends AppController {
             } else {
                 $this->Flash->error(__('la password ripetuta non corrisponde'));
             }
-        }        
+        }
+    }
+        
+    private function getOAuth2Client() {
+        $appid = getenv('OAUTH2_APPID') ?? '';
+        $client_secret = getenv('OAUTH2_CLIENT_SECRET') ?? '';
+
+        if ($appid == "" || $client_secret == "") {
+            return null;
+        }
+
+        return new GenericProvider([
+            'clientId'                => $appid,
+            'clientSecret'            => $client_secret,
+            'redirectUri'             => Router::url([ 'controller' => 'users', 'action' => 'oauth2Callback' ], true),
+            'urlAuthorize'            => getenv('OAUTH2_URL_AUTHORIZE'),
+            'urlAccessToken'          => getenv('OAUTH2_URL_TOKEN'),
+            'urlResourceOwnerDetails' => getenv('OAUTH2_URL_USERINFO'),
+            'scopes'                  => 'openid profile email'
+        ]);
+    }
+
+    public function oauth2Login() {
+        $client = $this->getOAuth2Client();
+
+        if (!$client) {
+            $this->Flash->error('OAuth2 authentication is disabled');
+            return $this->redirect([ 'action' => 'login' ]);
+        }
+    
+        $authUrl = $client->getAuthorizationUrl();
+        $this->getRequest()
+            ->getSession()
+            ->write('oauth-state', $client->getState());
+
+        return $this->redirect($authUrl);
+    }
+
+    public function oauth2Callback() {
+        $session = $this->getRequest()->getSession();
+        $expectedState = $session->read('oauth-state');
+        $providedState = $this->request->getQuery('state');
+
+        if (! $session->check('oauth-state')) {
+            return $this->redirect([ 'controller' => 'users', 'action' => 'login' ]);
+        }
+
+        if ($providedState == null || $providedState != $expectedState) {
+            $this->Flash->error('Mismatch in states during OAuth2');
+            return $this->redirect([ 'controller' => 'users', 'action' => 'login' ]);
+        }
+
+        $authCode = $this->request->getQuery('code');
+        $client = $this->getOAuth2Client();
+
+        try {
+            $accessToken = $client->getAccessToken('authorization_code', [
+              'code' => $authCode
+            ]);
+
+            $resourceOwner = $client->getResourceOwner($accessToken);
+
+            $data = $resourceOwner->toArray();
+            $uid = explode('@', $data['sub'])[0];
+            $fiscalNumber = $data['fiscalNumber'];
+
+            // Query the UniPI API to obtain the user number ("matricola") 
+            // of the current degree. 
+            try {
+                $request = $client->getAuthenticatedRequest(
+                    'GET',
+                    'https://api.unipi.it:443/authPds/api/Carriera/studente/cod_fiscale/' . $fiscalNumber, 
+                    $accessToken,
+                    [ 'headers' => [ 'accept' => 'application/json' ] ]
+                );
+
+                $api_data = $client->getParsedResponse($request);
+                $number = $api_data['Corsi'][0]['Matricola'];
+            } catch (\Error $e) {
+                $number = $uid;
+            }
+
+            // Make sure that if we have no information on the user id 
+            // in the system, we fall back to using the user id. 
+            $number = $number == "" ? $uid : $number;
+
+            $authuser = [ 
+                'username' => $uid,
+                'givenname' => $data['given_name'],
+                'surname' => $data['family_name'],
+                'name' => $data['given_name'] . ' ' . $data['family_name'],
+                'number' => $number,
+                'admin' => false,
+                'email' => $data['email']
+            ];
+
+            $this->login_user($authuser);
+    
+            return  $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
+        }
+        catch (IdentityProviderException $e) {
+            $this->Flash->error('Error requesting the Access Token: ' . $e->getMessage());
+            return $this->redirect([ 'action' => 'login' ]);
+        }
+
+        $this->Flash->error('You are not authorized to access this page directly');
+        return $this->redirect([ 'action' => 'login' ]);
     }
 
 }

@@ -1,6 +1,6 @@
 FROM php:8-apache
 
-ENV NODE_VERSION=14.18.1
+ENV NODE_VERSION=16.13.0
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN apt-get update && apt-get install -y \
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
         postgresql-client \
 	sudo \
         python3 \
+	python \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
