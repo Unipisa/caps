@@ -54,7 +54,7 @@ function recurseFlattenObject($object)
     foreach ($properties as $key => $val) {
         if (is_object($val) || is_associative_array($val)) {
             if ($val instanceof FrozenTime) {
-                $obj->{$key} = $val->toIso8601String();
+                $obj->{$key} = $val->i18nFormat('yyyy-MMM-dd HH:mm:ss');
             } else {
                 $subobj = recurseFlattenObject($val);
                 foreach ($subobj as $k => $v) {
