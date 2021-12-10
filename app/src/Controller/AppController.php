@@ -28,6 +28,7 @@ use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use App\Application;
+use App\View\XslxView;
 use Cake\I18n\FrozenTime;
 use Cake\Mailer\TransportFactory;
 use stdClass;
@@ -38,7 +39,7 @@ function is_associative_array($item)
     return is_array($item) && (array_keys($item) !== range(0, count($item) - 1));
 }
 
-function recurseFlattenObject($object)
+function recurseFlattenObject($object, bool $stringTimes = false)
 {
     // error_log("recurseFlattenObject (" . gettype($object) . " ) " . json_encode($object));
     $obj = new stdClass(); // empty object
@@ -54,7 +55,10 @@ function recurseFlattenObject($object)
     foreach ($properties as $key => $val) {
         if (is_object($val) || is_associative_array($val)) {
             if ($val instanceof FrozenTime) {
-                $obj->{$key} = $val->i18nFormat('yyyy-MMM-dd HH:mm:ss');
+                if ($stringTimes)
+                    $obj->{$key} = $val->i18nFormat('yyyy-MM-dd HH:mm:ss');
+                else 
+                    $obj->{$key} = $val;
             } else {
                 $subobj = recurseFlattenObject($val);
                 foreach ($subobj as $k => $v) {
@@ -65,7 +69,7 @@ function recurseFlattenObject($object)
             // sequential array
             $obj->{$key} = implode(",", array_map('json_encode', $val));
         } else if ($class_name == "App\\Model\\Entity\\Form" && $key == "data") {
-            $subobj = recurseFlattenObject(json_decode($val));
+            $subobj = recurseFlattenObject(json_decode($val), $stringTimes);
             foreach ($subobj as $k => $v) {
                 $obj->{$key . "_" . $k} = $v;
             }
@@ -83,7 +87,7 @@ function recurseFlattenObject($object)
  * sono le intestazioni (nomi degli attributi)
  * e le righe seguenti sono i valori di tali attributi
  */
-function flatten($object)
+function flatten($object, bool $stringTimes = false)
 {
     // error_log("flatten(" . json_encode($object) . ")");
     // error_log("\nflatten type " . gettype($object));
@@ -99,7 +103,7 @@ function flatten($object)
     foreach ($array as $obj) {
         $row = [];
         array_pad($row, count($headers_map), null);
-        $obj = recurseFlattenObject($obj);
+        $obj = recurseFlattenObject($obj, $stringTimes);
         foreach ($obj as $key => $val) {
             if (array_key_exists($key, $headers_map)) {
                 $row[$headers_map[$key]] = $val;
@@ -148,8 +152,20 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false,
+            'enableBeforeRedirect' => false, 
         ]);
+
+        $this->request->addDetector(
+            'xlsx',
+            [
+                'accept' => [ 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ],
+                'param' => '_ext',
+                'value' => 'xlsx',
+            ]
+        );
+
+        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
+
         $this->loadComponent('Authentication.Authentication', [
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
@@ -187,6 +203,8 @@ class AppController extends Controller
                 return($this->redirect($this->referer()));
             }
         }
+
+        $this->response->setTypeMap('xslx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
 
@@ -273,14 +291,15 @@ class AppController extends Controller
     {
         parent::beforeRender($event);
 
-        if ($this->request->is('csv')) {
+        if ($this->request->is('csv') || $this->request->is('xlsx')) {
             $vars = $this->viewBuilder()->getOption('serialize');
             if (! is_array($vars)) {
                 $vars = [ $vars ];
             }
 
             foreach ($vars as $var) {
-                $data = flatten($this->viewBuilder()->getVar($var));
+                // We only convert times to strings for CSV requests. 
+                $data = flatten($this->viewBuilder()->getVar($var), $this->request->is('csv'));
                 $this->set($var, $data);
             }
         }

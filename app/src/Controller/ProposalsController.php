@@ -54,7 +54,6 @@ class ProposalsController extends AppController
     {
         parent::initialize();
         $this->loadComponent('Paginator');
-        $this->loadComponent('RequestHandler');
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)

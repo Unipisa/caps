@@ -65,6 +65,10 @@ class CapsController {
         location.pathname += '.csv';
     }
 
+    downloadXLSX() {
+        location.pathname += '.xlsx';
+    }
+
     // Submit a form by injecting the name and value of an element; this is used
     // in several places where we allow to operate on a set of elements selected
     // by checkboxes, even with buttons that are outside the HTML <form> tags.

@@ -115,7 +115,7 @@ class GroupsController extends AppController
         }
 
         $this->set('groups', $groups);
-        if ($this->request->is('csv')) {
+        if ($this->request->is('csv') || $this->request->is('xlsx')) {
             $data = [];
             foreach ($groups as $group) {
                 $exams = $group->exams;
