@@ -39,7 +39,7 @@ function is_associative_array($item)
     return is_array($item) && (array_keys($item) !== range(0, count($item) - 1));
 }
 
-function recurseFlattenObject($object, bool $stringTimes = false)
+function recurseFlattenObject($object)
 {
     // error_log("recurseFlattenObject (" . gettype($object) . " ) " . json_encode($object));
     $obj = new stdClass(); // empty object
@@ -55,10 +55,7 @@ function recurseFlattenObject($object, bool $stringTimes = false)
     foreach ($properties as $key => $val) {
         if (is_object($val) || is_associative_array($val)) {
             if ($val instanceof FrozenTime) {
-                if ($stringTimes)
-                    $obj->{$key} = $val->i18nFormat('yyyy-MM-dd HH:mm:ss');
-                else 
-                    $obj->{$key} = $val;
+                $obj->{$key} = $val;
             } else {
                 $subobj = recurseFlattenObject($val);
                 foreach ($subobj as $k => $v) {
@@ -69,7 +66,7 @@ function recurseFlattenObject($object, bool $stringTimes = false)
             // sequential array
             $obj->{$key} = implode(",", array_map('json_encode', $val));
         } else if ($class_name == "App\\Model\\Entity\\Form" && $key == "data") {
-            $subobj = recurseFlattenObject(json_decode($val), $stringTimes);
+            $subobj = recurseFlattenObject(json_decode($val));
             foreach ($subobj as $k => $v) {
                 $obj->{$key . "_" . $k} = $v;
             }
@@ -87,7 +84,7 @@ function recurseFlattenObject($object, bool $stringTimes = false)
  * sono le intestazioni (nomi degli attributi)
  * e le righe seguenti sono i valori di tali attributi
  */
-function flatten($object, bool $stringTimes = false)
+function flatten($object)
 {
     // error_log("flatten(" . json_encode($object) . ")");
     // error_log("\nflatten type " . gettype($object));
@@ -103,7 +100,7 @@ function flatten($object, bool $stringTimes = false)
     foreach ($array as $obj) {
         $row = [];
         array_pad($row, count($headers_map), null);
-        $obj = recurseFlattenObject($obj, $stringTimes);
+        $obj = recurseFlattenObject($obj);
         foreach ($obj as $key => $val) {
             if (array_key_exists($key, $headers_map)) {
                 $row[$headers_map[$key]] = $val;
@@ -138,6 +135,39 @@ class AppController extends Controller
     // a new query to the database.
     private $settingsTable = null;
 
+    private function setupTableViews() {
+        $this->request->addDetector(
+            'xlsx',
+            [
+                'accept' => [ 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ],
+                'param' => '_ext',
+                'value' => 'xlsx',
+            ]
+        );
+
+        $this->request->addDetector(
+            'ods',
+            [
+                'accept' => [ 'application/vnd.oasis.opendocument.spreadsheet' ],
+                'param' => '_ext',
+                'value' => 'ods',
+            ]
+        );
+
+        $this->request->addDetector(
+            'csv',
+            [
+                'accept' => [ 'text/csv' ],
+                'param' => '_ext',
+                'value' => 'csv',
+            ]
+        );
+
+        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
+        $this->RequestHandler->setConfig('viewClassMap.ods',  'Ods');
+        $this->RequestHandler->setConfig('viewClassMap.csv',  'Csv');
+    }
+
     /**
      * Initialization hook method.
      *
@@ -155,17 +185,9 @@ class AppController extends Controller
             'enableBeforeRedirect' => false, 
         ]);
 
-        $this->request->addDetector(
-            'xlsx',
-            [
-                'accept' => [ 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ],
-                'param' => '_ext',
-                'value' => 'xlsx',
-            ]
-        );
-
-        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
-
+        // Hook up the correct views for Csv, Xslx, Ods, and similar data types. 
+        $this->setupTableViews();
+        
         $this->loadComponent('Authentication.Authentication', [
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
@@ -205,6 +227,7 @@ class AppController extends Controller
         }
 
         $this->response->setTypeMap('xslx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->response->setTypeMap('ods', 'application/vnd.oasis.opendocument.spreadsheet');
     }
 
 
@@ -291,7 +314,7 @@ class AppController extends Controller
     {
         parent::beforeRender($event);
 
-        if ($this->request->is('csv') || $this->request->is('xlsx')) {
+        if ($this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
             $vars = $this->viewBuilder()->getOption('serialize');
             if (! is_array($vars)) {
                 $vars = [ $vars ];
@@ -299,7 +322,7 @@ class AppController extends Controller
 
             foreach ($vars as $var) {
                 // We only convert times to strings for CSV requests. 
-                $data = flatten($this->viewBuilder()->getVar($var), $this->request->is('csv'));
+                $data = flatten($this->viewBuilder()->getVar($var));
                 $this->set($var, $data);
             }
         }

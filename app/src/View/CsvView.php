@@ -25,16 +25,16 @@ namespace App\View;
 use Cake\View\View;
 use App\View\SpreadsheetView;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Cake\I18n\FrozenTime;
 
-class XlsxView extends SpreadsheetView
+class CsvView extends SpreadsheetView
 {
     public function render(?string $template = null, $layout = null) : string {
-        $spreadsheet = $this->renderSpreadsheet();
+        $spreadsheet = $this->renderSpreadsheet(false);
 
-        $writer = new Xlsx($spreadsheet);
-        $tmpfile = tempnam("/tmp", "xlsx-writer-");
+        $writer = new Csv($spreadsheet);
+        $tmpfile = tempnam("/tmp", "csv-writer-");
         $writer->save($tmpfile);
         $res = file_get_contents($tmpfile);
         
