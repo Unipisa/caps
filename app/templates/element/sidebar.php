@@ -57,7 +57,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'users', 'action' => 'view', $user['id']
             ]); ?>">
-                <i class="fas fa-fw fa-file-alt"></i>
+                <i class="fas mr-1 fa-file-alt"></i>
                 <span>
                     I miei documenti
                 </span>
@@ -69,7 +69,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'edit'
             ]); ?>">
-                <i class="fas fa-fw fa-plus-square"></i>
+                <i class="fas mr-1 fa-plus-square"></i>
                 <span>Nuovo piano di studio</span>
             </a>
         </li>
@@ -80,7 +80,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'forms', 'action' => 'edit'
             ]); ?>">
-                <i class="fas fa-fw fa-plus-square"></i>
+                <i class="fas mr-1 fa-edit"></i>
                 <span>Nuovo modulo</span>
             </a>
         </li>
@@ -102,7 +102,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'proposals', 'action' => 'dashboard'
             ]); ?>">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <i class="fas mr-1 fa-tachometer-alt"></i>
                 <span>Pannello di controllo</span>
             </a>
         </li>
@@ -112,7 +112,7 @@ $actionName = $this->request->getParam('action');
                 'controller' => 'proposals',
                 'action' => 'index'
             ]) ?>">
-                <i class="fas fa-fw fa-file-alt"></i>
+                <i class="fas mr-1 fa-file-alt"></i>
                 <span>Piani di studio</span>
             </a>
         </li>
@@ -122,7 +122,7 @@ $actionName = $this->request->getParam('action');
                 'controller' => 'forms',
                 'action' => 'index'
             ]) ?>">
-                <i class="fas fa-fw fa-table"></i>
+                <i class="fas mr-1 fa-table"></i>
                 <span>Moduli</span>
             </a>
         </li>
@@ -140,7 +140,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'degrees', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-university"></i>
+                <i class="fas mr-1 fa-university"></i>
                 <span>Corsi di Laurea</span>
             </a>
         </li>
@@ -150,7 +150,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'curricula', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-scroll"></i>
+                <i class="fas mr-1 fa-scroll"></i>
                 <span>Curricula</span>
             </a>
         </li>
@@ -159,7 +159,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'groups', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-toolbox"></i>
+                <i class="fas mr-1 fa-toolbox"></i>
                 <span>Gruppi</span>
             </a>
         </li>
@@ -168,7 +168,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'exams', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-tasks"></i>
+                <i class="fas mr-1 fa-tasks"></i>
                 <span>Esami</span>
             </a>
         </li>
@@ -177,7 +177,7 @@ $actionName = $this->request->getParam('action');
             <a class="nav-link" href="<?= $this->Url->build([
                 'controller' => 'formTemplates', 'action' => 'index'
             ]); ?>">
-                <i class="fas fa-fw fa-table"></i>
+                <i class="fas mr-1 fa-table"></i>
                 <span>Modelli</span>
             </a>
         </li>
@@ -188,14 +188,14 @@ $actionName = $this->request->getParam('action');
                 '?' => ['admin' => 'admin']], [
                     'escape' => false
                 ]); ?>">
-                <i class="fas fa-fw fa-user"></i>
+                <i class="fas mr-1 fa-user"></i>
                 <span>Utenti</span>
                 </a>
         </li>
 
         <li class="nav-item<?= $controllerName == 'Settings' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'settings', 'action' => 'index']); ?>">
-            <i class="fas fa-fw fa-wrench"></i>
+            <i class="fas mr-1 fa-wrench"></i>
             <span>Impostazioni</span>
             </a>
         </li>
