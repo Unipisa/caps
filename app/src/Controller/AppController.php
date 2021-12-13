@@ -232,7 +232,7 @@ class AppController extends Controller
 
 
     /**
-     * Look for a query parameter secret=XXXX, and saves it into an array of
+     * Look for a query parameter secret=XXXX, and save it into an array of
      * secrets in the current session. These can be used to access proposals
      * of other users, and are automatically generated when the user shares
      * its proposals.
