@@ -28,6 +28,7 @@ use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use App\Application;
+use App\View\XslxView;
 use Cake\I18n\FrozenTime;
 use Cake\Mailer\TransportFactory;
 use stdClass;
@@ -134,6 +135,39 @@ class AppController extends Controller
     // a new query to the database.
     private $settingsTable = null;
 
+    private function setupTableViews() {
+        $this->request->addDetector(
+            'xlsx',
+            [
+                'accept' => [ 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ],
+                'param' => '_ext',
+                'value' => 'xlsx',
+            ]
+        );
+
+        $this->request->addDetector(
+            'ods',
+            [
+                'accept' => [ 'application/vnd.oasis.opendocument.spreadsheet' ],
+                'param' => '_ext',
+                'value' => 'ods',
+            ]
+        );
+
+        $this->request->addDetector(
+            'csv',
+            [
+                'accept' => [ 'text/csv' ],
+                'param' => '_ext',
+                'value' => 'csv',
+            ]
+        );
+
+        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
+        $this->RequestHandler->setConfig('viewClassMap.ods',  'Ods');
+        $this->RequestHandler->setConfig('viewClassMap.csv',  'Csv');
+    }
+
     /**
      * Initialization hook method.
      *
@@ -148,8 +182,12 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false,
+            'enableBeforeRedirect' => false, 
         ]);
+
+        // Hook up the correct views for Csv, Xslx, Ods, and similar data types. 
+        $this->setupTableViews();
+        
         $this->loadComponent('Authentication.Authentication', [
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
@@ -187,11 +225,14 @@ class AppController extends Controller
                 return($this->redirect($this->referer()));
             }
         }
+
+        $this->response->setTypeMap('xslx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->response->setTypeMap('ods', 'application/vnd.oasis.opendocument.spreadsheet');
     }
 
 
     /**
-     * Look for a query parameter secret=XXXX, and saves it into an array of
+     * Look for a query parameter secret=XXXX, and save it into an array of
      * secrets in the current session. These can be used to access proposals
      * of other users, and are automatically generated when the user shares
      * its proposals.
@@ -273,13 +314,14 @@ class AppController extends Controller
     {
         parent::beforeRender($event);
 
-        if ($this->request->is('csv')) {
+        if ($this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
             $vars = $this->viewBuilder()->getOption('serialize');
             if (! is_array($vars)) {
                 $vars = [ $vars ];
             }
 
             foreach ($vars as $var) {
+                // We only convert times to strings for CSV requests. 
                 $data = flatten($this->viewBuilder()->getVar($var));
                 $this->set($var, $data);
             }

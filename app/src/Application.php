@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.6.0';
+    public static $_CAPSVERSION = '2.6.1';
 
     /**
      * application version number
@@ -73,7 +73,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
-        $this->addPlugin('CsvView');
         $this->addPlugin('Migrations');
         $this->addPlugin('Authentication');
 

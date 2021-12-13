@@ -61,27 +61,29 @@ class GroupsController extends AppController
                 },
             'Degrees' 
             ]);
+
+        // We currently eliminate the exams from groups when exporting to 
+        // CSV or XLSX formats; this is probably not particularly useful, 
+        // but it's not easy to effectively represent the hierarchical data. 
+        //
+        // Note that the pagination is computed only for standard views. 
+        if ($this->request->is([ 'csv', 'xlsx' ])) {
+            $groups = array_map(function ($g) {
+                $g->exams = [];
+                return $g;
+            }, $groups->toArray());
+        }
+        else {
+            $this->set('paginated_groups', $this->paginate($groups->cleanCopy()));
+        }
         
         $filterForm = new GroupsFilterForm($groups);
         $groups = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);
         $this->set('groups', $groups);
         $this->set('_serialize', ['groups']); // overwritten below if CSV is requested
-        $this->set('paginated_groups', $this->paginate($groups->cleanCopy()));
+        $this->viewBuilder()->setOption('serialize', 'groups');
 
-        if ($this->request->is('csv')) {
-            $data = [];
-            foreach ($groups as $group) {
-                $exams = $group->exams;
-                $bare_group = $group;
-                unset($bare_group->exams);
-                foreach ($exams as $exam) {
-                    $data[] = ['group' => $bare_group, 'exam' => $exam];
-                }
-            }
-            $this->set('data', $data);
-            $this->set('_serialize', 'data');
-        } 
         
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
@@ -112,23 +114,6 @@ class GroupsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-        }
-
-        $this->set('groups', $groups);
-        if ($this->request->is('csv')) {
-            $data = [];
-            foreach ($groups as $group) {
-                $exams = $group->exams;
-                $bare_group = $group;
-                unset($bare_group->exams);
-                foreach ($exams as $exam) {
-                    $data[] = ['group' => $bare_group, 'exam' => $exam];
-                }
-            }
-            $this->set('data', $data);
-            $this->viewBuilder()->setOption('serialize', 'data');
-        } else {
-            $this->viewBuilder()->setOption('serialize', ['groups']);
         }
     }
 

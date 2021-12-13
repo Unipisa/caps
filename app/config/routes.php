@@ -47,6 +47,8 @@ Router::defaultRouteClass(DashedRoute::class);
 Router::connect('/', [ 'controller' => 'users', 'action' => 'login' ]);
 Router::extensions('json', true);
 Router::extensions('csv');
+Router::extensions('xlsx');
+Router::extensions('ods');
 
 Router::scope('/', function (RouteBuilder $routes) {
     /**

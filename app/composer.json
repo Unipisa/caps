@@ -13,9 +13,9 @@
         "cakephp/migrations": "^3.1",
         "cakephp/plugin-installer": "^1.0",
         "dompdf/dompdf": "^1.0",
-        "friendsofcake/cakephp-csvview": "^4.0",
         "league/oauth2-client": "^2.6",
-        "mobiledetect/mobiledetectlib": "2.*"
+        "mobiledetect/mobiledetectlib": "2.*",
+        "phpoffice/phpspreadsheet": "^1.19"
     },
     "require-dev": {
         "cakephp/cakephp-codesniffer": "^3.0",
