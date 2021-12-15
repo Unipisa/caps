@@ -148,7 +148,7 @@ class UsersController extends AppController {
 
         if (! $user) {
             // ... otherwise create a new user
-            $user = $this->Users->newEntity();
+            $user = $this->Users->newEmptyEntity();
         }
 
         // We save the user data no matter what, just in case it has changed

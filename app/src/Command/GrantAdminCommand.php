@@ -70,8 +70,7 @@ class GrantAdminCommand extends Command {
             $io->error("User '$username' not found in the database!");
             $io->info("This may mean that the user has never logged in.");
             if ($args->getOption('force')) {
-                $user = new User;
-                //$user = $this->Users->newEntity();
+                $user = new User();
                 $user['username'] = $username;
                 $user['name'] = $username;
                 $user['givenname'] = '';
