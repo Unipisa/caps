@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -148,7 +148,7 @@ class UsersController extends AppController {
 
         if (! $user) {
             // ... otherwise create a new user
-            $user = $this->Users->newEntity();
+            $user = $this->Users->newEmptyEntity();
         }
 
         // We save the user data no matter what, just in case it has changed

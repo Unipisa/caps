@@ -1,7 +1,7 @@
 <?php
 /**
  * CAPS - Compilazione Assistita Piani di Studio
- * Copyright (C) 2014 - 2020 E. Paolini, J. Notarstefano, L. Robol
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.6.1';
+    public static $_CAPSVERSION = '2.6.2';
 
     /**
      * application version number
