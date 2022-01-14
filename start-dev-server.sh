@@ -35,9 +35,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if composer is installed
-if [ ! -x app/composer.phar ]; then
+if [ ! -x backend/composer.phar ]; then
   echo "Composer not found, downloading it"
-  cd app/
+  cd backend/
 
   # Adapted from: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
   EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
@@ -83,11 +83,11 @@ echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 # From now on, all command should succeed
 set -e
 
-cd app
+cd backend
 php ./composer.phar -n install
 cd ..
 
-cd html
+cd frontend
 npm install
 cd ..
 
@@ -117,10 +117,10 @@ echo "  > Using NodeJS $(node --version)"
 echo "  > Using NPM $(npm --version)"
 echo ""
 
-(cd html && npm run watch:dev )&
+(cd frontend && npm run watch:dev )&
 watch_pid=$!
 
-(cd html && npm run watch )&
+(cd frontend && npm run watch )&
 watch_pid2=$!
 
 wait

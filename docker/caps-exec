@@ -14,8 +14,8 @@ export HOME=/var/www
 
 msg "Starting the CAPS Docker manager"
 
-msg "Adjust permissions of directory /app/logs"
-chown www-data:www-data /app/logs -R
+msg "Adjust permissions of directory /backend/logs"
+chown www-data:www-data /backend/logs -R
 
 msg "Making sure that /tmp is 777"
 chmod 777 /tmp
@@ -50,17 +50,17 @@ fi
 if [ "$CAPS_SSH_TUNNEL" != "" ]; then
   msg "Starting the SSH tunnel"
 
-  if [ ! -f /app/id_rsa ]; then
-    msg "Please make sure to mount your public SSH key as /app/id_rsa.pub"
+  if [ ! -f /backend/id_rsa ]; then
+    msg "Please make sure to mount your public SSH key as /backend/id_rsa.pub"
     exit 2
   fi
 
   # Make sure we're the one to own the key
-  cp /app/id_rsa /app/id_rsa.key
-  chown $(whoami) /app/id_rsa.key
-  chmod 600 /app/id_rsa.key
+  cp /backend/id_rsa /backend/id_rsa.key
+  chown $(whoami) /backend/id_rsa.key
+  chmod 600 /backend/id_rsa.key
 
-  /app/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /app/id_rsa.key ${CAPS_LDAP_URI} &
+  /backend/ssh-tunnel-wrapper.sh ${CAPS_SSH_TUNNEL} /backend/id_rsa.key ${CAPS_LDAP_URI} &
 
   msg "We are rewriting the configuration to point to the local forward:"
   msg ${CAPS_LDAP_URI} | grep ldaps: > /dev/null
@@ -89,9 +89,9 @@ export APACHE_RUN_GROUP=www-data
 export APACHE_LOG_DIR=/var/log/apache2
 
 if [ ! -L /var/www/html ]; then
-  msg "Setting up /var/www/html as a symbolic link to /app/webroot"
+  msg "Setting up /var/www/html as a symbolic link to /backend/webroot"
   rm -r /var/www/html
-  ln -s /app/webroot /var/www/html
+  ln -s /backend/webroot /var/www/html
 fi
 
 # msg "Dumping configuration"
@@ -119,7 +119,7 @@ msg "Starting Apache2, go to http://localhost${PORT}/"
 if [ "$DEBUG" = "true" ]; then
   msg ""
   msg "Run "
-  msg "    sudo docker exec -it caps /app/bin/cake grant-admin USER [--force] [--password PASSWD]"
+  msg "    sudo docker exec -it caps /backend/bin/cake grant-admin USER [--force] [--password PASSWD]"
   msg "to make USER an administrator"
 fi
 msg "************************************************"

@@ -12,7 +12,7 @@ For later updates, use
 ```bash
 sudo docker-compose up --build
 ```
-to regenerate the CAPS image. This will copy the files from the ```app```
+to regenerate the CAPS image. This will copy the files from the ```backend```
 folder into the image. 
 
 ## Local development
@@ -28,7 +28,7 @@ an LDAP server with users ```user1``` and ```user2``` with their username as
 passwords is created. In that case, you may wish to make one of the two an
 administrator by running 
 ```bash
-$ sudo docker exec -it caps /app/bin/cake grant-admin user1
+$ sudo docker exec -it caps /backend/bin/cake grant-admin user1
 ```
 once the Docker containers are running. 
 
@@ -45,10 +45,10 @@ run ```docker-compose build``` again.
 The image is set up for automatic SSH forwarding of LDAP server that are not
 publicly accessible, for development. In this case, you may set the variable 
 ```CAPS_SSH_TUNNEL``` in ```caps.env```, and make sure that a private RSA key
-is available at ```/app/id_rsa``` inside the container. For instance, it suffices
+is available at ```/backend/id_rsa``` inside the container. For instance, it suffices
 to have:
 ```
   volumes:
-    - ./id_rsa:/app/id_rsa
+    - ./id_rsa:/backend/id_rsa
 ```
 inside the container named ```caps```. 

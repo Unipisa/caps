@@ -1,9 +1,9 @@
-app/*.sqlite
-app/*.sh
-app/webroot/js
-app/webroot/node_modules
-app/vendor
-html/js
-html/css
-html/node_modules
+backend/*.sqlite
+backend/*.sh
+backend/webroot/js
+backend/webroot/node_modules
+backend/vendor
+frontend/js
+frontend/css
+frontend/node_modules
 

@@ -13,12 +13,12 @@ services:
       # This is set anyway, in case it does not exists a folder
       # is created, which is harmless. Otherwise, this should be
       # a file with a private RSA key for SSH authentication
-      - "./id_rsa:/app/id_rsa:ro"
-      - "../app/src:/app/src:ro"
-      - "../app/templates:/app/templates:ro"
-      - "../app/webroot:/app/webroot:ro"
-      - "../app/config/Migrations:/app/config/Migrations"
-      - "./logs:/app/logs"
+      - "./id_rsa:/backend/id_rsa:ro"
+      - "../backend/src:/backend/src:ro"
+      - "../backend/templates:/backend/templates:ro"
+      - "../backend/webroot:/backend/webroot:ro"
+      - "../backend/config/Migrations:/backend/config/Migrations"
+      - "./logs:/backend/logs"
     env_file:
       - caps.env
     environment:

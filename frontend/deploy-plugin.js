@@ -3,7 +3,7 @@
 // properly handling versioning. 
 //
 // In particular:
-//  - It creates a text file in ../app/webroot/js/ver which contains
+//  - It creates a text file in ../backend/webroot/js/ver which contains
 //    the name of the JS file to load. The name is without the extension, 
 //    i.e., if it is caps-xxxx, then the files are:
 //
@@ -32,12 +32,12 @@ class CAPSDeployPlugin {
         const hash = stats.hash;
 
         const name = 'caps-' + hash;
-        const js_dir = '../app/webroot/js/';
+        const js_dir = '../backend/webroot/js/';
         const version_file = stats.compilation.outputOptions.filename + '.version';        
         
         const extension = '.' + output_file.split('.').splice(1).join('.');
 
-        // Check that the directory ../app/webroot/js exists; if not, create it
+        // Check that the directory ../backend/webroot/js exists; if not, create it
         try {
             fs.accessSync(js_dir, fs.constants.W_OK);
         } 
@@ -47,13 +47,13 @@ class CAPSDeployPlugin {
         }
 
         // Try to remove all the old files that have the same extension.
-        const files = fs.readdirSync('../app/webroot/js/');
+        const files = fs.readdirSync('../backend/webroot/js/');
         for (const f of files) {
             const fe = '.' + f.split('.').splice(1).join('.');
             if (fe == extension) {
                 console.log(`Removing the old file ${f}`);
                 try {
-                    fs.unlinkSync('../app/webroot/js/' + f);
+                    fs.unlinkSync('../backend/webroot/js/' + f);
                 }
                 catch {
                     console.log("Error during removal, ignoring");
@@ -61,12 +61,12 @@ class CAPSDeployPlugin {
             }
         }
 
-        const fn = '../app/webroot/js/' + name + extension;
+        const fn = '../backend/webroot/js/' + name + extension;
         console.log(`Installing ${output_file} into ${fn}`);
         fs.copyFileSync(output_file, fn);
 
-        console.log(`Creating the file ../app/webroot/js/${version_file}`);
-        fs.writeFileSync(`../app/webroot/js/${version_file}`, name + extension);
+        console.log(`Creating the file ../backend/webroot/js/${version_file}`);
+        fs.writeFileSync(`../backend/webroot/js/${version_file}`, name + extension);
     }
 }
   
