@@ -55,7 +55,6 @@ return [
         // If set to '', or not set, PDF signatures verification is disabled.
         'psv_api' => env('CAPS_PSV_API', ''),
         // 'psv_api' => 'https://my-psv-server:8081/validate',
-        
         // if not empty only allows GET requests
         // and if a string it will be inserted as a message in every page
         'readonly' => env('CAPS_READONLY', '')
@@ -311,7 +310,6 @@ return [
     'Datasources' => [
         'default' => [
             'className' => Connection::class,
-            //'driver' => Mysql::class,
             'driver' => [
                 'sqlite' => Sqlite::class,
                 'mysql' => Mysql::class,
