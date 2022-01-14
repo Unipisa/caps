@@ -17,21 +17,6 @@ class FormTemplatesFixture extends TestFixture
     */
     public $table = 'form_templates';
 
-    /**
-     * Fields
-     *
-     * @var array
-     */
-    // phpcs:disable
-    public $fields = [
-        'id' => ['type' => 'integer', 'length' => null, 'unsigned' => false, 'null' => false, 'default' => null, 'autoIncrement' => true, 'precision' => null, 'comment' => null],
-        'enabled' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'precision' => null, 'comment' => null],
-        'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'precision' => null, 'comment' => null, 'collate' => null],
-        'text' => ['type' => 'text', 'length' => null, 'null' => false, 'default' => null, 'precision' => null, 'comment' => null, 'collate' => null],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
-        ],
-    ];
     // phpcs:enable
     /**
      * Init method

@@ -25,11 +25,11 @@ class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
     
-    public $fixtures = [
+    protected $fixtures = [
+        'app.Degrees',
         'app.Users', 
         'app.Proposals', 
         'app.Curricula', 
-        'app.CurriculaProposals',
         'app.Forms',
         'app.FormTemplates'
     ];

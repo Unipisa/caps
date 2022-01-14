@@ -16,27 +16,7 @@ class FormsFixture extends TestFixture
      * @var string
      */
     public $table = 'forms';
-
-    /**
-     * Fields
-     *
-     * @var array
-     */
-    // phpcs:disable
-    public $fields = [
-        'id' => ['type' => 'integer', 'length' => null, 'unsigned' => false, 'null' => false, 'default' => null, 'autoIncrement' => true, 'precision' => null, 'comment' => null],
-        'form_template_id' => ['type' => 'integer', 'length' => null, 'unsigned' => false, 'null' => false, 'default' => null, 'precision' => null, 'comment' => null, 'autoIncrement' => null],
-        'user_id' => ['type' => 'integer', 'length' => null, 'unsigned' => false, 'null' => false, 'default' => null, 'precision' => null, 'comment' => null, 'autoIncrement' => null],
-        'state' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => 'draft', 'precision' => null, 'comment' => null, 'collate' => null],
-        'date_submitted' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'precision' => null, 'comment' => null],
-        'date_managed' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'precision' => null, 'comment' => null],
-        'data' => ['type' => 'text', 'length' => null, 'null' => false, 'default' => '[]', 'precision' => null, 'comment' => null, 'collate' => null],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
-            'form_template_id_fk' => ['type' => 'foreign', 'columns' => ['form_template_id'], 'references' => ['form_templates', 'id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
-            'user_id_fk' => ['type' => 'foreign', 'columns' => ['user_id'], 'references' => ['users', 'id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
-        ],
-    ];
+    
     // phpcs:enable
     /**
      * Init method

@@ -9,7 +9,16 @@ use Cake\ORM\TableRegistry;
  */
 class ExamsControllerTest extends MyIntegrationTestCase
 {
-    public $fixtures = ['app.Users', 'app.Exams', 'app.Groups', 'app.ExamsGroups', 'app.Settings', 'app.Tags', 'app.TagsExams' ];
+    public $fixtures = [
+        'app.Degrees',
+        'app.Users', 
+        'app.Exams', 
+        'app.Groups', 
+        'app.ExamsGroups', 
+        'app.Settings', 
+        'app.Tags', 
+        'app.TagsExams' 
+    ];
 
     public function setUp(): void
     {

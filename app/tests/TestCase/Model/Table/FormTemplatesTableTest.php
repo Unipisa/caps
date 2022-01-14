@@ -24,8 +24,7 @@ class FormTemplatesTableTest extends TestCase
      * @var array
      */
     protected $fixtures = [
-        'app.FormTemplates',
-        'app.Forms',
+        'app.FormTemplates'
     ];
 
     /**

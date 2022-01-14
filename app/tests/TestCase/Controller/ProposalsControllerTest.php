@@ -4,11 +4,12 @@ namespace App\Test\TestCase\Controller;
 use Cake\TestSuite\TestCase;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\ORM\TableRegistry;
+use App\Test\TestCase\Controller\MyIntegrationTestCase;
 
 /**
  * UsersControllerTest class
  */
-class ProposalsControllerTest extends TestCase
+class ProposalsControllerTest extends MyIntegrationTestCase
 {
     use IntegrationTestTrait;
 
@@ -16,18 +17,17 @@ class ProposalsControllerTest extends TestCase
             'app.Users',
             'app.Proposals',
             'app.Curricula',
-            'app.CurriculaProposals',
             'app.Degrees',
+            'app.Tags', 
+            'app.TagsExams',
             'app.Exams',
-            'app.Groups',
-            'app.Settings',
-            'app.Tags'
+            'app.ExamsGroups', 
+            'app.Groups'
     ];
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->Users = TableRegistry::getTableLocator()->get('Users');
     }
 
     public function testProposalPage()
@@ -38,14 +38,8 @@ class ProposalsControllerTest extends TestCase
             $this->assertRedirect();
         }
 
-//        $this->get('/proposals/view/1000/');
-//        debug($this->_response);
-//        $this->assertResponseOk();
-        // $auth = TableRegistry::getTableLocator()->get('ProposalAuths')->get(1);
-
         // Set session data
-        $user = TableRegistry::getTableLocator()->get('Users')->get(1);
-        $this->session([ 'Auth' => $user ]);
+        $this->studentSession();
 
         $this->get('/proposals/edit');
         $this->assertResponseOk();

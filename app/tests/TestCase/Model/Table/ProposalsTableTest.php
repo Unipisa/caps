@@ -23,6 +23,8 @@ class ProposalsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.Degrees',
+        'app.Groups',
         'app.Proposals',
         'app.Users'
     ];
