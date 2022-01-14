@@ -8,7 +8,7 @@
         "php": ">=7.2",
         "cakephp/authentication": "^2.0",
         "cakephp/bake": "^2.5",
-        "cakephp/cakephp": "4.2.x",
+        "cakephp/cakephp": "^4.3",
         "cakephp/debug_kit": "^4.4",
         "cakephp/migrations": "^3.1",
         "cakephp/plugin-installer": "^1.0",
