@@ -167,11 +167,16 @@ class UsersController extends AppController {
 
         if ($this->Users->save($user)) {
             $this->Authentication->setIdentity($user);
-            Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
+            if ($user->isNew()) {
+                Log::write('debug', 'Added user ' . $authuser['username'] . ' to the database');
+            }
+            else {
+                Log::write('debug', 'Logged in user ' . $authuser['username']);
+            }
         }
         else {
             Log::write('error',
-                'Error adding user ' . $authuser['username'] . ' to the database');
+                'Error adding or updating user ' . $authuser['username'] . ' in the database');
         }
     }
 
