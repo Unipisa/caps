@@ -27,23 +27,23 @@ RUN apt-get update && apt-get install -y \
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 	&& sed -i "s|session.gc_maxlifetime = .*|session.gc_maxlifetime = 86400|g" "$PHP_INI_DIR/php.ini"
 
-COPY app /app
-COPY html /html
-COPY ./docker/app.php /app/config/app.php.template
-COPY ./docker/caps-exec /app/
-COPY ./scripts/ssh-tunnel-wrapper.sh /app/
+COPY backend /backend
+COPY frontend /frontend
+COPY ./docker/app.php /backend/config/app.php.template
+COPY ./docker/caps-exec /backend/
+COPY ./scripts/ssh-tunnel-wrapper.sh /backend/
 
-RUN rm -rf /html/node_modules /app/webroot/css/* /app/webroot/js/* \
+RUN rm -rf /frontend/node_modules /backend/webroot/css/* /backend/webroot/js/* \
     && wget -q https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
     && tar xJf ./node-v${NODE_VERSION}-linux-x64.tar.xz -C / \
     && rm node-v${NODE_VERSION}-linux-x64.tar.xz \
-    && cd /app && php /usr/local/bin/composer.phar install \
-    && chown www-data:www-data /app /html /var/www -R \
-    && cd /html \ 
+    && cd /backend && php /usr/local/bin/composer.phar install \
+    && chown www-data:www-data /backend /frontend /var/www -R \
+    && cd /frontend \ 
     && sudo -u www-data env PATH=${PATH} npm install \ 
     && sudo -u www-data env PATH=${PATH} npm run deploy
 
-WORKDIR /app
+WORKDIR /backend
 
 CMD './caps-exec'
 
