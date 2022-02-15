@@ -42,7 +42,7 @@ tramite interfaccia web.
 Se non si vuole configurare l'autenticazione LDAP si possono inserire le password localmente nel database.
 Ad esempio per creare un utente ```admin``` con password ```secret```:
 ```bash
-bin/cake grand-admin --force --password secret admin
+bin/cake grant-admin --force --password secret admin
 ```
 ## Inoltro dell'LDAP in locale
 
