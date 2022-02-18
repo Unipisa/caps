@@ -63,6 +63,10 @@ class GrantAdminCommand extends Command {
         $username = $args->getArgument('username');
         $password = $args->getOption('password');
         
+        if ($username == null) {
+            $io->error("No user provided");
+            return;
+        }
         $users = $this->Users->find()->where([ 'username' => $username ]);
         
         if ($users->count() == 0)
