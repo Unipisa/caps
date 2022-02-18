@@ -40,6 +40,8 @@ class FormTemplate extends Entity
         'enabled' => true,
         'name' => true,
         'text' => true,
+        'code' => true,
+        'require_approval' => true,
         'notify_emails' => true,
     ];
 }

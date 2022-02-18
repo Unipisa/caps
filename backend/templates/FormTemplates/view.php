@@ -57,12 +57,23 @@
                         <th>Notifiche</th>
                         <td><?= h($form_template['notify_emails']) ?></td>
                     </tr>
+                    <tr>
+                        <th>Richiede approvazione [non ancora implementato]</th>
+                        <td><?= h($form_template['require_approval'] ? 'Sì' : 'No') ?></td>
+                    </tr>
                 </table>
 
                 <h4>Modello</h4>
                 <p>
                     <?= $form_template['text'] ?>
                 </p>
+                <? if ($form_template['code']) :?>
+                <h4>Codice [non ancora implementato]</h4>
+                <pre>
+                    <?= $form_template['code'] ?>
+                </pre>
+                </p>
+                <? endif; ?>
             </div>
         </div>
     </div>

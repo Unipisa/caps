@@ -37,15 +37,26 @@
 
                 <?= $this->Form->control('notify_emails', ['label' => 'Email a cui inviare le notifiche']) ?>
 
+                <div class="form-check">
+                    <?= $this->Form->control('require_approval', ['label' => 'necessita approvazione']) ?>
+                </div>
+
                 <div class="form-group">
                     <label for="text">Testo del modello</label>
                     <div>Inserire il testo formattato del modello. E' possibile usare le stringhe 
                         { user.firstname } { user.lastname } { user.code } { user.email}
                     </div>
                     <textarea id="text" name="text" class="form-control" rows="20"><?= h($form_template['text']) ?></textarea>
-                    <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
-                    <?= $this->Form->end() ?>
                 </div>
+
+                <div class="form-group">
+                    <label for="code">Codice opzionale</label>
+                    <div>Inserire eventuale codice javascript
+                    </div>
+                    <textarea id="code" name="code" class="form-control" rows="20"><?= h($form_template['code']) ?></textarea>
+                </div>
+                <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
+                <?= $this->Form->end() ?>
             </div>
         </div>
     </div>
