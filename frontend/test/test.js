@@ -1,26 +1,37 @@
-var assert = require('assert');
+import assert from 'assert';
+
+import curricula from '../src/models/curricula.js';
+import degrees from '../src/models/degrees.js';
+import exams from '../src/models/exams.js';
+import groups from '../src/models/groups.js';
+import proposals from '../src/models/proposals.js';
+import jsdom from 'jsdom';
+
+import CapsAttachment from '../src/modules/attachment';
+import { loadDashboardData } from '../src/modules/dashboard';
+
+
+
+
 
 describe('models', function() {
-    var curricula = require('../src/models/curricula.js');
-    var degrees = require('../src/models/degrees.js');
-    var exams = require('../src/models/exams.js');
-    var groups = require('../src/models/groups.js');
-    var proposals = require('../src/models/proposals.js');
+
 });
 
 describe('modules', function() {
-    var jsdom = require('jsdom');
-    global.window = new jsdom.JSDOM().window;
-    global.document = window.document;
-    var CapsAttachment = require('../src/modules/attachment.js');
-    var loadDashboardData = require('../src/modules/dashboard.js');
+
     describe('upload-csv', function() {
+        global.window = new jsdom.JSDOM().window;
+        global.document = window.document;
+        
+        // import UploadCsv from '../src/modules/upload-csv';
         var UploadCsv = require("../src/modules/upload-csv.js");
         const headers = ['nome','codice','settore','crediti'];
         const line = ["giorgio", "XY", "MAT", "6"];
         var csv = new UploadCsv({
             upload_fields: headers
         });
+        
         describe('split_row', () => {
             it('simple line', () => {
                 assert.deepStrictEqual(csv.split_row(line.join(",")), line);
