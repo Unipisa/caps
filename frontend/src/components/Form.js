@@ -116,6 +116,7 @@ class Form extends React.Component {
             let reactElem = <div><DatePicker 
                 selected={this.state[stateName]} 
                 name={name} 
+                dateFormat="d.M.yyyy"
                 onChange={changeHandler}>
             </DatePicker></div>;
 
