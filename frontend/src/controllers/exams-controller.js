@@ -1,5 +1,5 @@
-const CapsAppController = require('./app-controller');
-const CsvUpload = require('../modules/upload-csv');
+import CapsAppController from './app-controller';
+import CsvUpload from '../modules/upload-csv';
 
 class CapsExamsController extends CapsAppController {
 
@@ -50,4 +50,4 @@ class CapsExamsController extends CapsAppController {
 
 }
 
-module.exports = CapsExamsController;
+export default CapsExamsController;

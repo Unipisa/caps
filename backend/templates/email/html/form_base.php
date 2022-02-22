@@ -24,6 +24,8 @@
 <style>
     table, td, tr, th {
         text-align: left;
+        border-collapse: collapse;
+        border: 1px;
     }
     .proposal-tag {
         display: inline-block;
@@ -43,8 +45,16 @@
         ['controller' => 'Forms', 'action' => 'view', '_full' => true, $form['id']]) ?>
 </p>
 <p>
-    Nome e cognome: <?= $form['user']['name'] ?><br>
-    Matricola: <?= $form['user']['number'] ?><br>
-    Modello: <?= $form['form_template']['name'] ?><br>
-    <?= $settings['department'] ?><br>
+    Nome e cognome: <?= h($form['user']['name']) ?><br>
+    Matricola: <?= h($form['user']['number']) ?><br>
+    Modello: <?= h($form['form_template']['name']) ?><br>
+    <table>
+        <?php foreach($form['data_expanded'] as $key => $val) : ?>
+            <tr>
+                <td><?= h(str_replace("_", " ", $key)) ?>: </td>
+                <td><?= h($val) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+    <?= h($settings['department']) ?><br>
 <p>

@@ -1,7 +1,5 @@
 'use strict';
 
-const { get } = require("jquery");
-
 class Cache {
 
     constructor() {
@@ -74,4 +72,4 @@ class Cache {
 
 }
 
-module.exports = Cache;
+export default Cache;

@@ -1,13 +1,17 @@
 'use strict';
 
-const React = require('react');
-const Card = require('./Card');
-const LoadingMessage = require('./LoadingMessage');
-const FormTemplates = require('../models/form_templates');
-const Forms = require('../models/forms');
-const Users = require('../models/users');
+import React, { useState } from 'react';
+import LoadingMessage from './LoadingMessage';
+import FormTemplates from '../models/form_templates';
+import Forms from '../models/forms';
 
-const submitForm = require('../modules/form-submission');
+import submitForm from '../modules/form-submission';
+
+import "react-datepicker/dist/react-datepicker.css";
+
+import ReactDOM from 'react-dom';
+import ReactDOMServer from 'react-dom/server';
+import DatePicker from 'react-datepicker';
 
 class Form extends React.Component {
     constructor(props) {
@@ -83,11 +87,51 @@ class Form extends React.Component {
         return s;
     }
 
+    enhanceDatePickers(form) {
+        Array.from(form.getElementsByClassName("datepicker")).forEach((el) => {
+            // Create an appropriate state for this component
+            const name = el.name ? el.name : el.getAttribute('data-name')
+            const elementId = `datepicker-react-${name}`;
+            const stateName = `dates.${elementId}`;
+
+            // If this field was already set we load it from the form data
+            if (! this.state[stateName]) {
+                this.state[stateName] = new Date();
+                if (this.state.form && this.state.form.data[name] !== undefined) {
+                    this.state[stateName] = new Date(this.state.form.data[name]);
+                }
+            }
+                
+            // We use a new container to hold this react component; the name 
+            // is set to data-name for later recovery
+            var container = document.createElement('div');
+            container.classList += elementId;
+            container.classList += ' datepicker';
+            container.setAttribute('data-name', name);
+
+            let changeHandler = (date) => {
+                this.setState({ [stateName]: date });
+            };
+
+            let reactElem = <div><DatePicker 
+                selected={this.state[stateName]} 
+                name={name} 
+                onChange={changeHandler}>
+            </DatePicker></div>;
+
+            el.parentNode.replaceChild(container, el);
+            ReactDOM.render(reactElem, container);
+        });
+    }
+
     componentDidUpdate() {
         this.fields = {};
         const form = document.getElementById("form-form");
         if (!form) return; // the form has not been rendered yet
         form.addEventListener('submit', this.onSave.bind(this));
+
+        this.enhanceDatePickers(form);
+
         if (!this.state.form) return; // this is a new form, no data needs to be injected
         const form_div = document.getElementById("form-div");
         const array_to_list = arr => {
@@ -108,7 +152,8 @@ class Form extends React.Component {
                     new_el.innerHTML = checked?'<b>X</b>':'o';
                     el.parentNode.replaceChild(new_el, el);
                 }
-            } else {
+            }
+            else {
                 el.value = data[el.name];
                 if (!this.props.edit) {
                     let new_el = document.createElement('b');
@@ -192,7 +237,6 @@ class Form extends React.Component {
 
     renderForm() {
         return [
-//            <h1 key="form-h1">{ this.state.form_template.name }</h1>,
             <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
         ];
     }
@@ -207,4 +251,4 @@ class Form extends React.Component {
 
 }
 
-module.exports = Form;
+export default Form;

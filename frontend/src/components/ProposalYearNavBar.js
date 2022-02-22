@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react');
+import React from "react";
 
 class ProposalYearNavBar extends React.Component {
 
@@ -37,4 +37,4 @@ class ProposalYearNavBar extends React.Component {
     }
 }
 
-module.exports = ProposalYearNavBar;
+export default ProposalYearNavBar;

@@ -1,10 +1,10 @@
 'use strict';
 
-const Groups = require('../models/groups')
-const Exams = require('../models/exams');
+import Groups from '../models/groups';
+import Exams from '../models/exams';
 
-const React = require('react');
-const TrashIcon = require('./TrashIcon');
+import React from 'react';
+import TrashIcon from './TrashIcon';
 
 class ExamInput extends React.Component {
     constructor(props) {
@@ -214,4 +214,4 @@ class ExamInput extends React.Component {
 
 }
 
-module.exports = ExamInput;
+export default ExamInput;

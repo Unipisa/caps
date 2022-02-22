@@ -1,8 +1,7 @@
 'use strict';
 
-const React = require('react');
-
-const { formatDate } = require('../modules/dates');
+import React from 'react';
+import { formatDate } from '../modules/dates';
 
 class Attachment extends React.Component {
 
@@ -18,4 +17,4 @@ class Attachment extends React.Component {
 
 }
 
-module.exports = Attachment;
+export default Attachment;

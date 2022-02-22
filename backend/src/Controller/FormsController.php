@@ -201,6 +201,31 @@ class FormsController extends AppController
         $this->set('form', $form);
     }
 
+    /**
+     * Check if a user can view a specific form. At the moment we
+     * grant view rights to the folloing classes of users:
+     *
+     * 1. The user who submit the form.
+     * 2. System administrators.
+     * 3. Any user who has been notified for the form.
+     *
+     * The function returns true if the user is allowed to view the form,
+     * false otherwise.
+     */
+    private function canView($user, $form) : bool {
+        if ($form['user_id'] == $user['id']) {
+            return true;
+        }
+
+        if ($user['admin']) {
+            return true;
+        }
+
+        $notified_emails = explode(',', $form['form_template']['notify_emails']);
+
+        return ($user['email'] && in_array($user['email'], $notified_emails));
+    }
+
     public function view($id) {
         $query = $this->request->getQuery();
         if (!$id) {
@@ -208,7 +233,7 @@ class FormsController extends AppController
         }
         $form = $this->Forms->get($id, ['contain' => ['FormTemplates', 'Users']]);
 
-        if ($form['user_id'] != $this->user['id'] && !$this->user['admin']) {
+        if (! $this->canView($this->user, $form)) {
             throw new ForbiddenException();
         }
 
@@ -242,14 +267,16 @@ class FormsController extends AppController
             $this->Flash->error('Impossibile eliminare il modulo');
         }
 
-        return $this->redirect([ 'controller' => 'forms', 'action' => 'view' ]);
+        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
     }
 
     private function get_form($id)
     {
-        return $this->Forms->get($id, [
+        $form = $this->Forms->get($id, [
             "contain" => [ 'Users', 'FormTemplates']
             ]);
+        $form['data_expanded'] = json_decode($form['data']);
+        return $form;
     }
 
     private function createEmail($form)
@@ -281,9 +308,9 @@ class FormsController extends AppController
         $form = $this->get_form($form_id);
 
         if ($form['user']['email'] == "" || $form['user']['email'] == null) {
+            $this->log("User " . $form['user']['username'] . " has no email");
             return False;
         }
-
         $email = $this->createEmail($form)
             ->setTo($form['user']['email'])
             ->setSubject($subject);

@@ -1,6 +1,6 @@
 'use strict';
 
-const Cache = require('../modules/cache');
+import Cache from '../modules/cache';
 
 class Groups {
 
@@ -34,4 +34,4 @@ class Groups {
 
 }
 
-module.exports = new Groups();
+export default new Groups();

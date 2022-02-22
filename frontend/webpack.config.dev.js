@@ -2,7 +2,7 @@ const path = require('path');
 const CAPSDeployPlugin = require('./deploy-plugin');
 
 module.exports = {
-  entry: './src/caps.js',
+  entry: [ 'babel-polyfill', './src/caps.js' ],
   mode: 'development',
   devtool: 'eval-source-map',
   module: {
@@ -24,11 +24,11 @@ module.exports = {
           "css-loader",
           "sass-loader",
         ],
-      },
+      }
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.scss', '.css'],
   },
   plugins: [
     new CAPSDeployPlugin()

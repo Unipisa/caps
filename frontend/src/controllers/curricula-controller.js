@@ -1,6 +1,6 @@
-const CapsAppController = require('./app-controller');
+import CapsAppController from './app-controller';
 
 class CapsCurriculaController extends CapsAppController {
 }
 
-module.exports = CapsCurriculaController;
+export default CapsCurriculaController;

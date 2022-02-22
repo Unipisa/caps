@@ -23,6 +23,7 @@
     namespace App\Controller;
 
     use App\Model\Entity\FormTemplate;
+    use Cake\ORM\TableRegistry;
     use App\Controller\AppController;
     use Cake\Http\Exception\ForbiddenException;
     use Cake\Http\Exception\NotFoundException;
@@ -61,16 +62,16 @@
                 if ($this->request->getData('delete')) {
                     $delete_count = 0;
                     foreach ($selected as $form_template_id) {
-                        if ($this->deleteIfNotUsed($curriculum_id)) {
+                        if ($this->deleteIfNotUsed($form_template_id)) {
                             $delete_count++;
                         }
                     }
                     if ($delete_count > 1) {
-                        $this->Flash->success(__('{delete_count} moduli cancellati con successo', ['delete_count' => $delete_count]));
+                        $this->Flash->success(__('{delete_count} modelli cancellati con successo', ['delete_count' => $delete_count]));
                     } elseif ($delete_count == 1) {
-                        $this->Flash->success(__('un modulo cancellato con successo'));
+                        $this->Flash->success(__('un modello cancellato con successo'));
                     } else {
-                        $this->Flash->success(__('nessun modulo cancellato'));
+                        $this->Flash->success(__('nessun modello cancellato'));
                     }
 
                     return $this->redirect(['action' => 'index']);
@@ -130,4 +131,27 @@
             $this->set('form_template', $form_template);
             $this->viewBuilder()->setOption('serialize', 'form_template');
         }
+
+        protected function deleteIfNotUsed($form_template_id): bool
+        {
+            $form_template = $this->FormTemplates->findById($form_template_id)->firstOrFail();
+            $form_count = TableRegistry::getTableLocator()->get('forms')->find('all')
+                ->where(['form_template_id' => $form_template_id])
+                ->count();
+            if ($form_count == 0) {
+                if ($this->FormTemplates->delete($form_template)) {
+                    return true;
+                } else {
+                    $this->flash->error(__('Cancellazione del modello non riuscita'));
+                }
+            } else {
+                $this->Flash->error(__(
+                    'Il modello {name} non può essere rimosso perché ci sono {count} moduli collegati',
+                    ['name' => $form_template['name'], 'count' => $form_count]
+                ));
+            }
+    
+            return false;
+        }
+    
     }

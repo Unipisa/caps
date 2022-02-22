@@ -1,4 +1,4 @@
-const CapsAppController = require('./app-controller');
+import CapsAppController from './app-controller';
 
 class CapsDegreesController extends CapsAppController {
 
@@ -18,4 +18,4 @@ class CapsDegreesController extends CapsAppController {
     }
 }
 
-module.exports = CapsDegreesController;
+export default CapsDegreesController;

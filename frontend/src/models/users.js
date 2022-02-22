@@ -14,4 +14,4 @@ class Users {
 
 }
 
-module.exports = new Users();
+export default new Users();

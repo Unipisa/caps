@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react');
+import React from "react";
 
 class TrashIcon extends React.Component {
 
@@ -21,4 +21,4 @@ class TrashIcon extends React.Component {
 
 }
 
-module.exports = TrashIcon;
+export default TrashIcon;

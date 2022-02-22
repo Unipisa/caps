@@ -11,36 +11,39 @@ ed alcune librerie Javascript per (parte) del frontend. Per un ambiente di sviup
 apt install composer npm
 apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
 apt install sqlite3  # for development
+cd frontend/
+  npm install
+  npm run test # run js unit tests
+  npm run deploy # compiles js and css files
+  npm run deploy:dev # as above but for development
+cd ..
+cd backend
+  composer install # installa pacchetti PHP
+  bin/cake migrations migrate # crea il database
+  vendor/bin/phpunit # esegue test
+  bin/cake server # fai partire il server
+cd ..
 ```
-
 ## Configurazione di CakePHP
-```bash
-cd app
-cp config/app.default.php config/app.php # Configurazione locale, richiede di impostare i parametri per LDAP
-composer install
-```
-Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
-tramite una porta locale, è necessario modificare il parametro ```verify_cert``` a false in 
-```app.php``` (si trovano più dettagli sotto). Ovviamente, questa configurazione non 
-è ideale in produzione. 
-Per lo sviluppo in locale, se non si vuole configurare LDAP, è possibile 
-inserire le credenziali degli utenti direttamente nel file di configurazione.
 
-Una volta fatto il login con un utente, è possibile renderlo amministratore con il comando
+Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
+tramite una porta locale, è necessario modificare la variabile d'ambiente ```CAPS_VERIFY_CERT``` a false (si trovano più dettagli sotto). Ovviamente, questa configurazione non 
+è ideale in produzione. 
+Per lo sviluppo in locale, se non si vuole configurare LDAP, è possibile creare gli utenti e definire le password direttamente 
+nel database.
+
+Se un utente accede tramite LDAP è possibile renderlo amministratore con il comando
 ```bash
 bin/cake grant-admin username
 ```
 Una volta che è presente il primo amministratore, gli altri possono essere creati
 tramite interfaccia web. 
 
-Se non si vuole configurare l'autenticazione LDAP si possono inserire gli username e password
-degli utenti in una variabile d'ambiente. 
-Ad esempio per avere due utenti con password uguale allo username:
+Se non si vuole configurare l'autenticazione LDAP si possono inserire le password localmente nel database.
+Ad esempio per creare un utente ```admin``` con password ```secret```:
+```bash
+bin/cake grant-admin --force --password secret admin
 ```
-export LDAP_ADMINS=admin
-export LDAP_USERS_PASSWD=admin:admin,user:user
-```
-
 ## Inoltro dell'LDAP in locale
 
 Per utilizzare un server LDAP disponibile in remoto (ad esempio '''idm2.unipi.it''' sulla macchina '''caps.dm.unipi.it''')
@@ -48,26 +51,22 @@ in locale, va inoltrata la porta tramite SSH:
 ```bash
 ssh -L 1636:idm2.unipi.it:636 utente@caps.dm.unipi.it
 ```
-e poi va modificato il file '''config/app.php''' per puntare all'LDAP locale, ad esempio:
-```php
-'UnipiAuthenticate' => [
-  'ldap_server_uri' => 'ldaps://127.0.0.1:1636/',
-  'base_dn' => "ou=people,dc=unipi,dc=it",
-  'verify_cert' => false
-]
+e poi vanno definite le seguenti variabili d'ambiente, ad esempio:
+```bash
+export CAPS_LDAP_URI=ldaps://127.0.0.1:1636/
+export CAPS_LDAP_BASE=ou=people,dc=unipi,dc=it
+export CAPS_VERIFY_CERT=false
 ```
-I parametri opzionali ```admin``` e ```fakes``` possono essere utilizzati per forzare
-alcuni utenti ad essere amministratori, o per creare utenti fittizzi. 
 
 Questa procedura viene gestita in automatico dall'immagine [Docker](docker/README.md). 
 
 ## Creazione files HTML e JS
 
-Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```html```. 
+Il template, basato su SB-Admin-2, (CSS e JS) si trova nella cartella ```frontend```. 
 Per compilare i file JS e CSS è necessario entrare nella cartella ed usare ```npm```. 
 
 ```bash
-cd html/
+cd frontend/
 npm install
 npm run test # run js unit tests
 npm run deploy # compiles js and css files
@@ -83,24 +82,11 @@ npm run watch:dev
 ``` 
 
 I file sorgente si trovano rispettivamente 
-nelle cartelle ```html/scss``` e ```html/src```.
+nelle cartelle ```frontend/scss``` e ```frontend/src```.
 
 Il comando ```deploy``` esegue ```npm run build``` e ```npm run install``` che compilano e 
-copiano i file CSS e JS all'interno di ../app/webroot/, rispettivamente. Per comodità, i file
+copiano i file CSS e JS all'interno di ```../app/webroot/```, rispettivamente. Per comodità, i file
 già compilati sono inclusi nel repository. 
-
-
-## Esecuzione del backend
-
-Per avviare il server di sviluppo si possono usare i seguenti comandi. È necessario aver prima compilato
-i file JS e CSS. 
-
-```bash
-cd app
-bin/cake migrations migrate # applica eventuali migrazioni al database
-vendor/bin/phpunit # run php unit tests
-bin/cake server & # run a development server
-```
 
 ## Branching model
 Utilizziamo il *branching model* descritto qui: https://nvie.com/posts/a-successful-git-branching-model/ in particolare il branch *master* deve poter andare immediatamente in produzione mentre le modifiche non completamente testate andranno nel branch *develop*

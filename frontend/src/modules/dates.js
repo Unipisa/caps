@@ -3,4 +3,4 @@
     return date.toLocaleString(navigator.language);
  }
  
- module.exports = { formatDate }
+ export { formatDate };

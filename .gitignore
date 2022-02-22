@@ -11,3 +11,4 @@ backend/webroot/js/ver
 backend/webroot/css/style.min.css.map
 backend/webroot/node_modules
 caps.sqlite
+node_modules

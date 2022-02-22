@@ -13,6 +13,7 @@
     "esm": "^3.2.25",
     "jquery-easing": "0.0.1",
     "react": "^17.0.2",
+    "react-datepicker": "^4.6.0",
     "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.9",
     "startbootstrap-sb-admin-2": "^4.1.4"
@@ -22,6 +23,7 @@
     "@babel/preset-env": "^7.15.0",
     "@babel/preset-react": "^7.14.5",
     "babel-loader": "^8.2.2",
+    "babel-polyfill": "^6.26.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "chart.js": "^2.9.4",

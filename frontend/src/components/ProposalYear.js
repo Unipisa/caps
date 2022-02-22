@@ -1,8 +1,8 @@
 'use strict';
 
-const React = require('react');
-const ExamInput = require('./ExamInput');
-const ProposalYearNavBar = require('./ProposalYearNavBar');
+import React from 'react';
+import ExamInput from './ExamInput';
+import ProposalYearNavBar from './ProposalYearNavBar';
 
 
 /**
@@ -174,4 +174,4 @@ class ProposalYear extends React.Component {
 
 }
 
-module.exports = ProposalYear;
+export default ProposalYear;

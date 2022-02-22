@@ -1,7 +1,7 @@
 'use strict';
 
-const { formatDate } = require('../modules/dates');
-const React = require('react');
+import { formatDate } from '../modules/dates';
+import React from 'react';
 
 class Share extends React.Component {
 
@@ -18,4 +18,4 @@ class Share extends React.Component {
 
 }
 
-module.exports = Share;
+export default Share;
