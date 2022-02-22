@@ -25,5 +25,9 @@ $this->extend('/email/html/form_base');
 
 <h3>Modulo inviato</h3>
 <p>
+    <?php if ($form['form_template']['require_approval']): ?> 
     Il modulo è stato sottoposto ad approvazione.
+    <?php else: ?>
+    Il modulo è stato inserito.
+    <?php endif; ?>
 </p>

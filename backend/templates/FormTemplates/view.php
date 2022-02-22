@@ -58,7 +58,7 @@
                         <td><?= h($form_template['notify_emails']) ?></td>
                     </tr>
                     <tr>
-                        <th>Richiede approvazione [non ancora implementato]</th>
+                        <th>Richiede approvazione</th>
                         <td><?= h($form_template['require_approval'] ? 'Sì' : 'No') ?></td>
                     </tr>
                 </table>
