@@ -37,7 +37,7 @@
                     <?php if ($form_templates->count()>0): ?>
                     <a href="#" >
                         <button class="btn btn-sm btn-danger mr-2"
-                                onclick="Caps.submitForm('curricula-form', {'delete' : 1}, 'Eliminare i moduli selezionati?')">
+                                onclick="Caps.submitForm('form-templates-form', {'delete' : 1}, 'Eliminare i moduli selezionati?')">
                             <i class="fas fa-times"></i><span class="d-none d-lg-inline ml-2">Elimina modello</span>
                         </button>
                     </a>
