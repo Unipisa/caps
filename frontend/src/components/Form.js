@@ -70,19 +70,6 @@ class Form extends React.Component {
         }
 
         s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
-        
-        s = `<form id="form-form">
-             <div id="form-div" class="form-form">${s}</div>
-             <div class="form-group btn-group mt-4">`;
-
-        if (form_state == 'draft') {
-            s += `<button class="btn btn-success" type="submit" name="submit">Invia</button>`;
-        }             
-        if (this.props.edit) {
-            // possibile salvare bozza solo in EDIT
-            s += `<button class="btn btn-primary" type="submit" name="save">Salva bozza</button>`;
-        }
-        s += `</div></form>`;
 
         return s;
     }
@@ -110,13 +97,14 @@ class Form extends React.Component {
             container.setAttribute('data-name', name);
 
             let changeHandler = (date) => {
+                console.log(date);
                 this.setState({ [stateName]: date });
             };
 
             let reactElem = <div><DatePicker 
                 selected={this.state[stateName]} 
                 name={name} 
-                dateFormat="d.M.yyyy"
+                dateFormat="yyyy-MM-dd"
                 onChange={changeHandler}>
             </DatePicker></div>;
 
@@ -129,9 +117,9 @@ class Form extends React.Component {
         this.fields = {};
         const form = document.getElementById("form-form");
         if (!form) return; // the form has not been rendered yet
-        form.addEventListener('submit', this.onSave.bind(this));
 
-        this.enhanceDatePickers(form);
+        if (this.props.edit)
+            this.enhanceDatePickers(form);
 
         if (!this.state.form) return; // this is a new form, no data needs to be injected
         const form_div = document.getElementById("form-div");
@@ -188,11 +176,11 @@ class Form extends React.Component {
         });
     }
 
-    onSave(evt) {
+    onSave(action, evt) {
         evt.preventDefault();
         let payload = new URLSearchParams();
         if (this.props.edit) {
-            const formData = new FormData(evt.target);
+            const formData = new FormData(document.getElementById('form-form'));
             const data = [...formData.entries()]
             .reduce((all, entry) => {
                 all[entry[0]] = entry[1]
@@ -201,7 +189,7 @@ class Form extends React.Component {
             payload.append("form_template_id", this.state.form_template.id);
             payload.append("data", JSON.stringify(data));
         }
-        payload.append("action", evt.submitter.name);
+        payload.append("action", action);
         payload.append('_csrfToken', this.props.csrfToken);
 
         if (this.props.edit) {
@@ -237,9 +225,17 @@ class Form extends React.Component {
     }    
 
     renderForm() {
-        return [
-            <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
-        ];
+        return <form id="form-form">
+                <div id="form-div" className="form-form" >
+                    <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
+                </div>
+                { this.props.edit && 
+                <div className="form-group btn-group mt-4">
+                    <button onClick={(evt) => this.onSave('submit', evt)} className="btn btn-success">Invia</button>
+                    <button onClick={(evt) => this.onSave('save', evt)} className="btn btn-primary">Salva bozza</button> 
+                </div>
+                }
+            </form>;
     }
 
     render() {
