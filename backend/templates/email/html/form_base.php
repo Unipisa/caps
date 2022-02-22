@@ -56,5 +56,6 @@
             </tr>
         <?php endforeach; ?>
     </table>
+    <br>
     <?= h($settings['department']) ?><br>
 <p>
