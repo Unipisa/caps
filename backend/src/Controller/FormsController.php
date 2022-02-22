@@ -267,7 +267,7 @@ class FormsController extends AppController
             $this->Flash->error('Impossibile eliminare il modulo');
         }
 
-        return $this->redirect([ 'controller' => 'forms', 'action' => 'view' ]);
+        return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
     }
 
     private function get_form($id)
