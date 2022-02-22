@@ -272,9 +272,11 @@ class FormsController extends AppController
 
     private function get_form($id)
     {
-        return $this->Forms->get($id, [
+        $form = $this->Forms->get($id, [
             "contain" => [ 'Users', 'FormTemplates']
             ]);
+        $form['data_expanded'] = json_decode($form['data']);
+        return $form;
     }
 
     private function createEmail($form)
@@ -306,9 +308,9 @@ class FormsController extends AppController
         $form = $this->get_form($form_id);
 
         if ($form['user']['email'] == "" || $form['user']['email'] == null) {
+            $this->log("User " . $form['user']['username'] . " has no email");
             return False;
         }
-
         $email = $this->createEmail($form)
             ->setTo($form['user']['email'])
             ->setSubject($subject);
