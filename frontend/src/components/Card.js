@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react');
+import React from "react";
 
 class Card extends React.Component {
 
@@ -28,4 +28,4 @@ class Card extends React.Component {
     }
 }
 
-module.exports = Card;
+export default Card;

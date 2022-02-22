@@ -27,4 +27,4 @@ class Degrees {
     }
 }
 
-module.exports = new Degrees();
+export default new Degrees();

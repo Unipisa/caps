@@ -1,10 +1,7 @@
-// const CapsAppController = require('./app-controller');
-// const caps_forms_add = require('../modules/forms-add');
-
-const React = require('react');
-const ReactDOM = require('react-dom');
-const CapsAppController = require('./app-controller');
-const Form = require('../components/Form');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import CapsAppController from './app-controller';
+import Form from '../components/Form';
 
 class CapsFormsController extends CapsAppController {
     edit(params) {
@@ -35,4 +32,4 @@ class CapsFormsController extends CapsAppController {
     }
 }
 
-module.exports = CapsFormsController;
+export default CapsFormsController;

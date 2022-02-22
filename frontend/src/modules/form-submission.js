@@ -33,4 +33,4 @@ function submitForm(action, method, params) {
     form.submit();
 }
 
-module.exports = submitForm;
+export default submitForm;

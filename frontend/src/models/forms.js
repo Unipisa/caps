@@ -16,4 +16,4 @@ class Forms {
 
 }
 
-module.exports = new Forms();
+export default new Forms();

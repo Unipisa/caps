@@ -27,4 +27,4 @@ class FormTemplates {
     }
 }
 
-module.exports = new FormTemplates();
+export default new FormTemplates();

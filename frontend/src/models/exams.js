@@ -1,6 +1,6 @@
 'use strict';
 
-const Cache = require('../modules/cache');
+import Cache from '../modules/cache';
 
 class Exams {
 
@@ -21,4 +21,4 @@ class Exams {
 
 }
 
-module.exports = new Exams();
+export default new Exams();

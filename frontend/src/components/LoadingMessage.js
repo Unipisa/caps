@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react');
+import React from 'react';
 
 class LoadingMessage extends React.Component {
     render() {
@@ -11,4 +11,4 @@ class LoadingMessage extends React.Component {
     }
 }
 
-module.exports = LoadingMessage;
+export default LoadingMessage;

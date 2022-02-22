@@ -1,7 +1,6 @@
-const CapsAppController = require("./app-controller");
-const ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
+import CapsAppController from "./app-controller";
 
 class CapsSettingsController extends CapsAppController {
 }
 
-module.exports = CapsSettingsController;
+export default CapsSettingsController;

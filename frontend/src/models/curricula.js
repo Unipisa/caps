@@ -28,4 +28,4 @@ class Curricula {
 
 }
 
-module.exports = new Curricula();
+export default new Curricula();

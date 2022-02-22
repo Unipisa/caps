@@ -12,4 +12,4 @@ class Proposals {
 
 }
 
-module.exports = new Proposals();
+export default new Proposals();

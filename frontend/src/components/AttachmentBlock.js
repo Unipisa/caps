@@ -1,10 +1,9 @@
 'use strict';
 
-const React = require('react');
-
-const Attachment = require('./Attachment');
-const Card = require('./Card');
-const Share = require('./Share');
+import React from 'react';
+import Attachment from './Attachment';
+import Card from './Card';
+import Share from './Share';
 
 class AttachmentBlock extends React.Component {
 
@@ -45,4 +44,4 @@ class AttachmentBlock extends React.Component {
 
 }
 
-module.exports = AttachmentBlock;
+export default AttachmentBlock;

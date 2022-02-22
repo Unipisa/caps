@@ -1,5 +1,4 @@
-const jQuery = require('jquery');
-const Chart = require('chart.js');
+import Chart from 'chart.js';
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 

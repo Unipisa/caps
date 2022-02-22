@@ -1,16 +1,16 @@
 'use strict';
 
-const Degrees = require('../models/degrees');
-const Curricula = require('../models/curricula');
-const Proposals = require('../models/proposals');
+import Degrees from '../models/degrees';
+import Curricula from '../models/curricula';
+import Proposals from '../models/proposals';
 
-const submitForm = require('../modules/form-submission');
+import submitForm from '../modules/form-submission';
 
-const AttachmentBlock = require('./AttachmentBlock');
-const React = require('react');
-const Card = require('./Card');
-const LoadingMessage = require('./LoadingMessage');
-const ProposalYear = require('./ProposalYear');
+import AttachmentBlock from './AttachmentBlock';
+import React from 'react';
+import Card from './Card';
+import LoadingMessage from './LoadingMessage';
+import ProposalYear from './ProposalYear';
 
 class Proposal extends React.Component {
     constructor(props) {
@@ -554,4 +554,4 @@ class Proposal extends React.Component {
     }
 }
 
-module.exports = Proposal;
+export default Proposal;

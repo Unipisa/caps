@@ -8,10 +8,11 @@ import '@fortawesome/fontawesome-free/js/regular';
 import '@fortawesome/fontawesome-free/js/brands';
 
 // These libraries need to be available as global variables
-global.CapsController = require('./caps-controller.js');
+import CapsController from './caps-controller.js';
+global.CapsController = CapsController;
 
 // These are only used inside this code
-require('jquery.easing');
-require('popper.js');
-require('bootstrap');
-require('./sb-admin-2.js');
+import 'jquery.easing';
+import 'popper.js';
+import 'bootstrap';
+import './sb-admin-2.js';

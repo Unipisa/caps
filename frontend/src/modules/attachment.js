@@ -1,4 +1,4 @@
-const jQuery = require('jquery');
+import jQuery from "jquery";
 
 /**
  * The CapsAttachment is the controller for a span.pdf-attachment element, and
@@ -70,4 +70,4 @@ class CapsAttachment {
 
 }
 
-module.exports = CapsAttachment;
+export default CapsAttachment;

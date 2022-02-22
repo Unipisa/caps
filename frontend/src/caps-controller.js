@@ -1,13 +1,13 @@
 // This class implements all the handler needed by the elements in CAPS.
-const jQuery = require('jquery');
-const CapsAppController = require('./controllers/app-controller');
+import jQuery from 'jquery';
+import CapsAppController from './controllers/app-controller';
 
-const CapsCurriculaController = require('./controllers/curricula-controller');
-const CapsDegreesController = require('./controllers/degrees-controller');
-const CapsExamsController = require('./controllers/exams-controller');
-const CapsProposalsController = require('./controllers/proposals-controller');
-const CapsSettingsController = require('./controllers/settings-controller');
-const CapsFormsController = require('./controllers/forms-controller');
+import CapsCurriculaController from './controllers/curricula-controller';
+import CapsDegreesController from './controllers/degrees-controller';
+import CapsExamsController from './controllers/exams-controller';
+import CapsProposalsController from './controllers/proposals-controller';
+import CapsSettingsController from './controllers/settings-controller';
+import CapsFormsController from './controllers/forms-controller';
 
 'use strict'
 
@@ -91,4 +91,4 @@ class CapsController {
 
 }
 
-module.exports = CapsController;
+export default CapsController;

@@ -1,9 +1,9 @@
-const CapsAppController = require('./app-controller');
-const { loadDashboardData } = require('../modules/dashboard');
+import CapsAppController from './app-controller';
+import { loadDashboardData } from '../modules/dashboard';
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const Proposal = require('../components/Proposal');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Proposal from '../components/Proposal';
 
 class CapsProposalsController extends CapsAppController {
 
@@ -55,4 +55,4 @@ class CapsProposalsController extends CapsAppController {
 
 }
 
-module.exports = CapsProposalsController;
+export default CapsProposalsController;

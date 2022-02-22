@@ -1,8 +1,8 @@
-const jQuery = require('jquery');
-const CapsAttachment = require('../modules/attachment');
-const ClassicEditor = require('@ckeditor/ckeditor5-build-classic');
+import jQuery from 'jquery';
+import CapsAttachment from '../modules/attachment';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-require('bootstrap-select');
+import 'bootstrap-select';
 
 class CapsAppController {
 
@@ -106,4 +106,4 @@ class CapsAppController {
     }
 }
 
-module.exports = CapsAppController;
+export default CapsAppController;
