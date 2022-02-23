@@ -183,9 +183,9 @@ class FormsController extends AppController
             if ($this->Forms->save($form)) {
                 if ($form['state'] == "submitted") {
                     if ($this->notifySubmission($form['id'])) {
-                        $this->Flash->success("Ho inviato un email di notifica");
+                        $this->Flash->success("Modulo inviato correttamente.");
                     } else {
-                        $this->Flash->error("Non sono riuscito ad inviare l'email di notifica");
+                        $this->Flash->error("Non sono riuscito ad inviare l'email di notifica.");
                     }
                 }
                 return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
