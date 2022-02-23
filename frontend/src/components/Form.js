@@ -274,6 +274,26 @@ class Form extends React.Component {
         return badges;
     }
 
+    /*
+     * If the form is in a draft state, and we are in the view action, then show a warning
+     * for the user, as he/she needs to submit the form before it can be properly evaluated.
+     */
+    renderDraftNotice() {
+        if ( (!this.props.edit) && this.state.form && this.state.form.state == "draft") {
+            return <div className="card shadow border-left-warning mb-2">
+                <div className="card-body">
+                    <p>Questo modulo è una bozza: è necessario modificarlo ed inviarlo perché venga valutato.</p>
+                    <a href={"../edit/" + this.state.form.id}>
+                        <button className="btn btn-primary btn-sm">Modifica</button>
+                    </a>
+                </div>
+            </div>;
+        }
+        else {
+            return [];
+        }
+    }
+
     render() {
         if (this.state.form_template === null) {
             return <Card>
@@ -282,6 +302,7 @@ class Form extends React.Component {
         } else {
             return <Card title={this.state.form_template.name}>
                 {this.renderBadges()}
+                {this.renderDraftNotice()}
                 {this.renderForm()}
             </Card>;
         }
