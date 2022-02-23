@@ -33,6 +33,20 @@ use Cake\Mailer\Email;
 
 class FormsController extends AppController
 {    
+    public $paginate = [
+        'limit' => 15,
+        'order' => [
+            'date_submitted' => 'desc'
+        ]
+    ];
+
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('Paginator');
+        $this->loadComponent('RequestHandler');
+    }
+
     public function index()
     {
         $forms = $this->Forms->find()
