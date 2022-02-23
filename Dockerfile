@@ -40,7 +40,7 @@ RUN rm -rf /frontend/node_modules /backend/webroot/css/* /backend/webroot/js/* \
     && cd /backend && php /usr/local/bin/composer.phar install \
     && chown www-data:www-data /backend /frontend /var/www -R \
     && cd /frontend \ 
-    && sudo -u www-data env PATH=${PATH} npm install \ 
+    && sudo -u www-data env PATH=${PATH} npm ci \ 
     && sudo -u www-data env PATH=${PATH} npm run deploy
 
 WORKDIR /backend

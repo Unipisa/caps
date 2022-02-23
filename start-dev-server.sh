@@ -88,7 +88,7 @@ php ./composer.phar -n install
 cd ..
 
 cd frontend
-npm install
+npm ci
 cd ..
 
 VARIANT="$1"
