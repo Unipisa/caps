@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
 import FormTemplates from '../models/form_templates';
 import Forms from '../models/forms';
+import Card from './Card'
 
 import submitForm from '../modules/form-submission';
 
@@ -239,9 +240,13 @@ class Form extends React.Component {
 
     render() {
         if (this.state.form_template === null) {
-            return this.renderTemplateSelection();
+            return <Card>
+                {this.renderTemplateSelection()}
+            </Card>;
         } else {
-            return this.renderForm();
+            return <Card title={this.state.form_template.name}>
+                {this.renderForm()}
+            </Card>;
         }
     }
 

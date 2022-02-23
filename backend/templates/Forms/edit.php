@@ -23,7 +23,5 @@
 ?>
 <div>
     <!--h2><?= $form['id']?"Modifica":"Nuovo" ?> modulo</h2-->
-    <?= $this->element('card-start'); ?>
     <div id="app"></div>
-    <?= $this->element('card-end'); ?>
 </div>
