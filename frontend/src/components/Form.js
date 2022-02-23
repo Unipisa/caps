@@ -100,12 +100,12 @@ class Form extends React.Component {
                 this.setState({ [stateName]: date });
             };
 
-            let reactElem = <div><DatePicker 
+            let reactElem = <DatePicker 
                 selected={this.state[stateName]} 
                 name={name} 
                 dateFormat="yyyy-MM-dd"
                 onChange={changeHandler}>
-            </DatePicker></div>;
+            </DatePicker>;
 
             el.parentNode.replaceChild(container, el);
             ReactDOM.render(reactElem, container);

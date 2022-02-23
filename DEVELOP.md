@@ -12,7 +12,7 @@ apt install composer npm
 apt install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
 apt install sqlite3  # for development
 cd frontend/
-  npm install
+  npm ci
   npm run test # run js unit tests
   npm run deploy # compiles js and css files
   npm run deploy:dev # as above but for development
@@ -67,7 +67,7 @@ Per compilare i file JS e CSS è necessario entrare nella cartella ed usare ```n
 
 ```bash
 cd frontend/
-npm install
+npm ci
 npm run test # run js unit tests
 npm run deploy # compiles js and css files
 npm run deploy:dev # as above but for development
