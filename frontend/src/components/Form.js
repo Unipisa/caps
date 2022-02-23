@@ -238,6 +238,42 @@ class Form extends React.Component {
         </form>;
     }
 
+    /**
+     * Show badges for this form, such as "submitted on ...", or "approved on ...", and so on.
+     */
+    renderBadges() {
+        let badges = [];
+
+        if (! this.state.form)
+            return badges;
+
+        if (this.state.form.date_submitted) {
+            badges.push(<span key="submitted-badge" className="badge badge-secondary mr-2 mb-2">
+                Inviato il {this.state.form.date_submitted}
+            </span>);
+        }
+
+        if (this.state.form.state == "approved") {
+            badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
+                Approvato il {this.state.form.date_managed}
+            </span>);
+        }
+
+        if (this.state.form.state == "rejected") {
+            badges.push(<span key="rejected-badge" className="badge badge-danger mr-2 mb-2">
+                Rifiutato il {this.state.form.date_managed}
+            </span>);
+        }
+
+        if (! this.state.form_template.require_approval) {
+            badges.push(<span key="no-approval-badge" className="badge badge-success mr-2 mb-2">
+                Questo modulo non richiede l'approvazione
+            </span>);
+        }
+
+        return badges;
+    }
+
     render() {
         if (this.state.form_template === null) {
             return <Card>
@@ -245,6 +281,7 @@ class Form extends React.Component {
             </Card>;
         } else {
             return <Card title={this.state.form_template.name}>
+                {this.renderBadges()}
                 {this.renderForm()}
             </Card>;
         }
