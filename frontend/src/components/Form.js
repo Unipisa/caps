@@ -92,8 +92,7 @@ class Form extends React.Component {
             // We use a new container to hold this react component; the name 
             // is set to data-name for later recovery
             var container = document.createElement('div');
-            container.classList += elementId;
-            container.classList += ' datepicker';
+            container.classList += elementId + ' datepicker d-inline-block';
             container.setAttribute('data-name', name);
 
             let changeHandler = (date) => {
@@ -226,16 +225,16 @@ class Form extends React.Component {
 
     renderForm() {
         return <form id="form-form">
-                <div id="form-div" className="form-form" >
-                    <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
-                </div>
-                { this.props.edit && 
-                <div className="form-group btn-group mt-4">
-                    <button onClick={(evt) => this.onSave('submit', evt)} className="btn btn-success">Invia</button>
-                    <button onClick={(evt) => this.onSave('save', evt)} className="btn btn-primary">Salva bozza</button> 
-                </div>
-                }
-            </form>;
+            <div id="form-div" className="form-form" >
+                <div key="form-div" dangerouslySetInnerHTML={{ __html: this.state.html }} ></div>
+            </div>
+            { this.props.edit && 
+            <div className="form-group btn-group mt-4">
+                <button onClick={(evt) => this.onSave('submit', evt)} className="btn btn-success">Invia</button>
+                <button onClick={(evt) => this.onSave('save', evt)} className="btn btn-primary">Salva bozza</button> 
+            </div>
+            }
+        </form>;
     }
 
     render() {
