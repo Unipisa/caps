@@ -313,7 +313,7 @@ class FormsController extends AppController
         }
         $email = $this->createEmail($form)
             ->setTo($form['user']['email'])
-            ->setSubject($subject);
+            ->setSubject($subject . ": " . $form['form_template']['name']);
         $email->viewBuilder()->setTemplate($template_name);
         try {
             $email->send();
@@ -325,15 +325,15 @@ class FormsController extends AppController
     }
 
     private function notifySubmission($form_id): bool {
-        return $this->notify($form_id, 'form_submission', 'modulo inviato');
+        return $this->notify($form_id, 'form_submission', 'Modulo inviato');
     }
 
     private function notifyApproval($form_id): bool {
-        return $this->notify($form_id, 'form_approval', 'richiesta approvata');
+        return $this->notify($form_id, 'form_approval', 'Richiesta approvata');
     }
 
     private function notifyRejection($form_id): bool {
-        return $this->notify($form_id, 'form_rejection', 'modulo inviato');
+        return $this->notify($form_id, 'form_rejection', 'Richiesta negata');
     }
 
 }
