@@ -4,6 +4,11 @@ const CAPSDeployPlugin = require('./deploy-plugin');
 module.exports = {
   entry: [ 'babel-polyfill', './src/caps.js' ],
   mode: 'production',
+  performance: {
+    hints: false,
+    maxEntrypointSize: 3000000,
+    maxAssetSize: 3000000
+  },
   module: {
     rules: [
       {

@@ -21,6 +21,8 @@ if [ ! -r docker/caps.env ]; then
   cp example.env docker/caps.env
 fi
 
+sudo true
+
 # Check if docker is installed
 type docker 2> /dev/null > /dev/null
 if [ $? -ne 0 ]; then
@@ -96,20 +98,10 @@ if [ "$VARIANT" = "" ]; then
   VARIANT="dev"
 fi
 
-# Start the development server. If needed, build the image
-echo ""
-echo "== IMAGE REGENERATION =="
-echo "Regenerating the image is only needed in case there have been"
-echo "changes in the migrations or the app configuration, or if this"
-echo "is the first time that the script is used. "
-echo "The regeneration can take some time."
-echo ""
-echo -n "Do you wish to regenerate the images now? [yn]: "
-read ANS
-sudo true
-if [ "$ANS" = "y" ]; then
+if [ "$1" == "--build" ]; then
   ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps
 fi
+
 ${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 echo "Node Configuration"
