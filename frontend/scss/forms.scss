@@ -1,0 +1,23 @@
+#form-form input[type=text], #form-form input[type=email] {
+    @extend .form-control;
+    display: inline-block;
+    width: auto;
+    padding: 1px;
+    padding-left: 3px;
+    padding-right: 3px;
+    height: 1.5em;
+}
+
+#form-form select {
+    @extend .form-control;
+    display: inline-block;
+    width: auto;
+    height: 1.5em;    
+    padding: 1px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+#form-form textarea {
+    @extend .form-control;
+}
