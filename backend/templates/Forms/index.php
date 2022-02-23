@@ -95,8 +95,8 @@
             <th><a href="#">Stato</a></th>
             <th><?= $this->Paginator->sort('Users.surname', 'Nome'); ?></th>
             <th><?= $this->Paginator->sort('FormTemplates.name', 'Modello'); ?></th>
-            <th><?= $this->Paginator->sort('modified', 'inviato'); ?></th>
-            <th><?= $this->Paginator->sort('modified', 'gestito'); ?></th>
+            <th><?= $this->Paginator->sort('date_submitted', 'Inviato'); ?></th>
+            <th><?= $this->Paginator->sort('date_managed', 'Gestito'); ?></th>
             <th></th>
             </thead>
         </tr>

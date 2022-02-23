@@ -33,7 +33,7 @@
     {
         public function index()
         {
-            $form_templates = $this->FormTemplates->find('all');
+            $form_templates = $this->FormTemplates->find('all',['order' => 'name']);
             if (!$this->user['admin']) {
                 // avoid to make public information which is not yet marked as enabled
                 $form_templates = $form_templates->where(['enabled' => true]);
