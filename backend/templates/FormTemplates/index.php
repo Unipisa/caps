@@ -54,8 +54,8 @@
                     <table class="table">
                         <tr><thead>
                             <th></th>
-                            <th><?= $this->Paginator->sort('FormTemplates.enabled', 'Attivo'); ?></th>
-                            <th><?= $this->Paginator->sort('FormTemplates.title', 'titolo'); ?></th>
+                            <th><?= $this->Paginator->sort('enabled', 'Attivo'); ?></th>
+                            <th><?= $this->Paginator->sort('name', 'Titolo'); ?></th>
                         </thead></tr>
                         <?php foreach ($paginated_form_templates as $form_template): ?>
                             <tr>

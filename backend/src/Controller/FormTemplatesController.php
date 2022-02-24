@@ -31,6 +31,21 @@
 
     class FormTemplatesController extends AppController
     {
+        public $paginate = [
+            'sortableFields' => [ 'name' , 'enabled' ],
+            'limit' => 15,
+            'order' => [
+                'name' => 'asc'
+            ]
+        ];
+
+        public function initialize() : void
+        {
+            parent::initialize();
+            $this->loadComponent('Paginator');
+        }
+
+        
         public function index()
         {
             $form_templates = $this->FormTemplates->find('all',['order' => 'name']);
