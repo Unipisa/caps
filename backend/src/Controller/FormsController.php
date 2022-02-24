@@ -34,6 +34,8 @@ use Cake\Mailer\Email;
 class FormsController extends AppController
 {    
     public $paginate = [
+        'contain' => [ 'Users', 'FormTemplates' ],
+        'sortableFields' => [ 'date_managed', 'date_submitted', 'Users.surname', 'FormTemplates.name' ],
         'limit' => 15,
         'order' => [
             'date_submitted' => 'desc'
@@ -44,7 +46,6 @@ class FormsController extends AppController
     {
         parent::initialize();
         $this->loadComponent('Paginator');
-        $this->loadComponent('RequestHandler');
     }
 
     public function index()
