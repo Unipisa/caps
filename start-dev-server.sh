@@ -21,8 +21,6 @@ if [ ! -r docker/caps.env ]; then
   cp example.env docker/caps.env
 fi
 
-sudo true
-
 # Check if docker is installed
 type docker 2> /dev/null > /dev/null
 if [ $? -ne 0 ]; then
@@ -97,6 +95,8 @@ VARIANT="$1"
 if [ "$VARIANT" = "" ]; then
   VARIANT="dev"
 fi
+
+sudo true
 
 if [ "$1" == "--build" ]; then
   ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps

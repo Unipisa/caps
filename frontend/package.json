@@ -6,7 +6,9 @@
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^29.1.0",
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "@fortawesome/fontawesome-svg-core": "^1.3.0",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.17",
     "bootstrap": "^4.6.0",
     "bootstrap-select": "^1.13.18",
     "esm": "^3.2.25",

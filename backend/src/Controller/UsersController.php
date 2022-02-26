@@ -69,6 +69,42 @@ class UsersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['user' => 'user_entry']);
     }
 
+    public function view2($id = null) {
+
+    }
+
+    public function proposals($id) {
+        if ($id != $this->user['id'] && !$this->user['admin']) {
+            throw new ForbiddenException('Cannot access another user profile');
+        }
+
+        $proposals = $this->Users->Proposals->find()
+            ->contain(['Users', 'Curricula', 'Curricula.Degrees'])
+            ->where(['Users.id' => $id])
+            ->order(['Proposals.modified' => 'DESC']);
+        $this->set('proposals', $proposals);
+
+        $this->viewBuilder()->setOption('serialize', ['proposals' => 'proposals']);
+    }
+
+    public function forms($id) {
+        $forms = $this->Users->Forms->find()
+            ->contain(['Users', 'FormTemplates'])
+            ->where(['Users.id' => $id]);
+        $this->set('forms', $forms);
+
+        $this->viewBuilder()->setOption('serialize', ['forms' => 'forms']);
+    }
+
+    public function documents($id) {
+        $documents = $this->Users->Documents->find()
+            ->contain(['Users'])
+            ->where(['Users.id' => $id]);
+        $this->set('documents', $documents);
+
+        $this->viewBuilder()->setOption('serialize', ['documents' => 'documents']);
+    }
+
     public function index() {
         if (!$this->user['admin']) {
             throw new ForbiddenException();

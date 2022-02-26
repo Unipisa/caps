@@ -33,4 +33,8 @@ function submitForm(action, method, params) {
     form.submit();
 }
 
-export default submitForm;
+function postLink(url) {
+    submitForm(url, 'POST', {});
+}
+
+export { submitForm as default, postLink };
