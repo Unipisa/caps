@@ -78,13 +78,15 @@ class UserProfile extends React.Component {
         return <Card>
             <h2>Piani di studio</h2>
             { this.state.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
+            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <span>
+                Nessun piano di studio presentato.
+                </span> }
             { this.state.proposals !== undefined && 
             <div className="row">
                 { this.state.proposals.map(
                     p => <ProposalInfo root={this.props.root} 
                         key={"proposal-info-" + p.id} proposal={p}
                         onChange={this.onProposalChanged.bind(this)}>
-                        
                     </ProposalInfo>
                 )
                 }
@@ -99,7 +101,7 @@ class UserProfile extends React.Component {
             { this.state.forms === undefined && <LoadingMessage>Caricamento dei moduli in corso</LoadingMessage>}
             {
                 this.state.forms !== undefined && <div className="row">
-                    { this.state.forms.length == 0 && "Nessun modulo consegnato."}
+                    { this.state.forms.length == 0 && <div class="col-12">Nessun modulo consegnato.</div>}
                     { this.state.forms.map(f => <FormInfo root={this.props.root} key={"form-info-" + f.id} form={f}></FormInfo>)}
                 </div> 
             }

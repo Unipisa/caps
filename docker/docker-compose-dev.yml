@@ -13,7 +13,6 @@ services:
       # This is set anyway, in case it does not exists a folder
       # is created, which is harmless. Otherwise, this should be
       # a file with a private RSA key for SSH authentication
-      - "./id_rsa:/backend/id_rsa:ro"
       - "../backend/src:/backend/src:ro"
       - "../backend/templates:/backend/templates:ro"
       - "../backend/webroot:/backend/webroot:ro"
