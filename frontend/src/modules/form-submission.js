@@ -33,8 +33,16 @@ function submitForm(action, method, params) {
     form.submit();
 }
 
-function postLink(url) {
-    submitForm(url, 'POST', {});
+async function postLink(endpoint, csrfToken) {
+    const data = new URLSearchParams();
+    data.append('_csrfToken', csrfToken);
+
+    const res = await fetch(endpoint, { 
+        method: 'POST',
+        body: data
+    });
+
+    return res;
 }
 
 export { submitForm as default, postLink };

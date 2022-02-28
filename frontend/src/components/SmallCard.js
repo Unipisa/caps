@@ -20,7 +20,7 @@ class SmallCard extends React.Component {
         }
 
         return <div className="card-header bg-primary">
-                <h3 className={title_classes}>{this.props.title}</h3>
+                <p className={title_classes}>{this.props.title}</p>
         </div>;
     }
 

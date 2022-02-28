@@ -9,7 +9,7 @@ class CapsUsersController extends CapsAppController {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
         ReactDOM.render(
-            <UserProfile id={id} root={this.root} />, 
+            <UserProfile id={id} root={this.root} csrfToken={params._csrfToken} />, 
             document.getElementById("app")
         );
     }

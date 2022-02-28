@@ -6,7 +6,7 @@ import Proposals from '../models/proposals';
 
 import submitForm from '../modules/form-submission';
 
-import AttachmentBlock from './AttachmentBlock';
+import AttachmentDocumentsBlock from './AttachmentDocumentsBlock';
 import React from 'react';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
@@ -434,7 +434,7 @@ class Proposal extends React.Component {
 
         if (this.state.proposal !== null) {
             rows.push(
-                <AttachmentBlock key="attachments" attachments={this.state.proposal.attachments} auths={this.state.proposal.auths}></AttachmentBlock>
+                <AttachmentDocumentsBlock root={this.props.root} title="Allegati e commenti" key="attachments" attachments={this.state.proposal.attachments} auths={this.state.proposal.auths}></AttachmentDocumentsBlock>
             );
         }
 

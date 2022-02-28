@@ -6,7 +6,7 @@ import SmallCard from "./SmallCard";
 class Card extends React.Component {
 
     render() {
-        return <div className="row my-2">
+        return <div className="row">
             <div className="col">
                 <SmallCard {...this.props}>
                     {this.props.children}

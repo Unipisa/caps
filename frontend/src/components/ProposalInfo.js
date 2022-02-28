@@ -7,9 +7,14 @@ class ProposalInfo extends React.Component {
 
     async onDeleteClicked() {
         if (confirm('Cancellare il piano di studi selezionato?')) {
-            let delete_endpoint = this.props.root + 'proposals/delete/' + this.props.proposal.id;
+            const res = await postLink(
+                this.props.root + 'proposals/delete/' + this.props.proposal.id, 
+                this.props.csrfToken
+            );
 
-            const res = await fetch(delete_endpoint, { method: 'POST', mode: 'cors' });
+            if (! res.ok) {
+                console.log("Error while delete proposal with id = " + this.props.proposal.id);
+            }
 
             if (this.props.onChange !== undefined) {
                 this.props.onChange(this);
