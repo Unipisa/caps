@@ -1,8 +1,21 @@
 import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
+import { postLink } from '../modules/form-submission';
 
 class FormInfo extends React.Component {
+
+    async onDeleteClicked() {
+        const res = await postLink(this.props.root + 'forms/delete/' + this.props.form.id, this.props.csrfToken);
+
+        if (! res.ok) {
+            console.log("Error deleting the form with id = " + this.props.form.id);
+        }
+
+        if (this.props.onChange !== undefined) {
+            this.props.onChange(this);
+        }
+    }
 
     renderBadge() {
         if (this.props.form.state == "draft") {
@@ -23,7 +36,7 @@ class FormInfo extends React.Component {
                 <a href={`${this.props.root}forms/edit/${this.props.form.id}`} className="btn btn-sm btn-primary">Modifica</a>
             }
             {this.props.form.state == "draft" && 
-                <a className="btn btn-sm btn-danger">Elimina</a>
+                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>Elimina</a>
             }
         </div>
     }

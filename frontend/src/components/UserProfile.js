@@ -3,6 +3,9 @@ import Card from "./Card";
 import LoadingMessage from './LoadingMessage';
 import ProposalInfo from "./ProposalInfo";
 import FormInfo from "./FormInfo";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 
 class UserProfile extends React.Component {
 
@@ -66,22 +69,32 @@ class UserProfile extends React.Component {
         this.loadProposals();
     }
 
+    async onFormChanged(f) {
+        this.loadForms();
+    }
+
     renderUserBlock() {
-        return <h1>{this.state.user.name}
-            <span className="text-muted h5 ml-2">
-                matricola: {this.state.user.number}
-            </span>
-        </h1>;
+        return <div><Card className="border-left-primary">
+            <h3>{this.state.user.name}</h3>
+            <strong>Matricola: </strong> {this.state.user.number}<br></br>
+            <strong>Email: </strong> {this.state.user.email}<br />
+            </Card></div>;
     }
 
     renderProposalsBlock() {        
-        return <Card>
-            <h2>Piani di studio</h2>
+        return <div className="mt-4">
+            <h2 className="d-flex">
+                <span className="mr-auto">Piani di studio</span>
+                <a href={this.props.root + 'proposals/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
+                    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
+                    <span className="d-none d-md-inline ml-2">Nuovo piano di studio</span>
+                </a>
+            </h2>
             { this.state.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
             { this.state.proposals !== undefined && 
             <div className="row">
                 { this.state.proposals.map(
-                    p => <ProposalInfo root={this.props.root} 
+                    p => <ProposalInfo root={this.props.root} csrfToken={this.props.csrfToken} 
                         key={"proposal-info-" + p.id} proposal={p}
                         onChange={this.onProposalChanged.bind(this)}>
                         
@@ -90,34 +103,54 @@ class UserProfile extends React.Component {
                 }
             </div>
             }
-        </Card>
+        </div>
     }
 
     renderFormsBlock() {
-        return <Card>
-            <h2>Moduli</h2>
+        return <div className="mt-4">
+            <h2 className="d-flex">
+                <span className="mr-auto">Moduli</span>
+                <a href={this.props.root + 'forms/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
+                    <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
+                    <span className="d-none d-md-inline ml-2">Nuovo modulo</span>
+                </a>
+            </h2>
             { this.state.forms === undefined && <LoadingMessage>Caricamento dei moduli in corso</LoadingMessage>}
             {
-                this.state.forms !== undefined && <div className="row">
-                    { this.state.forms.length == 0 && "Nessun modulo consegnato."}
-                    { this.state.forms.map(f => <FormInfo root={this.props.root} key={"form-info-" + f.id} form={f}></FormInfo>)}
+                this.state.forms !== undefined && <div>
+                    { this.state.forms.length == 0 && <Card>Nessun modulo consegnato.</Card>}
+                    <div className="row">{ this.state.forms.map(f => <FormInfo root={this.props.root} 
+                        csrfToken={this.props.csrfToken} 
+                        key={"form-info-" + f.id} 
+                        onChange={this.onFormChanged.bind(this)}
+                        form={f}></FormInfo>)
+                    }</div>
                 </div> 
             }
             
-        </Card>
+        </div>
     }
 
     renderDocumentsBlock() {
-        return <Card>
-        <h2>Documenti</h2>
+        const blockTitle = "Documenti e allegati";
+
+        return <div className="mt-2">
         { this.state.documents === undefined && <LoadingMessage>Caricamento dei documenti in corso</LoadingMessage>}
         {
             this.state.documents !== undefined && <div>
-                { this.state.documents.length == 0 && "Nessun documento archiviato."}
+                { this.state.documents.length == 0 && <Card title={blockTitle}>Nessun documento archiviato.</Card>}
+                { this.state.documents.length > 0 && 
+                    <AttachmentDocumentsBlock root={this.props.root} 
+                        controller="documents" 
+                        title={blockTitle}
+                        key="documents" 
+                        attachments={this.state.documents} auths={[]}>
+                    </AttachmentDocumentsBlock>
+                }
             </div> 
         }
         
-    </Card>
+    </div>
     }
 
     render() {
@@ -128,8 +161,8 @@ class UserProfile extends React.Component {
             return <div>
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
-                {this.renderFormsBlock()}
                 {this.renderDocumentsBlock()}
+                {this.renderFormsBlock()}
             </div>;
         }
     }
