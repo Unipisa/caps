@@ -92,6 +92,11 @@ class User extends Entity implements IdentityInterface
             $this['id'] == $attachment['user_id'];
     }
 
+    public function canDeleteProposal(Proposal $proposal) 
+    {
+        return $this['admin'] || (($this['id'] == $proposal['user_id']) && ($proposal['state'] == 'draft'));
+    }
+
     public function getDisplayName() {
         return $this->givenname . " " . $this->surname;
     }

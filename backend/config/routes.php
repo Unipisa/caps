@@ -32,6 +32,10 @@ return function (RouteBuilder $routes) {
          // login form or redirect the user to the right location.
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
 
+        $routes->prefix('api/v1', function (RouteBuilder $routes) {
+            $routes->fallbacks(DashedRoute::class);
+        });
+
         // Handle the usual mapping /:controller/:action/params
         $routes->fallbacks(DashedRoute::class);
     });

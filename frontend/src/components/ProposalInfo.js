@@ -1,19 +1,19 @@
 import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
-import { postLink } from '../modules/form-submission';
 
 class ProposalInfo extends React.Component {
 
     async onDeleteClicked() {
         if (confirm('Cancellare il piano di studi selezionato?')) {
-            const res = await postLink(
-                this.props.root + 'proposals/delete/' + this.props.proposal.id, 
-                this.props.csrfToken
+            const res = await fetch(
+                this.props.root + 'api/v1/proposals/delete/' + this.props.proposal.id + '.json'
             );
+            const data = await res.json();
 
-            if (! res.ok) {
+            if (data.code != 200) {
                 console.log("Error while delete proposal with id = " + this.props.proposal.id);
+                console.log(data.message);
             }
 
             if (this.props.onChange !== undefined) {

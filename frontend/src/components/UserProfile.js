@@ -91,9 +91,9 @@ class UserProfile extends React.Component {
                 </a>
             </h2>
             { this.state.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
-            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <span>
+            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <Card>
                 Nessun piano di studio presentato.
-                </span> }
+                </Card> }
             { this.state.proposals !== undefined && 
             <div className="row">
                 { this.state.proposals.map(
