@@ -11,20 +11,20 @@ class ProposalsController extends AppController
 
         if (! $this->user->canDeleteProposal($p)) {
             $response = [ 
-                'message'=> 'The deletion of this proposal is forbidden to the current user', 
+                'message'=> 'The deletion of this proposal is forbidden to the current user.', 
                 'code' => 503
             ];
         }
         else {
             if (! $this->Proposals->delete($p)) {
                 $response = [ 
-                    'message' => 'A database error was encountered while deleting the proposal', 
+                    'message' => 'A database error was encountered while deleting the proposal.', 
                     'code' => 500
                 ];
             }
             else {
                 $response = [ 
-                    'message' => 'The proposal has been successfully deleted',
+                    'message' => 'The proposal has been successfully deleted.',
                     'code' => 200
                 ];
             }

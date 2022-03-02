@@ -6,6 +6,8 @@ import FormInfo from "./FormInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
+import Proposals from "../models/proposals";
+import Users from '../models/users';
 
 class UserProfile extends React.Component {
 
@@ -16,7 +18,8 @@ class UserProfile extends React.Component {
             'user': undefined, 
             'proposals': undefined,
             'forms': undefined,
-            'documents': undefined
+            'documents': undefined,
+            'flash': undefined
         };
     }
 
@@ -25,12 +28,8 @@ class UserProfile extends React.Component {
     }
 
     async loadUserData() {
-        const user_endpoint = this.props.root + 'users/view/' 
-            + ((this.props.id == undefined) ? '' : this.props.id) + '.json';
-        const user_data = await (await fetch(user_endpoint)).json();
-
         this.setState({
-            'user': user_data['user']
+            'user': await Users.get(this.props.id)
         }, () => {
             this.loadProposals();
             this.loadForms();
@@ -39,13 +38,13 @@ class UserProfile extends React.Component {
     }
 
     async loadProposals() {
-        const proposals_endpoint = this.props.root + 'users/proposals/' + this.state.user.id + '.json';
-        const data = await (await fetch(proposals_endpoint)).json();
-
         this.setState({
-            'proposals': data['proposals']
+            'proposals': await Users.proposals(this.state.user.id)
         });
     }
+
+    // FIXME: For forms and documents we should use model classes as for users 
+    // and proposals, they are just not here yet.
 
     async loadForms() {
         const forms_endpoint = this.props.root + 'users/forms/' + this.state.user.id + '.json';
@@ -65,12 +64,29 @@ class UserProfile extends React.Component {
         });
     }
 
-    async onProposalChanged(p) {
-        this.loadProposals();
-    }
-
     async onFormChanged(f) {
         this.loadForms();
+    }
+
+    async onProposalDeleteClicked(p) {
+        if (confirm('Cancellare il piano di studi selezionato?')) {
+            const data = await Proposals.delete(p.props.proposal.id);
+
+            if (data.code != 200) {
+                this.setState({
+                    'flash': { 'type': 'error', 'message': data.message }
+                });
+            }
+            else {
+                // Remove the proposal from the current state
+                let proposals = this.state.proposals;
+                proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+                this.setState({
+                    'proposals': proposals, 
+                    'flash': { 'type': 'success', 'message': data.message }
+                });
+            }
+        }
     }
 
     renderUserBlock() {
@@ -99,7 +115,7 @@ class UserProfile extends React.Component {
                 { this.state.proposals.map(
                     p => <ProposalInfo root={this.props.root} csrfToken={this.props.csrfToken} 
                         key={"proposal-info-" + p.id} proposal={p}
-                        onChange={this.onProposalChanged.bind(this)}>
+                        onDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                     </ProposalInfo>
                 )
                 }
@@ -155,12 +171,38 @@ class UserProfile extends React.Component {
     </div>
     }
 
+    hideFlash() {
+        this.setState({ 'flash': undefined });
+    }
+
+    renderFlash() {
+        if (this.state.flash === undefined) {
+            return null;
+        }
+
+        let className = "primary";
+
+        switch (this.state.flash.type) {
+            case 'success':
+                className = "success";
+                break;
+            case 'error':
+                className = 'danger';
+                break;
+        }
+
+        return <Card className={`border-left-${className} mb-2`} onClick={this.hideFlash.bind(this)}>
+            {this.state.flash.message}
+        </Card>
+    }
+
     render() {
         if (this.state.user == undefined) {
             return <Card><LoadingMessage>Loading the user profile</LoadingMessage></Card>;
         }
         else {
             return <div>
+                {this.renderFlash()}
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
                 {this.renderDocumentsBlock()}

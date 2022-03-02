@@ -5,7 +5,7 @@ version: '2.3'
 
 services:
   caps:
-    build: ..
+    image: getcaps/caps:develop
     container_name: caps
     ports:
       - 8765:80

@@ -5,20 +5,8 @@ import { formatDate } from '../modules/dates';
 class ProposalInfo extends React.Component {
 
     async onDeleteClicked() {
-        if (confirm('Cancellare il piano di studi selezionato?')) {
-            const res = await fetch(
-                this.props.root + 'api/v1/proposals/delete/' + this.props.proposal.id + '.json'
-            );
-            const data = await res.json();
-
-            if (data.code != 200) {
-                console.log("Error while delete proposal with id = " + this.props.proposal.id);
-                console.log(data.message);
-            }
-
-            if (this.props.onChange !== undefined) {
-                this.props.onChange(this);
-            }
+        if (this.props.onDeleteClicked !== undefined) {
+            this.props.onDeleteClicked(this);
         }
     }
 

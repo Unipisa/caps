@@ -10,6 +10,14 @@ class Proposals {
         return response;
     }
 
+    async delete(id) {
+        const response = await (
+            await fetch(Caps.root + 'api/v1/proposals/delete/' + id + '.json')
+        ).json();
+
+        return response;
+    }
+
 }
 
 export default new Proposals();

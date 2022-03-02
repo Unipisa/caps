@@ -61,7 +61,7 @@
             <?= $this->element('topbar') ?>
 
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="container-fluid" id="flash-container">
                 <?php echo $this->Flash->render(); ?>
                 <?php echo $this->fetch('content'); ?>
             </div>

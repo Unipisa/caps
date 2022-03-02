@@ -96,12 +96,7 @@ if [ "$VARIANT" = "" ]; then
   VARIANT="dev"
 fi
 
-sudo true
-
-if [ "$1" == "--build" ]; then
-  ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps
-fi
-
+sudo docker build -t getcaps/caps:develop .
 ${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 echo "Node Configuration"
