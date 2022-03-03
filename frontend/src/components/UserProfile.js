@@ -15,6 +15,8 @@ class UserProfile extends React.Component {
         super(props);
 
         this.state = {
+            'settings': undefined,
+            'logged_user': null,
             'user': undefined, 
             'proposals': undefined,
             'forms': undefined,
@@ -24,7 +26,18 @@ class UserProfile extends React.Component {
     }
 
     componentDidMount() {
-        this.loadUserData();
+        this.loadStatus();
+    }
+
+    async loadStatus() {
+        const status = await (await fetch(Caps.root + 'api/v1/status.json')).json();
+
+        this.setState({
+            'settings': status['settings'], 
+            'logged_user': status['user']
+        }, () => {
+            this.loadUserData();
+        })
     }
 
     async loadUserData() {
@@ -56,6 +69,10 @@ class UserProfile extends React.Component {
     }
 
     async loadDocuments() {
+        if (! this.state.logged_user.admin) {
+            return;
+        }
+
         const documents_endpoint = this.props.root + 'users/documents/' + this.state.user.id + '.json';
         const data = await (await fetch(documents_endpoint)).json();
 
@@ -150,6 +167,9 @@ class UserProfile extends React.Component {
     }
 
     renderDocumentsBlock() {
+        if (! this.state.logged_user.admin)
+            return;
+
         const blockTitle = "Documenti e allegati";
 
         return <div className="mt-2">
@@ -176,13 +196,17 @@ class UserProfile extends React.Component {
     }
 
     renderFlash() {
-        if (this.state.flash === undefined) {
-            return null;
+        let type = "success";
+        let message = "";
+
+        if (this.state.flash !== undefined) {
+            message = this.state.flash.message;
+            type = this.state.flash.type;
         }
 
         let className = "primary";
 
-        switch (this.state.flash.type) {
+        switch (type) {
             case 'success':
                 className = "success";
                 break;
@@ -191,9 +215,15 @@ class UserProfile extends React.Component {
                 break;
         }
 
-        return <Card className={`border-left-${className} mb-2`} onClick={this.hideFlash.bind(this)}>
-            {this.state.flash.message}
-        </Card>
+        if (this.state.flash === undefined) {
+            className += " d-none";
+        }
+
+        const elem = <Card className={`border-left-${className} mb-2`} onClick={this.hideFlash.bind(this)}>
+            {message}
+        </Card>;
+
+        return elem;
     }
 
     render() {
