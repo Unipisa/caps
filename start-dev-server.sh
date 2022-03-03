@@ -83,13 +83,13 @@ echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 # From now on, all command should succeed
 set -e
 
-cd backend
-php ./composer.phar -n install
-cd ..
+#cd backend
+#php ./composer.phar -n install
+#cd ..
 
-cd frontend
-npm ci
-cd ..
+#cd frontend
+#npm ci
+#cd ..
 
 VARIANT="$1"
 if [ "$VARIANT" = "" ]; then

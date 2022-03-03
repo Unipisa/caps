@@ -45,7 +45,7 @@ class UsersController extends AppController {
         $this->Authentication->allowUnauthenticated([ 'login', 'oauth2Login', 'oauth2Callback' ]);
     }
 
-    public function view($id = null) {
+    public function view2($id = null) {
         if ($id == null) $id = $this->user['id']; 
         if ($id != $this->user['id'] && !$this->user['admin']) {
             throw new ForbiddenException('Cannot access another user profile');
@@ -69,8 +69,7 @@ class UsersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['user' => 'user_entry']);
     }
 
-    public function view2($id = null) {
-
+    public function view($id = null) {
     }
 
     public function proposals($id) {

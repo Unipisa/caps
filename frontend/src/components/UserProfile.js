@@ -8,6 +8,7 @@ import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import Proposals from "../models/proposals";
 import Users from '../models/users';
+import Forms from "../models/forms";
 
 class UserProfile extends React.Component {
 
@@ -56,9 +57,6 @@ class UserProfile extends React.Component {
         });
     }
 
-    // FIXME: For forms and documents we should use model classes as for users 
-    // and proposals, they are just not here yet.
-
     async loadForms() {
         const forms_endpoint = this.props.root + 'users/forms/' + this.state.user.id + '.json';
         const data = await (await fetch(forms_endpoint)).json();
@@ -67,6 +65,9 @@ class UserProfile extends React.Component {
             'forms': data['forms']
         });
     }
+
+    // FIXME: For documents we should use model classes as for users 
+    // proposals and forms, they are just not here yet.
 
     async loadDocuments() {
         if (! this.state.logged_user.admin) {
@@ -79,10 +80,6 @@ class UserProfile extends React.Component {
         this.setState({
             'documents': data['documents']
         });
-    }
-
-    async onFormChanged(f) {
-        this.loadForms();
     }
 
     async onProposalDeleteClicked(p) {
@@ -103,6 +100,24 @@ class UserProfile extends React.Component {
                     'flash': { 'type': 'success', 'message': data.message }
                 });
             }
+        }
+    }
+
+    async onFormDeleteClicked(f) {
+        const data = await Forms.delete(f.props.form.id);
+
+        if (data.code != 200) {
+            this.setState({
+                'flash': { 'type': 'error', 'message': data.message }
+            });
+        }
+        else {
+            let forms = this.state.forms;
+            forms.splice(this.state.forms.indexOf(f.props.form), 1);
+            this.setState({
+                'forms': forms, 
+                'flash': { 'type': 'success', 'message': data.message }
+            });
         }
     }
 
@@ -157,7 +172,7 @@ class UserProfile extends React.Component {
                     <div className="row">{ this.state.forms.map(f => <FormInfo root={this.props.root} 
                         csrfToken={this.props.csrfToken} 
                         key={"form-info-" + f.id} 
-                        onChange={this.onFormChanged.bind(this)}
+                        onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                         form={f}></FormInfo>)
                     }</div>
                 </div> 

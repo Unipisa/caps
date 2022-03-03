@@ -71,14 +71,14 @@ class User extends Entity implements IdentityInterface
         return $this;
     }
 
-    public function canAddAttachment(Proposal $proposal, $secrets = [])
+    public function canAddAttachment(Proposal $proposal, $secrets = []) : bool
     {
         return $this['admin'] ||
             $this['id'] == $proposal['user_id'] ||
             $proposal->checkSecrets($secrets);
     }
 
-    public function canViewAttachment(Attachment $attachment, $secrets = [])
+    public function canViewAttachment(Attachment $attachment, $secrets = []) : bool
     {
         return $this['admin'] ||
             $this['username'] == $attachment->user['username'] ||
@@ -86,13 +86,23 @@ class User extends Entity implements IdentityInterface
             ($attachment->proposal != null && $attachment->proposal->checkSecrets($secrets));
     }
 
-    public function canDeleteAttachment(Attachment $attachment)
+    public function canDeleteAttachment(Attachment $attachment) : bool
     {
         return $this['admin'] ||
             $this['id'] == $attachment['user_id'];
     }
 
-    public function canDeleteProposal(Proposal $proposal) 
+    public function canDeleteForm(Form $form) : bool 
+    {
+        return $this['admin'] || ($this['id'] == $form['user_id']);
+    }
+
+    public function canViewProposal(Proposal $proposal, $secrets = []) : bool 
+    {
+        return $this['admin'] || ($this['id'] == $p['user_id']) || $p->checkSecrets($secrets);
+    }
+
+    public function canDeleteProposal(Proposal $proposal) : bool
     {
         return $this['admin'] || (($this['id'] == $proposal['user_id']) && ($proposal['state'] == 'draft'));
     }

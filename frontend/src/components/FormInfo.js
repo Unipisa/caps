@@ -6,14 +6,8 @@ import { postLink } from '../modules/form-submission';
 class FormInfo extends React.Component {
 
     async onDeleteClicked() {
-        const res = await postLink(this.props.root + 'forms/delete/' + this.props.form.id, this.props.csrfToken);
-
-        if (! res.ok) {
-            console.log("Error deleting the form with id = " + this.props.form.id);
-        }
-
-        if (this.props.onChange !== undefined) {
-            this.props.onChange(this);
+        if (this.props.onDeleteClicked !== undefined) {
+            this.props.onDeleteClicked(this);
         }
     }
 

@@ -5,7 +5,7 @@ import CapsAppController from './app-controller';
 
 class CapsUsersController extends CapsAppController {
 
-    view2(params) {
+    view(params) {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
         ReactDOM.render(

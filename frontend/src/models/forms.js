@@ -14,6 +14,14 @@ class Forms {
         return response;
     }
 
+    async delete(id) {
+        let response = await (
+            await fetch(Caps.root + `api/v1/forms/delete/${id}.json`)
+        ).json();
+
+        return response;
+    }
+
 }
 
 export default new Forms();
