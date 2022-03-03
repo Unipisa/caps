@@ -89,6 +89,6 @@ class UsersControllerTest extends TestCase
         $this->session([ 'Auth' => $user ]);
 
         $this->get('/users/view');
-        $this->assertResponseContains('matricola: 123456');
+        $this->assertResponseContains('<div id="app">');
     }
 }
