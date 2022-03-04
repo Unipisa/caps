@@ -1,30 +1,56 @@
 <?php
 
-namespace App\Controller\Api\V1;
+namespace App\Controller\Api\v1;
+use App\Controller\Api\v1\RestController;
+use App\Model\Entity\Proposal;
 
-use App\Controller\AppController;
-
-class ProposalsController extends AppController
+class ProposalsController extends RestController
 {
+    public static $associations = [ 
+        'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
+        'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
+        'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
+        'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees', 'ProposalAuths', 
+        'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ];
+
     private function get_proposal($id) : ?\App\Model\Entity\Proposal {
-        return $this->Proposals->get($id, [ 'contain' => [ 
-            'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
-            'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
-            'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-            'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees', 'ProposalAuths', 
-            'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ]
-        ]);
+        return $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]);
     }
 
-    function get($id) {
-        $p = $this->get_proposal($id);
+    function index() {
+        $user_id = $this->request->getQuery('user_id');
 
-        if (! $this->user->canViewProposal($p, $this->getSecrets())) { 
-            throw new ForbiddenException('Access not allowed to this proposal');
+        $proposals = $this->Proposals->find('all', 
+            [ 'contain' => ProposalsController::$associations ]
+        );
+
+        // Check permissions: users can see their proposals, and admins are 
+        // always allowed to perform any query they like.
+        if (!$this->user['admin'] && $this->user['id'] != $user_id) {
+            $this->JSONResponse(ResponseCode::Forbidden);
+            return;
         }
 
-        $this->set('proposal', $p);
-        $this->viewBuilder()->setOption('serialize', [ 'proposal' ]);
+        $user_id && ($proposals = $proposals->where([ 'user_id' => $user_id ]));
+
+        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($proposals));
+    }
+
+    public function get($id) {
+        try {
+            $p = $this->get_proposal($id);
+        }
+        catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::NotFound, null, "Proposal not found");
+            return;
+        }
+
+        if (! $this->user->canViewProposal($p, $this->getSecrets())) {
+            $this->JSONResponse(ResponseCode::Forbidden, null, "Access not allowed to this proposal");
+        }
+        else {
+            $this->JSONResponse(ResponseCode::Ok, $p);
+        }       
     }
 
     function delete($id) {
@@ -34,18 +60,18 @@ class ProposalsController extends AppController
         $p = $this->Proposals->get($id, [ 'contain' => [ 'Users' ] ]);
 
         if (! $this->user->canDeleteProposal($p)) {
-            throw new ForbiddenException('The deletion of this proposal is forbidden to the current user.');
+            $this->JSONResponse(ResponseCode::Forbidden, [], 'The deletion of this proposal is forbidden to the current user.');
+            return;
         }
 
-        $this->Proposals->deleteOrFail($p);
-        
-        $response = [ 
-            'message' => 'The proposal has been successfully deleted.',
-            'code' => 200
-        ];
+        try {
+            $this->Proposals->deleteOrFail($p);
+        } catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::Error, [], 'A database error was encountered while saving the proposal');
+            return;
+        }
 
-        $this->set('response', $response);
-        $this->viewBuilder()->setOption('serialize', 'response');
+        $this->JSONResponse(ResponseCode::Ok, [], 'The proposal has been successfully deleted.');
     }
 }
 

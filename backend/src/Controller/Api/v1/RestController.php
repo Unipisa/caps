@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Controller\Api\v1;
+
+use App\Controller\AppController;
+use \Cake\View\JsonView;
+
+enum ResponseCode : int {
+    case Ok = 200;
+    case Forbidden = 403;
+    case NotFound = 404;
+    case MethodNotAllowed = 405;
+    case Error = 500;
+}
+
+class RestController extends AppController {
+
+    protected function JSONResponse(ResponseCode $code, mixed $data = null, string $message = null) : void {
+        $this->viewBuilder()->setOption('serialize', 'response');
+        $this->viewBuilder()->setClassName('\Cake\View\JsonView');
+
+        if ($message == null) {
+            switch ($code) {
+                case ResponseCode::Ok:
+                    $message = "OK";
+                    break;
+                case ResponseCode::Forbidden:
+                    $message = "Forbidden";
+                    break;
+                case ResponseCode::NotFound:
+                    $message = "Not Found";
+                    break;
+                case ResponseCode::MethodNotAllowed:
+                    $message = "Method not allowed";
+                    break;
+                case ResponseCode::Error:
+                    $message = "Internal server error";
+                    break;
+            }
+        }
+
+        $this->set('response', [
+            'data' => $data, 
+            'code' => $code->value, 
+            'message' => $message
+        ]);
+
+        $this->response = $this->response->withStatus($code->value);
+    }
+
+    function status() {
+        /* We only expose the settings that are safe to view from the client-side */
+        $settings = $this->getSettings();
+        $safe_settings = [ 
+            'user-instructions' => $settings['user-instructions'], 
+            'cds' => $settings['cds'], 
+            'disclaimer' => $settings['disclaimer'],
+            'department' => $settings['department'], 
+            'approval-signature-text' => $settings['approval-signature-text']
+        ];
+
+        $this->JSONResponse(ResponseCode::Ok, [
+            'settings' => $safe_settings, 
+            'user' => $this->user
+        ]);
+    }
+
+    protected function paginateQuery($query) {
+        $limit = $this->request->getParam('limit');
+        $offset = $this->request->getParam('offset');
+
+        if ($limit !== null) {
+            $query = $query->limit($limit);
+        }
+
+        if ($offset != null) {
+            $query = $query->offset($offset);
+        }
+
+        return $query;
+    }
+
+}
+
+?>
+

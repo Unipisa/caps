@@ -6,9 +6,7 @@ import FormInfo from "./FormInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
-import Proposals from "../models/proposals";
-import Users from '../models/users';
-import Forms from "../models/forms";
+import RestClient from "../modules/api";
 
 class UserProfile extends React.Component {
 
@@ -26,24 +24,31 @@ class UserProfile extends React.Component {
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.loadStatus();
     }
 
+    reportError(msg) {
+        console.log(msg);
+    }
+
     async loadStatus() {
-        const status = await (await fetch(Caps.root + 'api/v1/status.json')).json();
+        const status = await RestClient.status();
 
         this.setState({
-            'settings': status['settings'], 
-            'logged_user': status['user']
+            'settings': status['data']['settings'], 
+            'logged_user': status['data']['user']
         }, () => {
             this.loadUserData();
         })
     }
 
     async loadUserData() {
+        const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
+        const user = await RestClient.get(`users/${user_id}`);
+
         this.setState({
-            'user': await Users.get(this.props.id)
+            'user': user['data']
         }, () => {
             this.loadProposals();
             this.loadForms();
@@ -52,59 +57,62 @@ class UserProfile extends React.Component {
     }
 
     async loadProposals() {
-        this.setState({
-            'proposals': await Users.proposals(this.state.user.id)
-        });
+        const res = await RestClient.get('proposals', { 'user_id': this.state.user.id });
+
+        if (res.code != 200) {
+            console.log('Error while loading the proposals: ' + res.message);
+        }
+        else {
+            this.setState({ 'proposals': res['data'] });
+        }        
     }
 
     async loadForms() {
-        const forms_endpoint = this.props.root + 'users/forms/' + this.state.user.id + '.json';
-        const data = await (await fetch(forms_endpoint)).json();
+        const res = await RestClient.get('forms', { 'user_id': this.state.user.id });
 
-        this.setState({
-            'forms': data['forms']
-        });
+        if (res.code != 200) {
+            this.reportError(res.message);
+        }
+        else {
+            this.setState({
+                'forms': res.data
+            });
+        }
     }
-
-    // FIXME: For documents we should use model classes as for users 
-    // proposals and forms, they are just not here yet.
 
     async loadDocuments() {
         if (! this.state.logged_user.admin) {
             return;
         }
 
-        const documents_endpoint = this.props.root + 'users/documents/' + this.state.user.id + '.json';
-        const data = await (await fetch(documents_endpoint)).json();
+        const res = await RestClient.get('documents', { 'user_id': this.state.user.id });
 
         this.setState({
-            'documents': data['documents']
+            'documents': res['data']
         });
     }
 
     async onProposalDeleteClicked(p) {
-        if (confirm('Cancellare il piano di studi selezionato?')) {
-            const data = await Proposals.delete(p.props.proposal.id);
+        const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
 
-            if (data.code != 200) {
-                this.setState({
-                    'flash': { 'type': 'error', 'message': data.message }
-                });
-            }
-            else {
-                // Remove the proposal from the current state
-                let proposals = this.state.proposals;
-                proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-                this.setState({
-                    'proposals': proposals, 
-                    'flash': { 'type': 'success', 'message': data.message }
-                });
-            }
+        if (data.code != 200) {
+            this.setState({
+                'flash': { 'type': 'error', 'message': data.message }
+            });
+        }
+        else {
+            // Remove the proposal from the current state
+            let proposals = this.state.proposals;
+            proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+            this.setState({
+                'proposals': proposals, 
+                'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
+            });
         }
     }
 
     async onFormDeleteClicked(f) {
-        const data = await Forms.delete(f.props.form.id);
+        const data = await RestClient.delete(`forms/${f.props.form.id}`);
 
         if (data.code != 200) {
             this.setState({
@@ -116,7 +124,7 @@ class UserProfile extends React.Component {
             forms.splice(this.state.forms.indexOf(f.props.form), 1);
             this.setState({
                 'forms': forms, 
-                'flash': { 'type': 'success', 'message': data.message }
+                'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
             });
         }
     }

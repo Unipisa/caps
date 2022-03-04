@@ -17,6 +17,7 @@ services:
       - "../backend/templates:/backend/templates:ro"
       - "../backend/webroot:/backend/webroot:ro"
       - "../backend/config/Migrations:/backend/config/Migrations"
+      - "../backend/config/routes.php:/backend/config/routes.php"
       - "./logs:/backend/logs"
     env_file:
       - caps.env

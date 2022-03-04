@@ -40,6 +40,8 @@
       // The following script loads all the JS compiled; it is loaded in minified form when in production, 
       // and in not minified form when in development. 
     ?>
+    <?php echo $this->Html->meta('csrfToken', $this->request->getAttribute('csrfToken')); ?>
+
     
     <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
 

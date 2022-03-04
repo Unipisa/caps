@@ -33,7 +33,22 @@ return function (RouteBuilder $routes) {
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
-            $routes->fallbacks(DashedRoute::class);
+            foreach ([ 'Proposals', 'Users', 'Forms', 'Documents' ] as $controller) {
+                $uri = strtolower($controller);
+
+                $routes->connect('/' . $uri, 
+                    ['controller' => $controller, 'action' => 'index']
+                )->setMethods([ 'GET' ]);
+
+                foreach ([ 'GET', 'POST', 'DELETE'] as $method) {
+                    $routes->connect('/' . $uri . '/*', 
+                        [ 'controller' => $controller, 'action' => strtolower($method) ]
+                    )->setMethods([ $method ]);
+                }
+            }
+
+            // Status
+            $routes->connect('/status', [ 'controller' => 'Rest', 'action' => 'status' ])->setMethods([ 'GET' ]);
         });
 
         // Handle the usual mapping /:controller/:action/params

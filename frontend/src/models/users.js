@@ -1,19 +1,11 @@
 'use strict';
 
+import RestClient from "../modules/api";
+
 class Users {
 
     async get(id) {
-        let response = await (
-            await fetch(Caps.root + 'api/v1/users/get/' + ((id === undefined) ? '' : id) + '.json')
-        ).json();
-
-        response = response['user'];
-
-        return response;
-    }
-
-    async profile(id) {
-
+        return await RestClient.fetch('users/' + id);
     }
 
     async proposals(id) {
