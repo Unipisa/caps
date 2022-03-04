@@ -22,6 +22,7 @@
  */
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Route\DashedRoute;
+use Cake\Utility\Inflector;
 
 return function (RouteBuilder $routes) {
 
@@ -33,8 +34,8 @@ return function (RouteBuilder $routes) {
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
-            foreach ([ 'Proposals', 'Users', 'Forms', 'Documents', 'Exams', 'Groups' ] as $controller) {
-                $uri = strtolower($controller);
+            foreach ([ 'Documents', 'Exams', 'Forms', 'FormTemplates', 'Groups', 'Proposals', 'Users' ] as $controller) {
+                $uri = Inflector::underscore($controller);
 
                 $routes->connect('/' . $uri, 
                     ['controller' => $controller, 'action' => 'index']

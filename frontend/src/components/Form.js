@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
-import FormTemplates from '../models/form_templates';
 import Card from './Card'
 import RestClient from '../modules/api';
 
@@ -40,11 +39,22 @@ class Form extends React.Component {
             html = this.compile_html(form_template.text, form.data, form.state, form.user);
         }
         if (form_template === null && this.props.form_template_id) {
-            form_template = await FormTemplates.get(this.props.form_template_id);
-            html = this.compile_html(form_template.text, {}, 'draft', Caps.params.user);
+            const response = await RestClient.get(`form_template/${this.props.form_template_id}`);
+
+            if (response.code == 200) {
+                form_template = response['data'];
+                html = this.compile_html(form_template.text, {}, 'draft', Caps.params.user);
+            }
+            else {
+                form_template = null;
+            }
         }
         if (form_template === null && form_templates === null) {
-            form_templates = await FormTemplates.allActive();
+            const response = await RestClient.get('form_templates', { 'enabled': true });
+            if (response.code == 200) {
+                form_templates = response['data'];
+            }
+            
         }
         this.setState({form, form_template, form_templates, html});
     }
