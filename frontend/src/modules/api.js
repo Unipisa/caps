@@ -3,7 +3,11 @@
 class RestClient {
 
     constructor() {
-        this.csrf = document.getElementsByName('csrfToken')[0].content
+        try {
+            this.csrf = document.getElementsByName('csrfToken')[0].content
+        } catch {
+            this.csrf = null;
+        }
     }
 
     async fetch(uri, method = 'GET', data = null) {
