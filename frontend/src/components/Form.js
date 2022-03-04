@@ -3,15 +3,14 @@
 import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
 import FormTemplates from '../models/form_templates';
-import Forms from '../models/forms';
 import Card from './Card'
+import RestClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 
 import "react-datepicker/dist/react-datepicker.css";
 
 import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
 import DatePicker from 'react-datepicker';
 
 class Form extends React.Component {
@@ -36,7 +35,7 @@ class Form extends React.Component {
         let form_templates = this.state.form_templates;
         let html = "";
         if (form === null && this.props.id !== undefined) {
-            form = await Forms.get(this.props.id);
+            form = (await RestClient.get(`forms/${this.props.id}`))['data'];
             form_template = form.form_template;
             html = this.compile_html(form_template.text, form.data, form.state, form.user);
         }

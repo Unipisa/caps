@@ -36,6 +36,14 @@ class RestClient {
         return await this.fetch(uri + '?' + params.toString(), 'GET');
     }
 
+    async post(uri, data) {
+        return await this.fetch(uri, 'POST', data);
+    }
+
+    async put(uri, data) {
+        return await this.fetch(uri, 'PUT', data);
+    }
+
 }
 
 export default new RestClient();

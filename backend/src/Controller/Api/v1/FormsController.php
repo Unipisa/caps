@@ -25,6 +25,23 @@ class FormsController extends RestController {
         $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($forms));
     }
 
+    public function get($id) {
+        try {
+            $form = $this->Forms->get($id, [ 'contain' => FormsController::$associations ]);
+        }
+        catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::NotFound);
+            return;
+        }
+
+        if (! $this->user->canViewForm($form)) {
+            $this->JSONResponse(ResponseCode::Forbidden);
+            return;
+        }
+
+        $this->JSONResponse(ResponseCode::Ok, $form);
+    }
+
     public function delete($id) {
         $form = $this->Forms->get($id);
 

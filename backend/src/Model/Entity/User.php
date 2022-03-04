@@ -97,6 +97,11 @@ class User extends Entity implements IdentityInterface
         return $this['admin'] || ($this['id'] == $form['user_id']);
     }
 
+    public function canViewForm(Form $form) : bool
+    {
+        return $this['admin'] || ($this['id'] == $form['user_id']);
+    }
+
     public function canViewProposal(Proposal $proposal, $secrets = []) : bool 
     {
         return $this['admin'] || ($this['id'] == $p['user_id']) || $p->checkSecrets($secrets);
