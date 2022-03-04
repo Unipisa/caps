@@ -33,7 +33,7 @@ return function (RouteBuilder $routes) {
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
-            foreach ([ 'Proposals', 'Users', 'Forms', 'Documents' ] as $controller) {
+            foreach ([ 'Proposals', 'Users', 'Forms', 'Documents', 'Exams', 'Groups' ] as $controller) {
                 $uri = strtolower($controller);
 
                 $routes->connect('/' . $uri, 

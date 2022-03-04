@@ -3,6 +3,7 @@
 import Degrees from '../models/degrees';
 import Curricula from '../models/curricula';
 import Proposals from '../models/proposals';
+import RestClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 
@@ -70,7 +71,7 @@ class Proposal extends React.Component {
     }
 
     async loadProposal(id) {
-        const proposal = await Proposals.get(id);
+        const proposal = (await RestClient.get(`proposals/${id}`))['data'];
         const curriculum = await Curricula.get(proposal.curriculum.id);
         const degree = curriculum.degree;
         const curricula = await Curricula.forDegree(degree.id);

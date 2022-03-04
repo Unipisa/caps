@@ -66,8 +66,8 @@ class RestController extends AppController {
     }
 
     protected function paginateQuery($query) {
-        $limit = $this->request->getParam('limit');
-        $offset = $this->request->getParam('offset');
+        $limit = $this->request->getQuery('limit');
+        $offset = $this->request->getQuery('offset');
 
         if ($limit !== null) {
             $query = $query->limit($limit);

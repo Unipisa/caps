@@ -3,7 +3,6 @@
 namespace App\Controller\Api\v1;
 
 use App\Controller\Api\v1\RestController;
-use Cake\Http\Client\Response;
 
 class DocumentsController extends RestController {
 

@@ -20,9 +20,8 @@ class ProposalsController extends RestController
     function index() {
         $user_id = $this->request->getQuery('user_id');
 
-        $proposals = $this->Proposals->find('all', 
-            [ 'contain' => ProposalsController::$associations ]
-        );
+        $proposals = $this->Proposals->find()
+            ->contain(ProposalsController::$associations);
 
         // Check permissions: users can see their proposals, and admins are 
         // always allowed to perform any query they like.
