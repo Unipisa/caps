@@ -8,16 +8,16 @@ use App\Controller\Api\v1\RestController;
 class FormsController extends RestController {
 
     private static $associations = [ 'Users', 'FormTemplates' ];
+    public $allowedFilters = [ 'user_id' ];
 
     public function index() {
         $forms = $this->Forms->find('all', 
             [ 'contain' => FormsController::$associations ]);
 
-        $user_id = $this->request->getQuery('user_id');
-        $user_id && ($forms = $forms->where([ 'user_id' => $user_id ]));
+        $forms = $this->applyFilters($forms);
 
         // Check permissions
-        if (!$this->user['admin'] && $this->user['id'] != $user_id) {
+        if (!$this->user['admin'] && $this->user['id'] !== $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }

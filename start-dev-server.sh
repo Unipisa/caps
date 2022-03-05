@@ -104,10 +104,10 @@ echo "  > Using NodeJS $(node --version)"
 echo "  > Using NPM $(npm --version)"
 echo ""
 
-(cd frontend && npm run watch:dev )&
+(cd frontend && npm ci && npm run watch:dev )&
 watch_pid=$!
 
-(cd frontend && npm run watch )&
+(cd frontend && npm ci && npm run watch )&
 watch_pid2=$!
 
 wait

@@ -34,7 +34,13 @@ return function (RouteBuilder $routes) {
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
-            foreach ([ 'Documents', 'Exams', 'Forms', 'FormTemplates', 'Groups', 'Proposals', 'Users' ] as $controller) {
+            $api_controllers = [ 
+                'Curricula', 'Degrees', 'Documents', 
+                'Exams', 'Forms', 'FormTemplates', 
+                'Groups', 'Proposals', 'Users' 
+            ];
+
+            foreach ($api_controllers as $controller) {
                 $uri = Inflector::underscore($controller);
 
                 $routes->connect('/' . $uri, 

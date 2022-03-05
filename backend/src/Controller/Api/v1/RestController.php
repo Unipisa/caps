@@ -15,6 +15,23 @@ enum ResponseCode : int {
 
 class RestController extends AppController {
 
+    // A list of columns on which filtered queries are permitted. Override 
+    // this in classes that inherit from RestController and then use 
+    // RestController::applyFilters($query) to apply the filters automatically
+    public $allowedFilters = [];
+
+    protected function applyFilters($query) {
+        foreach ($this->allowedFilters as $field) {
+            $value = $this->request->getQuery($field);
+            if ($value !== null) {
+                $value = json_decode($value);
+                $query = $query->where([ $field => $value ]);
+            }
+        }
+
+        return $query;
+    }
+
     protected function JSONResponse(ResponseCode $code, mixed $data = null, string $message = null) : void {
         $this->viewBuilder()->setOption('serialize', 'response');
         $this->viewBuilder()->setClassName('\Cake\View\JsonView');

@@ -10,7 +10,7 @@ jobs:
       - name: JS tests
         run: |
           cd frontend/
-          npm install
+          npm ci
           npm run test
           npm run deploy
           npm run deploy:dev

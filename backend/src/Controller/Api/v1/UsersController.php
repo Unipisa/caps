@@ -7,10 +7,8 @@ use App\Controller\Api\v1\RestController;
 
 class UsersController extends RestController
 {
-    function get($id = null) {
-        $id = ($id == null) ? $this->user['id'] : $id;
-
-        if ($id != $this->user['id'] && ! $this->user['admin']) {
+    function get($id) {
+        if ($id !== $this->user['id'] && ! $this->user['admin']) {
             $this->JSONResponse(ResponseCode::Forbidden, [], 'Cannot access another user profile');
             return;
         }

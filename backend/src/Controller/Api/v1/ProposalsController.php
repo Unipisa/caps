@@ -13,31 +13,26 @@ class ProposalsController extends RestController
         'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees', 'ProposalAuths', 
         'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ];
 
-    private function get_proposal($id) : ?\App\Model\Entity\Proposal {
-        return $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]);
-    }
+    public $allowedFilters = [ 'user_id' ];
 
     function index() {
-        $user_id = $this->request->getQuery('user_id');
-
         $proposals = $this->Proposals->find()
             ->contain(ProposalsController::$associations);
+        $proposals = $this->applyFilters($proposals);
 
         // Check permissions: users can see their proposals, and admins are 
         // always allowed to perform any query they like.
-        if (!$this->user['admin'] && $this->user['id'] != $user_id) {
+        if (!$this->user['admin'] && $this->user['id'] !== $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
-
-        $user_id && ($proposals = $proposals->where([ 'user_id' => $user_id ]));
 
         $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($proposals));
     }
 
     public function get($id) {
         try {
-            $p = $this->get_proposal($id);
+            $p = $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]);
         }
         catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, "Proposal not found");
@@ -54,7 +49,7 @@ class ProposalsController extends RestController
 
     function delete($id) {
         // We only get the proposal without all the associated tables, 
-        // as we do not need that much data to decide whether the proposal
+        // as we do not need that much data to decide wheather the proposal
         // can be deleted or not.
         $p = $this->Proposals->get($id, [ 'contain' => [ 'Users' ] ]);
 

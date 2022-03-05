@@ -6,29 +6,18 @@ use App\Controller\Api\v1\RestController;
 
 class FormTemplatesController extends RestController {
 
+    public $allowedFilters = [ 'enabled' ];
+
     public function index() {
         $form_templates = $this->FormTemplates->find();
-
-        $enabled = $this->request->getQuery('enabled');
-        
-        if ($enabled !== null) {
-            if (! in_array($enabled, [ 'false', 'true' ])) {
-                $this->JSONResponse(ResponseCode::Error, null, 'Invalid value for the parameter "enabled"');
-                return;
-            }
-            $enabled = $enabled == 'true';
-        }
-        else {
-            $enabled = true;
-        }
+        $form_templates = $this->applyFilters($form_templates);
 
         // Non-admin users can not see disabled form templates
-        if ($enabled !== true && !$this->user['admin']) {
+        if ($this->geQuery('enabled') !== 'true' && !$this->user['admin']) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;   
         }
 
-        $form_templates = $form_templates->where([ 'enabled' => $enabled ]);
         $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($form_templates));
     }
 
