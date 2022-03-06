@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
+import FormsBlock from "./FormsBlock";
 
 class UserProfile extends React.Component {
 
@@ -164,31 +165,6 @@ class UserProfile extends React.Component {
         </div>
     }
 
-    renderFormsBlock() {
-        return <div className="mt-4">
-            <h2 className="d-flex">
-                <span className="mr-auto">Moduli</span>
-                <a href={this.props.root + 'forms/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
-                    <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
-                    <span className="d-none d-md-inline ml-2">Nuovo modulo</span>
-                </a>
-            </h2>
-            { this.state.forms === undefined && <LoadingMessage>Caricamento dei moduli in corso</LoadingMessage>}
-            {
-                this.state.forms !== undefined && <div>
-                    { this.state.forms.length == 0 && <Card>Nessun modulo consegnato.</Card>}
-                    <div className="row">{ this.state.forms.map(f => <FormInfo root={this.props.root} 
-                        csrfToken={this.props.csrfToken} 
-                        key={"form-info-" + f.id} 
-                        onDeleteClicked={this.onFormDeleteClicked.bind(this)}
-                        form={f}></FormInfo>)
-                    }</div>
-                </div> 
-            }
-            
-        </div>
-    }
-
     renderDocumentsBlock() {
         if (! this.state.logged_user.admin)
             return;
@@ -259,7 +235,10 @@ class UserProfile extends React.Component {
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
                 {this.renderDocumentsBlock()}
-                {this.renderFormsBlock()}
+                <FormsBlock
+                    forms={this.state.forms}
+                    root={this.props.root}
+                ></FormsBlock>
             </div>;
         }
     }
