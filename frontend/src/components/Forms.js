@@ -3,10 +3,9 @@
 import React, { useState } from 'react';
 import Card from './Card';
 import RestClient from '../modules/api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
-import LoadingMessage from './LoadingMessage';
-import FormsBlock from './FormsBlock';
+import InputControl from './InputControl';
+import SelectControl from './SelectControl';
+import FilterButton from './FilterButton';
 
 class Forms extends React.Component {
     constructor(props) {
@@ -30,14 +29,54 @@ class Forms extends React.Component {
     onDeleteClicked(f) {
     }
 
+    renderHeadPanel() {
+        return <div className="d-flex mb-2">
+            <FilterButton>                    
+                <SelectControl
+                    name="state"
+                    label="stato"
+                    type="select"
+                    options={{
+                        '': 'tutti',
+                        'draft': 'bozze',
+                        'submitted': 'da valutare',
+                        'approved': 'approvati',
+                        'rejected': 'rifiutati'
+                    }}>
+                </SelectControl>
+                <InputControl
+                    name="surname"
+                    label="cognome">
+                </InputControl>
+                <InputControl
+                    name="formTemplate"
+                    label="modello">
+                </InputControl>
+                <InputControl
+                    name="name"
+                    label="nome">
+                </InputControl>
+            </FilterButton>
+        </div>;
+    }
+
+    renderTailPanel() {
+        return ;
+    }
+
+    renderTable() {
+        return ;
+    }
 
     render() {
-        return <Card>
-            <FormsBlock
-                forms={this.state.forms}
-                root={this.props.root}
-            ></FormsBlock>
-            </Card>;
+        return <div>
+            <h1>Moduli</h1>
+            <Card>
+                { this.renderHeadPanel() }
+                { this.renderTable() }
+                { this.renderTailPanel() }
+            </Card>
+        </div>
     }
 }
 
