@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
-import Card from './Card'
+import Card from './Card';
 import RestClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';

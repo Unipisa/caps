@@ -13,7 +13,7 @@ class FormTemplatesController extends RestController {
         $form_templates = $this->applyFilters($form_templates);
 
         // Non-admin users can not see disabled form templates
-        if ($this->geQuery('enabled') !== 'true' && !$this->user['admin']) {
+        if ($this->request->getQuery('enabled') !== 'true' && !$this->user['admin']) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;   
         }
