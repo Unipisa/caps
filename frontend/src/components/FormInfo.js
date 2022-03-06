@@ -2,6 +2,7 @@ import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
 import { postLink } from '../modules/form-submission';
+import Forms from '../models/forms';
 
 class FormInfo extends React.Component {
 
@@ -44,7 +45,7 @@ class FormInfo extends React.Component {
     render() {
         return <div className="my-2 col-xxl-3 col-xl-4 col-lg-6 col-12">
             <SmallCard className="border-left-primary">
-                <div className="mb-2">{this.renderBadge()}</div>
+                <div className="mb-2">{Forms.renderBadge(this.props.form)}</div>
                 <strong>{this.props.form.form_template.name}</strong>
                 <div>{this.renderDatesBlock()}</div>
                 <div className="mt-2">{this.renderButtons()}</div>

@@ -33,9 +33,17 @@ class CapsFormsController extends CapsAppController {
     }
 
     index(params) {
+        var query = params["?"];
+        if (query === undefined) {
+            query = [];
+        }
+
+        sessionStorage.setItem('forms-filter', JSON.stringify(query));
+
         ReactDOM.render(
             <Forms
                 root={this.root}
+                query={query}
                 csrfToken={params._csrfToken}></Forms>,
             document.querySelector('#app')
         );

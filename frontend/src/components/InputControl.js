@@ -8,7 +8,8 @@ class InputControl extends React.Component {
             <label htmlFor={this.props.name}>{ this.props.label }</label>
             <input className="form-control"
                 name={this.props.name}
-                label={this.props.label}></input>
+                label={this.props.label}
+                onChange={this.props.onChange}></input>
             </div> 
     }
 }

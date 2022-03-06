@@ -8,7 +8,8 @@ class SelectControl extends React.Component {
             <label htmlFor={this.props.name}>{ this.props.label }</label>
             <select className="form-control"
                 name={this.props.name}
-                label={this.props.label}>
+                label={this.props.label}
+                onChange={this.props.onChange}>
                 { Object.entries(this.props.options).map(
                     option => <option
                         key={option[0]}
