@@ -28,6 +28,7 @@ class FormsController extends RestController {
     public function get($id) {
         try {
             $form = $this->Forms->get($id, [ 'contain' => FormsController::$associations ]);
+            $form['data'] = json_decode($form['data']);
         }
         catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound);
