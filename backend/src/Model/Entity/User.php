@@ -71,6 +71,19 @@ class User extends Entity implements IdentityInterface
         return $this;
     }
 
+    public function canView(Entity $item, $secrets = []) : bool {
+        if ($item instanceof Proposal) {
+            return $this->canViewProposal($item, $secrets);
+        }
+        if ($item instanceof Attachment) {
+            return $this->canViewAttachment($item, $secrets);
+        }
+        if ($item instanceof Form) {
+            return $this['admin'] || ($this['id'] == $item['user_id']);
+        }
+        return $this['admin'];
+    }
+
     public function canAddAttachment(Proposal $proposal, $secrets = []) : bool
     {
         return $this['admin'] ||
@@ -93,11 +106,6 @@ class User extends Entity implements IdentityInterface
     }
 
     public function canDeleteForm(Form $form) : bool 
-    {
-        return $this['admin'] || ($this['id'] == $form['user_id']);
-    }
-
-    public function canViewForm(Form $form) : bool
     {
         return $this['admin'] || ($this['id'] == $form['user_id']);
     }

@@ -3,38 +3,28 @@
 namespace App\Controller\Api\v1;
 use App\Controller\Api\v1\RestController;
 
+const COMMON_FIELDS = [
+    "id", 
+    "name",
+    "years",
+    "enable_sharing",
+    "approval_confirmation",
+    "rejection_confirmation",
+    "submission_confirmation",
+    "academic_year",
+    "enabled",
+];
+
 class DegreesController extends RestController {
-
-    public static $associations = [];
+    protected $tableName = "Degrees";
+    protected $typeName = "degree";
+    protected $indexFields = COMMON_FIELDS;
+    protected $getFields = [ ...COMMON_FIELDS, ...[
+        "approval_message",
+        "rejection_message",
+        "submission_message",
+        "default_group_id" ]];
     public $allowedFilters = [ 'enabled' ];
-
-    public function index() {
-        $c = $this->Degrees->find('all', [
-            'contains' => DegreesController::$associations
-        ]);
-
-        $c = $this->applyFilters($c);
-        $c = $this->paginateQuery($c);
-
-        $this->JSONResponse(ResponseCode::Ok, $c);
-    }
-
-    public function get($id) {
-        try {
-            $c = $this->Degrees->get($id, [
-                'contain' => DegreesController::$associations
-            ]);
-        }
-        catch (\Exception $e) {
-            $this->JSONResponse(ResponseCode::NotFound);
-            return;
-        }
-
-        $this->JSONResponse(ResponseCode::Ok, $c);
-    }
-
-
-
 }
 
 ?>

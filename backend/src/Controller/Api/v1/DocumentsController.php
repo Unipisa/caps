@@ -4,24 +4,28 @@ namespace App\Controller\Api\v1;
 
 use App\Controller\Api\v1\RestController;
 
+use const App\Controller\Api\v1\COMMON_FIELDS as V1COMMON_FIELDS;
+
+const COMMON_FIELDS = [
+    "id",
+    "filename",
+    "user_id",
+    "proposal_id",
+    "mimetype",
+    "comment",
+    "created"];
+
 class DocumentsController extends RestController {
 
-    public static $associations = [ 'Users' ];
+    protected $associations = [ 'Users' ];
     public $allowedFilters = [ 'user_id' ];
+    protected $indexFields = COMMON_FIELDS;
+    protected $getFields = [...COMMON_FIELDS, ...["data"]];
 
-    public function index() {
-        $d = $this->Documents->find('all', 
-            [ 'contain' => DocumentsController::$associations ]
-        );
-
-        $d = $this->applyFilters($d);
-
-        if (!$this->user['admin'] && $this->user['id'] !== $this->request->getQuery($user_id)) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
+    protected function permissionFilter($query) {
+        if (!$this->user['admin']) {
+            $query = $query->where(["user_id" => $this->user['id']]);
         }
-
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($d));
+        return $query;
     }
-
 }

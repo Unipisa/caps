@@ -2,63 +2,53 @@
 
 namespace App\Controller\Api\v1;
 
-use App\Controller\AppController;
 use App\Controller\Api\v1\RestController;
+use Cake\ORM\TableRegistry;
+
+const COMMON_FIELDS = [ 
+    "id",
+    "state",
+    "date_submitted",
+    "date_managed",
+    "FormTemplates.id",
+    "FormTemplates.name",
+    "FormTemplates.enabled",
+    "Users.id",
+    "Users.username",
+    "Users.name",
+    "Users.number",
+    "Users.givenname",
+    "Users.surname",
+    "Users.email",
+    "Users.admin"];
 
 class FormsController extends RestController {
 
-    private static $associations = [ 'Users', 'FormTemplates' ];
-    public $allowedFilters = [ 'user_id' ];
+    protected $tableName = "Forms";
+    protected $typeName = "form";
+    protected $associations = [ 'Users', 'FormTemplates' ];
+    public $allowedFilters = [ 'user_id', 'state' ]; 
+    protected $indexFields = COMMON_FIELDS;
+    protected $getFields = [...COMMON_FIELDS, ...["data"]];
 
-    public function index() {
-        $forms = $this->Forms->find('all', 
-            [ 'contain' => FormsController::$associations ]);
-
-        $forms = $this->applyFilters($forms);
-
-        // Check permissions
-        if (!$this->user['admin'] && $this->user['id'] !== $this->request->getQuery('user_id')) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
+    public function permissionFilter($query) {
+        if (!$this->user['admin']) {
+            // only shows owned forms
+            $query = $query->where(['user_id' => $this->user['id']]);
         }
-
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($forms));
+        return $query;
     }
 
-    public function get($id) {
-        try {
-            $form = $this->Forms->get($id, [ 'contain' => FormsController::$associations ]);
-            $form['data'] = json_decode($form['data']);
-        }
-        catch (\Exception $e) {
-            $this->JSONResponse(ResponseCode::NotFound);
-            return;
-        }
+    // override to explode "data" json field
+    protected function getItem($id) {
+        $item = parent::getItem($id);
 
-        if (! $this->user->canViewForm($form)) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
+        if ($item !== null) {
+            // explode json data in 'data' field
+            $item['data'] = json_decode($item['data']);
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $form);
-    }
-
-    public function delete($id) {
-        $form = $this->Forms->get($id);
-
-        if (! $this->user->canDeleteForm($form)) {
-            $this->JSONResponse(ResponseCode::Forbidden, null, 'The current user can not delete this form.');
-            return;
-        }
-
-        try {
-            $this->Forms->deleteOrFail($form);
-        } catch (\Exception $e) {
-            $this->JSONResponse(ResponseCode::Error, null, 'Error while deleting the proposal');
-            return;
-        }
-
-        $this->JSONResponse(ResponseCode::Ok);
+        return $item;
     }
 
 }

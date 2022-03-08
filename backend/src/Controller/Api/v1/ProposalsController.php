@@ -6,7 +6,7 @@ use App\Model\Entity\Proposal;
 
 class ProposalsController extends RestController
 {
-    public static $associations = [ 
+    protected $associations = [ 
         'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
         'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
         'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
@@ -17,7 +17,7 @@ class ProposalsController extends RestController
 
     function index() {
         $proposals = $this->Proposals->find()
-            ->contain(ProposalsController::$associations);
+            ->contain($this->associations);
         $proposals = $this->applyFilters($proposals);
 
         // Check permissions: users can see their proposals, and admins are 
@@ -32,7 +32,7 @@ class ProposalsController extends RestController
 
     public function get($id) {
         try {
-            $p = $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]);
+            $p = $this->Proposals->get($id, [ 'contain' => $this->associations ]);
         }
         catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, "Proposal not found");
