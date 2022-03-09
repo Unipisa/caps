@@ -1,10 +1,5 @@
 import assert from 'assert';
 
-import curricula from '../src/models/curricula.js';
-import degrees from '../src/models/degrees.js';
-import exams from '../src/models/exams.js';
-import groups from '../src/models/groups.js';
-import proposals from '../src/models/proposals.js';
 import jsdom from 'jsdom';
 
 import CapsAttachment from '../src/modules/attachment';

@@ -5,7 +5,7 @@ import Card from './Card';
 import RestClient from '../modules/api';
 import FilterButton from './FilterButton';
 import LoadingMessage from './LoadingMessage';
-import forms from '../models/forms';
+import FormBadge from './FormBadge';
 
 class Forms extends React.Component {
     constructor(props) {
@@ -76,7 +76,7 @@ class Forms extends React.Component {
                     </thead>
                     {this.state.forms.map(form => <tr key={form.id}>
                         <td><input type="checkbox" value={form.id}></input></td>
-                        <td>{forms.renderBadge(form)}</td>
+                        <td><FormBadge form={form}></FormBadge></td>
                         <td>{form.user.firstname+" "+form.user.surname}</td>
                         <td>{form.form_template.name}</td>
                         <td>{form.date_submitted}</td>

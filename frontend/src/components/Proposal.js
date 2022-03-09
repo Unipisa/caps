@@ -19,7 +19,7 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'chosen_exams': [],
+            'chosen_exams': null,
             'proposal': null, 
             'error': null
         };
@@ -142,7 +142,7 @@ class Proposal extends React.Component {
 
         const curricula = curricula_response.data;
 
-        var chosen_exams = [];
+        var chosen_exams = null;
         let selected_curriculum = null;
         if (this.curriculum_id) {
             // seleziona il curriculum indicato nella querystring
@@ -192,7 +192,7 @@ class Proposal extends React.Component {
             this.setState({
                 'selected_degree': this.state.degrees[degree_idx],
                 'selected_curriculum': null,
-                'chosen_exams': []
+                'chosen_exams': null
             }, () => this.loadCurricula());
         }
     }
@@ -215,7 +215,7 @@ class Proposal extends React.Component {
             // proposal.
             this.setState({
                 'selected_curriculum': this.state.curricula[idx],
-                'chosen_exams': []
+                'chosen_exams': null
             }, async () => {
                 const curriculum_id = this.state.curricula[idx].id;
                 const response = await RestClient.get(`curricula/${curriculum_id}`);
@@ -468,7 +468,7 @@ class Proposal extends React.Component {
     renderProposal() {
         var rows = [];
 
-        if (this.state.chosen_exams.length == 0) {
+        if (this.state.chosen_exams === null) {
             return <Card>
                 <LoadingMessage>Caricamento del piano in corso...</LoadingMessage>
             </Card>;
@@ -615,7 +615,7 @@ class Proposal extends React.Component {
         return <div>
             <Card>{this.renderDegreeCurriculaSelection()}</Card>
             {this.state.selected_curriculum !== null && this.renderProposal()}
-            {this.state.selected_curriculum !== null &&
+            {this.state.selected_curriculum !== null && this.state.chosen_exams !== null &&
                 <Card>{this.renderSubmitBlock()}</Card>
             }
         </div>;
