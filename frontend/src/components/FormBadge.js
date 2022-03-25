@@ -10,6 +10,11 @@ function FormBadge(props) {
     if (props.form.state == "approved") {
         return <span className="badge badge-sm badge-success">Approvato</span>;
     }
+    if (props.form.state == "rejected") {
+        return <span className="badge badge-sm badge-danger">Rifiutato</span>;
+    }
+
+    return <></>;
 }
 
 export default FormBadge;
