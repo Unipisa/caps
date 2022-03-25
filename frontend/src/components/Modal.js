@@ -11,9 +11,14 @@ class Modal extends React.Component {
             display_class: 'd-none', 
             callback: null
         }
+
+        this.overlay_ref = React.createRef();
     }
 
     show(title, content, callback = null) {
+        this.overlay_ref.current.style.display = "block";
+        this.overlay_ref.current.style.backgroundColor = "rgb(255,255,255,0.8)";
+
         this.setState({
             title: title, 
             content: content, 
@@ -23,6 +28,9 @@ class Modal extends React.Component {
     }
 
     hide() {
+        this.overlay_ref.current.style.display = "none";
+        this.overlay_ref.current.style.backgroundColor = "rgb(255,255,255,0)";
+
         this.setState({
             display_class: 'd-none'
         })
@@ -46,14 +54,16 @@ class Modal extends React.Component {
 
     render() {
         return <>
-        <div className={this.state.display_class} style={{ 
+        <div ref={this.overlay_ref} style={{ 
                 position: "fixed", 
                 top: 0, 
                 left: 0, 
                 width: "100%", 
                 height: "100%", 
                 zIndex: "1049", 
-                backgroundColor: "rgba(255,255,255,0.8)" 
+                display: "none",
+                transition: "background-color 1s ease",
+                backgroundColor: "rgba(255,255,255,0.0)"
             }}>
             &nbsp;
         </div>
