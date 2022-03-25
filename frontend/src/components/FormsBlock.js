@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import LoadingMessage from './LoadingMessage';
 import FormInfo from './FormInfo';
+import Card from './Card';
 
 class FormsBlock extends React.Component {
     render() {
@@ -22,7 +23,7 @@ class FormsBlock extends React.Component {
                     <div className="row">{ forms.map(f => <FormInfo root={this.props.root} 
                         csrfToken={this.props.csrfToken} 
                         key={"form-info-" + f.id} 
-                        onDeleteClicked={this.props.onDeleteClicked}
+                        onDeleteClicked={this.props.onDeleteClicked.bind(this)}
                         form={f}></FormInfo>)
                     }</div>
                 </div> 

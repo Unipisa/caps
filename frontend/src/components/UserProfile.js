@@ -8,6 +8,7 @@ import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
+import Modal from "./Modal";
 
 class UserProfile extends React.Component {
 
@@ -23,6 +24,8 @@ class UserProfile extends React.Component {
             'documents': undefined,
             'flash': undefined
         };
+
+        this.modal_ref = React.createRef();
     }
 
     async componentDidMount() {
@@ -94,40 +97,57 @@ class UserProfile extends React.Component {
     }
 
     async onProposalDeleteClicked(p) {
-        const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
+        // Make sure that the user wants to delete the proposal
+        this.modal_ref.current.show('Eliminare il piano di studi?', 
+            'Eliminare definitivamente il piano di studi del Curriculum ' + p.props.proposal.curriculum.name + '?\n' + 
+            'Questa operazione non è reversibile.', 
+            async (response) => {
+                if (response) {
+                    const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
 
-        if (data.code != 200) {
-            this.setState({
-                'flash': { 'type': 'error', 'message': data.message }
-            });
-        }
-        else {
-            // Remove the proposal from the current state
-            let proposals = this.state.proposals;
-            proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-            this.setState({
-                'proposals': proposals, 
-                'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
-            });
-        }
+                    if (data.code != 200) {
+                        this.setState({
+                            'flash': { 'type': 'error', 'message': data.message }
+                        });
+                    }
+                    else {
+                        // Remove the proposal from the current state
+                        let proposals = this.state.proposals;
+                        proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+                        this.setState({
+                            'proposals': proposals, 
+                            'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
+                        });
+                    }
+                }
+        })
+
+        
     }
 
     async onFormDeleteClicked(f) {
-        const data = await RestClient.delete(`forms/${f.props.form.id}`);
+        this.modal_ref.current.show('Eliminare il modulo?', 
+            'Eliminare il modulo definitivamente? Questa operazione non può essere annullata.', 
+            async (response) => {
+                if (response) {
+                    const data = await RestClient.delete(`forms/${f.props.form.id}`);
 
-        if (data.code != 200) {
-            this.setState({
-                'flash': { 'type': 'error', 'message': data.message }
+                    if (data.code != 200) {
+                        this.setState({
+                            'flash': { 'type': 'error', 'message': data.message }
+                        });
+                    }
+                    else {
+                        let forms = this.state.forms;
+                        forms.splice(this.state.forms.indexOf(f.props.form), 1);
+                        this.setState({
+                            'forms': forms, 
+                            'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
+                        });
+                    }   
+                }
             });
-        }
-        else {
-            let forms = this.state.forms;
-            forms.splice(this.state.forms.indexOf(f.props.form), 1);
-            this.setState({
-                'forms': forms, 
-                'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
-            });
-        }
+        
     }
 
     renderUserBlock() {
@@ -231,11 +251,13 @@ class UserProfile extends React.Component {
         }
         else {
             return <div>
+                <Modal ref={this.modal_ref}></Modal>
                 {this.renderFlash()}
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
                 {this.renderDocumentsBlock()}
                 <FormsBlock
+                    onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
                     root={this.props.root}
                 ></FormsBlock>
