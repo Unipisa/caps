@@ -6,11 +6,15 @@ class Card extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.containerClass = "card-header bg-" + 
+            ((this.props.bg !== undefined) ? this.props.bg : "primary");
+        this.titleClass = this.props.titleClass ? this.props.titleClass : "text-white"
     }
 
     renderTitle() {
-        return <div className="card-header bg-primary">
-                <h3 className="h5 text-white">{this.props.title}</h3>
+        return <div className={this.containerClass}>
+                <h3 className={"h5 " + this.titleClass}>{this.props.title}</h3>
         </div>;
     }
 
