@@ -22,6 +22,8 @@
  */
 
 namespace App\View\Helper;
+
+use App\Model\Entity\Form;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\View\Helper;
@@ -39,12 +41,15 @@ class CapsHelper extends Helper {
      * In particular, green if accepted, yellow for submission, red for 
      * rejected, gray otherwise. 
      */
-    public function proposalColor($proposal) {
-        switch ($proposal['state']) {
+    public function proposalColor($item) {
+        switch ($item['state']) {
             case 'approved':
                 return "success";
                 break;
             case 'submitted':
+                if ($item instanceof Form && !$item['form_template']['require_approval']) {
+                    return "success";
+                }
                 return "warning";
                 break;
             case 'rejected':
@@ -56,15 +61,15 @@ class CapsHelper extends Helper {
         }
     }
 
-    public function badge($proposal, $class = "") {
-        // $proposal can also be a Form instance (not only Proposal)
-        $statusclass = $this->proposalColor($proposal);
+    public function badge($item, $class = "") {
+        // $item can be a Proposal or Form instance
+        $statusclass = $this->proposalColor($item);
         $status = [
             'draft' => 'Bozza',
             'submitted' => 'Inviato',
             'approved' => 'Approvato',
             'rejected' => 'Rifiutato'
-        ][$proposal['state']];
+        ][$item['state']];
 
         $cl = "badge" . " " . $class;
         return "<span class=\"$cl badge-$statusclass\">$status</span>";
