@@ -474,6 +474,14 @@ class Proposal extends React.Component {
             </Card>;
         }
 
+        if (this.state.selected_curriculum.notes) {
+            rows.push(
+                <Card title="Nota" bg="warning" titleClass="text-primary">
+                    {this.state.selected_curriculum.notes}
+                </Card>
+            )
+        }
+
         for (var i = 1; i <= this.state.selected_degree.years; i++) {
             const year = i;
             const chosen_exams = this.state.chosen_exams.filter((e) => e.year == year);
