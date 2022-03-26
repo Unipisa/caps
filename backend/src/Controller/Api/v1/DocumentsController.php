@@ -63,7 +63,7 @@ class DocumentsController extends RestController {
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, [], 'L\'allegato è stato cancellato');
+        $this->JSONResponse(ResponseCode::Ok, [], 'L\'allegato è stato cancellato.');
     }
 
 }

@@ -78,7 +78,7 @@ class DocumentsController extends AppController
             $data = $this->request->getData('data');
 
             if ($data->getClientFilename() == "" && $document['comment'] == "") {
-                $this->Flash->error('Selezionare un file da caricare, o inserire un commento');
+                $this->Flash->error('Selezionare un file da caricare, o inserire un commento.');
 
                 return $this->redirect([
                     'controller' => 'users',
@@ -91,7 +91,7 @@ class DocumentsController extends AppController
                 $document['data'] = $data->getStream()->getContents();
 
                 if ($document['data'] == "") {
-                    $this->Flash->error('Impossibile caricare un file vuoto');
+                    $this->Flash->error('Impossibile caricare un file vuoto.');
 
                     return $this->redirect([
                         'controller' => 'users',

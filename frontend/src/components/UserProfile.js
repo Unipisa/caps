@@ -167,7 +167,7 @@ class UserProfile extends React.Component {
             else {
                 this.setState({
                     'documents': [...this.state.documents, response['data']], 
-                    'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo' },
+                    'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo.' },
                     loadingDocument: false
                 });
             }
