@@ -76,7 +76,10 @@
                                     <div class="card-body">
                                         <p>Effettua il login usando le credenziali di Ateneo.</p>
                                         <?php if ($oauth2_enabled): ?>
-                                            <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build([ 'controller' => 'users', 'action' => 'oauth2-login' ])?>">
+                                            <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build(
+                                                [ 'controller' => 'users', 'action' => 'oauth2-login',
+                                                '?' => [ 'redirect' => $redirect ] ]
+                                            )?>">
                                             <i class="fas fa-key mr-2"></i> Login
                                             </a>
                                         <?php endif; ?>
