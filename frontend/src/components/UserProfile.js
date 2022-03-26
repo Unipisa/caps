@@ -155,13 +155,13 @@ class UserProfile extends React.Component {
 
         if (response.code != 200) {
             this.setState({
-                'flash': response.message
+                'flash': { 'type': 'error', 'message': response.message }
             });
         }
         else {
             this.setState({
                 'documents': [...this.state.documents, response['data']], 
-                'flash': 'Allegato aggiunto al profilo'
+                'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo' }
             });
         }
     }
@@ -174,7 +174,7 @@ class UserProfile extends React.Component {
                 const data = await RestClient.delete(`documents/${a.id}`);
                 if (data.code != 200) {
                     this.setState({
-                        'flash': data.message
+                        'flash': { 'type': 'error', 'message': data.message }
                     })
                 }
                 else {
@@ -182,7 +182,7 @@ class UserProfile extends React.Component {
                     new_documents.splice(new_documents.indexOf(a), 1);
 
                     this.setState({
-                        'flash': data.message, 
+                        'flash': { 'type': 'success', 'message': data.message },
                         'documents': new_documents
                     })
                 }
