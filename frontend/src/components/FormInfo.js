@@ -54,7 +54,7 @@ class FormInfo extends React.Component {
     render() {
         return <div className="my-2 col-xxl-3 col-xl-4 col-lg-6 col-12">
             <SmallCard onClick={this.onClick.bind(this)} className="border-left-primary clickable-card">
-                <div class="d-flex">
+                <div className="d-flex">
                     <div className="mb-2 mr-auto">
                         <FormBadge form={this.props.form}></FormBadge>
                     </div>
