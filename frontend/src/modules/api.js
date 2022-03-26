@@ -11,16 +11,26 @@ class RestClient {
     }
 
     async fetch(uri, method = 'GET', data = null) {
-        const res = await fetch(Caps.root + 'api/v1/' + uri, {
-            method: method, 
-            headers: {
-                'Content-Type': 'application/json', 
-                'X-CSRF-Token': this.csrf
-            }, 
-            body: data ? JSON.stringify(data) : null
-        });
+        let response = {}
 
-        return await res.json();
+        try {
+            const res = await fetch(Caps.root + 'api/v1/' + uri, {
+                method: method, 
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'X-CSRF-Token': this.csrf
+                }, 
+                body: data ? JSON.stringify(data) : null
+            });
+            response = await res.json();
+        } catch {
+            response = {
+                code: 500, 
+                message: 'RESTClient: an error occurred while performing the request.'
+            };
+        }
+
+        return response;
     }
 
     async status() {

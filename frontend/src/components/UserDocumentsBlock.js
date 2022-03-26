@@ -1,6 +1,7 @@
 import React from "react";
 import Attachment from "./Attachment";
 import Card from "./Card";
+import LoadingMessage from "./LoadingMessage";
 import NewAttachmentForm from "./NewAttachmentForm";
 
 function UserDocumentsBlock(props) {
@@ -16,6 +17,18 @@ function UserDocumentsBlock(props) {
             showDeleteButton="true"
         ></Attachment>
     });
+
+    if (props.loadingDocument) {
+        document_rows.push(
+            <div key="document-loading" className="card border-left-primary mb-2">
+                <div className="card-body p-1">
+                    <LoadingMessage>
+                        Caricamento del documento in corso...
+                    </LoadingMessage>
+                </div>
+            </div>
+        )
+    }
 
     const info_text = <p>
         I documenti e le annotazioni inserite in questa sezione

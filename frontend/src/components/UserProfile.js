@@ -23,6 +23,7 @@ class UserProfile extends React.Component {
             'proposals': undefined,
             'forms': undefined,
             'documents': undefined,
+            'loadingDocument': false, 
             'flash': undefined
         };
 
@@ -151,19 +152,28 @@ class UserProfile extends React.Component {
 
     async onNewAttachment(a) {
         a['user_id'] = this.state.user.id;
-        const response = await RestClient.post('documents', a);        
 
-        if (response.code != 200) {
-            this.setState({
-                'flash': { 'type': 'error', 'message': response.message }
-            });
-        }
-        else {
-            this.setState({
-                'documents': [...this.state.documents, response['data']], 
-                'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo' }
-            });
-        }
+        this.setState({
+            loadingDocument: true
+        }, async () => {
+            const response = await RestClient.post('documents', a);        
+
+            if (response.code != 200) {
+                this.setState({
+                    'flash': { 'type': 'error', 'message': response.message }, 
+                    loadingDocument: false
+                });
+            }
+            else {
+                this.setState({
+                    'documents': [...this.state.documents, response['data']], 
+                    'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo' },
+                    loadingDocument: false
+                });
+            }
+        })
+
+        
     }
 
     async onAttachmentDeleteClicked(a) {
@@ -275,7 +285,8 @@ class UserProfile extends React.Component {
                     forms={this.state.forms}
                     root={this.props.root}
                 ></FormsBlock>
-                {this.state.logged_user.admin && <UserDocumentsBlock 
+                {this.state.logged_user.admin && <UserDocumentsBlock
+                    loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
                     onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
