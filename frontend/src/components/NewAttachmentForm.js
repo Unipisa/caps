@@ -59,7 +59,7 @@ function NewAttachmentForm(props) {
                 <div className="form-group">
                     <input ref={attachment_ref} type="file" className="form-control-file"></input>
                 </div>
-                <button className="btn btn-primary" onClick={newAttachmentCallback}>Aggiungi alegato o commento</button>
+                <button className="btn btn-primary" onClick={newAttachmentCallback}>Aggiungi allegato o commento</button>
             </div>
         </div>
     </>;
