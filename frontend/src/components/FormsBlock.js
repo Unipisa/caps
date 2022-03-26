@@ -19,7 +19,7 @@ class FormsBlock extends React.Component {
             { forms === undefined && <LoadingMessage>Caricamento dei moduli in corso</LoadingMessage>}
             {
                 forms !== undefined && <div>
-                    { forms.length == 0 && <Card>Nessun modulo.</Card>}
+                    { forms.length == 0 && <p>Nessun modulo compilato.</p>}
                     <div className="row">{ forms.map(f => <FormInfo root={this.props.root} 
                         csrfToken={this.props.csrfToken} 
                         key={"form-info-" + f.id} 

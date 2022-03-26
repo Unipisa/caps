@@ -3,25 +3,32 @@
 import React from 'react';
 import { formatDate } from '../modules/dates';
 
-class Attachment extends React.Component {
+function Attachment(props) {
+    const api_base = props.root + ((props.controller !== undefined) ? props.controller : 'attachments');
 
-    render() {
-        const api_base = this.props.root + ((this.props.controller !== undefined) ? this.props.controller : 'attachments');
-
-        return <li className="card border-left-info mb-2">
-            <div className="card-body p-1">
-                {this.props.attachment.comment != "" && 
-                    <div>{this.props.attachment.comment}</div>
-                }
-                {this.props.attachment.filename !== undefined && <div>
-                    <a href={api_base + '/view/' + this.props.attachment.id}>{this.props.attachment.filename}</a>
-                </div>}
-                <strong>{this.props.attachment.user.name}</strong> &mdash;
-                {formatDate(this.props.attachment.created)}
-            </div>
-        </li>;
+    const deleteHandler = () => {
+        if (props.onDeleteClicked) {
+            props.onDeleteClicked(props.attachment);
+        }
     }
 
+    return <li className="card border-left-info mb-2">
+        <div className="card-body p-1">
+            {props.attachment.comment != "" && 
+                <div>{props.attachment.comment}</div>
+            }
+            {props.attachment.filename !== undefined && <div>
+                <a href={api_base + '/view/' + props.attachment.id}>{props.attachment.filename}</a>
+            </div>}
+            <div className="d-sm-flex align-items-center justify-content-between">
+                <div>
+                    <strong>{props.attachment.user.name}</strong> &mdash;
+                    {formatDate(props.attachment.created)}
+                </div>
+                {props.showDeleteButton && <button className="btn btn-sm btn-danger" onClick={deleteHandler}>Elimina</button>}
+            </div>
+        </div>
+    </li>;
 }
 
 export default Attachment;

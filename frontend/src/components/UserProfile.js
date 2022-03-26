@@ -9,6 +9,7 @@ import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
 import Modal from "./Modal";
+import UserDocumentsBlock from "./UserDocumentsBlock";
 
 class UserProfile extends React.Component {
 
@@ -121,8 +122,6 @@ class UserProfile extends React.Component {
                     }
                 }
         })
-
-        
     }
 
     async onFormDeleteClicked(f) {
@@ -150,6 +149,47 @@ class UserProfile extends React.Component {
         
     }
 
+    async onNewAttachment(a) {
+        a['user_id'] = this.state.user.id;
+        const response = await RestClient.post('documents', a);        
+
+        if (response.code != 200) {
+            this.setState({
+                'flash': response.message
+            });
+        }
+        else {
+            this.setState({
+                'documents': [...this.state.documents, response['data']], 
+                'flash': 'Allegato aggiunto al profilo'
+            });
+        }
+    }
+
+    async onAttachmentDeleteClicked(a) {
+        this.modal_ref.current.show('Eliminare il documento?', 
+            'Questa operazione non è reversibile.', 
+            async (response) => {
+            if (response) {
+                const data = await RestClient.delete(`documents/${a.id}`);
+                if (data.code != 200) {
+                    this.setState({
+                        'flash': data.message
+                    })
+                }
+                else {
+                    let new_documents = this.state.documents;
+                    new_documents.splice(new_documents.indexOf(a), 1);
+
+                    this.setState({
+                        'flash': data.message, 
+                        'documents': new_documents
+                    })
+                }
+            }
+        });
+    }
+
     renderUserBlock() {
         return <div><Card className="border-left-primary">
             <h3>{this.state.user.name}</h3>
@@ -168,9 +208,9 @@ class UserProfile extends React.Component {
                 </a>
             </h2>
             { this.state.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
-            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <Card>
+            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <p>
                 Nessun piano di studio presentato.
-                </Card> }
+                </p> }
             { this.state.proposals !== undefined && 
             <div className="row">
                 { this.state.proposals.map(
@@ -183,31 +223,6 @@ class UserProfile extends React.Component {
             </div>
             }
         </div>
-    }
-
-    renderDocumentsBlock() {
-        if (! this.state.logged_user.admin)
-            return;
-
-        const blockTitle = "Documenti e allegati";
-
-        return <div className="mt-2">
-        { this.state.documents === undefined && <LoadingMessage>Caricamento dei documenti in corso</LoadingMessage>}
-        {
-            this.state.documents !== undefined && <div>
-                { this.state.documents.length == 0 && <Card title={blockTitle}>Nessun documento archiviato.</Card>}
-                { this.state.documents.length > 0 && 
-                    <AttachmentDocumentsBlock root={this.props.root} 
-                        controller="documents" 
-                        title={blockTitle}
-                        key="documents" 
-                        attachments={this.state.documents} auths={[]}>
-                    </AttachmentDocumentsBlock>
-                }
-            </div> 
-        }
-        
-    </div>
     }
 
     hideFlash() {
@@ -255,12 +270,17 @@ class UserProfile extends React.Component {
                 {this.renderFlash()}
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
-                {this.renderDocumentsBlock()}
                 <FormsBlock
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
                     root={this.props.root}
                 ></FormsBlock>
+                {this.state.logged_user.admin && <UserDocumentsBlock 
+                    documents={this.state.documents} 
+                    onNewAttachment={this.onNewAttachment.bind(this)}
+                    onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
+                    root={this.props.root}
+                ></UserDocumentsBlock>}
             </div>;
         }
     }

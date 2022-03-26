@@ -22,7 +22,7 @@ class ProposalsController extends RestController
 
         // Check permissions: users can see their proposals, and admins are 
         // always allowed to perform any query they like.
-        if (!$this->user['admin'] && $this->user['id'] !== $this->request->getQuery('user_id')) {
+        if (!$this->user['admin'] && $this->user['id'] != $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
