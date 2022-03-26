@@ -1,13 +1,17 @@
 import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
+
 
 class ProposalInfo extends React.Component {
 
-    async onDeleteClicked() {
+    async onDeleteClicked(evt) {
         if (this.props.onDeleteClicked !== undefined) {
             this.props.onDeleteClicked(this);
         }
+        evt.stopPropagation();
     }
 
     renderStateBadge() {
@@ -26,13 +30,16 @@ class ProposalInfo extends React.Component {
     }
 
     renderButtons() {
-        return <div className="btn-group float-right">
-            <a href={`${this.props.root}proposals/view/${this.props.proposal.id}`}className="btn btn-sm btn-success">Visualizza</a>
+        return <div className="btn-group">
             {this.props.proposal.state == "draft" && 
-                <a href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary">Modifica</a>
+                <a  onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
+                    <FontAwesomeIcon icon={faEdit} />
+                </a>
             }
             {this.props.proposal.state == "draft" && 
-                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>Elimina</a>
+                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>
+                    <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
+                </a>
             }
         </div>
     }
@@ -43,18 +50,25 @@ class ProposalInfo extends React.Component {
         </div>
     }
 
+    onClick() {
+        // Redirect the user to the view page 
+        window.location.href = Caps.root + 'proposals/view/' + this.props.proposal.id;
+    }
+
     render() {
         const proposal = this.props.proposal;
 
         return <div className="my-2 col-xxl-3 col-xl-4 col-lg-6 col-12">
-            <SmallCard title={proposal.curriculum.degree.name}>
-                <div className="mb-2">{this.renderStateBadge()}</div>
+            <SmallCard className="clickable-card" title={proposal.curriculum.degree.name} onClick={this.onClick.bind(this)}>
+                <div className="d-flex">
+                    <div className="mb-2 mr-auto">{this.renderStateBadge()}</div>
+                    <div>
+                        {this.renderButtons()}
+                    </div>
+                </div>
                 <div><strong>{"Curriculum: " + proposal.curriculum.name}</strong></div>
                 <div className="small text-muted">Regolamento dell'anno accademico {proposal.curriculum.degree.academic_year}/{proposal.curriculum.degree.academic_year+1}</div>
                 {this.renderDatesBlock()}
-                <div className="mt-3">
-                    {this.renderButtons()}
-                </div>
             </SmallCard></div>;
     }
 

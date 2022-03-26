@@ -2,13 +2,16 @@ import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
 import FormBadge from './FormBadge';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 class FormInfo extends React.Component {
 
-    async onDeleteClicked() {
+    async onDeleteClicked(evt) {
         if (this.props.onDeleteClicked !== undefined) {
             this.props.onDeleteClicked(this);
         }
+        evt.stopPropagation();
     }
 
     renderBadge() {
@@ -24,13 +27,16 @@ class FormInfo extends React.Component {
     }
 
     renderButtons() {
-        return <div className="btn-group float-right">
-            <a href={`${this.props.root}forms/view/${this.props.form.id}`}className="btn btn-sm btn-success">Visualizza</a>
+        return <div className="btn-group">
             {this.props.form.state == "draft" && 
-                <a href={`${this.props.root}forms/edit/${this.props.form.id}`} className="btn btn-sm btn-primary">Modifica</a>
+                <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}forms/edit/${this.props.form.id}`} className="btn btn-sm btn-primary">
+                    <FontAwesomeIcon icon={faEdit} />
+                </a>
             }
             {this.props.form.state == "draft" && 
-                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>Elimina</a>
+                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                </a>
             }
         </div>
     }
@@ -41,14 +47,21 @@ class FormInfo extends React.Component {
         </div>
     }
 
+    onClick() {
+        window.location.href = `${this.props.root}forms/view/${this.props.form.id}`
+    }
+
     render() {
         return <div className="my-2 col-xxl-3 col-xl-4 col-lg-6 col-12">
-            <SmallCard className="border-left-primary">
-                <div className="mb-2">
-                    <FormBadge form={this.props.form}></FormBadge></div>
+            <SmallCard onClick={this.onClick.bind(this)} className="border-left-primary clickable-card">
+                <div class="d-flex">
+                    <div className="mb-2 mr-auto">
+                        <FormBadge form={this.props.form}></FormBadge>
+                    </div>
+                    {this.renderButtons()}
+                </div>
                 <strong>{this.props.form.form_template.name}</strong>
                 <div>{this.renderDatesBlock()}</div>
-                <div className="mt-2">{this.renderButtons()}</div>
             </SmallCard></div>
     }
 

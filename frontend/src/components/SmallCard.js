@@ -30,7 +30,7 @@ class SmallCard extends React.Component {
             wrapClasses += this.props.className;
         }
 
-        return  <div className={wrapClasses}>
+        return  <div className={wrapClasses} onClick={this.props.onClick}>
             { this.props.title  && this.renderTitle() }
             <div className="card-body">
                 {this.props.children}
