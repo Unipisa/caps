@@ -10,7 +10,8 @@ function UserDocumentsBlock(props) {
         return <Attachment 
             root={props.root} 
             controller="documents" 
-            attachment={d} key={"document-" + d.id}
+            attachment={d} 
+            key={"document-" + d.id}
             onDeleteClicked={props.onDeleteClicked}
             showDeleteButton="true"
         ></Attachment>

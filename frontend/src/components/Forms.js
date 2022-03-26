@@ -61,8 +61,8 @@ class Forms extends React.Component {
             return <LoadingMessage>Caricamento forms...</LoadingMessage>
         }
         else {
-            return <div class="table-responsive-lg">
-                <table class="table">
+            return <div className="table-responsive-lg">
+                <table className="table">
                     <thead>
                         <tr>
                         <th></th>
@@ -74,14 +74,16 @@ class Forms extends React.Component {
                         <th></th>
                         </tr>
                     </thead>
+                    <tbody>
                     {this.state.forms.map(form => <tr key={form.id}>
                         <td><input type="checkbox" value={form.id}></input></td>
                         <td><FormBadge form={form}></FormBadge></td>
-                        <td>{form.user.firstname+" "+form.user.surname}</td>
+                        <td>{form.user.givenname+" "+form.user.surname}</td>
                         <td>{form.form_template.name}</td>
                         <td>{form.date_submitted}</td>
                         <td>{form.date_managed}</td>
                     </tr>)}
+                    </tbody>
                 </table>
             </div>
         }
