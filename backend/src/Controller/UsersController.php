@@ -252,6 +252,7 @@ class UsersController extends AppController {
         }
 
         $this->set('oauth2_enabled', $this->isOAuth2Enabled());
+        $this->set('redirect', $this->request->getQuery(('redirect')));
     }
 
     private function isOAuth2Enabled() {
@@ -319,6 +320,11 @@ class UsersController extends AppController {
             ->getSession()
             ->write('oauth-state', $client->getState());
 
+        // Write the requested redrirect URL in the session, we will use it
+        // later in the callback to redirect the user to the right page.
+        $this->getRequest()->getSession()
+            ->write('redirect', $this->request->getQuery('redirect'));
+
         return $this->redirect($authUrl);
     }
 
@@ -366,8 +372,8 @@ class UsersController extends AppController {
                 $number = $uid;
             }
 
-            // Make sure that if we have no information on the user id 
-            // in the system, we fall back to using the user id. 
+            // Make sure that if we have no information on the user id
+            // in the system, we fall back to using the user id.
             $number = $number == "" ? $uid : $number;
 
             $authuser = [ 
@@ -381,8 +387,12 @@ class UsersController extends AppController {
             ];
 
             $this->login_user($authuser);
-    
-            return  $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
+
+            $redirect = $this->getRequest()->getSession()->read('redirect');
+            if ($redirect == '' || !$redirect) {
+                $redirect = '/';
+            }
+            return  $this->redirect($redirect);
         }
         catch (IdentityProviderException $e) {
             $this->Flash->error('Error requesting the Access Token: ' . $e->getMessage());
