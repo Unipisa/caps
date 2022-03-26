@@ -43,7 +43,7 @@ function UserDocumentsBlock(props) {
             <p>Nessun documento allegato.</p>
         </>;
 
-    if (documents.length > 0) {
+    if (document_rows.length > 0) {
         output = <>
             {info_text}
             {document_rows}
