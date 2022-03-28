@@ -56,7 +56,7 @@ function UserDocumentsBlock(props) {
         }
     }
 
-    return <div className="mt-2">
+    return <div className={props.className}>
         <h2>Documenti e allegati</h2>
         <Card>
             {output}

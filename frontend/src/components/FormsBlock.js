@@ -8,7 +8,7 @@ import Card from './Card';
 class FormsBlock extends React.Component {
     render() {
         const forms = this.props.forms;
-        return <div className="mt-4">
+        return <div className={this.props.className}>
             <h2 className="d-flex">
                 <span className="mr-auto">Moduli</span>
                 <a href={this.props.root + 'forms/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">

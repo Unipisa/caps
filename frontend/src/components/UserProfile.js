@@ -290,12 +290,12 @@ class UserProfile extends React.Component {
                 {this.renderFlash()}
                 {this.renderUserBlock()}
                 {this.renderProposalsBlock()}
-                <FormsBlock
+                <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
                     root={this.props.root}
                 ></FormsBlock>
-                {this.state.logged_user.admin && <UserDocumentsBlock
+                {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
