@@ -4,7 +4,7 @@ import LoadingMessage from './LoadingMessage';
 import ProposalInfo from "./ProposalInfo";
 import FormInfo from "./FormInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
@@ -271,7 +271,10 @@ class UserProfile extends React.Component {
         }
 
         const elem = <Card className={`border-left-${className} mb-2`} onClick={this.hideFlash.bind(this)}>
-            {message}
+            <div className="d-flex align-middle">
+                <div className="mr-auto">{message}</div>
+                <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
+            </div>
         </Card>;
 
         return elem;
