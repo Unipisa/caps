@@ -24,6 +24,9 @@ jobs:
           php7.4 composer.phar -n install
           bin/cake migrations migrate
           php7.4 vendor/bin/phpunit --debug
+      - name: Pull previous Docker image
+        run: |
+          docker pull getcaps/caps:develop
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Docker meta
