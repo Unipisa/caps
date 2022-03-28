@@ -201,11 +201,18 @@ class UserProfile extends React.Component {
     }
 
     renderUserBlock() {
-        return <div><Card className="border-left-primary">
-            <h3>{this.state.user.name}</h3>
-            <strong>Matricola: </strong> {this.state.user.number}<br></br>
-            <strong>Email: </strong> {this.state.user.email}<br />
-            </Card></div>;
+        return <>
+            <Card className="border-left-primary">
+                <h3>
+                    {this.state.user.name}
+                    <span className="d-none d-md-inline h5 text-muted ml-2">matricola: {this.state.user.number}</span>
+                </h3>
+                <h5 className="d-md-none text-muted">matricola: {this.state.user.number}</h5>
+                <p className="mt-4" dangerouslySetInnerHTML={{
+                    __html: this.state.settings['user-instructions']
+                }}></p>
+            </Card>
+        </>;
     }
 
     renderProposalsBlock() {        
