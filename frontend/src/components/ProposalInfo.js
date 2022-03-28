@@ -2,7 +2,7 @@ import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle, faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
 
 
 class ProposalInfo extends React.Component {
@@ -36,6 +36,10 @@ class ProposalInfo extends React.Component {
                     <FontAwesomeIcon icon={faEdit} />
                 </a>
             }
+            {this.props.proposal.state != "draft" &&
+            <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/duplicate/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
+                <FontAwesomeIcon icon={faCopy} />
+            </a>}
             {this.props.proposal.state == "draft" && 
                 <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>
                     <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
