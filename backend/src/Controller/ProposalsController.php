@@ -371,7 +371,7 @@ class ProposalsController extends AppController
 
         // authorization
         $secrets = $this->getSecrets();
-        if (!$proposal->checkSecrets($secrets) && $proposal['user']['id'] != $this->user['id'] && !$this->user['admin']) {
+        if (! $this->user->canViewProposal($proposal, $secrets)) {
             throw new ForbiddenException(__('Invalid secret, or no permissions'));
         }
 

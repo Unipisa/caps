@@ -33,6 +33,7 @@ use Cake\I18n\FrozenTime;
 use Cake\Mailer\TransportFactory;
 use stdClass;
 use Cake\Event\EventInterface;
+use App\Model\Entity\User;
 
 function is_associative_array($item)
 {
@@ -134,6 +135,8 @@ class AppController extends Controller
     // we make sure that subsequent requests for configuration keys will be handled by this cache instead of triggering
     // a new query to the database.
     private $settingsTable = null;
+
+    public ?User $user = null;
 
     private function setupTableViews() {
         $this->request->addDetector(

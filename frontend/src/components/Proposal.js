@@ -1,12 +1,10 @@
 'use strict';
 
-import Degrees from '../models/degrees';
-import Curricula from '../models/curricula';
-import Proposals from '../models/proposals';
+import RestClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 
-import AttachmentBlock from './AttachmentBlock';
+import AttachmentDocumentsBlock from './AttachmentDocumentsBlock';
 import React from 'react';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
@@ -21,8 +19,9 @@ class Proposal extends React.Component {
             'selected_degree': null,
             'curricula': null,
             'selected_curriculum': null,
-            'chosen_exams': [],
-            'proposal': null
+            'chosen_exams': null,
+            'proposal': null, 
+            'error': null
         };
 
         this.id_counter = 0;
@@ -35,13 +34,28 @@ class Proposal extends React.Component {
         const urlParams = new URLSearchParams(window.location.search);
         this.degree_id = parseInt(urlParams.get('degree_id'));
         this.curriculum_id = parseInt(urlParams.get('curriculum_id'));
-        
+    }
+
+    reportError(message) {
+        this.setState({
+            'error': message
+        });
+    }
+
+    async componentDidMount() {
         this.loadDegrees();
     }
 
     async loadDegrees() {
         if (this.state.degrees === null) {
-            let degrees = (await Degrees.allActive()).sort((a, b) => {
+            const response = await RestClient.get(`degrees`, { 'enabled': true });
+
+            if (response.code != 200) {
+                this.reportError('Impossibile caricare la lista dei corsi di Laurea attivi.');
+                return;
+            }
+
+            let degrees = response.data.sort((a, b) => {
                 if (a.academic_year > b.academic_year) return -1;
                 if (a.academic_year < b.academic_year) return 1;
                 if (a.name < b.name) return -1;
@@ -54,7 +68,12 @@ class Proposal extends React.Component {
                 if (!selected_degree) {
                     // il degree passato dalla querystring potrebbe non essere attivo
                     // in tal caso lo aggiungiamo comunque alla lista
-                    selected_degree = await  Degrees.get(this.degree_id);
+                    const response = RestClient.get(`degrees/${this.degree_id}`);
+                    if (response.code != 200) {
+                        this.reportError(`Impossibile caricare il corso di Laurea con ID = ${this.degree_id}`);
+                        return;
+                    }
+                    selected_degree = response.data;
                     degrees.push(selected_degree);
                 }
             }
@@ -70,10 +89,29 @@ class Proposal extends React.Component {
     }
 
     async loadProposal(id) {
-        const proposal = await Proposals.get(id);
-        const curriculum = await Curricula.get(proposal.curriculum.id);
+        const response = await RestClient.get(`proposals/${id}`);
+        if (response.code != 200) {
+            this.reportError(`Impossibile caricare il piano di studi con ID = ${id}.`);
+            return;
+        }
+        const proposal = response['data'];
+
+        const curriculum_response = await RestClient.get(`curricula/${proposal.curriculum.id}`);
+        if (curriculum_response.code != 200) {
+            this.reportError(`Impossibile caricare il curriculum con ID = ${proposal.curriculum.id}.`);
+            return;
+        }
+
+        const curriculum = curriculum_response['data'];
         const degree = curriculum.degree;
-        const curricula = await Curricula.forDegree(degree.id);
+
+        const curricula_response = await RestClient.get(`curricula`, { 'degree_id': degree.id });
+        if (curricula_response.code != 200) {
+            this.reportError(`Impossibile caricare i curricula per il corso di Laurea con ID = ${degree.id}`);
+            return;
+        }
+
+        const curricula = curricula_response['data'];
 
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
@@ -95,12 +133,25 @@ class Proposal extends React.Component {
 
     async loadCurricula() {
         const degree = this.state.selected_degree;
-        const curricula = await Curricula.forDegree(degree.id);
-        var chosen_exams = [];
+        const curricula_response = await RestClient.get('curricula', { 'degree_id': degree.id });
+
+        if (curricula_response.code != 200) {
+            this.reportError('Impossibile caricare i curricula per la il corso di Laurea: ${degree.name}, con ID = ${degree.id}');
+            return;
+        }
+
+        const curricula = curricula_response.data;
+
+        var chosen_exams = null;
         let selected_curriculum = null;
         if (this.curriculum_id) {
             // seleziona il curriculum indicato nella querystring
-            selected_curriculum = await Curricula.get(this.curriculum_id);
+            const response = await RestClient.get(`curricula/${this.curriculum_id}`);
+            if (response.code != 200) {
+                this.reportError(`Impossibile caricare il curriculum con ID = ${id}`);
+                return;
+            }
+            selected_curriculum = response.data;
             if (selected_curriculum !== null) {
                 chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
             }
@@ -141,7 +192,7 @@ class Proposal extends React.Component {
             this.setState({
                 'selected_degree': this.state.degrees[degree_idx],
                 'selected_curriculum': null,
-                'chosen_exams': []
+                'chosen_exams': null
             }, () => this.loadCurricula());
         }
     }
@@ -164,10 +215,15 @@ class Proposal extends React.Component {
             // proposal.
             this.setState({
                 'selected_curriculum': this.state.curricula[idx],
-                'chosen_exams': []
+                'chosen_exams': null
             }, async () => {
                 const curriculum_id = this.state.curricula[idx].id;
-                const curriculum = await Curricula.get(curriculum_id);
+                const response = await RestClient.get(`curricula/${curriculum_id}`);
+                if (response.code != 200) {
+                    this.reportError(`Impossibile caricare il Curriculum con ID = ${id}`);
+                    return;
+                }
+                const curriculum = response.data;
                 var chosen_exams = this.createInitialState(curriculum, [], [], true);
 
                 this.setState({
@@ -412,7 +468,7 @@ class Proposal extends React.Component {
     renderProposal() {
         var rows = [];
 
-        if (this.state.chosen_exams.length == 0) {
+        if (this.state.chosen_exams === null) {
             return <Card>
                 <LoadingMessage>Caricamento del piano in corso...</LoadingMessage>
             </Card>;
@@ -442,7 +498,7 @@ class Proposal extends React.Component {
 
         if (this.state.proposal !== null) {
             rows.push(
-                <AttachmentBlock key="attachments" attachments={this.state.proposal.attachments} auths={this.state.proposal.auths}></AttachmentBlock>
+                <AttachmentDocumentsBlock root={this.props.root} title="Allegati e commenti" key="attachments" attachments={this.state.proposal.attachments} auths={this.state.proposal.auths}></AttachmentDocumentsBlock>
             );
         }
 
@@ -544,6 +600,18 @@ class Proposal extends React.Component {
     }
 
     render() {
+        // If an error was encountered, show that message instead
+        if (this.state.error !== null) {
+            return <Card className="border-left-danger">
+                CAPS ha incontrato un errore durante il caricamento di alcuni dati; 
+                nel caso di un problema temporaneo potrebbe essere sufficiente 
+                ricaricare la pagina.
+                <br></br>
+                <br></br>
+                <strong>Errore:</strong> {this.state.error}
+            </Card>
+        }
+
         // If we are opening a proposal, but it has not been loaded yet, we display 
         // a LoadingMessage instead of the usual "Loading degrees" indicator. 
         if (this.props.id !== undefined && this.state.chosen_exams === null) {
@@ -555,7 +623,7 @@ class Proposal extends React.Component {
         return <div>
             <Card>{this.renderDegreeCurriculaSelection()}</Card>
             {this.state.selected_curriculum !== null && this.renderProposal()}
-            {this.state.selected_curriculum !== null &&
+            {this.state.selected_curriculum !== null && this.state.chosen_exams !== null &&
                 <Card>{this.renderSubmitBlock()}</Card>
             }
         </div>;

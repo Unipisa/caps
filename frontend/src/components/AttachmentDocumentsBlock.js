@@ -5,7 +5,7 @@ import Attachment from './Attachment';
 import Card from './Card';
 import Share from './Share';
 
-class AttachmentBlock extends React.Component {
+class AttachmentDocumentsBlock extends React.Component {
 
     constructor(props) {
         super(props);
@@ -21,7 +21,7 @@ class AttachmentBlock extends React.Component {
         var rows = [];
 
         for (var a of this.props.attachments) {
-            rows.push(<Attachment key={"attachment-" + a.id} attachment={a}></Attachment>);
+            rows.push(<Attachment controller={this.props.controller} root={this.props.root} key={"attachment-" + a.id} attachment={a}></Attachment>);
         }
 
         for (var a of this.props.auths) {
@@ -35,7 +35,7 @@ class AttachmentBlock extends React.Component {
             return Date.parse(ad) - Date.parse(bd);
         });
 
-        return <Card title="Allegati e commenti">
+        return <Card title={this.props.title}>
             <ul className="attachments">
                 {rows}
             </ul>
@@ -44,4 +44,4 @@ class AttachmentBlock extends React.Component {
 
 }
 
-export default AttachmentBlock;
+export default AttachmentDocumentsBlock;

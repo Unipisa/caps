@@ -88,7 +88,8 @@ class UsersControllerTest extends TestCase
         $user = TableRegistry::getTableLocator()->get('Users')->get(1);
         $this->session([ 'Auth' => $user ]);
 
+        // This does not contain the data anymore, since now everything is loaded through React.
         $this->get('/users/view');
-        $this->assertResponseContains('matricola: 123456');
+        $this->assertResponseContains('<div id="app">');
     }
 }

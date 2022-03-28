@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CapsAppController from './app-controller';
 import Form from '../components/Form';
+import Forms from '../components/Forms';
 
 class CapsFormsController extends CapsAppController {
     edit(params) {
@@ -29,6 +30,24 @@ class CapsFormsController extends CapsAppController {
                 edit={false}></Form>,
             document.querySelector('#app')
         );
+    }
+
+    index(params) {
+        var query = params["?"];
+        if (query === undefined) {
+            query = [];
+        }
+
+        sessionStorage.setItem('forms-filter', JSON.stringify(query));
+
+        // Disabilitato temporaneamente fino a che non sarà pronto. 
+        /* ReactDOM.render(
+            <Forms
+                root={this.root}
+                query={query}
+                csrfToken={params._csrfToken}></Forms>,
+            document.querySelector('#app')
+        ); */
     }
 }
 

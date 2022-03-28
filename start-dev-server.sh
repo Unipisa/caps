@@ -21,8 +21,6 @@ if [ ! -r docker/caps.env ]; then
   cp example.env docker/caps.env
 fi
 
-sudo true
-
 # Check if docker is installed
 type docker 2> /dev/null > /dev/null
 if [ $? -ne 0 ]; then
@@ -85,23 +83,20 @@ echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 # From now on, all command should succeed
 set -e
 
-cd backend
-php ./composer.phar -n install
-cd ..
+#cd backend
+#php ./composer.phar -n install
+#cd ..
 
-cd frontend
-npm ci
-cd ..
+#cd frontend
+#npm ci
+#cd ..
 
 VARIANT="$1"
 if [ "$VARIANT" = "" ]; then
   VARIANT="dev"
 fi
 
-if [ "$1" == "--build" ]; then
-  ${DOCKERCOMPOSE} -f docker/docker-compose-dev.yml build caps
-fi
-
+sudo docker build -t getcaps/caps:develop .
 ${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 echo "Node Configuration"
@@ -109,10 +104,10 @@ echo "  > Using NodeJS $(node --version)"
 echo "  > Using NPM $(npm --version)"
 echo ""
 
-(cd frontend && npm run watch:dev )&
+(cd frontend && npm ci && npm run watch:dev )&
 watch_pid=$!
 
-(cd frontend && npm run watch )&
+(cd frontend && npm ci && npm run watch )&
 watch_pid2=$!
 
 wait

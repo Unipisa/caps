@@ -22,6 +22,7 @@
  */
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Route\DashedRoute;
+use Cake\Utility\Inflector;
 
 return function (RouteBuilder $routes) {
 
@@ -31,6 +32,31 @@ return function (RouteBuilder $routes) {
          // Connect '/' to users/login, that will either show the
          // login form or redirect the user to the right location.
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
+
+        $routes->prefix('api/v1', function (RouteBuilder $routes) {
+            $api_controllers = [ 
+                'Curricula', 'Degrees', 'Documents', 
+                'Exams', 'Forms', 'FormTemplates', 
+                'Groups', 'Proposals', 'Users' 
+            ];
+
+            foreach ($api_controllers as $controller) {
+                $uri = Inflector::underscore($controller);
+
+                $routes->connect('/' . $uri, 
+                    ['controller' => $controller, 'action' => 'index']
+                )->setMethods([ 'GET' ]);
+
+                foreach ([ 'GET', 'POST', 'DELETE'] as $method) {
+                    $routes->connect('/' . $uri . '/*', 
+                        [ 'controller' => $controller, 'action' => strtolower($method) ]
+                    )->setMethods([ $method ]);
+                }
+            }
+
+            // Status
+            $routes->connect('/status', [ 'controller' => 'Rest', 'action' => 'status' ])->setMethods([ 'GET' ]);
+        });
 
         // Handle the usual mapping /:controller/:action/params
         $routes->fallbacks(DashedRoute::class);

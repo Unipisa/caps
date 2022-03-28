@@ -43,6 +43,9 @@ RUN rm -rf /frontend/node_modules /backend/webroot/css/* /backend/webroot/js/* \
     && sudo -u www-data env PATH=${PATH} npm ci \ 
     && sudo -u www-data env PATH=${PATH} npm run deploy
 
+# Tune the PHP configuration
+RUN sed -i "s/memory_limit = .*/memory_limit = 512M/" /usr/local/etc/php/php.ini
+
 WORKDIR /backend
 
 CMD './caps-exec'

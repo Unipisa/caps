@@ -1,8 +1,15 @@
 'use strict';
 
 import React from "react";
+import SmallCard from "./SmallCard";
 
 class Card extends React.Component {
+
+    onClick() {
+        if (this.props.onClick !== undefined) {
+            this.props.onClick(this);
+        }
+    }
 
     constructor(props) {
         super(props);
@@ -19,14 +26,11 @@ class Card extends React.Component {
     }
 
     render() {
-        return <div className="row my-2">
+        return <div className="row" onClick={this.onClick.bind(this)}>
             <div className="col">
-                <div className="card shadow">
-                    { this.props.title  && this.renderTitle() }
-                    <div className="card-body">
-                        {this.props.children}
-                    </div>
-                </div>
+                <SmallCard {...this.props}>
+                    {this.props.children}
+                </SmallCard>
             </div>
         </div>;
     }

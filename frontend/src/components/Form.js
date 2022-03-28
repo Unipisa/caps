@@ -2,16 +2,14 @@
 
 import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
-import FormTemplates from '../models/form_templates';
-import Forms from '../models/forms';
-import Card from './Card'
+import Card from './Card';
+import RestClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 
 import "react-datepicker/dist/react-datepicker.css";
 
 import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
 import DatePicker from 'react-datepicker';
 
 class Form extends React.Component {
@@ -36,16 +34,27 @@ class Form extends React.Component {
         let form_templates = this.state.form_templates;
         let html = "";
         if (form === null && this.props.id !== undefined) {
-            form = await Forms.get(this.props.id);
+            form = (await RestClient.get(`forms/${this.props.id}`))['data'];
             form_template = form.form_template;
             html = this.compile_html(form_template.text, form.data, form.state, form.user);
         }
         if (form_template === null && this.props.form_template_id) {
-            form_template = await FormTemplates.get(this.props.form_template_id);
-            html = this.compile_html(form_template.text, {}, 'draft', Caps.params.user);
+            const response = await RestClient.get(`form_template/${this.props.form_template_id}`);
+
+            if (response.code == 200) {
+                form_template = response['data'];
+                html = this.compile_html(form_template.text, {}, 'draft', Caps.params.user);
+            }
+            else {
+                form_template = null;
+            }
         }
         if (form_template === null && form_templates === null) {
-            form_templates = await FormTemplates.allActive();
+            const response = await RestClient.get('form_templates', { 'enabled': true });
+            if (response.code == 200) {
+                form_templates = response['data'];
+            }
+            
         }
         this.setState({form, form_template, form_templates, html});
     }
