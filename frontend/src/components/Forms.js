@@ -82,6 +82,16 @@ class Forms extends React.Component {
                         <td>{form.form_template.name}</td>
                         <td>{form.date_submitted}</td>
                         <td>{form.date_managed}</td>
+                        <td>
+                            <div className="d-none d-xl-inline-flex flex-row align-items-center">
+                                <a href={`${this.props.root}forms/view/${form.id}`}>
+                                    <button type="button" className="btn btn-sm btn-primary mr-2">
+                                    <i className="fas fa-eye mr-2"></i>
+                                    Visualizza
+                                    </button>
+                                </a>
+                            </div>
+                        </td>
                     </tr>)}
                     </tbody>
                 </table>
