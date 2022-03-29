@@ -241,15 +241,16 @@ class UserProfile extends React.Component {
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
-                    root={this.props.root}
-                ></FormsBlock>
-                {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
+                    root={this.props.root}>
+                </FormsBlock>
+                {this.state.logged_user.admin &&
+                <UserDocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
                     onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
-                    root={this.props.root}
-                ></UserDocumentsBlock>}
+                    root={this.props.root}>
+                </UserDocumentsBlock>}
             </div>;
         }
     }

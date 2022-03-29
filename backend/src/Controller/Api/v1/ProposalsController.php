@@ -10,7 +10,7 @@ class ProposalsController extends RestController
         'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
         'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
         'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
-        'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees', 'ProposalAuths', 
+        'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees',
         'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ];
 
     public $allowedFilters = [ 'user_id' ];
