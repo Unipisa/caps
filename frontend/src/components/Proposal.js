@@ -143,12 +143,6 @@ class Proposal extends React.Component {
 
         const curricula = curricula_response['data'];
 
-        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
-        if (group_response.code != 200) {
-            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
-            return;
-        }
-
         const groups = await this.loadGroups(degree);
 
         // Read the exam selection in the proposal, and use them to populate 
