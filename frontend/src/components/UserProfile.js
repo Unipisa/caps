@@ -238,11 +238,12 @@ class UserProfile extends React.Component {
                     proposals={this.state.proposals} 
                     onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                 </ProposalsBlock>
+                {this.state.forms && this.state.forms.length>0 &&
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
                     root={this.props.root}
-                ></FormsBlock>
+                ></FormsBlock>}
                 {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
