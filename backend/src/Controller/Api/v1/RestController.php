@@ -78,7 +78,8 @@ class RestController extends AppController {
 
         $this->JSONResponse(ResponseCode::Ok, [
             'settings' => $safe_settings, 
-            'user' => $this->user
+            'user' => $this->user,
+            'form_templates_enabled' => $this->form_templates_enabled
         ]);
     }
 

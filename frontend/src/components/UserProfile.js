@@ -21,6 +21,7 @@ class UserProfile extends React.Component {
         this.state = {
             'settings': undefined,
             'logged_user': null,
+            'form_templates_enabled': null,
             'user': undefined, 
             'proposals': undefined,
             'forms': undefined,
@@ -45,7 +46,8 @@ class UserProfile extends React.Component {
 
         this.setState({
             'settings': status['data']['settings'], 
-            'logged_user': status['data']['user']
+            'logged_user': status['data']['user'],
+            'form_templates_enabled': status['data']['form_templates_enabled']
         }, () => {
             this.loadUserData();
         })
@@ -238,11 +240,12 @@ class UserProfile extends React.Component {
                     proposals={this.state.proposals} 
                     onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                 </ProposalsBlock>
-                {this.state.forms && this.state.forms.length>0 &&
+                {(this.state.form_templates_enabled || (this.state.forms && this.state.forms.length>0))&&
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
                     root={this.props.root}
+                    form_templates_enabled={this.state.form_templates_enabled}
                 ></FormsBlock>}
                 {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 

@@ -1,6 +1,7 @@
 docker/id_rsa
 docker/database
 docker/caps.env
+docker/logs/
 backend/webroot/css/style.min.css
 backend/webroot/js/caps.js.version
 backend/webroot/js/caps.min.js.version
@@ -12,3 +13,4 @@ backend/webroot/css/style.min.css.map
 backend/webroot/node_modules
 caps.sqlite
 node_modules
+node-v*

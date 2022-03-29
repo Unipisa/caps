@@ -206,7 +206,7 @@ class AppController extends Controller
         $this->Caps = Configure::Read('Caps');
         if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
 
-        $form_templates_enabled = TableRegistry::getTableLocator()->get('formTemplates')->find()
+        $this->form_templates_enabled = TableRegistry::getTableLocator()->get('formTemplates')->find()
             ->where(['enabled' => true])->count() > 0;
 
         $this->set('capsVersion', Application::getVersion());
@@ -215,7 +215,7 @@ class AppController extends Controller
         $this->set('debug', Configure::read('debug'));
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
-        $this->set('form_templates_enabled', $form_templates_enabled);
+        $this->set('form_templates_enabled', $this->form_templates_enabled);
 
         $this->handleSecrets();
 
