@@ -1,16 +1,10 @@
 import CapsAppController from './app-controller';
-import { loadDashboardData } from '../modules/dashboard';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Proposal from '../components/Proposal';
 
 class CapsProposalsController extends CapsAppController {
-
-    dashboard() {
-        loadDashboardData();
-    }
-
     edit(params) {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 

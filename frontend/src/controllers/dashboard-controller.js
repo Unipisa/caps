@@ -1,3 +1,4 @@
+import CapsAppController from './app-controller';
 import Chart from 'chart.js';
 
 /**
@@ -8,8 +9,12 @@ import Chart from 'chart.js';
  */
 async function loadDashboardData() {
     // We fetch the data to display in the plots
-    let res = await fetch('dashboard_data.json');
+    let res = await fetch('/api/v1/dashboard'); // *** TODO: usare la root del server e la libreria apposita per la chiamata
     let data = await res.json();
+
+    // TODO: controllare data.code
+
+    data = data.data;
 
     // We fill in the data
     document.getElementById('current-month-submission-count').innerHTML = data.submission_counts[11];
@@ -113,4 +118,11 @@ async function loadDashboardData() {
     });
 }
 
-export { loadDashboardData };
+class DashboardController extends CapsAppController {
+    index(params) {
+        loadDashboardData();
+    }
+
+}
+
+export default DashboardController;
