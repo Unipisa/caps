@@ -517,11 +517,11 @@ class ProposalsController extends AppController
 
         // For each of the selected exams we need to clear the ID, so that saving this object will create new entities
         // for the selections, making this proposal effectively independent of the original one.
-        foreach ($newp['chosen_exams'] as $key => &$chosen_exam) {
+        foreach ($newp->chosen_exams as $key => &$chosen_exam) {
             $chosen_exam['id'] = null;
         }
 
-        foreach ($newp['chosen_free_choice_exams'] as $key => &$free_choice_exam) {
+        foreach ($newp->chosen_free_choice_exams as $key => &$free_choice_exam) {
             $free_choice_exam['id'] = null;
         }
 

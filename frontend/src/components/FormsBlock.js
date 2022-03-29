@@ -1,9 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import LoadingMessage from './LoadingMessage';
 import FormInfo from './FormInfo';
-import Card from './Card';
 
 class FormsBlock extends React.Component {
     render() {
@@ -12,7 +11,7 @@ class FormsBlock extends React.Component {
             <h2 className="d-flex">
                 <span className="mr-auto">Moduli</span>
                 <a href={this.props.root + 'forms/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
-                    <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
                     <span className="d-none d-md-inline ml-2">Nuovo modulo</span>
                 </a>
             </h2>

@@ -4,12 +4,14 @@ import LoadingMessage from './LoadingMessage';
 import ProposalInfo from "./ProposalInfo";
 import FormInfo from "./FormInfo";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
 import Modal from "./Modal";
 import UserDocumentsBlock from "./UserDocumentsBlock";
+import Flash from "./Flash";
+import ProposalsBlock from "./ProposalsBlock";
 
 class UserProfile extends React.Component {
 
@@ -151,6 +153,9 @@ class UserProfile extends React.Component {
     }
 
     async onNewAttachment(a) {
+        // The AttachmentBlock is not aware of the user we are adding the 
+        // attachment to, hence we complement this informatino before actually 
+        // sending the request to the server. 
         a['user_id'] = this.state.user.id;
 
         this.setState({
@@ -215,69 +220,8 @@ class UserProfile extends React.Component {
         </>;
     }
 
-    renderProposalsBlock() {        
-        return <div className="mt-4">
-            <h2 className="d-flex">
-                <span className="mr-auto">Piani di studio</span>
-                <a href={this.props.root + 'proposals/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
-                    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
-                    <span className="d-none d-md-inline ml-2">Nuovo piano di studio</span>
-                </a>
-            </h2>
-            { this.state.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
-            { (this.state.proposals !== undefined && this.state.proposals.length == 0) && <p>
-                Nessun piano di studio presentato.
-                </p> }
-            { this.state.proposals !== undefined && 
-            <div className="row">
-                { this.state.proposals.map(
-                    p => <ProposalInfo root={this.props.root} csrfToken={this.props.csrfToken} 
-                        key={"proposal-info-" + p.id} proposal={p}
-                        onDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
-                    </ProposalInfo>
-                )
-                }
-            </div>
-            }
-        </div>
-    }
-
     hideFlash() {
         this.setState({ 'flash': undefined });
-    }
-
-    renderFlash() {
-        let type = "success";
-        let message = "";
-
-        if (this.state.flash !== undefined) {
-            message = this.state.flash.message;
-            type = this.state.flash.type;
-        }
-
-        let className = "primary";
-
-        switch (type) {
-            case 'success':
-                className = "success";
-                break;
-            case 'error':
-                className = 'danger';
-                break;
-        }
-
-        if (this.state.flash === undefined) {
-            className += " d-none";
-        }
-
-        const elem = <Card className={`border-left-${className} mb-2`} onClick={this.hideFlash.bind(this)}>
-            <div className="d-flex align-middle">
-                <div className="mr-auto">{message}</div>
-                <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
-            </div>
-        </Card>;
-
-        return elem;
     }
 
     render() {
@@ -287,9 +231,13 @@ class UserProfile extends React.Component {
         else {
             return <div>
                 <Modal ref={this.modal_ref}></Modal>
-                {this.renderFlash()}
+                <Flash flash={this.state.flash} onClick={this.hideFlash.bind(this)}></Flash>
                 {this.renderUserBlock()}
-                {this.renderProposalsBlock()}
+                <ProposalsBlock className="mt-4"
+                    root={this.props.root} 
+                    proposals={this.state.proposals} 
+                    onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
+                </ProposalsBlock>
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
                     forms={this.state.forms}
