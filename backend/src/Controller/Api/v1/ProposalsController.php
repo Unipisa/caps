@@ -32,7 +32,7 @@ class ProposalsController extends RestController
 
     public function get($id) {
         try {
-            $p = $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]);
+            $p = $this->Proposals->get($id, [ 'contain' => array_merge(ProposalsController::$associations, [ 'ProposalAuths' ]) ]);
         }
         catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, "Proposal not found");

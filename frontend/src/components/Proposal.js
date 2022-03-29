@@ -103,6 +103,21 @@ class Proposal extends React.Component {
         }
     }
 
+    async loadGroups(degree) {
+        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
+
+        if (group_response.code != 200) {
+            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
+            return;
+        }
+
+        // We need to re-index the groups based on their ids, for easy lookups 
+        // later on when we build the form. 
+        const groups = Object.fromEntries(group_response.data.map(el => [el.id, el]));
+
+        return groups;
+    }
+
     async loadProposal(id) {
         const response = await RestClient.get(`proposals/${id}`);
         if (response.code != 200) {
@@ -128,6 +143,14 @@ class Proposal extends React.Component {
 
         const curricula = curricula_response['data'];
 
+        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
+        if (group_response.code != 200) {
+            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
+            return;
+        }
+
+        const groups = await this.loadGroups(degree);
+
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
         // console.log(proposal);
@@ -141,6 +164,7 @@ class Proposal extends React.Component {
                 'selected_degree': degree,
                 'chosen_exams': chosen_exams,
                 'proposal': proposal,
+                'groups': groups,
                 'saving': false // this is set to true when save is clicked, to avoid double requests
             }
         });
@@ -172,23 +196,11 @@ class Proposal extends React.Component {
             }
         }
 
-        // We load the groups associated with this degree. 
-        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
-
-        if (group_response.code != 200) {
-            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
-            return;
-        }
-
-        // We need to re-index the groups based on their ids, for easy lookups 
-        // later on when we build the form. 
-        const groups = Object.fromEntries(group_response.data.map(el => [el.id, el]));
-
         this.setState({
             curricula: curricula, 
             selected_curriculum: selected_curriculum, 
             chosen_exams: chosen_exams, 
-            groups: groups
+            groups: await this.loadGroups(degree)
         });
     }
 
