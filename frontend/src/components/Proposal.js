@@ -21,7 +21,9 @@ class Proposal extends React.Component {
             'selected_curriculum': null,
             'chosen_exams': null,
             'proposal': null, 
-            'error': null
+            'error': null, 
+            'exams': [],
+            'groups': []
         };
 
         this.id_counter = 0;
@@ -43,17 +45,26 @@ class Proposal extends React.Component {
     }
 
     async componentDidMount() {
-        this.loadDegrees();
+        this.loadDegreesAndExams();
     }
 
-    async loadDegrees() {
+    async loadDegreesAndExams() {
         if (this.state.degrees === null) {
-            const response = await RestClient.get(`degrees`, { 'enabled': true });
+            const [response, rexams] = await Promise.all([
+                RestClient.get(`degrees`, { 'enabled': true }), 
+                RestClient.get('exams')
+            ]);
 
             if (response.code != 200) {
                 this.reportError('Impossibile caricare la lista dei corsi di Laurea attivi.');
                 return;
             }
+
+            if (rexams.code != 200) {
+                this.reportError('Impossibile caricare la lista degli esami.');
+                return;
+            }
+            const exams = rexams.data;
 
             let degrees = response.data.sort((a, b) => {
                 if (a.academic_year > b.academic_year) return -1;
@@ -78,7 +89,11 @@ class Proposal extends React.Component {
                 }
             }
 
-            this.setState({degrees, selected_degree}, () => {
+            this.setState({
+                'degrees': degrees, 
+                'selected_degree': selected_degree, 
+                'exams': exams
+            }, () => {
                 if (this.props.id !== undefined) {
                     this.loadProposal(this.props.id);
                 } else if (selected_degree) {
@@ -86,6 +101,21 @@ class Proposal extends React.Component {
                 }
             });
         }
+    }
+
+    async loadGroups(degree) {
+        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
+
+        if (group_response.code != 200) {
+            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
+            return;
+        }
+
+        // We need to re-index the groups based on their ids, for easy lookups 
+        // later on when we build the form. 
+        const groups = Object.fromEntries(group_response.data.map(el => [el.id, el]));
+
+        return groups;
     }
 
     async loadProposal(id) {
@@ -113,6 +143,8 @@ class Proposal extends React.Component {
 
         const curricula = curricula_response['data'];
 
+        const groups = await this.loadGroups(degree);
+
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
         // console.log(proposal);
@@ -126,6 +158,7 @@ class Proposal extends React.Component {
                 'selected_degree': degree,
                 'chosen_exams': chosen_exams,
                 'proposal': proposal,
+                'groups': groups,
                 'saving': false // this is set to true when save is clicked, to avoid double requests
             }
         });
@@ -136,7 +169,7 @@ class Proposal extends React.Component {
         const curricula_response = await RestClient.get('curricula', { 'degree_id': degree.id });
 
         if (curricula_response.code != 200) {
-            this.reportError('Impossibile caricare i curricula per la il corso di Laurea: ${degree.name}, con ID = ${degree.id}');
+            this.reportError(`Impossibile caricare i curricula per la il corso di Laurea: ${degree.name}, con ID = ${degree.id}`);
             return;
         }
 
@@ -156,7 +189,13 @@ class Proposal extends React.Component {
                 chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
             }
         }
-        this.setState({curricula, selected_curriculum, chosen_exams});
+
+        this.setState({
+            curricula: curricula, 
+            selected_curriculum: selected_curriculum, 
+            chosen_exams: chosen_exams, 
+            groups: await this.loadGroups(degree)
+        });
     }
 
     renderDegreeSelection() {
@@ -488,6 +527,8 @@ class Proposal extends React.Component {
 
             rows.push(
                 <ProposalYear key={"proposal-year-" + year}
+                    exams={this.state.exams}
+                    groups={this.state.groups}
                     year={year}
                     curriculum={this.state.selected_curriculum}
                     degree={this.state.selected_degree}
