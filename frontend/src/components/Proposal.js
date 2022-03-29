@@ -476,7 +476,7 @@ class Proposal extends React.Component {
 
         if (this.state.selected_curriculum.notes) {
             rows.push(
-                <Card key="note" className="mt-2" title="Nota" bg="warning" titleClass="text-primary">
+                <Card key="proposal-curriculum-note" className="mt-2" title="Nota" bg="warning" titleClass="text-primary">
                     {this.state.selected_curriculum.notes}
                 </Card>
             )
