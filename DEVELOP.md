@@ -1,5 +1,36 @@
 # Informazioni utili per sviluppatori
 
+## Ambiente preconfigurato in docker
+
+Il modo più semplice per avviare un server di sviluppo è quello di utilizzare 
+un container docker pre configurato. Basta dare il comando:
+
+```bash
+./start-dev-server.sh
+```
+
+Una volta avviato il container (per il primo avvio ci può volere più tempo) il server viene esposto all'indirizzo
+http://localhost:8765
+
+L'interfaccia di *CakePHP* risulterà quindi accessibile tramite il comando
+```bash
+sudo docker exec -it caps bin/cake
+```
+Il database sarà invece accessibile tramite il comando
+```
+sudo docker exec -it caps-db mysql caps -u caps -p
+```
+la password del database è `secret` (specificata in docker/caps.env).
+
+I files del database persistono nella directory `docker/database`
+
+Al primo utilizzo è necessario inserire un utente amministratore per accedere 
+al servizio. Per creare uno username `admin` con password `admin` dare 
+il comando:
+```bash
+sudo docker exec -it caps bin/cake grant-admin admin --force --password admin
+```
+
 ## Preparazione dell'ambiente di sviluppo
 
 CAPS è sviluppato utilizzando il framework [CakePHP](https://cakephp.org) per il backend, 
