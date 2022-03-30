@@ -3,7 +3,8 @@
 namespace App\Controller\Api\v1;
 
 use App\Controller\AppController;
-use \Cake\View\JsonView;
+use Cake\Event\EventInterface;
+use \Cake\Routing\Router;
 
 enum ResponseCode : int {
     case Ok = 200;
@@ -19,6 +20,12 @@ class RestController extends AppController {
     // this in classes that inherit from RestController and then use 
     // RestController::applyFilters($query) to apply the filters automatically
     public $allowedFilters = [];
+
+    private $paginationData = [
+        'offset' => 0,
+        'limit' => null,
+        'total' => null
+    ];
 
     protected function applyFilters($query) {
         foreach ($this->allowedFilters as $field) {
@@ -56,12 +63,14 @@ class RestController extends AppController {
             }
         }
 
-        $this->set('response', [
+        $response = [
             'data' => $data, 
             'code' => $code->value, 
-            'message' => $message
-        ]);
+            'message' => $message,
+            'pagination' => $this->paginationData
+        ];
 
+        $this->set('response', $response);
         $this->response = $this->response->withStatus($code->value);
     }
 
@@ -87,12 +96,17 @@ class RestController extends AppController {
         $limit = $this->request->getQuery('limit');
         $offset = $this->request->getQuery('offset');
 
+        // FIXME: Are there any performance conerns with this?
+        $this->paginationData['total'] = $query->count();
+
         if ($limit !== null) {
             $query = $query->limit($limit);
+            $this->paginationData['limit'] = intval($limit);
         }
 
         if ($offset != null) {
             $query = $query->offset($offset);
+            $this->paginationData['offset'] = intval($offset);
         }
 
         return $query;

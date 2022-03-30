@@ -1,4 +1,5 @@
-import Chart from 'chart.js';
+import CapsAppController from './app-controller';
+import Chart, { scaleService } from 'chart.js';
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 
@@ -8,19 +9,31 @@ import Chart from 'chart.js';
  */
 async function loadDashboardData() {
     // We fetch the data to display in the plots
-    let res = await fetch('dashboard_data.json');
+    let res = await fetch('/api/v1/dashboard'); // *** TODO: usare la root del server e la libreria apposita per la chiamata
     let data = await res.json();
 
+    // TODO: controllare data.code
+
+    data = data.data;
+
+    function last(arr) {return arr[arr.length-1]};
+
+    function last_year(arr) {return arr.slice(-12)};
+
+
     // We fill in the data
-    document.getElementById('current-month-submission-count').innerHTML = data.submission_counts[11];
-    document.getElementById('current-year-submission-count').innerHTML = data.submission_counts.reduce((a, b) => a + b);
+    document.getElementById('current-month-proposal-submission-count').innerHTML = last(data.proposal_submission_counts);
+    document.getElementById('current-year-proposal-submission-count').innerHTML = last_year(data.proposal_submission_counts).reduce((a, b) => a + b);
+    document.getElementById('current-month-form-submission-count').innerHTML = last(data.form_submission_counts);
+    document.getElementById('current-year-form-submission-count').innerHTML = last_year(data.form_submission_counts).reduce((a, b) => a + b);
 
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // Construct the labels for the axes
     let now = new Date();
     let labels = [];
-    for (let i = 0; i < 12; i++) {
+    let n_months = data.proposal_submission_counts.length;
+    for (let i = 0; i < n_months; i++) {
         let thisMonth = now.getMonth();
         labels.unshift(monthNames[thisMonth] + " " + now.getFullYear());
         now.setMonth(thisMonth - 1); // This wraps automatically at the change of year
@@ -28,25 +41,33 @@ async function loadDashboardData() {
 
     var ctx = document.getElementById("SubmissionCharts");
 
+    function color_with_alpha(color, alpha) {
+        return "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", " + alpha + ")";
+    }
+
+    function dataset(label, color, data) {
+        let bg_color = color_with_alpha(color, 0.05);
+        let fg_color = color_with_alpha(color, 1);
+
+        return {
+            label: label,
+            backgroundColor: bg_color,
+            borderColor: fg_color,
+            pointBackgroundColor: fg_color,
+            pointBorderColor: fg_color,
+            data: data,
+        }
+    }
+
     var myLineChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [{
-                label: "Sottomissioni",
-                backgroundColor: "rgba(78, 115, 223, 0.05)",
-                borderColor: "rgba(78, 115, 223, 1)",
-                pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointBorderColor: "rgba(78, 115, 223, 1)",
-                data: data.submission_counts,
-            }, {
-                label: "Approvazioni",
-                pointBorderColor: "rgba(24, 142, 45, 1)",
-                borderColor: "rgba(24, 142, 45, 1)",
-                backgroundColor: "rgba(24, 142, 45, 0.05)",
-                pointBackgroundColor: "rgba(24, 142, 45, 1)",
-                data: data.approval_counts,
-            }],
+            datasets: [
+                dataset("Piani inviati", [78, 115, 223], data.proposal_submission_counts), 
+                dataset("Piani approvati", [24, 142, 45], data.proposal_approval_counts),
+                dataset("Moduli inviati", [170, 151, 57], data.form_submission_counts),
+                dataset("Moduli approvati", [128, 109, 21], data.form_approval_counts)],
         },
         options: {
             maintainAspectRatio: false,
@@ -113,4 +134,11 @@ async function loadDashboardData() {
     });
 }
 
-export { loadDashboardData };
+class DashboardController extends CapsAppController {
+    index(params) {
+        loadDashboardData();
+    }
+
+}
+
+export default DashboardController;

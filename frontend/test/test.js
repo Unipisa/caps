@@ -1,13 +1,6 @@
 import assert from 'assert';
-
 import jsdom from 'jsdom';
-
 import CapsAttachment from '../src/modules/attachment';
-import { loadDashboardData } from '../src/modules/dashboard';
-
-
-
-
 
 describe('models', function() {
 

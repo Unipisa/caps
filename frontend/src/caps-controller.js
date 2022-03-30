@@ -10,6 +10,7 @@ import CapsSettingsController from './controllers/settings-controller';
 import CapsFormsController from './controllers/forms-controller';
 import CapsFormTemplatesController from './controllers/form-templates-controller';
 import CapsUsersController from './controllers/users-controller';
+import CapsDashboardController from './controllers/dashboard-controller';
 
 'use strict'
 
@@ -26,7 +27,8 @@ const routes = {
     "Degrees": CapsDegreesController,
     "Forms": CapsFormsController,
     "FormTemplates": CapsFormTemplatesController,
-    "Users": CapsUsersController
+    "Users": CapsUsersController,
+    "Dashboard": CapsDashboardController
 }
 
 /**
