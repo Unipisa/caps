@@ -131,9 +131,7 @@
                 <h2 class="h5 mb-0">Piani e Moduli inviati</h2>
             </div>
             <div class="card-body">
-                <div class="chart-area">
-                    <canvas id="SubmissionCharts"></canvas>
-                </div>
+                <canvas id="SubmissionCharts"></canvas>
             </div>
         </div>
     </div>

@@ -70,7 +70,7 @@ async function loadDashboardData() {
                 dataset("Moduli approvati", [128, 109, 21], data.form_approval_counts)],
         },
         options: {
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             layout: {
                 padding: {
                     left: 10,
