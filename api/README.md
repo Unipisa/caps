@@ -29,7 +29,7 @@ $ curl -s -H 'Content-Type: application/json' \
 ```
 ... e poi
 ```bash
-$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/exams
+$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/exams | jq
 {
   "code": 200,
   "message": "OK",
