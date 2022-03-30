@@ -17,8 +17,10 @@ async function loadDashboardData() {
     data = data.data;
 
     // We fill in the data
-    document.getElementById('current-month-submission-count').innerHTML = data.proposal_submission_counts[11];
-    document.getElementById('current-year-submission-count').innerHTML = data.proposal_submission_counts.reduce((a, b) => a + b);
+    document.getElementById('current-month-proposal-submission-count').innerHTML = data.proposal_submission_counts[11];
+    document.getElementById('current-year-proposal-submission-count').innerHTML = data.proposal_submission_counts.reduce((a, b) => a + b);
+    document.getElementById('current-month-form-submission-count').innerHTML = data.form_submission_counts[11];
+    document.getElementById('current-year-form-submission-count').innerHTML = data.form_submission_counts.reduce((a, b) => a + b);
 
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -33,13 +35,13 @@ async function loadDashboardData() {
 
     var ctx = document.getElementById("SubmissionCharts");
 
-    function make_color(color, alpha) {
+    function color_with_alpha(color, alpha) {
         return "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", " + alpha + ")";
     }
 
     function dataset(label, color, data) {
-        let bg_color = make_color(color, 0.05);
-        let fg_color = make_color(color, 1);
+        let bg_color = color_with_alpha(color, 0.05);
+        let fg_color = color_with_alpha(color, 1);
 
         return {
             label: label,
@@ -58,8 +60,8 @@ async function loadDashboardData() {
             datasets: [
                 dataset("Piani inviati", [78, 115, 223], data.proposal_submission_counts), 
                 dataset("Piani approvati", [24, 142, 45], data.proposal_approval_counts),
-                dataset("Moduli inviati", [78, 115, 223], data.form_submission_counts),
-                dataset("Moduli approvati", [24, 142, 45], data.form_approval_counts)],
+                dataset("Moduli inviati", [170, 151, 57], data.form_submission_counts),
+                dataset("Moduli approvati", [128, 109, 21], data.form_approval_counts)],
         },
         options: {
             maintainAspectRatio: false,

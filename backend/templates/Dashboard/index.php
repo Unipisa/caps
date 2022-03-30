@@ -75,15 +75,33 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Sottomissioni</div>
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Piani inviati</div>
                         <div class="h5 mb-0 text-gray-800">Mese corrente: 
                           <strong>
-                            <span id="current-month-submission-count"></span>
+                            <span id="current-month-proposal-submission-count"></span>
                           </strong>
                         </div>
                         <div class="h5 mb-0 text-gray-800">Ultimi 12 mesi:
                             <strong>
-                                <span id="current-year-submission-count"></span>
+                                <span id="current-year-proposal-submission-count"></span>
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Moduli inviati</div>
+                        <div class="h5 mb-0 text-gray-800">Mese corrente: 
+                          <strong>
+                            <span id="current-month-form-submission-count"></span>
+                          </strong>
+                        </div>
+                        <div class="h5 mb-0 text-gray-800">Ultimi 12 mesi:
+                            <strong>
+                                <span id="current-year-form-submission-count"></span>
                             </strong>
                         </div>
                     </div>
@@ -94,6 +112,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 
