@@ -17,8 +17,8 @@ async function loadDashboardData() {
     data = data.data;
 
     // We fill in the data
-    document.getElementById('current-month-submission-count').innerHTML = data.submission_counts[11];
-    document.getElementById('current-year-submission-count').innerHTML = data.submission_counts.reduce((a, b) => a + b);
+    document.getElementById('current-month-submission-count').innerHTML = data.proposal_submission_counts[11];
+    document.getElementById('current-year-submission-count').innerHTML = data.proposal_submission_counts.reduce((a, b) => a + b);
 
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -33,25 +33,33 @@ async function loadDashboardData() {
 
     var ctx = document.getElementById("SubmissionCharts");
 
+    function make_color(color, alpha) {
+        return "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", " + alpha + ")";
+    }
+
+    function dataset(label, color, data) {
+        let bg_color = make_color(color, 0.05);
+        let fg_color = make_color(color, 1);
+
+        return {
+            label: label,
+            backgroundColor: bg_color,
+            borderColor: fg_color,
+            pointBackgroundColor: fg_color,
+            pointBorderColor: fg_color,
+            data: data,
+        }
+    }
+
     var myLineChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [{
-                label: "Sottomissioni",
-                backgroundColor: "rgba(78, 115, 223, 0.05)",
-                borderColor: "rgba(78, 115, 223, 1)",
-                pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointBorderColor: "rgba(78, 115, 223, 1)",
-                data: data.submission_counts,
-            }, {
-                label: "Approvazioni",
-                pointBorderColor: "rgba(24, 142, 45, 1)",
-                borderColor: "rgba(24, 142, 45, 1)",
-                backgroundColor: "rgba(24, 142, 45, 0.05)",
-                pointBackgroundColor: "rgba(24, 142, 45, 1)",
-                data: data.approval_counts,
-            }],
+            datasets: [
+                dataset("Piani inviati", [78, 115, 223], data.proposal_submission_counts), 
+                dataset("Piani approvati", [24, 142, 45], data.proposal_approval_counts),
+                dataset("Moduli inviati", [78, 115, 223], data.form_submission_counts),
+                dataset("Moduli approvati", [24, 142, 45], data.form_approval_counts)],
         },
         options: {
             maintainAspectRatio: false,

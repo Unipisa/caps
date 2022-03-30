@@ -2,24 +2,10 @@
 
 namespace App\Controller\Api\v1;
 
-use App\Controller\AppController;
 use App\Controller\Api\v1\RestController;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
-use App\Caps\Utils;
-use App\Form\ProposalsFilterForm;
-use App\Model\Entity\Proposal;
-use App\Model\Entity\ProposalAuth;
-use Cake\Core\Configure;
-use Cake\Log\Log;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Http\Exception\NotFoundException;
-use Cake\Http\Exception\ForbiddenException;
-use Cake\Mailer\Email;
-use Cake\Utility\Security;
-use Cake\Validation\Validation;
-use Dompdf\Dompdf;
-use DateTime;
 
 class DashboardController extends RestController
 {
@@ -27,13 +13,14 @@ class DashboardController extends RestController
     {
         parent::initialize();
         $this->Proposals = TableRegistry::getTableLocator()->get('proposals');
+        $this->Forms = TableRegistry::getTableLocator()->get('forms');
     }
 
    /** 
      * Get the number of submissions groups per month, in the last 12 months, 
      * including the current one. 
      */
-    private function get_submission_counts($date_field) {
+    private function get_submission_counts($Table, $date_field) {
         // we do this by separate queries because it appears to be
         // difficult to do in a database-independent way.
         $start = Time::now();
@@ -47,7 +34,7 @@ class DashboardController extends RestController
             $start = $start->addMonth(1);
             $end   = $end->addMonth(1);
 
-            $submission_counts[$i] = $this->Proposals->find()->where(
+            $submission_counts[$i] = $Table->find()->where(
                 function (QueryExpression $exp) use ($start, $end, $date_field) {
                     return $exp->lt($date_field, $end)
                         ->gte($date_field, $start);
@@ -77,8 +64,10 @@ class DashboardController extends RestController
 
     function index() {
         $data = [
-            'submission_counts' => $this->get_submission_counts('submitted_date'),
-            'approval_counts' => $this->get_submission_counts('approved_date')
+            'proposal_submission_counts' => $this->get_submission_counts($this->Proposals, 'submitted_date'),
+            'proposal_approval_counts' => $this->get_submission_counts($this->Proposals, 'approved_date'),
+            'form_submission_counts' => $this->get_submission_counts($this->Forms, 'date_submitted'),
+            'form_approval_counts' => $this->get_submission_counts($this->Forms, 'date_managed')
         ];
         $this->JSONResponse(ResponseCode::Ok, $data);
     }
