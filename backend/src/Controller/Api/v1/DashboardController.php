@@ -20,17 +20,17 @@ class DashboardController extends RestController
      * Get the number of submissions groups per month, in the last 12 months, 
      * including the current one. 
      */
-    private function get_submission_counts($Table, $date_field) {
+    private function get_submission_counts($Table, $date_field, $months) {
         // we do this by separate queries because it appears to be
         // difficult to do in a database-independent way.
         $start = Time::now();
         $start->day(1); // Go the start of this month
-        $start = $start->addMonth(-12);
+        $start = $start->addMonth(-$months);
         $end = new Time($start);
         $end = $end->addMonth(1);
         $submission_counts = [];
 
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < $months; $i++) {
             $start = $start->addMonth(1);
             $end   = $end->addMonth(1);
 
@@ -63,11 +63,12 @@ class DashboardController extends RestController
     */
 
     function index() {
+        $months = 24;
         $data = [
-            'proposal_submission_counts' => $this->get_submission_counts($this->Proposals, 'submitted_date'),
-            'proposal_approval_counts' => $this->get_submission_counts($this->Proposals, 'approved_date'),
-            'form_submission_counts' => $this->get_submission_counts($this->Forms, 'date_submitted'),
-            'form_approval_counts' => $this->get_submission_counts($this->Forms, 'date_managed')
+            'proposal_submission_counts' => $this->get_submission_counts($this->Proposals, 'submitted_date', $months),
+            'proposal_approval_counts' => $this->get_submission_counts($this->Proposals, 'approved_date', $months),
+            'form_submission_counts' => $this->get_submission_counts($this->Forms, 'date_submitted', $months),
+            'form_approval_counts' => $this->get_submission_counts($this->Forms, 'date_managed', $months)
         ];
         $this->JSONResponse(ResponseCode::Ok, $data);
     }

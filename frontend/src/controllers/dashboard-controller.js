@@ -1,5 +1,5 @@
 import CapsAppController from './app-controller';
-import Chart from 'chart.js';
+import Chart, { scaleService } from 'chart.js';
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 
@@ -16,18 +16,24 @@ async function loadDashboardData() {
 
     data = data.data;
 
+    function last(arr) {return arr[arr.length-1]};
+
+    function last_year(arr) {return arr.slice(-12)};
+
+
     // We fill in the data
-    document.getElementById('current-month-proposal-submission-count').innerHTML = data.proposal_submission_counts[11];
-    document.getElementById('current-year-proposal-submission-count').innerHTML = data.proposal_submission_counts.reduce((a, b) => a + b);
-    document.getElementById('current-month-form-submission-count').innerHTML = data.form_submission_counts[11];
-    document.getElementById('current-year-form-submission-count').innerHTML = data.form_submission_counts.reduce((a, b) => a + b);
+    document.getElementById('current-month-proposal-submission-count').innerHTML = last(data.proposal_submission_counts);
+    document.getElementById('current-year-proposal-submission-count').innerHTML = last_year(data.proposal_submission_counts).reduce((a, b) => a + b);
+    document.getElementById('current-month-form-submission-count').innerHTML = last(data.form_submission_counts);
+    document.getElementById('current-year-form-submission-count').innerHTML = last_year(data.form_submission_counts).reduce((a, b) => a + b);
 
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // Construct the labels for the axes
     let now = new Date();
     let labels = [];
-    for (let i = 0; i < 12; i++) {
+    let n_months = data.proposal_submission_counts.length;
+    for (let i = 0; i < n_months; i++) {
         let thisMonth = now.getMonth();
         labels.unshift(monthNames[thisMonth] + " " + now.getFullYear());
         now.setMonth(thisMonth - 1); // This wraps automatically at the change of year

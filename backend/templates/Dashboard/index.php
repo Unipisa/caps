@@ -120,7 +120,7 @@
     <div class="col-xl-6 col-md-12 mb-4">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h2 class="h5 mb-0">Piani sottomessi e approvati</h2>
+                <h2 class="h5 mb-0">Piani e Moduli inviati</h2>
             </div>
             <div class="card-body">
                 <div class="chart-area">
