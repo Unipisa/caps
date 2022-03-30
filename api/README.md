@@ -11,6 +11,10 @@ che poi è possibile interrogare direttamente con
 ```
 sudo docker-compose exec mongo mongsh
 ```
+e poi in un terminale separato:
+```bash
+npm start
+```
 
 Alcune prove con le API si possono fare direttamente con curl (qui si usa jq per 
 fare il pretty print del JSON):
