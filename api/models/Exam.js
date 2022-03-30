@@ -1,5 +1,5 @@
 
-const mongoose = require('./database');
+const mongoose = require('mongoose');
 
 const Exam = mongoose.model('Exam', {
     name: { 
@@ -8,7 +8,7 @@ const Exam = mongoose.model('Exam', {
     },
     code: { 
         type: String,
-        required: true
+        default: null
     },
     sector: { 
         type: String,
