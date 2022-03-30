@@ -29,6 +29,8 @@ $ curl -s -H 'Content-Type: application/json' \
 ```
 ... e poi
 ```bash
+$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/exams
+{
   "code": 200,
   "message": "OK",
   "data": [
