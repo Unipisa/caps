@@ -32,7 +32,7 @@ class ProposalInfo extends React.Component {
     renderButtons() {
         return <div className="btn-group">
             {this.props.proposal.state == "draft" && 
-                <a  onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
+                <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
                     <FontAwesomeIcon icon={faEdit} />
                 </a>
             }

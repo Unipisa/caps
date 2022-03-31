@@ -6,8 +6,11 @@ import RestClient from '../modules/api';
 import FilterButton from './FilterButton';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
+import Modal from './Modal';
 
 function ActionButton(props) {
+    console.log(props.Forms)
+
     return <div className="dropdown">
     <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,7 +72,7 @@ function HeadPanel(props) {
             }}
             callback={filter_button => this.update(filter_button.filter)}>
         </FilterButton>
-        <ActionButton Forms={Forms} />
+        <ActionButton Forms={props.Forms} />
 
         <div className="flex-fill"></div>
 
@@ -116,6 +119,8 @@ class Forms extends React.Component {
             'forms': undefined,
             'selected': []
         };
+        this.modal_ref = React.createRef();
+
         this.update(this.props.query || {});
     }
 
@@ -140,6 +145,14 @@ class Forms extends React.Component {
     }
 
     async perform_action(action, selected) {
+        this.modal_ref.current.show('Ciao?', '', 
+            (response) => {
+                if (response) {
+                    console.log("aa");
+                }
+            }
+        );
+
         if (!["approve", "reject", "redraft", "delete"].includes(action)) {
             console.log("ERROR: invalid action");
             return;
@@ -200,14 +213,17 @@ class Forms extends React.Component {
     }
 
     render() {
-        return <div>
-            <h1>Moduli</h1>
-            <Card>
-                <HeadPanel Forms={this}></HeadPanel>
-                { this.renderTable() }
-                { this.renderTailPanel() }
-            </Card>
-        </div>
+        return <>
+            <Modal ref={this.modal_ref}></Modal>
+            <div>
+                <h1>Moduli</h1>
+                <Card>
+                    <HeadPanel Forms={this}></HeadPanel>
+                    { this.renderTable() }
+                    { this.renderTailPanel() }
+                </Card>
+            </div>
+        </>;
     }
 }
 
