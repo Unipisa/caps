@@ -20,11 +20,17 @@ class CapsPage extends React.Component {
         this.modal_ref = React.createRef();
     }
 
-    async confirm(title, message) {
-        return await new Promise((resolve) => {
+    confirm(title, message) {
+        return new Promise((resolve) => {
             this.modal_ref.current.show(title, message, resolve);
         }).catch(err => {throw err});
     }
+
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+          this.setState(state, resolve)
+        });
+    }    
 
     render() {
         return <>

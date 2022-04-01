@@ -44,14 +44,72 @@ class Forms extends CapsPage {
         });
     }
 
-    async perform_action(action, selected) {
-        if (!["approve", "reject", "redraft", "delete"].includes(action)) {
+    freezeSelected() {
+        return this.setStateAsync({
+            "selected": this.state.selected.map(form => {form.frozen = true; return form;}) 
+        });
+    }
+
+    /** 
+     * patch is a dictionary of key:vals which is sent 
+     * with a POST method to all selected objects
+     */
+    async update_form(form, patch) {
+        let res = await RestClient.patch(`/form/${form.id}`, patch);
+        if (res.code == 200) {
+            let forms = this.state.forms.map(f => {f==form?res.data:f});
+            let selected = this.state.forms.map(f => {f==form?res.data:f});
+            this.setState({forms, selected});
+        } else {
+            console.log(res.message);
+            /* flash error message */
+        }
+    }
+
+    async delete_form(form) {
+        let res = await RestClient.delete(`/form/${form.id}`);
+        if (res.code == 200) {
+            /* flash confirmed message ? */
+            let selected = this.state.selected.filter(f => (f != form));
+            let forms = this.state.selected.filter(f => (f != form));
+            await this.setStateAsync({
+                "selected": selected,
+                "forms": forms
+            });
+        } else {
+            console.log(res.message);
+            /* flash error message ? */
+        }
+    }
+
+    async perform_action(action) {
+        let selected = this.state.selected;
+        await this.freezeSelected();
+        if (action === "approve") {
+            if (await this.confirm("Confermi approvazione?", `Vuoi approvare ${selected.length} modulo/i selezionati?`)) {
+                await this.update_selected({"state": "approved"});
+            }
+        } else if (action == "reject") {
+            if (await this.confirm("Confermi rifiuto?", `Vuoi rifiutare ${selected.length} modulo/i selezionati?`)) {
+                await this.update_selected({"state": "rejected"});
+            }
+        } else if (action == "resubmit") {
+            if (await this.confirm("Riporta in valutazione?", `Vuoi risottomettere ${selected.length} modulo/i selezionati?`)) {
+                await this.update_selected({"state": "submitted"});     
+            }
+        } else if (action == "redraft") {
+            if (await this.confirm("Riporta in bozza?", `Vuoi riportare in bozza ${selected.length} modulo/i selezionati?`)) {
+                await this.update_selected({"state": "draft"});
+            }
+        } else if (action == "delete") {
+            if (await this.confirm("Confermi cancellazione?", `Vuoi rimuovere ${selected.length} modulo/i selezionati?`)) {
+                await this.delete_selected();
+            }
+        }  else {
             console.log("ERROR: invalid action");
-            return;
         }
-        if (this.confirm("Confermi?", "Confermi l'azione scelta...?")) {
-            // to be implemented...
-        }
+        selected = this.state.selected.map(form => {form.frozen = undefined; return form;});
+        this.setState({selected});
     }
 
     downloadCSV() {
@@ -112,8 +170,6 @@ class Forms extends CapsPage {
 }
 
 function ActionButton(props) {
-    console.log(props.Forms)
-
     return <div className="dropdown">
     <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -125,27 +181,19 @@ function ActionButton(props) {
             ✓ Approva i moduli selezionati
         </button>
         <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() =>
-                    confirm('Confermi di voler rifiutare i moduli selezionati?')
-                    && props.Forms.perform_action('reject')}>
+                onClick={() => props.Forms.perform_action('reject')}>
             ✗ Rifiuta i moduli selezionati
         </button>
         <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() =>
-                    confirm('Confermi di voler riportare in valutazione i moduli selezionati?')
-                    && props.Forms.perform_action('resubmit')}>
+                onClick={() => props.Forms.perform_action('resubmit')}>
             ⎌ Riporta in valutazione i moduli selezionati
         </button>
         <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() =>
-                    confirm('Confermi di voler riportare in bozza i moduli selezionati?')
-                    && props.Forms.perform_action('redraft')}>
+                onClick={() => props.Forms.perform_action('redraft')}>
             ⎌ Riporta in bozza i moduli selezionati
         </button>
         <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() =>
-                    confirm('Confermi di voler eliminare i moduli selezionati?')
-                    && props.Forms.perform_action('delete')}> 
+                onClick={() => props.Forms.perform_action('delete')}> 
             🗑 Elimina i moduli selezionati
         </button>
     </div>
@@ -188,15 +236,10 @@ function HeadPanel(props) {
 function FormRow(props) {
     const selected = props.Forms.state.selected.includes(props.form);
     const form = props.form;
-    return <tr>
-        <td>
-            { selected 
-                ? <input type="checkbox" checked="checked" onClick={() => props.Forms.removeFromSelection(form)}/>
-                : <input type="checkbox" onClick={() => props.Forms.addToSelection(form)}/>
-            }
-        </td>
+    return <tr style={form.frozen?{background: "gray"}:{}}>
+        <td><input type="checkbox" defaultChecked={ selected } onClick={() => selected ? props.Forms.removeFromSelection(form) : props.Forms.addToSelection(form)}/></td>
         <td><FormBadge form={form}></FormBadge></td>
-        <td>{form.user.givenname+" "+form.user.surname}</td>
+        <td>{form.user.name}</td>
         <td>{form.form_template.name}</td>
         <td>{form.date_submitted}</td>
         <td>{form.date_managed}</td>

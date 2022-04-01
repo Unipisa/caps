@@ -54,6 +54,10 @@ class RestClient {
         return await this.fetch(uri, 'PUT', data);
     }
 
+    async patch(uri, data) {
+        return await this.fetch(uri, 'PATCH', data);
+    }
+
 }
 
 export default new RestClient();

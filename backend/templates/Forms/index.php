@@ -24,10 +24,11 @@
 <div id="app">
 </div>
 
+<?php if (false): ?>
+
 <h1>Moduli</h1>
 
 <?php if ($user['admin']): ?>
-
 <?php echo $this->element('card-start') ?>
     <div class="d-flex mb-2">
         <?= $this->element('filter-button', ['items' => [
@@ -181,6 +182,8 @@
     </div>
     <?php echo $this->element('pagination'); ?>
     <?php echo $this->Form->end(); ?>
+
+<?php endif; ?>
 
 <?php echo $this->element('card-end'); ?>
 

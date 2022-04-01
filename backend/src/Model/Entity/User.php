@@ -94,7 +94,7 @@ class User extends Entity implements IdentityInterface
 
     public function canDeleteForm(Form $form) : bool 
     {
-        return $this['admin'] || ($this['id'] == $form['user_id']);
+        return $this['admin'] || ($this['id'] == $form['user_id'] && $form['state'] != "submitted");
     }
 
     public function canViewForm(Form $form) : bool
