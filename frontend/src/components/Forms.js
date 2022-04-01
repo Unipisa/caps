@@ -6,7 +6,110 @@ import RestClient from '../modules/api';
 import FilterButton from './FilterButton';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
-import Modal from './Modal';
+import CapsPage from './CapsPage';
+
+class Forms extends CapsPage {
+    constructor(props) {
+        super(props);
+        this.state = {
+            'forms': undefined,
+            'selected': []
+        };
+        this.query = {};
+        Object.assign(this.query, this.props.query);
+        this.query.limit = 15;
+    }
+    
+    async componentDidMount() {
+        this.update(this.query);
+    }
+
+    addToSelection(form) {
+        if (!this.state.forms || !this.state.forms.includes(form) || this.state.selected.includes(form)) {
+            console.log("cannot select form");
+            return;
+        }
+        this.setState({
+            "selected": this.state.selected.concat([form]) 
+        })
+    }
+
+    removeFromSelection(form) {
+        if (!this.state.forms || !this.state.forms.includes(form) || !this.state.selected.includes(form)) {
+            console.log("cannot deselect form");
+            return;
+        }
+        this.setState({
+            "selected": this.state.selected.filter(f => f!=form)
+        });
+    }
+
+    async perform_action(action, selected) {
+        if (!["approve", "reject", "redraft", "delete"].includes(action)) {
+            console.log("ERROR: invalid action");
+            return;
+        }
+        if (this.confirm("Confermi?", "Confermi l'azione scelta...?")) {
+            // to be implemented...
+        }
+    }
+
+    downloadCSV() {
+        // to be implemented...
+    }
+
+    async update(query) {
+        const forms = (await RestClient.get(`forms/`, query))['data'];
+        this.setState({"forms": forms});
+    }
+
+    renderTailPanel() {
+        return ;
+    }
+
+    renderTable() {
+        if (this.state.forms === undefined) {
+            return <LoadingMessage>Caricamento forms...</LoadingMessage>
+        }
+        else {
+            return <div className="table-responsive-lg">
+                <table className="table">
+                    <thead>
+                        <tr>
+                        <th></th>
+                        <th><a href="#">Stato</a></th>
+                        <th>Nome</th>
+                        <th>Modello</th>
+                        <th>Inviato</th>
+                        <th>Gestito</th>
+                        <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {this.state.forms.map(form => 
+                        <FormRow 
+                            key={form.id} 
+                            form={form} 
+                            Forms={this}
+                            >
+                        </FormRow>)}
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    renderPage() {
+        return <div>
+                <h1>Moduli</h1>
+                <Card>
+                    <HeadPanel Forms={this}></HeadPanel>
+                    { this.renderTable() }
+                    { this.renderTailPanel() }
+                </Card>
+            </div>
+    }
+}
 
 function ActionButton(props) {
     console.log(props.Forms)
@@ -18,9 +121,7 @@ function ActionButton(props) {
     </button>
     <div className="dropdown-menu p-2 shadow" style={{"width": "450px"}}>
         <button className="my-1 btn btn-success" style={{"width": "100%"}}
-                onClick={() =>
-                    confirm('Confermi di voler approvare i moduli selezionati?') 
-                    && props.Forms.perform_action('approve')}>
+                onClick={() => props.Forms.perform_action('approve')}>
             ✓ Approva i moduli selezionati
         </button>
         <button className="my-1 btn btn-danger" style={{"width": "100%"}}
@@ -110,121 +211,6 @@ function FormRow(props) {
             </div>
         </td>
     </tr>
-}
-
-class Forms extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            'forms': undefined,
-            'selected': []
-        };
-        this.modal_ref = React.createRef();
-
-        this.update(this.props.query || {});
-    }
-
-    addToSelection(form) {
-        if (!this.state.forms || !this.state.forms.includes(form) || this.state.selected.includes(form)) {
-            console.log("cannot select form");
-            return;
-        }
-        this.setState({
-            "selected": this.state.selected.concat([form]) 
-        })
-    }
-
-    removeFromSelection(form) {
-        if (!this.state.forms || !this.state.forms.includes(form) || !this.state.selected.includes(form)) {
-            console.log("cannot deselect form");
-            return;
-        }
-        this.setState({
-            "selected": this.state.selected.filter(f => f!=form)
-        });
-    }
-
-    async perform_action(action, selected) {
-        this.modal_ref.current.show('Ciao?', '', 
-            (response) => {
-                if (response) {
-                    console.log("aa");
-                }
-            }
-        );
-
-        if (!["approve", "reject", "redraft", "delete"].includes(action)) {
-            console.log("ERROR: invalid action");
-            return;
-        }
-        // to be implemented...
-    }
-
-    downloadCSV() {
-        // to be implemented...
-    }
-
-    async update(query) {
-        const forms = (await RestClient.get(`forms/`, query))['data'];
-        this.setState({"forms": forms});
-    }
-
-    async update_query() {
-
-    }
-
-    onDeleteClicked(f) {
-    }
-
-    renderTailPanel() {
-        return ;
-    }
-
-    renderTable() {
-        if (this.state.forms === undefined) {
-            return <LoadingMessage>Caricamento forms...</LoadingMessage>
-        }
-        else {
-            return <div className="table-responsive-lg">
-                <table className="table">
-                    <thead>
-                        <tr>
-                        <th></th>
-                        <th><a href="#">Stato</a></th>
-                        <th>Nome</th>
-                        <th>Modello</th>
-                        <th>Inviato</th>
-                        <th>Gestito</th>
-                        <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {this.state.forms.map(form => 
-                        <FormRow 
-                            key={form.id} 
-                            form={form} 
-                            Forms={this}
-                            >
-                        </FormRow>)}
-                    </tbody>
-                </table>
-            </div>
-        }
-    }
-
-    render() {
-        return <>
-            <Modal ref={this.modal_ref}></Modal>
-            <div>
-                <h1>Moduli</h1>
-                <Card>
-                    <HeadPanel Forms={this}></HeadPanel>
-                    { this.renderTable() }
-                    { this.renderTailPanel() }
-                </Card>
-            </div>
-        </>;
-    }
 }
 
 export default Forms;
