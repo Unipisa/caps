@@ -12,148 +12,108 @@ class Forms extends CapsPage {
     constructor(props) {
         super(props);
         this.state = {
-            'forms': undefined,
-            'selected': []
+            'rows': undefined
         };
-        this.query = {};
-        Object.assign(this.query, this.props.query);
-        this.query.limit = 15;
+        this.query = {limit: 15, ...this.props.query};
     }
     
     async componentDidMount() {
-        this.update(this.query);
+        this.load(this.query);
     }
 
-    addToSelection(form) {
-        if (!this.state.forms || !this.state.forms.includes(form) || this.state.selected.includes(form)) {
-            console.log("cannot select form");
-            return;
-        }
-        this.setState({
-            "selected": this.state.selected.concat([form]) 
-        })
+    async load(query) {
+        const forms = (await RestClient.get(`forms/`, query))['data'];
+        const rows = forms.map(form => {return {
+            form,
+            selected: false
+        }})
+        await this.setStateAsync({rows});
     }
 
-    removeFromSelection(form) {
-        if (!this.state.forms || !this.state.forms.includes(form) || !this.state.selected.includes(form)) {
-            console.log("cannot deselect form");
-            return;
-        }
-        this.setState({
-            "selected": this.state.selected.filter(f => f!=form)
-        });
+    async selectForm(form) {
+        const rows = this.state.rows.map(row => {
+            return row.form === form 
+            ? {...row, selected: true}
+            : row;});
+        await this.setStateAsync({rows});
     }
 
-    freezeSelected() {
-        return this.setStateAsync({
-            "selected": this.state.selected.map(form => {form.frozen = true; return form;}) 
-        });
+    async unselectForm(form) {
+        const rows = this.state.rows.map(row => {
+            return row.form === form 
+            ? {...row, selected: false}
+            : row;});
+        await this.setStateAsync({rows});
     }
 
     /** 
      * patch is a dictionary of key:vals which is sent 
-     * with a POST method to all selected objects
+     * with a PATCH method to all selected objects
      */
-    async update_form(form, patch) {
-        let res = await RestClient.patch(`/form/${form.id}`, patch);
+    async updateForm(form, state) {
+        let res = await RestClient.patch(`form/${form.id}`, {state});
         if (res.code == 200) {
-            let forms = this.state.forms.map(f => {f==form?res.data:f});
-            let selected = this.state.forms.map(f => {f==form?res.data:f});
-            this.setState({forms, selected});
+            const rows = this.state.rows.map(
+                row => {return (row.form === form
+                    ? {...row, "form": res.data}
+                    : row);});
+            await this.setState({rows});
         } else {
             console.log(res.message);
             /* flash error message */
         }
     }
 
-    async delete_form(form) {
-        let res = await RestClient.delete(`/form/${form.id}`);
+    async deleteForm(form) {
+        let res = await RestClient.delete(`form/${form.id}`);
         if (res.code == 200) {
             /* flash confirmed message ? */
-            let selected = this.state.selected.filter(f => (f != form));
-            let forms = this.state.selected.filter(f => (f != form));
-            await this.setStateAsync({
-                "selected": selected,
-                "forms": forms
-            });
+            const rows = this.state.rows.filter(row => (row.form !== form));
+            await this.setStateAsync({rows});
         } else {
             console.log(res.message);
             /* flash error message ? */
         }
     }
 
-    async perform_action(action) {
-        let selected = this.state.selected;
-        await this.freezeSelected();
+    updateRows(state) {
+        this.state.rows.forEach(row => {
+            if (row.selected) this.updateForm(row.form, state);
+        });
+    }
+
+    deleteRows(forms) {
+        this.state.rows.forEach(row => {
+            if (row.selected) this.deleteForm(row.form);
+        });
+    }
+
+    async performAction(action) {
+        const selected = (this.state.rows
+            .filter(row => row.selected)
+            .map(row => row.form));
         if (action === "approve") {
             if (await this.confirm("Confermi approvazione?", `Vuoi approvare ${selected.length} modulo/i selezionati?`)) {
-                await this.update_selected({"state": "approved"});
+                this.updateRows("approved");
             }
         } else if (action == "reject") {
             if (await this.confirm("Confermi rifiuto?", `Vuoi rifiutare ${selected.length} modulo/i selezionati?`)) {
-                await this.update_selected({"state": "rejected"});
+                this.updateRows("rejected");
             }
         } else if (action == "resubmit") {
             if (await this.confirm("Riporta in valutazione?", `Vuoi risottomettere ${selected.length} modulo/i selezionati?`)) {
-                await this.update_selected({"state": "submitted"});     
+                this.updateRows("submitted");     
             }
         } else if (action == "redraft") {
             if (await this.confirm("Riporta in bozza?", `Vuoi riportare in bozza ${selected.length} modulo/i selezionati?`)) {
-                await this.update_selected({"state": "draft"});
+                await this.updateRows("draft");
             }
         } else if (action == "delete") {
             if (await this.confirm("Confermi cancellazione?", `Vuoi rimuovere ${selected.length} modulo/i selezionati?`)) {
-                await this.delete_selected();
+                this.deleteRows();
             }
         }  else {
             console.log("ERROR: invalid action");
-        }
-        selected = this.state.selected.map(form => {form.frozen = undefined; return form;});
-        this.setState({selected});
-    }
-
-    downloadCSV() {
-        // to be implemented...
-    }
-
-    async update(query) {
-        const forms = (await RestClient.get(`forms/`, query))['data'];
-        this.setState({"forms": forms});
-    }
-
-    renderTailPanel() {
-        return ;
-    }
-
-    renderTable() {
-        if (this.state.forms === undefined) {
-            return <LoadingMessage>Caricamento forms...</LoadingMessage>
-        }
-        else {
-            return <div className="table-responsive-lg">
-                <table className="table">
-                    <thead>
-                        <tr>
-                        <th></th>
-                        <th><a href="#">Stato</a></th>
-                        <th>Nome</th>
-                        <th>Modello</th>
-                        <th>Inviato</th>
-                        <th>Gestito</th>
-                        <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {this.state.forms.map(form => 
-                        <FormRow 
-                            key={form.id} 
-                            form={form} 
-                            Forms={this}
-                            >
-                        </FormRow>)}
-                    </tbody>
-                </table>
-            </div>
         }
     }
 
@@ -161,15 +121,45 @@ class Forms extends CapsPage {
         return <div>
                 <h1>Moduli</h1>
                 <Card>
-                    <HeadPanel Forms={this}></HeadPanel>
-                    { this.renderTable() }
-                    { this.renderTailPanel() }
+                    <HeadPanel Forms={this} />
+                    <Table Forms={this} rows={this.state.rows} /> 
                 </Card>
             </div>
     }
 }
 
+function Table(props) {
+    if (props.rows === undefined) {
+        return <LoadingMessage>Caricamento moduli...</LoadingMessage>
+    }
+    else {
+        return <div className="table-responsive-lg">
+            <table className="table">
+                <thead>
+                    <tr>
+                    <th></th>
+                    <th><a href="#">Stato</a></th>
+                    <th>Nome</th>
+                    <th>Modello</th>
+                    <th>Inviato</th>
+                    <th>Gestito</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {props.rows.map(row => 
+                    <FormRow 
+                        key={row.form.id} 
+                        row={row} 
+                        Forms={props.Forms}/>)}
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
 function ActionButton(props) {
+    const {Forms} = props;
     return <div className="dropdown">
     <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -177,23 +167,23 @@ function ActionButton(props) {
     </button>
     <div className="dropdown-menu p-2 shadow" style={{"width": "450px"}}>
         <button className="my-1 btn btn-success" style={{"width": "100%"}}
-                onClick={() => props.Forms.perform_action('approve')}>
+                onClick={() => Forms.performAction('approve')}>
             ✓ Approva i moduli selezionati
         </button>
         <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() => props.Forms.perform_action('reject')}>
+                onClick={() => Forms.performAction('reject')}>
             ✗ Rifiuta i moduli selezionati
         </button>
         <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() => props.Forms.perform_action('resubmit')}>
+                onClick={() => Forms.performAction('resubmit')}>
             ⎌ Riporta in valutazione i moduli selezionati
         </button>
         <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() => props.Forms.perform_action('redraft')}>
+                onClick={() => Forms.performAction('redraft')}>
             ⎌ Riporta in bozza i moduli selezionati
         </button>
         <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() => props.Forms.perform_action('delete')}> 
+                onClick={() => Forms.performAction('delete')}> 
             🗑 Elimina i moduli selezionati
         </button>
     </div>
@@ -201,6 +191,7 @@ function ActionButton(props) {
 }
 
 function HeadPanel(props) {
+    const {Forms} = props;
     return <div className="d-flex mb-2">
         <FilterButton                   
             items={{
@@ -219,9 +210,9 @@ function HeadPanel(props) {
                 formTemplate: "modello",
                 name: "nome"
             }}
-            callback={filter_button => this.update(filter_button.filter)}>
+            callback={filter_button => Forms.update(filter_button.filter)}>
         </FilterButton>
-        <ActionButton Forms={props.Forms} />
+        <ActionButton Forms={Forms} />
 
         <div className="flex-fill"></div>
 
@@ -234,10 +225,12 @@ function HeadPanel(props) {
 }
 
 function FormRow(props) {
-    const selected = props.Forms.state.selected.includes(props.form);
-    const form = props.form;
-    return <tr style={form.frozen?{background: "gray"}:{}}>
-        <td><input type="checkbox" defaultChecked={ selected } onClick={() => selected ? props.Forms.removeFromSelection(form) : props.Forms.addToSelection(form)}/></td>
+    const {row: {form, selected}, Forms} = props;
+    return <tr style={selected?{background: "lightgray"}:{}}>
+        <td><input type="checkbox" defaultChecked={ selected } onClick={
+            () => selected 
+                ? Forms.unselectForm(form) 
+                : Forms.selectForm(form)}/></td>
         <td><FormBadge form={form}></FormBadge></td>
         <td>{form.user.name}</td>
         <td>{form.form_template.name}</td>
@@ -245,7 +238,7 @@ function FormRow(props) {
         <td>{form.date_managed}</td>
         <td>
             <div className="d-none d-xl-inline-flex flex-row align-items-center">
-                <a href={`${props.Forms.props.root}forms/view/${form.id}`}>
+                <a href={`${Forms.props.root}forms/view/${form.id}`}>
                     <button type="button" className="btn btn-sm btn-primary mr-2">
                     <i className="fas fa-eye mr-2"></i>
                     Visualizza
