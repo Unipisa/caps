@@ -247,10 +247,6 @@ class UserProfile extends React.Component {
                     root={this.props.root}
                     form_templates_enabled={this.state.form_templates_enabled}>
                 </FormsBlock>}
-                {this.state.logged_user.admin &&
-                <UserDocumentsBlock className="mt-4"
-                    root={this.props.root}
-                ></UserDocumentsBlock>}
                 {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
