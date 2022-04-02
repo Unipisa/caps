@@ -22,7 +22,16 @@ class FormsController extends RestController {
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($forms));
+        $forms = $this->paginateQuery($forms);
+
+        foreach($forms as $form) {
+            $form['data'] = json_decode($form['data']);
+            unset($form['user']['password']);
+            unset($form['form_template']['text']);
+            unset($form['form_template']['code']);
+        }
+
+        $this->JSONResponse(ResponseCode::Ok, $forms);
     }
 
     public function get($id) {

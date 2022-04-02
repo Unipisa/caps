@@ -7,6 +7,7 @@ import FilterButton from './FilterButton';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
 import CapsPage from './CapsPage';
+import { CSVDownload, CSVLink } from "react-csv";
 
 class Forms extends CapsPage {
     constructor(props) {
@@ -124,36 +125,77 @@ class Forms extends CapsPage {
                 </Card>
             </div>
     }
+
+    async csvData() {
+        const {code, message, data} = await RestClient.get("forms/", this.query);
+        if (code !== 200) {
+            console.log(`error ${message}`);
+            // flash...
+            return;
+        }
+        let keys = [];
+        function addKey(key) {
+            if (!keys.includes(key)) keys.push(key);
+        }
+        function addKeys(prefix, obj) {
+            for(let key in obj) {
+                const val=obj[key];
+                if (typeof(val) === 'object') {
+                    addKeys(`${prefix}${key}.`, val);
+                } else {
+                    addKey(`${prefix}${key}`);
+                }
+            }
+        }
+        data.forEach(form => addKeys("", form));
+        keys.sort();
+        const headers = (keys.map(key => { return {
+                "label": key.replaceAll('.',' ').replaceAll('_',' '), 
+                key}}));
+        return {headers, data};
+    }
 }
 
-function Table(props) {
-    if (props.rows === undefined) {
-        return <LoadingMessage>Caricamento moduli...</LoadingMessage>
-    }
-    else {
-        return <div className="table-responsive-lg">
-            <table className="table">
-                <thead>
-                    <tr>
-                    <th></th>
-                    <th><a href="#">Stato</a></th>
-                    <th>Nome</th>
-                    <th>Modello</th>
-                    <th>Inviato</th>
-                    <th>Gestito</th>
-                    <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                {props.rows.map(row => 
-                    <FormRow 
-                        key={row.form.id} 
-                        row={row} 
-                        Forms={props.Forms}/>)}
-                </tbody>
-            </table>
+function HeadPanel(props) {
+    const {Forms} = props;
+    return <div className="d-flex mb-2">
+        <FilterButton                   
+            items={{
+                state: {
+                    label: "stato",
+                    type: "select",
+                    options: {
+                        '': 'tutti',
+                        'draft': 'bozze',
+                        'submitted': 'da valutare',
+                        'approved': 'approvati',
+                        'rejected': 'rifiutati'
+                    }
+                },
+                surname: "cognome",
+                formTemplate: "modello",
+                name: "nome"
+            }}
+            callback={filter_button => Forms.update(filter_button.filter)}>
+        </FilterButton>
+        <ActionButton Forms={Forms} />
+
+        <div className="flex-fill"></div>
+
+        <div className="col-auto">
+            <button type="button" className="btn btn-sm btn-primary"
+                onClick={async () => Forms.setState({csvData: await Forms.csvData()})}>
+                <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
+            </button>
+            {Forms.state.csvData !== undefined 
+                ? <CSVDownload 
+                    data={Forms.state.csvData.data}
+                    headers={Forms.state.csvData.headers}
+                    filename="caps-moduli.csv"
+                    target="_blank" /> 
+                : null }
         </div>
-    }
+    </div>
 }
 
 function ActionButton(props) {
@@ -188,38 +230,34 @@ function ActionButton(props) {
 </div>
 }
 
-function HeadPanel(props) {
-    const {Forms} = props;
-    return <div className="d-flex mb-2">
-        <FilterButton                   
-            items={{
-                state: {
-                    label: "stato",
-                    type: "select",
-                    options: {
-                        '': 'tutti',
-                        'draft': 'bozze',
-                        'submitted': 'da valutare',
-                        'approved': 'approvati',
-                        'rejected': 'rifiutati'
-                    }
-                },
-                surname: "cognome",
-                formTemplate: "modello",
-                name: "nome"
-            }}
-            callback={filter_button => Forms.update(filter_button.filter)}>
-        </FilterButton>
-        <ActionButton Forms={Forms} />
-
-        <div className="flex-fill"></div>
-
-        <div className="col-auto">
-            <button type="button" className="btn btn-sm btn-primary" onClick={() => Forms.downloadCSV()}>
-                <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
-            </button>
+function Table(props) {
+    if (props.rows === undefined) {
+        return <LoadingMessage>Caricamento moduli...</LoadingMessage>
+    }
+    else {
+        return <div className="table-responsive-lg">
+            <table className="table">
+                <thead>
+                    <tr>
+                    <th></th>
+                    <th><a href="#">Stato</a></th>
+                    <th>Nome</th>
+                    <th>Modello</th>
+                    <th>Inviato</th>
+                    <th>Gestito</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {props.rows.map(row => 
+                    <FormRow 
+                        key={row.form.id} 
+                        row={row} 
+                        Forms={props.Forms}/>)}
+                </tbody>
+            </table>
         </div>
-        </div>;
+    }
 }
 
 function FormRow(props) {
