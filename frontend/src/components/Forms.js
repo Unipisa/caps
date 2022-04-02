@@ -14,20 +14,48 @@ class Forms extends CapsPage {
         this.state = {
             'rows': undefined
         };
-        this.query = {limit: 15, ...this.props.query};
+        // query with filters and sorting keys, no limits
+        this.query = {...this.props.query};
     }
     
     async componentDidMount() {
-        this.load(this.query);
+        this.load();
     }
 
-    async load(query) {
-        const forms = (await RestClient.get(`forms/`, query))['data'];
+    async load() {
+        const limit = 15;
+        const forms = (await RestClient.get(`forms/`, {...this.query, limit}))['data'];
         const rows = forms.map(form => {return {
             form,
             selected: false
         }})
         await this.setStateAsync({rows});
+    }
+
+    async updateForm(form, state) {
+        let res = await RestClient.patch(`forms/${form.id}`, {state});
+        if (res.code == 200) {
+            const rows = this.state.rows.map(
+                row => {return (row.form === form
+                    ? {...row, "form": res.data, "selected": false}
+                    : row);});
+            await this.setState({rows});
+        } else {
+            console.log(res.message);
+            /* flash error message */
+        }
+    }
+
+    async deleteForm(form) {
+        let res = await RestClient.delete(`forms/${form.id}`);
+        if (res.code == 200) {
+            /* flash confirmed message ? */
+            const rows = this.state.rows.filter(row => (row.form !== form));
+            await this.setStateAsync({rows});
+        } else {
+            console.log(res.message);
+            /* flash error message ? */
+        }
     }
 
     async selectForm(form) {
@@ -44,36 +72,6 @@ class Forms extends CapsPage {
             ? {...row, selected: false}
             : row;});
         await this.setStateAsync({rows});
-    }
-
-    /** 
-     * patch is a dictionary of key:vals which is sent 
-     * with a PATCH method to all selected objects
-     */
-    async updateForm(form, state) {
-        let res = await RestClient.patch(`form/${form.id}`, {state});
-        if (res.code == 200) {
-            const rows = this.state.rows.map(
-                row => {return (row.form === form
-                    ? {...row, "form": res.data}
-                    : row);});
-            await this.setState({rows});
-        } else {
-            console.log(res.message);
-            /* flash error message */
-        }
-    }
-
-    async deleteForm(form) {
-        let res = await RestClient.delete(`form/${form.id}`);
-        if (res.code == 200) {
-            /* flash confirmed message ? */
-            const rows = this.state.rows.filter(row => (row.form !== form));
-            await this.setStateAsync({rows});
-        } else {
-            console.log(res.message);
-            /* flash error message ? */
-        }
     }
 
     updateRows(state) {
@@ -227,7 +225,7 @@ function HeadPanel(props) {
 function FormRow(props) {
     const {row: {form, selected}, Forms} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
-        <td><input type="checkbox" defaultChecked={ selected } onClick={
+        <td><input type="checkbox" checked={ selected } readOnly onClick={
             () => selected 
                 ? Forms.unselectForm(form) 
                 : Forms.selectForm(form)}/></td>

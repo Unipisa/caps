@@ -61,10 +61,11 @@ class FormsController extends RestController {
         $this->JSONResponse(ResponseCode::Ok);
     }
 
-    public function patch($id, $payload) {
-        $form = $this->Forms->get($id); // TODO: catch exception
+    public function patch($id) {
+        $form = $this->Forms->get($id, [ 'contain' => FormsController::$associations ]); // TODO: catch exception
+        $payload = json_decode($this->request->getBody());
 
-        if (!$form || !($this->user['admin'] || $this->user.id == $form['user_id'])) {
+        if (!$form || !($this->user['admin'] || $this->user['id'] == $form['user_id'])) {
             // don't leak information:
             // if the form does not exist give the same error as if you cannot access it
             $this->JSONResponse(ResponseCode::Error, null, 'The current user can not edit this form or form does not exist.');
@@ -73,25 +74,22 @@ class FormsController extends RestController {
         foreach($payload as $field => $value) {
             if ($field == "state") {
                 // Solo il proprietario e l'amministratore possono modifica
-                if ($this->user['admin'] || $form.state == "draft") {
+                if ($this->user['admin'] || $form['state'] == "draft") {
                     $form[$field] = $value;
                 } else {
                     $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted form');
+                    return;
                 }
             } else if ($field == "data") {
-                if ($form.state == "draft") {
+                if ($form['state'] == "draft") {
                     $form[$field] = $value;
                 } else {
                     $this->JSONResponse(ResponseCode::Error, null, 'Cannot modify the data of a submitted form');
+                    return;
                 }
             }
         }
-
-        if (! $this->user->canEditForm($form)) {
-            $this->JSONResponse(ResponseCode::Forbidden, null, 'The current user can not delete this form.');
-            return;
-        }
-
+        $this->Forms->save($form);
         $this->JSONResponse(ResponseCode::Ok, $form);
     }
 
