@@ -1,11 +1,6 @@
 'use strict';
 
-import React, { useState } from 'react';
-import Card from './Card';
-import RestClient from '../modules/api';
-import FilterButton from './FilterButton';
-import LoadingMessage from './LoadingMessage';
-import FormBadge from './FormBadge';
+import React from 'react';
 import Modal from './Modal';
 
 /**

@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import Card from './Card';
 import RestClient from '../modules/api';
-import FilterButton from './FilterButton';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
 import CapsPage from './CapsPage';
+import { FilterButton, FilterInput, FilterSelect, 
+        ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 
 class Forms extends CapsPage {
@@ -20,6 +21,7 @@ class Forms extends CapsPage {
     }
     
     async componentDidMount() {
+        // await new Promise(r => setTimeout(r, 5000)); // sleep 5
         this.load();
     }
 
@@ -59,20 +61,12 @@ class Forms extends CapsPage {
         }
     }
 
-    async selectForm(form) {
+    toggleForm(form) {
         const rows = this.state.rows.map(row => {
-            return row.form === form 
-            ? {...row, selected: true}
+            return row.form === form
+            ? {...row, "selected": !row.selected}
             : row;});
-        await this.setStateAsync({rows});
-    }
-
-    async unselectForm(form) {
-        const rows = this.state.rows.map(row => {
-            return row.form === form 
-            ? {...row, selected: false}
-            : row;});
-        await this.setStateAsync({rows});
+        this.setState({rows});
     }
 
     updateRows(state) {
@@ -87,43 +81,125 @@ class Forms extends CapsPage {
         });
     }
 
-    async performAction(action) {
-        const selected = (this.state.rows
-            .filter(row => row.selected)
-            .map(row => row.form));
-        if (action === "approve") {
-            if (await this.confirm("Confermi approvazione?", `Vuoi approvare ${selected.length} modulo/i selezionati?`)) {
-                this.updateRows("approved");
-            }
-        } else if (action == "reject") {
-            if (await this.confirm("Confermi rifiuto?", `Vuoi rifiutare ${selected.length} modulo/i selezionati?`)) {
-                this.updateRows("rejected");
-            }
-        } else if (action == "resubmit") {
-            if (await this.confirm("Riporta in valutazione?", `Vuoi risottomettere ${selected.length} modulo/i selezionati?`)) {
-                this.updateRows("submitted");     
-            }
-        } else if (action == "redraft") {
-            if (await this.confirm("Riporta in bozza?", `Vuoi riportare in bozza ${selected.length} modulo/i selezionati?`)) {
-                await this.updateRows("draft");
-            }
-        } else if (action == "delete") {
-            if (await this.confirm("Confermi cancellazione?", `Vuoi rimuovere ${selected.length} modulo/i selezionati?`)) {
+    countSelected() {
+        return this.state.rows.filter(row => row.selected).length;
+    }
+
+    async approveSelected() {
+        if (await this.confirm("Confermi approvazione?", 
+            `Vuoi approvare ${this.countSelected()} modulo/i selezionati?`)) {
+            this.updateRows("approved");
+        }
+    }
+
+    async rejectSelected() {
+        if (await this.confirm("Confermi rifiuto?", 
+            `Vuoi rifiutare ${this.countSelected()} modulo/i selezionati?`)) {
+            this.updateRows("rejected");
+        }
+    }
+
+    async resubmitSelected() {
+        if (await this.confirm("Riporta in valutazione?", 
+            `Vuoi risottomettere ${this.countSelected()} modulo/i selezionati?`)) {
+            this.updateRows("submitted"); 
+        }    
+    }
+
+    async redraftSelected() {
+        if (await this.confirm("Riporta in bozza?", 
+            `Vuoi riportare in bozza ${this.countSelected()} modulo/i selezionati?`)) {
+                this.updateRows("draft");
+        }
+    }
+
+    async deleteSelected() {
+        if (await this.confirm("Confermi cancellazione?", 
+            `Vuoi rimuovere ${this.countSelected()} modulo/i selezionati?`)) {
                 this.deleteRows();
-            }
-        }  else {
-            console.log("ERROR: invalid action");
         }
     }
 
     renderPage() {
         return <div>
-                <h1>Moduli</h1>
-                <Card>
-                    <HeadPanel Forms={this} />
-                    <Table Forms={this} rows={this.state.rows} /> 
-                </Card>
-            </div>
+            <h1>Moduli</h1>
+            <Card>
+                <div className="d-flex mb-2">
+                    <FilterButton>
+                        <FilterSelect name="state" label="stato" onChange={this.update}>
+                            <option value="">tutti</option> 
+                            <option value="draft">bozze</option>
+                            <option value="submitted">da valutare</option>
+                            <option value="approved">approvati</option>
+                            <option value="rejected">rifiutati</option>
+                        </FilterSelect>
+                        <FilterInput name="surname" label="cognome" />
+                        <FilterInput name="formTemplate" label="modello" />
+                        <FilterInput name="name" label="nome" />
+                    </FilterButton>
+
+                    <ActionButtons>
+                        <ActionButton onClick={() => this.approveSelected()}>
+                            ✓ Approva i moduli selezionati
+                        </ActionButton>
+                        <ActionButton className="btn-danger" onClick={() => this.rejectSelected()}>
+                            ✗ Rifiuta i moduli selezionati
+                        </ActionButton>
+                        <ActionButton className="btn-warning" onClick={() => this.resubmitSelected()}>
+                            ⎌ Riporta in valutazione i moduli selezionati
+                        </ActionButton>
+                        <ActionButton className="btn-warning" onClick={() => this.redraftSelected()}>
+                            ⎌ Riporta in bozza i moduli selezionati
+                        </ActionButton>
+                        <ActionButton className="btn-danger" onClick={() => this.deleteSelected()}> 
+                            🗑 Elimina i moduli selezionati
+                        </ActionButton>
+                    </ActionButtons>
+
+                    <div className="flex-fill"></div>
+
+                    <div className="col-auto">
+                        <button type="button" className="btn btn-sm btn-primary"
+                            onClick={async () => this.setState({csvData: await this.csvData()})}>
+                            <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
+                        </button>
+                        {this.state.csvData !== undefined 
+                            ? <CSVDownload 
+                                data={this.state.csvData.data}
+                                headers={this.state.csvData.headers}
+                                filename="caps-moduli.csv"
+                                target="_blank" /> 
+                            : null }
+                    </div>
+                </div>
+                <div className="table-responsive-lg">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                            <th></th>
+                            <th><a href="#">Stato</a></th>
+                            <th>Nome</th>
+                            <th>Modello</th>
+                            <th>Inviato</th>
+                            <th>Gestito</th>
+                            <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        { this.state.rows === undefined 
+                            ? <tr><td colSpan="4"><LoadingMessage>Caricamento moduli...</LoadingMessage></td></tr>
+                            : this.state.rows.map(row => <FormRow 
+                                key={row.form.id} 
+                                row={row} 
+                                onToggle={() => {this.toggleForm(row.form)}}
+                                href={`${this.props.root}forms/view/${row.form.id}`}
+                                />)
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
+    </div>
     }
 
     async csvData() {
@@ -156,117 +232,10 @@ class Forms extends CapsPage {
     }
 }
 
-function HeadPanel(props) {
-    const {Forms} = props;
-    return <div className="d-flex mb-2">
-        <FilterButton                   
-            items={{
-                state: {
-                    label: "stato",
-                    type: "select",
-                    options: {
-                        '': 'tutti',
-                        'draft': 'bozze',
-                        'submitted': 'da valutare',
-                        'approved': 'approvati',
-                        'rejected': 'rifiutati'
-                    }
-                },
-                surname: "cognome",
-                formTemplate: "modello",
-                name: "nome"
-            }}
-            callback={filter_button => Forms.update(filter_button.filter)}>
-        </FilterButton>
-        <ActionButton Forms={Forms} />
-
-        <div className="flex-fill"></div>
-
-        <div className="col-auto">
-            <button type="button" className="btn btn-sm btn-primary"
-                onClick={async () => Forms.setState({csvData: await Forms.csvData()})}>
-                <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
-            </button>
-            {Forms.state.csvData !== undefined 
-                ? <CSVDownload 
-                    data={Forms.state.csvData.data}
-                    headers={Forms.state.csvData.headers}
-                    filename="caps-moduli.csv"
-                    target="_blank" /> 
-                : null }
-        </div>
-    </div>
-}
-
-function ActionButton(props) {
-    const {Forms} = props;
-    return <div className="dropdown">
-    <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Azioni
-    </button>
-    <div className="dropdown-menu p-2 shadow" style={{"width": "450px"}}>
-        <button className="my-1 btn btn-success" style={{"width": "100%"}}
-                onClick={() => Forms.performAction('approve')}>
-            ✓ Approva i moduli selezionati
-        </button>
-        <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() => Forms.performAction('reject')}>
-            ✗ Rifiuta i moduli selezionati
-        </button>
-        <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() => Forms.performAction('resubmit')}>
-            ⎌ Riporta in valutazione i moduli selezionati
-        </button>
-        <button className="my-1 btn btn-warning" style={{"width": "100%"}}
-                onClick={() => Forms.performAction('redraft')}>
-            ⎌ Riporta in bozza i moduli selezionati
-        </button>
-        <button className="my-1 btn btn-danger" style={{"width": "100%"}}
-                onClick={() => Forms.performAction('delete')}> 
-            🗑 Elimina i moduli selezionati
-        </button>
-    </div>
-</div>
-}
-
-function Table(props) {
-    if (props.rows === undefined) {
-        return <LoadingMessage>Caricamento moduli...</LoadingMessage>
-    }
-    else {
-        return <div className="table-responsive-lg">
-            <table className="table">
-                <thead>
-                    <tr>
-                    <th></th>
-                    <th><a href="#">Stato</a></th>
-                    <th>Nome</th>
-                    <th>Modello</th>
-                    <th>Inviato</th>
-                    <th>Gestito</th>
-                    <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                {props.rows.map(row => 
-                    <FormRow 
-                        key={row.form.id} 
-                        row={row} 
-                        Forms={props.Forms}/>)}
-                </tbody>
-            </table>
-        </div>
-    }
-}
-
 function FormRow(props) {
-    const {row: {form, selected}, Forms} = props;
+    const {row: {selected, form}, href, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
-        <td><input type="checkbox" checked={ selected } readOnly onClick={
-            () => selected 
-                ? Forms.unselectForm(form) 
-                : Forms.selectForm(form)}/></td>
+        <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><FormBadge form={form}></FormBadge></td>
         <td>{form.user.name}</td>
         <td>{form.form_template.name}</td>
@@ -274,7 +243,7 @@ function FormRow(props) {
         <td>{form.date_managed}</td>
         <td>
             <div className="d-none d-xl-inline-flex flex-row align-items-center">
-                <a href={`${Forms.props.root}forms/view/${form.id}`}>
+                <a href={href}>
                     <button type="button" className="btn btn-sm btn-primary mr-2">
                     <i className="fas fa-eye mr-2"></i>
                     Visualizza
