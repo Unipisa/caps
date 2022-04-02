@@ -1,5 +1,6 @@
 import CapsAppController from './app-controller';
 import Chart, { scaleService } from 'chart.js';
+import RestClient from '../modules/api';
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 
@@ -9,19 +10,17 @@ import Chart, { scaleService } from 'chart.js';
  */
 async function loadDashboardData() {
     // We fetch the data to display in the plots
-    let res = await fetch('/api/v1/dashboard'); // *** TODO: usare la root del server e la libreria apposita per la chiamata
-    let data = await res.json();
-
+    let data = await RestClient.get('dashboard');
+    data = data.data;
     // TODO: controllare data.code
 
-    data = data.data;
 
     function last(arr) {return arr[arr.length-1]};
 
     function last_year(arr) {return arr.slice(-12)};
 
 
-    // We fill in the data
+    // fill in the data
     document.getElementById('current-month-proposal-submission-count').innerHTML = last(data.proposal_submission_counts);
     document.getElementById('current-year-proposal-submission-count').innerHTML = last_year(data.proposal_submission_counts).reduce((a, b) => a + b);
     document.getElementById('current-month-form-submission-count').innerHTML = last(data.form_submission_counts);
@@ -70,7 +69,7 @@ async function loadDashboardData() {
                 dataset("Moduli approvati", [128, 109, 21], data.form_approval_counts)],
         },
         options: {
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             layout: {
                 padding: {
                     left: 10,

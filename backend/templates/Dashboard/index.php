@@ -25,7 +25,7 @@
 <h1>Pannello di controllo</h1>
 
 <div class="row">
-    <div class="col-xl-4 col-md-4 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
         <div class="card shadow border-left-warning">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -52,7 +52,7 @@
     </div>
 
 
-    <div class="col-xl-4 col-md-4 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
         <div class="card shadow border-left-warning">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <div class="col-xl-4 col-md-4 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
         <div class="card shadow border-left-primary">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -91,13 +91,21 @@
                         <i class="fas fa-file fa-2x text-gray-300"></i>
                     </div>
                 </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow border-left-primary">
+            <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Moduli inviati</div>
                         <div class="h5 mb-0 text-gray-800">Mese corrente: 
-                          <strong>
+                            <strong>
                             <span id="current-month-form-submission-count"></span>
-                          </strong>
+                            </strong>
                         </div>
                         <div class="h5 mb-0 text-gray-800">Ultimi 12 mesi:
                             <strong>
@@ -123,9 +131,7 @@
                 <h2 class="h5 mb-0">Piani e Moduli inviati</h2>
             </div>
             <div class="card-body">
-                <div class="chart-area">
-                    <canvas id="SubmissionCharts"></canvas>
-                </div>
+                <canvas id="SubmissionCharts"></canvas>
             </div>
         </div>
     </div>
