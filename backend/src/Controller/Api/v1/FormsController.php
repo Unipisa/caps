@@ -8,9 +8,13 @@ use App\Controller\Api\v1\RestController;
 class FormsController extends RestController {
 
     private static $associations = [ 'Users', 'FormTemplates' ];
-    public $allowedFilters = [ 'user_id' ];
+
+    // TODO: decidere come specificare i filtri per i campi associati
+    public $allowedFilters = [ 'user_id', 'state', 'user.givenname', 'form_template.name' ];
 
     public function index() {
+        $query = $this->request->getQuery();
+
         $forms = $this->Forms->find('all', 
             [ 'contain' => FormsController::$associations ]);
 

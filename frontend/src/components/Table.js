@@ -21,7 +21,7 @@ export function FilterSelect(props) {
 
 }
 
-export function FilterButton(props) {
+export function FilterButton({onChange, children}) {
     return <div className="dropdown mr-2">
     <button className="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
         <i className="fas fa-filter"></i>
@@ -29,7 +29,10 @@ export function FilterButton(props) {
     </button>
     <div className="dropdown-menu p-2" style={{width: "350px"}}>
         <form className="filterForm">
-            { props.children }
+            { children.map((el,n) => {
+                // inserisce la prop onChange in tutti i children
+                return React.cloneElement(el, {key: el.key || n, onChange})
+                }) }
         </form>
     </div>
 </div>

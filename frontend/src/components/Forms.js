@@ -10,14 +10,23 @@ import { FilterButton, FilterInput, FilterSelect,
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 
+function convert_query(q) {
+    let query = {...q};
+    // TODO: decidere come codificare i filtri
+    for(let key in query) {
+        if (query[key] == "") delete query[key];
+        else query[key] = JSON.stringify(query[key]);
+    }
+    return query;
+}
+
 class Forms extends CapsPage {
     constructor(props) {
         super(props);
         this.state = {
-            'rows': undefined
+            'rows': undefined,
+            'query': this.props.query,
         };
-        // query with filters and sorting keys, no limits
-        this.query = {...this.props.query};
     }
     
     async componentDidMount() {
@@ -26,13 +35,19 @@ class Forms extends CapsPage {
     }
 
     async load() {
-        const limit = 15;
-        const forms = (await RestClient.get(`forms/`, {...this.query, limit}))['data'];
+        let query = convert_query(this.state.query);
+        const forms = (await RestClient.get(`forms/`, query))['data'];
         const rows = forms.map(form => {return {
             form,
             selected: false
         }})
-        await this.setStateAsync({rows});
+        this.setState({rows});
+    }
+
+    onFilterChange(e) {
+        let query = {...this.state.query};
+        query[e.target.name] = e.target.value;
+        this.setState({query}, () => this.load());
     }
 
     async updateForm(form, state) {
@@ -121,12 +136,13 @@ class Forms extends CapsPage {
     }
 
     renderPage() {
+        const onFilterChange = this.onFilterChange.bind(this);
         return <div>
             <h1>Moduli</h1>
             <Card>
                 <div className="d-flex mb-2">
-                    <FilterButton>
-                        <FilterSelect name="state" label="stato" onChange={this.update}>
+                    <FilterButton onChange={onFilterChange}>
+                        <FilterSelect name="state" label="stato">
                             <option value="">tutti</option> 
                             <option value="draft">bozze</option>
                             <option value="submitted">da valutare</option>
@@ -203,7 +219,11 @@ class Forms extends CapsPage {
     }
 
     async csvData() {
-        const {code, message, data} = await RestClient.get("forms/", this.query);
+        // carica tutti i dati, rimuovi "limit"
+        let query = convert_query(this.state.query);
+        delete query.limit;
+        const {code, message, data} = await RestClient.get(
+            "forms/", query);
         if (code !== 200) {
             console.log(`error ${message}`);
             // flash...
