@@ -24,7 +24,6 @@ namespace App\Controller;
 
 use App\Model\Entity\Form;
 use App\Controller\AppController;
-use App\Form\FormsFilterForm;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
@@ -33,131 +32,8 @@ use Cake\Mailer\Email;
 
 class FormsController extends AppController
 {    
-    public $paginate = [
-        'contain' => [ 'Users', 'FormTemplates' ],
-        'sortableFields' => [ 'date_managed', 'date_submitted', 'Users.surname', 'FormTemplates.name' ],
-        'limit' => 15,
-        'order' => [
-            'date_submitted' => 'desc'
-        ]
-    ];
-
-    public function initialize(): void
-    {
-        parent::initialize();
-        $this->loadComponent('Paginator');
-    }
-
     public function index()
     {
-        $forms = $this->Forms->find()
-            ->contain([ 'Users', 'FormTemplates' ]);
-
-        if ($this->user['admin']) {
-            // admin può vedere tutti i proposal
-        } else {
-            // posso vedere solo i miei proposal
-            $forms = $forms->where(['Users.id' => $this->user['id']]);
-        }
-
-        $filterForm = new FormsFilterForm($forms);
-        $forms = $filterForm->validate_and_execute($this->request->getQuery());
-
-        if ($this->request->is("post")) {
-            if (!$this->user['admin']) {
-                throw new ForbiddenException();
-            }
-
-            $action = null;
-            foreach (['approve', 'reject', 'resubmit', 'redraft', 'delete'] as $i) {
-                if ($this->request->getData($i)) {
-                    if ($action) {
-                        $this->Flash->error(__('Richiesta non valida'));
-                        return $this->redirect($this->referer());
-                    }
-                    $action = $i;
-                }
-            }
-
-            if ($action) {
-                $context = [
-                  'approve' => [
-                      'state' => 'approved',
-                      'plural' => __('approvati'),
-                      'singular' => __('approvato')
-                  ],
-                  'reject' => [
-                      'state' => 'rejected',
-                      'plural' => __('rifiutati'),
-                      'singular' => __('rifiutato')
-                  ],
-                  'resubmit' => [
-                      'state' => 'submitted',
-                      'plural' => __('risottomessi'),
-                      'singular' => __('risottomesso')
-                  ],
-                  'redraft' => [
-                      'state' => 'draft',
-                      'plural' => __('riportati in bozza'),
-                      'singular' => __('riportato in bozza')
-                  ],
-                  'delete' => [
-                      'plural' => __('eliminati'),
-                      'singular' => __('eliminato')
-                  ]][$action];
-
-                $selected = $this->request->getData('selection');
-                if (!$selected) {
-                    $this->Flash->error(__('Nessun modulo selezionato'));
-                    return $this->redirect($this->referer());
-                }
-
-                $count = 0;
-                foreach ($selected as $form_id) {
-                    $form = $this->Forms->get($form_id);
-                    if ($action === 'delete') {
-                        if ($this->Forms->delete($form)) {
-                            $count++;
-                        }
-                    } else {
-                        $form['state'] = $context['state'];
-
-                        switch ($context['state']) {
-                            case 'approved': // cascade
-                            case 'rejected':
-                                $form['date_managed'] = Time::now();
-                                break;
-                        }
-
-                        if ($this->Forms->save($form)) {
-                            if ($context['state'] == 'approved') {
-                                $this->notifyApproval($form['id']);
-                            }
-                            if ($context['state'] == 'rejected') {
-                                $this->notifyRejection($form['id']);
-                            }
-
-                            $count++;
-                        }
-                    }
-                }
-                if ($count > 1) {
-                    $this->Flash->success(__('{count} moduli {what}', ['count' => $count, 'what' => $context['plural']]));
-                } elseif ($count == 1) {
-                    $this->Flash->success(__('modulo {what}', ['what' => $context['singular']]));
-                } else {
-                    $this->Flash->success(__('Nessun modulo {what}', ['what' => $context['singular']]));
-                }
-
-                return $this->redirect([]);
-            }
-        }
-
-        $this->set('data', $forms);
-        $this->viewBuilder()->setOption('serialize', 'data');
-        $this->set('filterForm', $filterForm);
-        $this->set('forms', $this->paginate($forms->cleanCopy()));
-        $this->set('selected', 'index');
     }  
 
     public function edit($form_id = null)
