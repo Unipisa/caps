@@ -1,20 +1,15 @@
 import React from "react";
 import Card from "./Card";
 import LoadingMessage from './LoadingMessage';
-import ProposalInfo from "./ProposalInfo";
-import FormInfo from "./FormInfo";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import AttachmentDocumentsBlock from "./AttachmentDocumentsBlock";
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
 import Modal from "./Modal";
 import UserDocumentsBlock from "./UserDocumentsBlock";
 import Flash from "./Flash";
 import ProposalsBlock from "./ProposalsBlock";
+import CapsPage from "./CapsPage";
 
-class UserProfile extends React.Component {
-
+class UserProfile extends CapsPage {
     constructor(props) {
         super(props);
 
@@ -29,8 +24,6 @@ class UserProfile extends React.Component {
             'loadingDocument': false, 
             'flash': undefined
         };
-
-        this.modal_ref = React.createRef();
     }
 
     async componentDidMount() {
@@ -104,54 +97,49 @@ class UserProfile extends React.Component {
 
     async onProposalDeleteClicked(p) {
         // Make sure that the user wants to delete the proposal
-        this.modal_ref.current.show('Eliminare il piano di studi?', 
-            'Eliminare definitivamente il piano di studi del Curriculum ' + p.props.proposal.curriculum.name + '?\n' + 
-            'Questa operazione non è reversibile.', 
-            async (response) => {
-                if (response) {
-                    const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
+        if (await this.confirm('Eliminare il piano di studi?', 
+            `Eliminare definitivamente il piano di studi 
+             del Curriculum ${p.props.proposal.curriculum.name}?
+             Questa operazione non è reversibile.`)) {
+            const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
 
-                    if (data.code != 200) {
-                        this.setState({
-                            'flash': { 'type': 'error', 'message': data.message }
-                        });
-                    }
-                    else {
-                        // Remove the proposal from the current state
-                        let proposals = this.state.proposals;
-                        proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-                        this.setState({
-                            'proposals': proposals, 
-                            'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
-                        });
-                    }
-                }
-        })
+            if (data.code != 200) {
+                this.setState({
+                    'flash': { 'type': 'error', 'message': data.message }
+                });
+            }
+            else {
+                // Remove the proposal from the current state
+                let proposals = this.state.proposals;
+                proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+                this.setState({
+                    'proposals': proposals, 
+                    'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
+            });
+            }
+        }
     }
 
     async onFormDeleteClicked(f) {
-        this.modal_ref.current.show('Eliminare il modulo?', 
-            'Eliminare il modulo definitivamente? Questa operazione non può essere annullata.', 
-            async (response) => {
-                if (response) {
-                    const data = await RestClient.delete(`forms/${f.props.form.id}`);
+        if (await this.confirm('Eliminare il modulo?', 
+            `Eliminare il modulo definitivamente? 
+             Questa operazione non può essere annullata.`)) { 
+            const data = await RestClient.delete(`forms/${f.props.form.id}`);
 
-                    if (data.code != 200) {
-                        this.setState({
-                            'flash': { 'type': 'error', 'message': data.message }
-                        });
-                    }
-                    else {
-                        let forms = this.state.forms;
-                        forms.splice(this.state.forms.indexOf(f.props.form), 1);
-                        this.setState({
-                            'forms': forms, 
-                            'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
-                        });
-                    }   
-                }
-            });
-        
+            if (data.code != 200) {
+                this.setState({
+                    'flash': { 'type': 'error', 'message': data.message }
+                });
+            }
+            else {
+                let forms = this.state.forms;
+                forms.splice(this.state.forms.indexOf(f.props.form), 1);
+                this.setState({
+                    'forms': forms, 
+                    'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
+                });
+            }   
+        }
     }
 
     async onNewAttachment(a) {
@@ -226,13 +214,12 @@ class UserProfile extends React.Component {
         this.setState({ 'flash': undefined });
     }
 
-    render() {
+    renderPage() {
         if (this.state.user == undefined) {
             return <Card><LoadingMessage>Loading the user profile</LoadingMessage></Card>;
         }
         else {
             return <div>
-                <Modal ref={this.modal_ref}></Modal>
                 <Flash flash={this.state.flash} onClick={this.hideFlash.bind(this)}></Flash>
                 {this.renderUserBlock()}
                 <ProposalsBlock className="mt-4"
