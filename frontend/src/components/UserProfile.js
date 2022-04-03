@@ -22,6 +22,17 @@ class UserProfile extends CapsPage {
             'documents': undefined,
             'loadingDocument': false, 
         };
+
+        this.decorateCatchAndBind(
+            "onAttachmentDeleteClicked",
+            "loadUserData",
+            "loadProposals",
+            "loadForms",
+            "loadDocuments",
+            "onProposalDeleteClicked",
+            "onFormDeleteClicked",
+            "onAttachmentDeleteClicked"
+            );
     }
 
     async componentDidMount() {
@@ -41,42 +52,29 @@ class UserProfile extends CapsPage {
 
     async loadUserData() {
         const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
-        const user = await RestClient.get(`users/${user_id}`);
+        const user = await this.get(`users/${user_id}`);
 
-        this.setState({
-            'user': user['data']
-        }, () => {
-            this.loadProposals();
-            this.loadForms();
-            this.loadDocuments();
-        })
+        await this.setStateAsync({
+            'user': user.data
+        });
+        this.loadProposals();
+        this.loadForms();
+        this.loadDocuments();
     }
 
     async loadProposals() {
-        try {
-            const res = await this.get('proposals', { 'user_id': this.state.user.id });
-            this.setState({ proposals: res.data });
-        } catch(err) {
-            this.flashError(err);
-        }
+        const res = await this.get('proposals', { 'user_id': this.state.user.id });
+        this.setState({ proposals: res.data });
     }
 
     async loadForms() {
-        try {
-            const res = await this.get('forms', { 'user_id': this.state.user.id });
-            this.setState({ forms: res.data });
-        } catch(err) {
-            this.flashError(err);
-        }
+        const res = await this.get('forms', { 'user_id': this.state.user.id });
+        this.setState({ forms: res.data });
     }
 
     async loadDocuments() {
-        try {
-            const res = await this.get('documents', { 'user_id': this.state.user.id });
-            this.setState({ documents: res.data });
-        } catch(err) {
-            this.flashError(err);
-        }
+        const res = await this.get('documents', { 'user_id': this.state.user.id });
+        this.setState({ documents: res.data });
     }
 
     async onProposalDeleteClicked(p) {
@@ -86,33 +84,25 @@ class UserProfile extends CapsPage {
             del Curriculum ${p.props.proposal.curriculum.name}?
             Questa operazione non è reversibile.`)) return;
 
-        try {
-            const data = await this.delete(`proposals/${p.props.proposal.id}`);
+        const data = await this.delete(`proposals/${p.props.proposal.id}`);
 
-            // Remove the proposal from the current state
-            let proposals = this.state.proposals;
-            proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-            this.flashSuccess("Il piano di studio è stato cancellato.");
-            this.setState({proposals});
-        } catch(err) {
-            this.flashError(err)
-        }
+        // Remove the proposal from the current state
+        let proposals = this.state.proposals;
+        proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+        this.flashSuccess("Il piano di studio è stato cancellato.");
+        this.setState({proposals});
     }
 
     async onFormDeleteClicked(f) {
         if (!await this.confirm('Eliminare il modulo?', 
             `Eliminare il modulo definitivamente? 
              Questa operazione non può essere annullata.`)) return;
-        try { 
-            const data = await this.delete(`forms/${f.props.form.id}`);
+        const data = await this.delete(`forms/${f.props.form.id}`);
 
-            let forms = this.state.forms;
-            forms.splice(this.state.forms.indexOf(f.props.form), 1);
-            this.flashSuccess("Il modulo è stato cancellato.");
-            this.setState({forms});
-        } catch(err) {
-            this.flashError(err);
-        }
+        let forms = this.state.forms;
+        forms.splice(this.state.forms.indexOf(f.props.form), 1);
+        this.flashSuccess("Il modulo è stato cancellato.");
+        this.setState({forms});
     }
 
     async onNewAttachment(attachment) {
@@ -141,17 +131,13 @@ class UserProfile extends CapsPage {
     async onAttachmentDeleteClicked(a) {
         if (!await this.confirm('Eliminare il documento?', 
             'Questa operazione non è reversibile.')) return;
-        try { 
-            const data = await this.delete(`documents/${a.id}`);
-                let new_documents = this.state.documents;
-                new_documents.splice(new_documents.indexOf(a), 1);
-                this.flashSuccess(data.message);
-                this.setState({
-                    'documents': new_documents
-                });
-        } catch(err) {
-            this.flashError(err);
-        }
+        const data = await this.delete(`documents/${a.id}`);
+        let new_documents = this.state.documents;
+        new_documents.splice(new_documents.indexOf(a), 1);
+        this.flashSuccess(data.message);
+        this.setState({
+            'documents': new_documents
+        });
     }
 
     renderUserBlock() {

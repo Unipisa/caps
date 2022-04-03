@@ -31,7 +31,6 @@ function Flash(props) {
             onClick={ props.onClick }
             >
         </FlashCard>);
-
 }
 
 export default Flash;

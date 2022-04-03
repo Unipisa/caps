@@ -20,6 +20,26 @@ class CapsPage extends React.Component {
         this.modal_ref = React.createRef();
     }
 
+    decorateCatchAndBind(...method_names) {
+        let self = this;
+        method_names.forEach(method_name => {
+            const method = self[method_name];
+            const f = async function(...args) {
+                try {
+                    const result = await method.apply(self, args);
+                    return result;    
+                } catch(err) {
+                    if ( typeof(err) === "string" ) {
+                        self.flashError(err);
+                    } else {
+                        throw err;
+                    }    
+                }
+            }
+            self[method_name] = f.bind(self);
+        });
+    }
+
     confirm(title, message) {
         return new Promise((resolve) => {
             this.modal_ref.current.show(title, message, resolve);
