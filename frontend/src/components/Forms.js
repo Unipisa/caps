@@ -24,6 +24,7 @@ class Forms extends CapsPage {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
             'rows': null,
             'query': this.props.query,
             'total': null

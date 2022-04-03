@@ -3,9 +3,7 @@ import Card from "./Card";
 import LoadingMessage from './LoadingMessage';
 import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
-import Modal from "./Modal";
 import UserDocumentsBlock from "./UserDocumentsBlock";
-import Flash from "./Flash";
 import ProposalsBlock from "./ProposalsBlock";
 import CapsPage from "./CapsPage";
 
@@ -14,6 +12,7 @@ class UserProfile extends CapsPage {
         super(props);
 
         this.state = {
+            ...this.state,
             'settings': undefined,
             'logged_user': null,
             'form_templates_enabled': null,
@@ -22,7 +21,6 @@ class UserProfile extends CapsPage {
             'forms': undefined,
             'documents': undefined,
             'loadingDocument': false, 
-            'flash': undefined
         };
     }
 
@@ -30,20 +28,15 @@ class UserProfile extends CapsPage {
         this.loadStatus();
     }
 
-    reportError(msg) {
-        console.log(msg);
-    }
-
     async loadStatus() {
         const status = await RestClient.status();
 
-        this.setState({
+        await this.setStateAsync({
             'settings': status['data']['settings'], 
             'logged_user': status['data']['user'],
             'form_templates_enabled': status['data']['form_templates_enabled']
-        }, () => {
-            this.loadUserData();
-        })
+        });
+        this.loadUserData();
     }
 
     async loadUserData() {
@@ -60,139 +53,105 @@ class UserProfile extends CapsPage {
     }
 
     async loadProposals() {
-        const res = await RestClient.get('proposals', { 'user_id': this.state.user.id });
-
-        if (res.code != 200) {
-            console.log('Error while loading the proposals: ' + res.message);
+        try {
+            const res = await this.get('proposals', { 'user_id': this.state.user.id });
+            this.setState({ proposals: res.data });
+        } catch(err) {
+            this.flashError(err);
         }
-        else {
-            this.setState({ 'proposals': res['data'] });
-        }        
     }
 
     async loadForms() {
-        const res = await RestClient.get('forms', { 'user_id': this.state.user.id });
-
-        if (res.code != 200) {
-            this.reportError(res.message);
-        }
-        else {
-            this.setState({
-                'forms': res.data
-            });
+        try {
+            const res = await this.get('forms', { 'user_id': this.state.user.id });
+            this.setState({ forms: res.data });
+        } catch(err) {
+            this.flashError(err);
         }
     }
 
     async loadDocuments() {
-        if (! this.state.logged_user.admin) {
-            return;
+        try {
+            const res = await this.get('documents', { 'user_id': this.state.user.id });
+            this.setState({ documents: res.data });
+        } catch(err) {
+            this.flashError(err);
         }
-
-        const res = await RestClient.get('documents', { 'user_id': this.state.user.id });
-
-        this.setState({
-            'documents': res['data']
-        });
     }
 
     async onProposalDeleteClicked(p) {
         // Make sure that the user wants to delete the proposal
-        if (await this.confirm('Eliminare il piano di studi?', 
+        if (!await this.confirm('Eliminare il piano di studi?', 
             `Eliminare definitivamente il piano di studi 
-             del Curriculum ${p.props.proposal.curriculum.name}?
-             Questa operazione non è reversibile.`)) {
-            const data = await RestClient.delete(`proposals/${p.props.proposal.id}`);
+            del Curriculum ${p.props.proposal.curriculum.name}?
+            Questa operazione non è reversibile.`)) return;
 
-            if (data.code != 200) {
-                this.setState({
-                    'flash': { 'type': 'error', 'message': data.message }
-                });
-            }
-            else {
-                // Remove the proposal from the current state
-                let proposals = this.state.proposals;
-                proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-                this.setState({
-                    'proposals': proposals, 
-                    'flash': { 'type': 'success', 'message': "Il piano di studio è stato cancellato." }
-            });
-            }
+        try {
+            const data = await this.delete(`proposals/${p.props.proposal.id}`);
+
+            // Remove the proposal from the current state
+            let proposals = this.state.proposals;
+            proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+            this.flashSuccess("Il piano di studio è stato cancellato.");
+            this.setState({proposals});
+        } catch(err) {
+            this.flashError(err)
         }
     }
 
     async onFormDeleteClicked(f) {
-        if (await this.confirm('Eliminare il modulo?', 
+        if (!await this.confirm('Eliminare il modulo?', 
             `Eliminare il modulo definitivamente? 
-             Questa operazione non può essere annullata.`)) { 
-            const data = await RestClient.delete(`forms/${f.props.form.id}`);
+             Questa operazione non può essere annullata.`)) return;
+        try { 
+            const data = await this.delete(`forms/${f.props.form.id}`);
 
-            if (data.code != 200) {
-                this.setState({
-                    'flash': { 'type': 'error', 'message': data.message }
-                });
-            }
-            else {
-                let forms = this.state.forms;
-                forms.splice(this.state.forms.indexOf(f.props.form), 1);
-                this.setState({
-                    'forms': forms, 
-                    'flash': { 'type': 'success', 'message': "Il modulo è stato cancellato." }
-                });
-            }   
+            let forms = this.state.forms;
+            forms.splice(this.state.forms.indexOf(f.props.form), 1);
+            this.flashSuccess("Il modulo è stato cancellato.");
+            this.setState({forms});
+        } catch(err) {
+            this.flashError(err);
         }
     }
 
-    async onNewAttachment(a) {
+    async onNewAttachment(attachment) {
         // The AttachmentBlock is not aware of the user we are adding the 
         // attachment to, hence we complement this informatino before actually 
         // sending the request to the server. 
-        a['user_id'] = this.state.user.id;
-
-        this.setState({
+        attachment['user_id'] = this.state.user.id;
+        await this.setStateAsync({
             loadingDocument: true
-        }, async () => {
-            const response = await RestClient.post('documents', a);        
-
-            if (response.code != 200) {
-                this.setState({
-                    'flash': { 'type': 'error', 'message': response.message }, 
-                    loadingDocument: false
-                });
-            }
-            else {
-                this.setState({
-                    'documents': [...this.state.documents, response['data']], 
-                    'flash': { 'type': 'success', 'message': 'Allegato aggiunto al profilo.' },
-                    loadingDocument: false
-                });
-            }
-        })
-
-        
+        });
+        try {
+            const response = await this.post('documents', attachment);        
+            this.flashSuccess('Allegato aggiunto al profilo.');
+            this.setState({
+                'documents': [...this.state.documents, response['data']], 
+            });
+        } catch(err) {
+            this.flashError(err);
+        } finally {
+            this.setState({ 
+                loadingDocument: false 
+            });
+        }
     }
 
     async onAttachmentDeleteClicked(a) {
-        this.modal_ref.current.show('Eliminare il documento?', 
-            'Questa operazione non è reversibile.', 
-            async (response) => {
-            if (response) {
-                const data = await RestClient.delete(`documents/${a.id}`);
-                if (data.code != 200) {
-                    this.setState({
-                        'flash': { 'type': 'error', 'message': data.message }
-                    })
-                }
-                else {
-                    let new_documents = this.state.documents;
-                    new_documents.splice(new_documents.indexOf(a), 1);
-
-                    this.setState({
-                        'flash': { 'type': 'success', 'message': data.message },
-                        'documents': new_documents
-                    })
-                }
-            }
-        });
+        if (!await this.confirm('Eliminare il documento?', 
+            'Questa operazione non è reversibile.')) return;
+        try { 
+            const data = await this.delete(`documents/${a.id}`);
+                let new_documents = this.state.documents;
+                new_documents.splice(new_documents.indexOf(a), 1);
+                this.flashSuccess(data.message);
+                this.setState({
+                    'documents': new_documents
+                });
+        } catch(err) {
+            this.flashError(err);
+        }
     }
 
     renderUserBlock() {
@@ -210,17 +169,12 @@ class UserProfile extends CapsPage {
         </>;
     }
 
-    hideFlash() {
-        this.setState({ 'flash': undefined });
-    }
-
     renderPage() {
         if (this.state.user == undefined) {
             return <Card><LoadingMessage>Loading the user profile</LoadingMessage></Card>;
         }
         else {
             return <div>
-                <Flash flash={this.state.flash} onClick={this.hideFlash.bind(this)}></Flash>
                 {this.renderUserBlock()}
                 <ProposalsBlock className="mt-4"
                     root={this.props.root} 
