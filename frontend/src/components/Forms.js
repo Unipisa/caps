@@ -24,8 +24,9 @@ class Forms extends CapsPage {
     constructor(props) {
         super(props);
         this.state = {
-            'rows': undefined,
+            'rows': null,
             'query': this.props.query,
+            'total': null
         };
     }
     
@@ -36,18 +37,29 @@ class Forms extends CapsPage {
 
     async load() {
         let query = convert_query(this.state.query);
-        const forms = (await RestClient.get(`forms/`, query))['data'];
+        const response = await RestClient.get(`forms/`, query);
+        const forms = response['data'];
         const rows = forms.map(form => {return {
             form,
             selected: false
         }})
-        this.setState({rows});
+        const total = response.pagination.total;
+        this.setState({rows, total});
     }
 
     onFilterChange(e) {
         let query = {...this.state.query};
         query[e.target.name] = e.target.value;
-        this.setState({query}, () => this.load());
+        this.setState({query}, this.load.bind(this));
+    }
+
+    extendLimit() {
+        let limit = this.state.query.limit;
+        if (limit) {
+            limit *= 2;
+            let query = {...this.state.query, limit}
+            this.setState({query}, this.load.bind(this));
+        }
     }
 
     async updateForm(form, state) {
@@ -68,7 +80,9 @@ class Forms extends CapsPage {
         let res = await RestClient.delete(`forms/${form.id}`);
         if (res.code == 200) {
             /* flash confirmed message ? */
+            let prev_length = rows.length;
             const rows = this.state.rows.filter(row => (row.form !== form));
+            const total = this.state.total + rows.length - prev_length;
             await this.setStateAsync({rows});
         } else {
             console.log(res.message);
@@ -202,7 +216,7 @@ class Forms extends CapsPage {
                             </tr>
                         </thead>
                         <tbody>
-                        { this.state.rows === undefined 
+                        { this.state.rows === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento moduli...</LoadingMessage></td></tr>
                             : this.state.rows.map(row => <FormRow 
                                 key={row.form.id} 
@@ -212,6 +226,14 @@ class Forms extends CapsPage {
                                 />)
                         }
                         </tbody>
+                        { this.state.rows && 
+                            <p>
+                            {this.state.rows.length < this.state.total 
+                            ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
+                            : null}
+                            {` [${this.state.rows.length}/${this.state.total} moduli mostrati.]`}
+                            </p>
+                        }
                     </table>
                 </div>
             </Card>
