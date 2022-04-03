@@ -69,7 +69,7 @@ class Forms extends CapsPage {
                 row => {return (row.form === form
                     ? {...row, "form": res.data, "selected": false}
                     : row);});
-            await this.setState({rows});
+            await this.setStateAsync({rows});
         } else {
             console.log(res.message);
             /* flash error message */
@@ -226,15 +226,15 @@ class Forms extends CapsPage {
                                 />)
                         }
                         </tbody>
-                        { this.state.rows && 
+                    </table>
+                    { this.state.rows && 
                             <p>
                             {this.state.rows.length < this.state.total 
                             ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
                             : null}
-                            {` [${this.state.rows.length}/${this.state.total} moduli mostrati.]`}
+                            {` [${this.state.rows.length}/${this.state.total} moduli mostrati]`}
                             </p>
                         }
-                    </table>
                 </div>
             </Card>
     </div>
