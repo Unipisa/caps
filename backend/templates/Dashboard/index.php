@@ -23,7 +23,7 @@
 ?>
 
 <div id="app"></div>
-
+<!--
 <h1>Pannello di controllo</h1>
 
 <div class="row">
@@ -189,3 +189,4 @@
         </div>
     </div>
 </div>
+-->
