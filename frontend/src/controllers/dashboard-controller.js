@@ -1,6 +1,9 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
 import CapsAppController from './app-controller';
 import Chart, { scaleService } from 'chart.js';
 import RestClient from '../modules/api';
+import Dashboard from '../components/Dashboard';
 
 /**
  * Loads the data for the Dashboard asynchronously, and display the submission plots 
@@ -8,13 +11,7 @@ import RestClient from '../modules/api';
  * 
  * This is done by using the API at /proposals/dashboard_data.json. 
  */
-async function loadDashboardData() {
-    // We fetch the data to display in the plots
-    let data = await RestClient.get('dashboard');
-    data = data.data;
-    // TODO: controllare data.code
-
-
+async function updateDashboardData(data) {
     function last(arr) {return arr[arr.length-1]};
 
     function last_year(arr) {return arr.slice(-12)};
@@ -134,8 +131,19 @@ async function loadDashboardData() {
 }
 
 class DashboardController extends CapsAppController {
-    index(params) {
-        loadDashboardData();
+    async index(params) {
+        // We fetch the data to display in the plots
+        let data = await RestClient.get('dashboard');
+        data = data.data;
+        // TODO: controllare data.code
+        await updateDashboardData(data);
+        ReactDOM.render(
+            <Dashboard
+                root={this.root}
+                data={data}
+                csrfToken={params._csrfToken}></Dashboard>,
+            document.querySelector('#app')
+        );
     }
 
 }
