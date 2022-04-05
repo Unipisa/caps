@@ -1,7 +1,6 @@
 import React from "react";
 import Card from "./Card";
 import LoadingMessage from './LoadingMessage';
-import RestClient from "../modules/api";
 import FormsBlock from "./FormsBlock";
 import UserDocumentsBlock from "./UserDocumentsBlock";
 import ProposalsBlock from "./ProposalsBlock";
@@ -24,6 +23,7 @@ class UserProfile extends CapsPage {
         };
 
         this.decorateCatchAndBind(
+            "loadStatus",
             "onAttachmentDeleteClicked",
             "loadUserData",
             "loadProposals",
@@ -31,6 +31,7 @@ class UserProfile extends CapsPage {
             "loadDocuments",
             "onProposalDeleteClicked",
             "onFormDeleteClicked",
+            "onNewAttachment",
             "onAttachmentDeleteClicked"
             );
     }
@@ -40,13 +41,14 @@ class UserProfile extends CapsPage {
     }
 
     async loadStatus() {
-        const status = await RestClient.status();
+        const status = await this.get("status");
 
         await this.setStateAsync({
-            'settings': status['data']['settings'], 
-            'logged_user': status['data']['user'],
-            'form_templates_enabled': status['data']['form_templates_enabled']
+            'settings': status.settings, 
+            'logged_user': status.user,
+            'form_templates_enabled': status.form_templates_enabled
         });
+
         this.loadUserData();
     }
 
@@ -54,27 +56,25 @@ class UserProfile extends CapsPage {
         const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
         const user = await this.get(`users/${user_id}`);
 
-        await this.setStateAsync({
-            'user': user.data
-        });
+        await this.setStateAsync({ user });
         this.loadProposals();
         this.loadForms();
         this.loadDocuments();
     }
 
     async loadProposals() {
-        const res = await this.get('proposals', { 'user_id': this.state.user.id });
-        this.setState({ proposals: res.data });
+        const proposals = await this.get('proposals', { 'user_id': this.state.user.id });
+        this.setState({ proposals });
     }
 
     async loadForms() {
-        const res = await this.get('forms', { 'user_id': this.state.user.id });
-        this.setState({ forms: res.data });
+        const forms = await this.get('forms', { 'user_id': this.state.user.id });
+        this.setState({ forms });
     }
 
     async loadDocuments() {
-        const res = await this.get('documents', { 'user_id': this.state.user.id });
-        this.setState({ documents: res.data });
+        const documents = await this.get('documents', { 'user_id': this.state.user.id });
+        this.setState({ documents });
     }
 
     async onProposalDeleteClicked(p) {
@@ -84,7 +84,7 @@ class UserProfile extends CapsPage {
             del Curriculum ${p.props.proposal.curriculum.name}?
             Questa operazione non è reversibile.`)) return;
 
-        const data = await this.delete(`proposals/${p.props.proposal.id}`);
+        await this.delete(`proposals/${p.props.proposal.id}`);
 
         // Remove the proposal from the current state
         let proposals = this.state.proposals;
@@ -97,7 +97,7 @@ class UserProfile extends CapsPage {
         if (!await this.confirm('Eliminare il modulo?', 
             `Eliminare il modulo definitivamente? 
              Questa operazione non può essere annullata.`)) return;
-        const data = await this.delete(`forms/${f.props.form.id}`);
+        await this.delete(`forms/${f.props.form.id}`);
 
         let forms = this.state.forms;
         forms.splice(this.state.forms.indexOf(f.props.form), 1);
@@ -114,13 +114,13 @@ class UserProfile extends CapsPage {
             loadingDocument: true
         });
         try {
-            const response = await this.post('documents', attachment);        
+            const document = await this.post('documents', attachment);        
             this.flashSuccess('Allegato aggiunto al profilo.');
             this.setState({
-                'documents': [...this.state.documents, response['data']], 
+                'documents': [...this.state.documents, document], 
             });
         } catch(err) {
-            this.flashError(err);
+            throw(err); // managed by CapsPage envelope
         } finally {
             this.setState({ 
                 loadingDocument: false 
@@ -131,13 +131,10 @@ class UserProfile extends CapsPage {
     async onAttachmentDeleteClicked(a) {
         if (!await this.confirm('Eliminare il documento?', 
             'Questa operazione non è reversibile.')) return;
-        const data = await this.delete(`documents/${a.id}`);
-        let new_documents = this.state.documents;
-        new_documents.splice(new_documents.indexOf(a), 1);
-        this.flashSuccess(data.message);
-        this.setState({
-            'documents': new_documents
-        });
+        await this.delete(`documents/${a.id}`);
+        let documents = this.state.documents.filter(d => d!==a);
+        this.flashSuccess('Allegato rimosso.');
+        this.setState({ documents });
     }
 
     renderUserBlock() {

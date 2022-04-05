@@ -1,5 +1,7 @@
 'use strict';
 
+import { type } from "jquery";
+
 class RestClient {
 
     constructor() {
@@ -23,11 +25,12 @@ class RestClient {
                 body: data ? JSON.stringify(data) : null
             });
             response = await res.json();
-        } catch {
+        } catch(err) {
             response = {
                 code: 500, 
-                message: 'RESTClient: an error occurred while performing the request.'
+                message: `fetch error: ${err.message}`
             };
+            console.log(err);
         }
 
         return response;
@@ -60,4 +63,47 @@ class RestClient {
 
 }
 
-export default new RestClient();
+class ApiError extends Error {
+    constructor(res, uri, method, data) {
+        super(res.message);
+        this.name = "ApiError";
+        this.code = res.code;
+        this.uri = uri;
+        this.method = method;
+        this.data = data;
+        this.res = res;
+    }
+}
+
+/**
+ * wrap RestClient
+ * throw exception on every code different from 200
+ */
+class ExtendedRestClient extends RestClient {
+    constructor() {
+        super();
+    }
+
+    async status() {
+        throw new Error("non usare la funzione status(), chiama get(\"status\")");
+    }
+
+    async fetch(uri, method = 'GET', data = null) {
+        if (Math.random()>0.8) throw new ApiError({code:500, message: "fake random error!"});
+        const res = await super.fetch(uri, method, data);
+        if (res.code < 200 || res.code >= 300) {
+            throw new ApiError(res, uri, method, data);
+        }
+        if (res.data instanceof Array) {
+            // data is a queryset, add metadata
+            res.data.total = res.total;
+            res.data.limit = res.limit;
+        } 
+        return res.data;
+    }
+}
+
+export let restClient = new RestClient();
+export let extendedRestClient = new ExtendedRestClient();
+
+export default restClient;

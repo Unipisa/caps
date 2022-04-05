@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from './Modal';
 import Flash from "./Flash";
-import RestClient from "../modules/api";
+import { extendedRestClient as restClient } from "../modules/api";
 
 /**
  * classe base per le componenti che implementano l'intera pagina
@@ -29,11 +29,8 @@ class CapsPage extends React.Component {
                     const result = await method.apply(self, args);
                     return result;    
                 } catch(err) {
-                    if ( typeof(err) === "string" ) {
-                        self.flashError(err);
-                    } else {
-                        throw err;
-                    }    
+                    self.flashError(`${err.name}: ${err.message}`);
+                    console.log(err);
                 }
             }
             self[method_name] = f.bind(self);
@@ -75,33 +72,15 @@ class CapsPage extends React.Component {
     }
 
     async get(path, query) {
-        const res = await RestClient.get(path, query);
-
-        if (res.code != 200) {
-            throw res.message;
-        }    
-
-        return res;
+        return restClient.get(path, query);
     }
 
     async delete(path) {
-        const res = await RestClient.delete(path);
-
-        if (res.code != 200) {
-            throw res.message;
-        }
-
-        return res;
+        return restClient.delete(path);
     }
 
     async post(path, payload) {
-        const res = await RestClient.post(path, payload);        
-
-        if (res.code != 200) {
-            throw res.message;
-        }
-
-        return res;
+        return restClient.post(path, payload);
     }
 
     render() {
