@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import CapsPage from './CapsPage';
+import Chart, { scaleService } from 'chart.js';
+
 
 class Dashboard extends CapsPage {
     constructor(props) {

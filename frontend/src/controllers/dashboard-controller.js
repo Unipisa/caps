@@ -1,16 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CapsAppController from './app-controller';
-import Chart, { scaleService } from 'chart.js';
-import RestClient from '../modules/api';
+import { extendedRestClient as restClient} from '../modules/api';
 import Dashboard from '../components/Dashboard';
 
 
 class DashboardController extends CapsAppController {
     async index(params) {
         // We fetch the data to display in the plots
-        let data = await RestClient.get('dashboard');
-        data = data.data;
+        let data = await restClient.get('dashboard');
+
         // FIX: cakephp inability to distinguish between {} and []
         if (typeof(data.proposal_comments) === 'object' ) {
             data.proposal_comments = [];
