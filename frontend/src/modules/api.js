@@ -98,8 +98,9 @@ class ExtendedRestClient extends RestClient {
         }
         if (res.data instanceof Array) {
             // data is a queryset, add metadata
-            res.data.total = res.total;
-            res.data.limit = res.limit;
+            res.data.total = res.pagination.total;
+            res.data.limit = res.pagination.limit;
+            res.data.offset = res.pagination.offset;
         } 
         return res.data;
     }

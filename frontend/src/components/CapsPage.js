@@ -32,18 +32,19 @@ class CapsPage extends React.Component {
         });
     }    
 
-    flashSuccess(message) {
+    flashMessage(message, type="primary") {
         this.setState({
-            'capsFlash': [...this.state.capsFlash, 
-                { 'type': 'success', 'message': message }]
+            capsFlash: [...this.state.capsFlash, 
+                { type, message }]
         });
     }
 
+    flashSuccess(message) {
+        this.flashMessage(message, 'success');
+    }
+
     flashError(message) {
-        this.setState({
-            'capsFlash': [...this.state.capsFlash,
-                { 'type': 'error', 'message': message }]
-        });
+        this.flashMessage(message, 'error');
     }
 
     flashCatch(error) {
@@ -68,6 +69,10 @@ class CapsPage extends React.Component {
 
     async post(path, payload) {
         return restClient.post(path, payload);
+    }
+
+    async patch(path, payload) {
+        return restClient.patch(path, payload);
     }
 
     render() {

@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Card from './Card';
-import RestClient from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
 import CapsPage from './CapsPage';
@@ -38,76 +37,80 @@ class Forms extends CapsPage {
 
     async load() {
         let query = convert_query(this.state.query);
-        const response = await RestClient.get(`forms/`, query);
-        const forms = response['data'];
-        const rows = forms.map(form => {return {
-            form,
-            selected: false
-        }})
-        const total = response.pagination.total;
-        this.setState({rows, total});
+        try {
+            const forms = await this.get(`forms/`, query);
+            const rows = forms.map(form => {return {
+                form,
+                selected: false
+            }})
+            rows.total = forms.total;
+            this.setState({ rows });
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
-    onFilterChange(e) {
+    async onFilterChange(e) {
         let query = {...this.state.query};
         query[e.target.name] = e.target.value;
-        this.setState({query}, this.load.bind(this));
+        await this.setStateAsync({query});
+        this.load();
     }
 
-    extendLimit() {
+    async extendLimit() {
         let limit = this.state.query.limit;
         if (limit) {
             limit *= 2;
             let query = {...this.state.query, limit}
-            this.setState({query}, this.load.bind(this));
+            await this.setStateAsync({query});
+            this.load();
         }
     }
 
-    async updateForm(form, state) {
-        let res = await RestClient.patch(`forms/${form.id}`, {state});
-        if (res.code == 200) {
+    async updateForm(form, state, message) {
+        try {
+            form = await this.patch(`forms/${ form.id }`, {state});
             const rows = this.state.rows.map(
-                row => {return (row.form === form
-                    ? {...row, "form": res.data, "selected": false}
+                row => { return (row.form.id === form.id
+                    ? {...row, form, "selected": false}
                     : row);});
-            await this.setStateAsync({rows});
-        } else {
-            console.log(res.message);
-            /* flash error message */
+            rows.total = this.state.rows.total;
+            this.flashSuccess(<>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b> { message }</>);
+            this.setStateAsync({rows});
+        } catch(err) {
+            this.flashCatch(err);
         }
-    }
+}
 
     async deleteForm(form) {
-        let res = await RestClient.delete(`forms/${form.id}`);
-        if (res.code == 200) {
-            /* flash confirmed message ? */
-            let prev_length = rows.length;
-            const rows = this.state.rows.filter(row => (row.form !== form));
-            const total = this.state.total + rows.length - prev_length;
-            await this.setStateAsync({rows});
-        } else {
-            console.log(res.message);
-            /* flash error message ? */
+        try {
+            await this.delete(`forms/${form.id}`);
+
+            // elimina la form dall'elenco
+            let prev_length = this.state.rows.length;
+            const rows = this.state.rows.filter(row => (row.form.id !== form.id));
+            rows.total = this.state.rows.total + rows.length - prev_length;
+
+            this.flashMessage(<>Modulo <i>{ form.form_template.name }</i> di <b>{ form.user.name }</b> eliminato.</>);
+            this.setState({ rows });
+        } catch(err) {
+            this.flashCatch(err);
         }
+
     }
 
     toggleForm(form) {
         const rows = this.state.rows.map(row => {
-            return row.form === form
+            return row.form.id === form.id
             ? {...row, "selected": !row.selected}
             : row;});
+        rows.total = this.state.rows.total;
         this.setState({rows});
     }
 
-    updateRows(state) {
+    updateRows(state, message) {
         this.state.rows.forEach(row => {
-            if (row.selected) this.updateForm(row.form, state);
-        });
-    }
-
-    deleteRows(forms) {
-        this.state.rows.forEach(row => {
-            if (row.selected) this.deleteForm(row.form);
+            if (row.selected) this.updateForm(row.form, state, message);
         });
     }
 
@@ -118,36 +121,40 @@ class Forms extends CapsPage {
     async approveSelected() {
         if (await this.confirm("Confermi approvazione?", 
             `Vuoi approvare ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("approved");
+            this.updateRows("approved", "approvato");
         }
     }
 
     async rejectSelected() {
         if (await this.confirm("Confermi rifiuto?", 
             `Vuoi rifiutare ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("rejected");
+            this.updateRows("rejected", "respinto");
         }
     }
 
     async resubmitSelected() {
         if (await this.confirm("Riporta in valutazione?", 
             `Vuoi risottomettere ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("submitted"); 
+            this.updateRows("submitted", "riportato in valutazione"); 
         }    
     }
 
     async redraftSelected() {
         if (await this.confirm("Riporta in bozza?", 
             `Vuoi riportare in bozza ${this.countSelected()} modulo/i selezionati?`)) {
-                this.updateRows("draft");
+                this.updateRows("draft", "riportato in bozza");
         }
     }
 
     async deleteSelected() {
         if (await this.confirm("Confermi cancellazione?", 
             `Vuoi rimuovere ${this.countSelected()} modulo/i selezionati?`)) {
-                this.deleteRows();
-        }
+
+                // delete selected forms one by one
+                this.state.rows.forEach(row => {
+                    if (row.selected) this.deleteForm(row.form);
+                });
+            }
     }
 
     renderPage() {
@@ -230,10 +237,10 @@ class Forms extends CapsPage {
                     </table>
                     { this.state.rows && 
                             <p>
-                            {this.state.rows.length < this.state.total 
+                            {this.state.rows.length < this.state.rows.total 
                             ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
                             : null}
-                            {` [${this.state.rows.length}/${this.state.total} moduli mostrati]`}
+                            {` [${this.state.rows.length}/${this.state.rows.total} moduli mostrati]`}
                             </p>
                         }
                 </div>
@@ -242,36 +249,53 @@ class Forms extends CapsPage {
     }
 
     async csvData() {
-        // carica tutti i dati, rimuovi "limit"
-        let query = convert_query(this.state.query);
-        delete query.limit;
-        const {code, message, data} = await RestClient.get(
-            "forms/", query);
-        if (code !== 200) {
-            console.log(`error ${message}`);
-            // flash...
-            return;
-        }
-        let keys = [];
-        function addKey(key) {
-            if (!keys.includes(key)) keys.push(key);
-        }
-        function addKeys(prefix, obj) {
-            for(let key in obj) {
-                const val=obj[key];
-                if (typeof(val) === 'object') {
-                    addKeys(`${prefix}${key}.`, val);
-                } else {
-                    addKey(`${prefix}${key}`);
+        try {
+            let query = convert_query(this.state.query);
+            // carica tutti i dati, rimuovi "limit"
+            // ma mantieni eventuali filtri (e ordinamento)
+
+            delete query.limit;
+            const data = await this.get("forms/", query);
+
+            // collect all keys from all forms
+            let keys = [];
+
+            function addKey(key) {
+                if (!keys.includes(key)) keys.push(key);
+            }
+
+            function addKeys(prefix, obj) {
+                for(let key in obj) {
+                    const val=obj[key];
+                    if (typeof(val) === 'object') {
+                        addKeys(`${prefix}${key}.`, val);
+                    } else {
+                        addKey(`${prefix}${key}`);
+                    }
                 }
             }
+
+            data.forEach(form => addKeys("", form));
+
+            keys.sort();
+
+            // compose user friendly column name
+            function label_for_key(key) {
+                let label = key;
+                label = label.replace(/^(data\.)/,''); // i campi dei moduli hanno il prefisso data che è fuorviante
+                label = label.replaceAll('.', ' ');
+                label = label.replaceAll('_', ' ');
+                return label;
+            }
+
+            const headers = (keys.map(key => { return {
+                    label: label_for_key(key),
+                    key }}));
+
+            return {headers, data};
+        } catch(err) {
+            this.flashCatch(err);
         }
-        data.forEach(form => addKeys("", form));
-        keys.sort();
-        const headers = (keys.map(key => { return {
-                "label": key.replaceAll('.',' ').replaceAll('_',' '), 
-                key}}));
-        return {headers, data};
     }
 }
 

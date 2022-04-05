@@ -96,7 +96,7 @@ class UserProfile extends CapsPage {
             // Remove the proposal from the current state
             let proposals = this.state.proposals;
             proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-            this.flashSuccess("Il piano di studio è stato cancellato.");
+            this.flashMessage("Il piano di studio è stato cancellato.");
             this.setState({proposals});
         } catch(err) {
             this.flashCatch(err);
@@ -113,7 +113,7 @@ class UserProfile extends CapsPage {
 
             let forms = this.state.forms;
             forms.splice(this.state.forms.indexOf(f.props.form), 1);
-            this.flashSuccess("Il modulo è stato cancellato.");
+            this.flashMessage("Il modulo è stato cancellato.");
             this.setState({forms});
         } catch(err) {
             this.flashCatch(err);
@@ -149,7 +149,7 @@ class UserProfile extends CapsPage {
                 'Questa operazione non è reversibile.')) return;
             await this.delete(`documents/${a.id}`);
             let documents = this.state.documents.filter(d => d!==a);
-            this.flashSuccess('Allegato rimosso.');
+            this.flashMessage('Allegato rimosso.');
             this.setState({ documents });
         } catch(err) {
             this.flashCatch(err);
