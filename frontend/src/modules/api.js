@@ -1,7 +1,5 @@
 'use strict';
 
-import { type } from "jquery";
-
 class RestClient {
 
     constructor() {
@@ -51,10 +49,6 @@ class RestClient {
 
     async post(uri, data) {
         return await this.fetch(uri, 'POST', data);
-    }
-
-    async put(uri, data) {
-        return await this.fetch(uri, 'PUT', data);
     }
 
     async patch(uri, data) {

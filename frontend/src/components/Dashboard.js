@@ -1,9 +1,6 @@
 'use strict';
 
 import React, { useState } from 'react';
-import Card from './Card';
-import RestClient from '../modules/api';
-import LoadingMessage from './LoadingMessage';
 import CapsPage from './CapsPage';
 
 class Dashboard extends CapsPage {
