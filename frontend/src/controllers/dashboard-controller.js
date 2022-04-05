@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CapsAppController from './app-controller';
-import { extendedRestClient as restClient} from '../modules/api';
+import restClient from '../modules/api';
 import Dashboard from '../components/Dashboard';
 
 

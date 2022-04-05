@@ -1,6 +1,6 @@
 'use strict';
 
-class RestClient {
+class BaseRestClient {
 
     constructor() {
         try {
@@ -73,7 +73,7 @@ class ApiError extends Error {
  * wrap RestClient
  * throw exception on every code different from 200
  */
-class ExtendedRestClient extends RestClient {
+class RestClient extends BaseRestClient {
     constructor() {
         super();
     }
@@ -100,7 +100,6 @@ class ExtendedRestClient extends RestClient {
     }
 }
 
-export let restClient = new RestClient();
-export let extendedRestClient = new ExtendedRestClient();
+let restClient = new RestClient();
 
 export default restClient;

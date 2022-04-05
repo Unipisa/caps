@@ -1,6 +1,6 @@
 'use strict';
 
-import { extendedRestClient as restClient} from '../modules/api';
+import restClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 

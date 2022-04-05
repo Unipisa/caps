@@ -68,20 +68,22 @@ GET /api/v1/proposals/1823
 
 ## Libraria Javascript
 
-C'è una libreria minimal Javascript in `frontend/modules/api.js`, che si può usare per fare la richieste; tutti i metodi sono marcati come `async`, ecco qualche esempio di utilizzo:
+C'è una libreria minimal Javascript in `frontend/modules/api.js`, che si può usare per fare la richieste; tutti i metodi sono marcati come `async`. 
+Se il response code non è 200 viene sollevato un errore di tipo RestError. Altrimenti viene restituito il campo `data` del response.
+Se `data` è una array ci vengono attaccate le proprietà: `limit`, `offset` e `total`.
+Ecco qualche esempio di utilizzo:
 
 ```javascript
-import RestClient from '../modules/api.js';
+import restClient from '../modules/api.js';
 
 async function example() {
-    const response = await RestClient.get('/proposals', { 'limit': 10 });
-    if (response.code == 200) {
-        ...
-    }
-    
-    const response = await RestClient.delete(`/proposals/${id}`);
-    if (response.code == 200) {
-        console.log("Proposal cancellato correttamente");
+    try {
+      const proposals = await restClient.get('/proposals', { 'limit': 10 });
+      console.log(`caricati ${proposals.length} piani su ${proposals.total} disponibili`);
+      
+      await restClient.delete(`/proposals/${id}`);
+    } catch(err) {
+      console.log(`ERRORE: ${err.message} [${err.code}]`);
     }
 }
 ```

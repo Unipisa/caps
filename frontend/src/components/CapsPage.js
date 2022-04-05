@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from './Modal';
 import Flash from "./Flash";
-import { extendedRestClient as restClient } from "../modules/api";
+import restClient from "../modules/api";
 
 /**
  * classe base per le componenti che implementano l'intera pagina
