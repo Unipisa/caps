@@ -59,22 +59,6 @@ class CapsPage extends React.Component {
         console.log(msg);
     }
 
-    async get(path, query) {
-        return restClient.get(path, query);
-    }
-
-    async delete(path) {
-        return restClient.delete(path);
-    }
-
-    async post(path, payload) {
-        return restClient.post(path, payload);
-    }
-
-    async patch(path, payload) {
-        return restClient.patch(path, payload);
-    }
-
     render() {
         return <>
             <Modal ref={this.modal_ref}></Modal>

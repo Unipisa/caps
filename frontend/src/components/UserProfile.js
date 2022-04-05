@@ -5,6 +5,7 @@ import FormsBlock from "./FormsBlock";
 import UserDocumentsBlock from "./UserDocumentsBlock";
 import ProposalsBlock from "./ProposalsBlock";
 import CapsPage from "./CapsPage";
+import restClient from "../modules/api";
 
 class UserProfile extends CapsPage {
     constructor(props) {
@@ -29,7 +30,7 @@ class UserProfile extends CapsPage {
 
     async loadStatus() {
         try {
-            const status = await this.get("status");
+            const status = await restClient.get("status");
 
             await this.setStateAsync({
                 'settings': status.settings, 
@@ -45,7 +46,7 @@ class UserProfile extends CapsPage {
     async loadUserData() {
         try {
             const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
-            const user = await this.get(`users/${user_id}`);
+            const user = await restClient.get(`users/${user_id}`);
 
             await this.setStateAsync({ user });
             this.loadProposals();
@@ -58,7 +59,7 @@ class UserProfile extends CapsPage {
 
     async loadProposals() {
         try {
-            const proposals = await this.get('proposals', { 'user_id': this.state.user.id });
+            const proposals = await restClient.get('proposals', { 'user_id': this.state.user.id });
             this.setState({ proposals });
         } catch (err) {
             this.flashCatch(err);
@@ -67,7 +68,7 @@ class UserProfile extends CapsPage {
 
     async loadForms() {
         try {
-            const forms = await this.get('forms', { 'user_id': this.state.user.id });
+            const forms = await restClient.get('forms', { 'user_id': this.state.user.id });
             this.setState({ forms });
         } catch(err) {
             this.flashCatch(err);
@@ -76,7 +77,7 @@ class UserProfile extends CapsPage {
 
     async loadDocuments() {
         try {
-            const documents = await this.get('documents', { 'user_id': this.state.user.id });
+            const documents = await restClient.get('documents', { 'user_id': this.state.user.id });
             this.setState({ documents });
         } catch(err) {
             this.flashCatch(err);
@@ -91,7 +92,7 @@ class UserProfile extends CapsPage {
                 del Curriculum ${p.props.proposal.curriculum.name}?
                 Questa operazione non è reversibile.`)) return;
 
-            await this.delete(`proposals/${p.props.proposal.id}`);
+            await restClient.delete(`proposals/${p.props.proposal.id}`);
 
             // Remove the proposal from the current state
             let proposals = this.state.proposals;
@@ -109,7 +110,7 @@ class UserProfile extends CapsPage {
                 `Eliminare il modulo definitivamente? 
                 Questa operazione non può essere annullata.`)) return;
 
-            await this.delete(`forms/${f.props.form.id}`);
+            await restClient.delete(`forms/${f.props.form.id}`);
 
             let forms = this.state.forms;
             forms.splice(this.state.forms.indexOf(f.props.form), 1);
@@ -129,7 +130,7 @@ class UserProfile extends CapsPage {
             await this.setStateAsync({
                 loadingDocument: true
             });
-            const document = await this.post('documents', attachment);        
+            const document = await restClient.post('documents', attachment);        
             this.flashSuccess('Allegato aggiunto al profilo.');
             this.setState({
                 'documents': [...this.state.documents, document], 
@@ -147,7 +148,7 @@ class UserProfile extends CapsPage {
         try {
             if (!await this.confirm('Eliminare il documento?', 
                 'Questa operazione non è reversibile.')) return;
-            await this.delete(`documents/${a.id}`);
+            await restClient.delete(`documents/${a.id}`);
             let documents = this.state.documents.filter(d => d!==a);
             this.flashMessage('Allegato rimosso.');
             this.setState({ documents });

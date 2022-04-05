@@ -8,6 +8,7 @@ import CapsPage from './CapsPage';
 import { FilterButton, FilterInput, FilterSelect, 
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
+import restClient from '../modules/api';
 
 function convert_query(q) {
     let query = {...q};
@@ -38,7 +39,7 @@ class Forms extends CapsPage {
     async load() {
         let query = convert_query(this.state.query);
         try {
-            const forms = await this.get(`forms/`, query);
+            const forms = await restClient.get(`forms/`, query);
             const rows = forms.map(form => {return {
                 form,
                 selected: false
@@ -69,7 +70,7 @@ class Forms extends CapsPage {
 
     async updateForm(form, state, message) {
         try {
-            form = await this.patch(`forms/${ form.id }`, {state});
+            form = await restClient.patch(`forms/${ form.id }`, {state});
             const rows = this.state.rows.map(
                 row => { return (row.form.id === form.id
                     ? {...row, form, "selected": false}
@@ -84,7 +85,7 @@ class Forms extends CapsPage {
 
     async deleteForm(form) {
         try {
-            await this.delete(`forms/${form.id}`);
+            await restClient.delete(`forms/${form.id}`);
 
             // elimina la form dall'elenco
             let prev_length = this.state.rows.length;
@@ -255,7 +256,7 @@ class Forms extends CapsPage {
             // ma mantieni eventuali filtri (e ordinamento)
 
             delete query.limit;
-            const data = await this.get("forms/", query);
+            const data = await restClient.get("forms/", query);
 
             // collect all keys from all forms
             let keys = [];
