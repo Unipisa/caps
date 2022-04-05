@@ -21,19 +21,6 @@ class UserProfile extends CapsPage {
             'documents': undefined,
             'loadingDocument': false, 
         };
-
-        this.decorateCatchAndBind(
-            "loadStatus",
-            "onAttachmentDeleteClicked",
-            "loadUserData",
-            "loadProposals",
-            "loadForms",
-            "loadDocuments",
-            "onProposalDeleteClicked",
-            "onFormDeleteClicked",
-            "onNewAttachment",
-            "onAttachmentDeleteClicked"
-            );
     }
 
     async componentDidMount() {
@@ -41,86 +28,114 @@ class UserProfile extends CapsPage {
     }
 
     async loadStatus() {
-        const status = await this.get("status");
+        try {
+            const status = await this.get("status");
 
-        await this.setStateAsync({
-            'settings': status.settings, 
-            'logged_user': status.user,
-            'form_templates_enabled': status.form_templates_enabled
-        });
-
-        this.loadUserData();
+            await this.setStateAsync({
+                'settings': status.settings, 
+                'logged_user': status.user,
+                'form_templates_enabled': status.form_templates_enabled
+            });
+            this.loadUserData();
+        } catch (err) {
+            this.flashCatch(err);
+        }
     }
 
     async loadUserData() {
-        const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
-        const user = await this.get(`users/${user_id}`);
+        try {
+            const user_id = this.props.id ? this.props.id : this.state.logged_user.id;
+            const user = await this.get(`users/${user_id}`);
 
-        await this.setStateAsync({ user });
-        this.loadProposals();
-        this.loadForms();
-        this.loadDocuments();
+            await this.setStateAsync({ user });
+            this.loadProposals();
+            this.loadForms();
+            this.loadDocuments();
+        } catch (err) {
+            this.flashCatch(err);
+        }
     }
 
     async loadProposals() {
-        const proposals = await this.get('proposals', { 'user_id': this.state.user.id });
-        this.setState({ proposals });
+        try {
+            const proposals = await this.get('proposals', { 'user_id': this.state.user.id });
+            this.setState({ proposals });
+        } catch (err) {
+            this.flashCatch(err);
+        }
     }
 
     async loadForms() {
-        const forms = await this.get('forms', { 'user_id': this.state.user.id });
-        this.setState({ forms });
+        try {
+            const forms = await this.get('forms', { 'user_id': this.state.user.id });
+            this.setState({ forms });
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     async loadDocuments() {
-        const documents = await this.get('documents', { 'user_id': this.state.user.id });
-        this.setState({ documents });
+        try {
+            const documents = await this.get('documents', { 'user_id': this.state.user.id });
+            this.setState({ documents });
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     async onProposalDeleteClicked(p) {
-        // Make sure that the user wants to delete the proposal
-        if (!await this.confirm('Eliminare il piano di studi?', 
-            `Eliminare definitivamente il piano di studi 
-            del Curriculum ${p.props.proposal.curriculum.name}?
-            Questa operazione non è reversibile.`)) return;
+        try {
+            // Make sure that the user wants to delete the proposal
+            if (!await this.confirm('Eliminare il piano di studi?', 
+                `Eliminare definitivamente il piano di studi 
+                del Curriculum ${p.props.proposal.curriculum.name}?
+                Questa operazione non è reversibile.`)) return;
 
-        await this.delete(`proposals/${p.props.proposal.id}`);
+            await this.delete(`proposals/${p.props.proposal.id}`);
 
-        // Remove the proposal from the current state
-        let proposals = this.state.proposals;
-        proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
-        this.flashSuccess("Il piano di studio è stato cancellato.");
-        this.setState({proposals});
+            // Remove the proposal from the current state
+            let proposals = this.state.proposals;
+            proposals.splice(this.state.proposals.indexOf(p.props.proposal), 1);
+            this.flashSuccess("Il piano di studio è stato cancellato.");
+            this.setState({proposals});
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     async onFormDeleteClicked(f) {
-        if (!await this.confirm('Eliminare il modulo?', 
-            `Eliminare il modulo definitivamente? 
-             Questa operazione non può essere annullata.`)) return;
-        await this.delete(`forms/${f.props.form.id}`);
+        try {
+            if (!await this.confirm('Eliminare il modulo?', 
+                `Eliminare il modulo definitivamente? 
+                Questa operazione non può essere annullata.`)) return;
 
-        let forms = this.state.forms;
-        forms.splice(this.state.forms.indexOf(f.props.form), 1);
-        this.flashSuccess("Il modulo è stato cancellato.");
-        this.setState({forms});
+            await this.delete(`forms/${f.props.form.id}`);
+
+            let forms = this.state.forms;
+            forms.splice(this.state.forms.indexOf(f.props.form), 1);
+            this.flashSuccess("Il modulo è stato cancellato.");
+            this.setState({forms});
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     async onNewAttachment(attachment) {
-        // The AttachmentBlock is not aware of the user we are adding the 
-        // attachment to, hence we complement this informatino before actually 
-        // sending the request to the server. 
-        attachment['user_id'] = this.state.user.id;
-        await this.setStateAsync({
-            loadingDocument: true
-        });
         try {
+            // The AttachmentBlock is not aware of the user we are adding the 
+            // attachment to, hence we complement this informatino before actually 
+            // sending the request to the server. 
+            attachment['user_id'] = this.state.user.id;
+            await this.setStateAsync({
+                loadingDocument: true
+            });
             const document = await this.post('documents', attachment);        
             this.flashSuccess('Allegato aggiunto al profilo.');
             this.setState({
                 'documents': [...this.state.documents, document], 
             });
         } catch(err) {
-            throw(err); // managed by CapsPage envelope
+            this.flashCatch(err);
         } finally {
             this.setState({ 
                 loadingDocument: false 
@@ -129,12 +144,16 @@ class UserProfile extends CapsPage {
     }
 
     async onAttachmentDeleteClicked(a) {
-        if (!await this.confirm('Eliminare il documento?', 
-            'Questa operazione non è reversibile.')) return;
-        await this.delete(`documents/${a.id}`);
-        let documents = this.state.documents.filter(d => d!==a);
-        this.flashSuccess('Allegato rimosso.');
-        this.setState({ documents });
+        try {
+            if (!await this.confirm('Eliminare il documento?', 
+                'Questa operazione non è reversibile.')) return;
+            await this.delete(`documents/${a.id}`);
+            let documents = this.state.documents.filter(d => d!==a);
+            this.flashSuccess('Allegato rimosso.');
+            this.setState({ documents });
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     renderUserBlock() {

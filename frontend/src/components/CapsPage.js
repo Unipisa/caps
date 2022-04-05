@@ -20,23 +20,6 @@ class CapsPage extends React.Component {
         this.modal_ref = React.createRef();
     }
 
-    decorateCatchAndBind(...method_names) {
-        let self = this;
-        method_names.forEach(method_name => {
-            const method = self[method_name];
-            const f = async function(...args) {
-                try {
-                    const result = await method.apply(self, args);
-                    return result;    
-                } catch(err) {
-                    self.flashError(`${err.name}: ${err.message}`);
-                    console.log(err);
-                }
-            }
-            self[method_name] = f.bind(self);
-        });
-    }
-
     confirm(title, message) {
         return new Promise((resolve) => {
             this.modal_ref.current.show(title, message, resolve);
@@ -61,6 +44,10 @@ class CapsPage extends React.Component {
             'capsFlash': [...this.state.capsFlash,
                 { 'type': 'error', 'message': message }]
         });
+    }
+
+    flashCatch(error) {
+        this.flashError(`${error.name}: ${error.message}`);
     }
 
     hideFlash() {

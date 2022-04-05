@@ -89,7 +89,9 @@ class ExtendedRestClient extends RestClient {
     }
 
     async fetch(uri, method = 'GET', data = null) {
-        if (Math.random()>0.8) throw new ApiError({code:500, message: "fake random error!"});
+        // genera errori casuali per testarne la gestione
+        if (false && Math.random()>0.8) throw new ApiError({code:500, message: `fake random error! [${method} ${uri}]`});
+
         const res = await super.fetch(uri, method, data);
         if (res.code < 200 || res.code >= 300) {
             throw new ApiError(res, uri, method, data);
