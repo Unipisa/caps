@@ -5,6 +5,8 @@ namespace App\Controller\Api\v1;
 use App\Controller\AppController;
 use Cake\Event\EventInterface;
 use \Cake\Routing\Router;
+use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\InternalErrorException;
 
 enum ResponseCode : int {
     case Ok = 200;
@@ -28,10 +30,26 @@ class RestController extends AppController {
     ];
 
     protected function applyFilters($query) {
-        foreach ($this->allowedFilters as $field) {
+        foreach($this->allowedFilters as $field => $type) {
             $value = $this->request->getQuery($field);
+            if ($value === null) {
+                // pass
+            } else if ($type === Boolean::class) {
+                if ($value === "true") $value = True;
+                else if ($value === "false") $value = False;
+                else throw new BadRequestException("invalid value '" . $value . "' for boolean field '" . $field . "'");
+            } else if ($type === Integer::class) {
+                $value = intval($value);
+            } else if ($type === String::class) {
+                // pass
+            } else if (is_array($type)) {
+                if (!in_array($value, $type)) {
+                    throw new BadRequestException("invalid value '" . $value . "' for field '" . $field . "'");
+                }
+            } else {
+                throw new InternalErrorRequestException("internal error: '" . $field ."' has unknown type");
+            }
             if ($value !== null) {
-                $value = json_decode($value);
                 $query = $query->where([ $field => $value ]);
             }
         }
@@ -93,8 +111,8 @@ class RestController extends AppController {
     }
 
     protected function paginateQuery($query) {
-        $limit = $this->request->getQuery('limit');
-        $offset = $this->request->getQuery('offset');
+        $limit = $this->request->getQuery('_limit');
+        $offset = $this->request->getQuery('_offset');
 
         // FIXME: Are there any performance conerns with this?
         $this->paginationData['total'] = $query->count();

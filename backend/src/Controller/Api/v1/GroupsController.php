@@ -7,7 +7,7 @@ use App\Controller\Api\v1\RestController;
 class GroupsController extends RestController {
 
     public static $associations = [ 'Exams' ];
-    public $allowedFilters = [ 'degree_id' ];
+    public $allowedFilters = [ 'degree_id' => Integr::class ];
 
     public function index() {
         $groups = $this->Groups->find('all', [ 'contain' => GroupsController::$associations ]);

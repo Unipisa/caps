@@ -10,7 +10,11 @@ class FormsController extends RestController {
     private static $associations = [ 'Users', 'FormTemplates' ];
 
     // TODO: decidere come specificare i filtri per i campi associati
-    public $allowedFilters = [ 'user_id', 'state', 'user.givenname', 'form_template.name' ];
+    public $allowedFilters = [ 
+        'user_id' => Integer::class, 
+        'state' => ["draft", "submitted", "approved", "rejected"], 
+        'user.givenname' => String::class, 
+        'form_template.name' => String::class ];
 
     public function index() {
         $query = $this->request->getQuery();
@@ -28,6 +32,7 @@ class FormsController extends RestController {
 
         $forms = $this->paginateQuery($forms);
 
+        // clean the resulting data
         foreach($forms as $form) {
             $form['data'] = json_decode($form['data']);
             unset($form['user']['password']);

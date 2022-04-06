@@ -10,19 +10,10 @@ import { FilterButton, FilterInput, FilterSelect,
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
 
-function convert_query(q) {
-    let query = {...q};
-    // TODO: decidere come codificare i filtri
-    for(let key in query) {
-        if (query[key] == "") delete query[key];
-        else query[key] = JSON.stringify(query[key]);
-    }
-    return query;
-}
-
 class Forms extends CapsPage {
     constructor(props) {
         super(props);
+
         this.state = {
             ...this.state,
             'rows': null,
@@ -37,9 +28,8 @@ class Forms extends CapsPage {
     }
 
     async load() {
-        let query = convert_query(this.state.query);
         try {
-            const forms = await restClient.get(`forms/`, query);
+            const forms = await restClient.get(`forms/`, this.state.query);
             const rows = forms.map(form => {return {
                 form,
                 selected: false
@@ -53,16 +43,20 @@ class Forms extends CapsPage {
 
     async onFilterChange(e) {
         let query = {...this.state.query};
-        query[e.target.name] = e.target.value;
+        if (e.target.value === '') {
+            delete e.target.value;
+        } else {
+            query[e.target.name] = e.target.value;
+        }
         await this.setStateAsync({query});
         this.load();
     }
 
     async extendLimit() {
-        let limit = this.state.query.limit;
-        if (limit) {
-            limit *= 2;
-            let query = {...this.state.query, limit}
+        let _limit = this.state.query._limit;
+        if (_limit) {
+            _limit += 10;
+            let query = {...this.state.query, _limit}
             await this.setStateAsync({query});
             this.load();
         }
@@ -251,11 +245,11 @@ class Forms extends CapsPage {
 
     async csvData() {
         try {
-            let query = convert_query(this.state.query);
+            let query = {...this.state.query};
+
             // carica tutti i dati, rimuovi "limit"
             // ma mantieni eventuali filtri (e ordinamento)
-
-            delete query.limit;
+            delete query._limit;
             const data = await restClient.get("forms/", query);
 
             // collect all keys from all forms

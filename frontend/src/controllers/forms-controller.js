@@ -38,10 +38,7 @@ class CapsFormsController extends CapsAppController {
             query = {};
         }
 
-        // TODO: se si mette limit=2 nella querystring
-        // allora qui arriva limit="2" e poi la richiesta
-        // darà errore...
-        query = {limit: 15,... query};
+        query = {_limit: 10,... query};
 
         sessionStorage.setItem('forms-filter', JSON.stringify(query));
 

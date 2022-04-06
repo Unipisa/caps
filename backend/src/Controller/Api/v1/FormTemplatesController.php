@@ -6,7 +6,7 @@ use App\Controller\Api\v1\RestController;
 
 class FormTemplatesController extends RestController {
 
-    public $allowedFilters = [ 'enabled' ];
+    public $allowedFilters = [ 'enabled' => Boolean::class ];
 
     public function index() {
         $form_templates = $this->FormTemplates->find();
