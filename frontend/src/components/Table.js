@@ -3,29 +3,33 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 
-export function FilterInput(props) {
+export function FilterInput({name, label, value, onChange}) {
     
+    const [ my_value, setValue ] = useState(value);
+
     function onKeyDown(e) {
         if (e.key == 'Enter') {
-            props.onChange(e);
+            onChange(e);
         }
     }
 
     return <div className="input form-group">
-            <label htmlFor={props.name}>{ props.label }</label>
+            <label htmlFor={name}>{ label }</label>
             <input className="form-control"
-                name={props.name}
-                placeholder={ props.label}
-                onBlur={props.onChange} 
+                name={name}
+                value={my_value}
+                placeholder={label}
+                onChange={e => {setValue(e.target.value)}}
+                onBlur={onChange} 
                 onKeyDown={onKeyDown}/>
         </div> 
 }
 
-export function FilterSelect(props) {
+export function FilterSelect({name, label, value, onChange, children}) {
     return <div className="input form-group">
-                <label htmlFor={props.name}>{props.label}</label>
-                <select className="form-control" name={props.name} onChange={props.onChange}>
-                    { props.children }
+                <label htmlFor={name}>{label}</label>
+                <select className="form-control" name={name} value={value} onChange={onChange}>
+                    { children }
                 </select>
             </div>
 
@@ -50,6 +54,24 @@ export function FilterButton({onChange, children }) {
                         }) }
                 </Dropdown.Menu>
             </Dropdown>
+}
+
+export function FilterBadges({query, onRemoveField}) {
+    let entries = Object.entries(query).filter(([field, value]) => !field.startsWith('_'));
+    if (entries.length == 0) return null;
+    return <div className="d-flex align-left my-2">
+            { entries.map(([field, value]) => {
+                return <a 
+                            key={field} 
+                            style={{cursor: 'pointer'}} 
+                            className="filter-badge-link" 
+                            onClick={() => onRemoveField(field)}>
+                    <span className="filter-badge badge badge-secondary mr-2" title={`rimuovi il filtro ${field}: ${value}`}>
+                        {`${field}: ${value} X`}
+                    </span>
+                </a>;
+                })}
+        </div>
 }
 
 export function ActionButtons(props) {

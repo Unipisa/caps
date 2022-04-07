@@ -5,7 +5,7 @@ import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
 import CapsPage from './CapsPage';
-import { TestFilterButton, FilterButton, FilterInput, FilterSelect, 
+import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
@@ -49,6 +49,13 @@ class Forms extends CapsPage {
         } else {
             query[e.target.name] = e.target.value;
         }
+        await this.setStateAsync({query});
+        this.load();
+    }
+
+    async onFilterRemoveField(field) {
+        let query = {...this.state.query};
+        delete query[field];
         await this.setStateAsync({query});
         this.load();
     }
@@ -159,17 +166,16 @@ class Forms extends CapsPage {
             <h1>Moduli</h1>
             <Card>
                 <div className="d-flex mb-2">
-
                     <FilterButton onChange={onFilterChange}>
-                        <FilterSelect name="state" label="stato">
+                        <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
                             <option value="">tutti</option> 
                             <option value="draft">bozze</option>
                             <option value="submitted">da valutare</option>
                             <option value="approved">approvati</option>
                             <option value="rejected">rifiutati</option>
                         </FilterSelect>
-                        <FilterInput name="user.surname" label="cognome" />
-                        <FilterInput name="form_template.name" label="modello" />
+                        <FilterInput name="user.surname" label="cognome" value={ this.state.query.surname || ""}/>
+                        <FilterInput name="form_template.name" label="modello" value={ this.state.query['form_template.name'] || ""} />
                     </FilterButton>
 
                     <ActionButtons>
@@ -207,6 +213,9 @@ class Forms extends CapsPage {
                             : null }
                     </div>
                 </div>
+                <FilterBadges 
+                    query={this.state.query} 
+                    onRemoveField={field => this.onFilterRemoveField(field)}></FilterBadges>
                 <div className="table-responsive-lg">
                     <table className="table">
                         <thead>
