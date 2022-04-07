@@ -5,10 +5,11 @@ import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import FormBadge from './FormBadge';
 import CapsPage from './CapsPage';
-import { FilterButton, FilterInput, FilterSelect, 
+import { TestFilterButton, FilterButton, FilterInput, FilterSelect, 
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
+import { Dropdown } from 'react-bootstrap';
 
 class Forms extends CapsPage {
     constructor(props) {
@@ -44,7 +45,7 @@ class Forms extends CapsPage {
     async onFilterChange(e) {
         let query = {...this.state.query};
         if (e.target.value === '') {
-            delete e.target.value;
+            delete query[e.target.name];
         } else {
             query[e.target.name] = e.target.value;
         }
@@ -158,6 +159,7 @@ class Forms extends CapsPage {
             <h1>Moduli</h1>
             <Card>
                 <div className="d-flex mb-2">
+
                     <FilterButton onChange={onFilterChange}>
                         <FilterSelect name="state" label="stato">
                             <option value="">tutti</option> 
@@ -166,9 +168,8 @@ class Forms extends CapsPage {
                             <option value="approved">approvati</option>
                             <option value="rejected">rifiutati</option>
                         </FilterSelect>
-                        <FilterInput name="surname" label="cognome" />
-                        <FilterInput name="formTemplate" label="modello" />
-                        <FilterInput name="name" label="nome" />
+                        <FilterInput name="user.surname" label="cognome" />
+                        <FilterInput name="form_template.name" label="modello" />
                     </FilterButton>
 
                     <ActionButtons>
@@ -187,6 +188,7 @@ class Forms extends CapsPage {
                         <ActionButton className="btn-danger" onClick={() => this.deleteSelected()}> 
                             🗑 Elimina i moduli selezionati
                         </ActionButton>
+                        
                     </ActionButtons>
 
                     <div className="flex-fill"></div>

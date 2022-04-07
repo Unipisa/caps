@@ -11,10 +11,16 @@ class FormsController extends RestController {
 
     // TODO: decidere come specificare i filtri per i campi associati
     public $allowedFilters = [ 
-        'user_id' => Integer::class, 
-        'state' => ["draft", "submitted", "approved", "rejected"], 
-        'user.givenname' => String::class, 
-        'form_template.name' => String::class ];
+        'form_id' => Integer::class, 
+        'state' => ['type' => String::class, 
+                    'options' => ["draft", "submitted", "approved", "rejected"]],
+        'user.surname' => [ 'type' => String::class, 
+                            'dbfield' => "Users.surname",
+                            'modifier' => "LIKE" ],
+        'form_template.name' => [ 'type' =>  String::class,
+                                'dbfield' => "FormTemplates.name",
+                                'modifier' => "LIKE" ]
+        ];
 
     public function index() {
         $query = $this->request->getQuery();

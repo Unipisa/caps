@@ -1,13 +1,23 @@
 'use strict';
 
 import React, { useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 
 export function FilterInput(props) {
+    
+    function onKeyDown(e) {
+        if (e.key == 'Enter') {
+            props.onChange(e);
+        }
+    }
+
     return <div className="input form-group">
             <label htmlFor={props.name}>{ props.label }</label>
             <input className="form-control"
                 name={props.name}
-                onChange={props.onChange} />
+                placeholder={ props.label}
+                onBlur={props.onChange} 
+                onKeyDown={onKeyDown}/>
         </div> 
 }
 
@@ -21,21 +31,25 @@ export function FilterSelect(props) {
 
 }
 
-export function FilterButton({onChange, children}) {
-    return <div className="dropdown mr-2">
-    <button className="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
-        <i className="fas fa-filter"></i>
-        <span className="ml-2 d-none d-md-inline">Filtra</span>
-    </button>
-    <div className="dropdown-menu p-2" style={{width: "350px"}}>
-        <form className="filterForm">
-            { children.map((el,n) => {
-                // inserisce la prop onChange in tutti i children
-                return React.cloneElement(el, {key: el.key || n, onChange})
-                }) }
-        </form>
-    </div>
-</div>
+export function FilterButton({onChange, children }) {
+    const [open, setOpen ] = useState(false);
+    function onItemChange(e) {
+        setOpen(false);
+        onChange(e);
+    }
+    // onClick={ () => setOpen(!open)
+    return <Dropdown className="mr-2" show={ open }>
+                <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
+                    <i className="fas fa-filter"></i>
+                    <span className="ml-2 d-none d-md-inline">Filtra</span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="p-2" style={{width: "350px", margin: 0}}>
+                    { children.map((el,n) => {
+                        // inserisce la prop onChange in tutti i children
+                        return React.cloneElement(el, {key: el.key || n, "onChange": onItemChange})
+                        }) }
+                </Dropdown.Menu>
+            </Dropdown>
 }
 
 export function ActionButtons(props) {

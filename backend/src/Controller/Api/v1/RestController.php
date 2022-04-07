@@ -16,6 +16,13 @@ enum ResponseCode : int {
     case Error = 500;
 }
 
+function array_get_default($key, $array, $default=null) {
+    if (array_key_exists($key, $array)) {
+        return $array[$key];
+    }
+    return $default;
+}
+
 class RestController extends AppController {
 
     // A list of columns on which filtered queries are permitted. Override 
@@ -30,11 +37,24 @@ class RestController extends AppController {
     ];
 
     protected function applyFilters($query) {
-        foreach($this->allowedFilters as $field => $type) {
-            $value = $this->request->getQuery($field);
-            if ($value === null) {
-                // pass
-            } else if ($type === Boolean::class) {
+        foreach($this->allowedFilters as $field => $opts) {
+            if (is_array($opts)) {
+                $type = array_get_default('type', $opts);
+                $options = array_get_default('options', $opts);
+                $dbfield = array_get_default('dbfield', $opts, $field);
+                $modifier = array_get_default('modifier', $opts);
+            } else {
+                $type = $opts;
+                $options = null;
+                $dbfield = $field;
+                $modifier = null;
+            }
+            
+            // !!! PHP converts dots to underscores in query strings 
+            $value = $this->request->getQuery(str_replace(".", "_", $field));
+            if ($value === null) continue;
+
+            if ($type === Boolean::class) {
                 if ($value === "true") $value = True;
                 else if ($value === "false") $value = False;
                 else throw new BadRequestException("invalid value '" . $value . "' for boolean field '" . $field . "'");
@@ -42,15 +62,20 @@ class RestController extends AppController {
                 $value = intval($value);
             } else if ($type === String::class) {
                 // pass
-            } else if (is_array($type)) {
-                if (!in_array($value, $type)) {
-                    throw new BadRequestException("invalid value '" . $value . "' for field '" . $field . "'");
-                }
             } else {
                 throw new InternalErrorRequestException("internal error: '" . $field ."' has unknown type");
             }
-            if ($value !== null) {
-                $query = $query->where([ $field => $value ]);
+
+            if ($options !== null && !in_array($value, $options)) {
+                throw new BadRequestException("invalid value '" . $value . "' for field '" . $field . "'");
+            }
+
+            if ($modifier === 'LIKE') {
+                $query = $query->where([$dbfield . " LIKE" => '%' . $value . '%']);
+            } else if ($modifier === null) {
+                $query = $query->where([ $dbfield => $value ]);
+            } else {
+                throw new InternalErrorRequestException("internal error: '" . $field ."' has unknown modifier");
             }
         }
 
