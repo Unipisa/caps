@@ -21,7 +21,7 @@ I dati vengono ritornadi dentro un capo `data` del JSON restituito, che contiene
 
 Esempi:
 ```
-GET /proposals/?user=996&limit=1
+GET /proposals/?user=996&_limit=1
 
 {
   "data": [
@@ -78,7 +78,7 @@ import restClient from '../modules/api.js';
 
 async function example() {
     try {
-      const proposals = await restClient.get('/proposals', { 'limit': 10 });
+      const proposals = await restClient.get('/proposals', { '_limit': 10 });
       console.log(`caricati ${proposals.length} piani su ${proposals.total} disponibili`);
       
       await restClient.delete(`/proposals/${id}`);

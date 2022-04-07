@@ -13,7 +13,26 @@ class ProposalsController extends RestController
         'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees',
         'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ];
 
-    public $allowedFilters = [ 'user_id' => Integer::class];
+    public $allowedFilters = [ 
+        'user_id' => Integer::class,
+        'state' => ['type' => String::class, 
+              'options' => ["draft", "submitted", "approved", "rejected"]],
+        'user.surname' => [ 'type' => String::class, 
+                'dbfield' => "Users.surname",
+                'modifier' => "LIKE" ],
+        'curriculum.degree.academic_year' => [ 'type' =>  Integer::class,
+                'dbfield' => "Curricula.Degree.academic_year"],
+        'curriculum.degree.name' => [ 'type' => String::class,
+                'dbfield' => "Curricula.Degree.name",
+                'modifier' => "LIKE" ],
+        'curriculum.name' => ['type' => String::class,
+                'dbfield' => "Curricula.name", "LIKE"],
+        'exam.name' => ['type' => String::class,
+                'dbfield' => "ChoosenExams.Exams.name"],
+        'free_exam.name' => ['type' => String::class,
+                'dbfield' => "ChosenFreeChoiceExams.name",
+                'modifier' => "LIKE"]
+    ];
 
     function index() {
         $proposals = $this->Proposals->find()
@@ -27,7 +46,14 @@ class ProposalsController extends RestController
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($proposals));
+        $proposals = $this->paginateQuery($proposals);
+
+        // clean the resulting data
+        foreach($proposals as $proposal) {
+            unset($proposal['user']['password']);
+        }        
+
+        $this->JSONResponse(ResponseCode::Ok, $proposals);
     }
 
     public function get($id) {

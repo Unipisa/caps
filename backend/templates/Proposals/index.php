@@ -21,6 +21,11 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
+
+<div id="app">
+</div>
+
+
 <h1>Piani di Studio</h1>
 
 <?php if ($user['admin']): ?>

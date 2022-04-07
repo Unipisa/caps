@@ -3,6 +3,7 @@ import CapsAppController from './app-controller';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Proposal from '../components/Proposal';
+import Proposals from '../components/Proposals';
 
 class CapsProposalsController extends CapsAppController {
     edit(params) {
@@ -20,6 +21,12 @@ class CapsProposalsController extends CapsAppController {
             query = [];
         }
 
+        if (query === undefined) {
+            query = {};
+        }
+
+        query = {_limit: 10,... query};
+
         sessionStorage.setItem('proposals-filter', JSON.stringify(query));
 
         // At this point we need to rewrite the links that may point to 
@@ -28,6 +35,14 @@ class CapsProposalsController extends CapsAppController {
 
         // Add a callback to the download proposals button
         document.getElementById("proposals-massive-download-button").onclick = this.onDownloadProposalsClicked.bind(this);
+
+        ReactDOM.render(
+            <Proposals
+                root={this.root}
+                query={query}
+                csrfToken={params._csrfToken}></Proposals>,
+            document.querySelector('#app')
+        );
     }
 
     onDownloadProposalsClicked() {
