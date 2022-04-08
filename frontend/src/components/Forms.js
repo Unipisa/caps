@@ -179,7 +179,7 @@ class Forms extends CapsPage {
                     </FilterButton>
 
                     <ActionButtons>
-                        <ActionButton onClick={() => this.approveSelected()}>
+                        <ActionButton className="btn-success" onClick={() => this.approveSelected()}>
                             ✓ Approva i moduli selezionati
                         </ActionButton>
                         <ActionButton className="btn-danger" onClick={() => this.rejectSelected()}>

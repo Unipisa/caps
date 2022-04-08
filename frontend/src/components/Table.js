@@ -88,7 +88,7 @@ export function ActionButtons(props) {
 
 export function ActionButton(props) {
     return <button 
-                className={`my-1 btn ${props.className || "btn-success"}`} 
+                className={`my-1 btn ${props.className || "btn-primary"}`} 
                 style={{"width": "100%"}}
                 onClick={ props.onClick }>
                     { props.children}

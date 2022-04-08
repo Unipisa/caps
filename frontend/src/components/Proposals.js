@@ -9,15 +9,19 @@ import { FilterButton, FilterInput, FilterSelect, FilterBadges,
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
+import CapsController from '../caps-controller';
+import { faThList } from '@fortawesome/free-solid-svg-icons';
 
 class Proposals extends CapsPage {
     constructor(props) {
         super(props);
 
+        const stored_query = JSON.parse(sessionStorage.getItem('proposals-filter'));
+
         this.state = {
             ...this.state,
             'rows': null,
-            'query': this.props.query,
+            'query': this.props.query || stored_query || {},
             'total': null
         };
     }
@@ -49,6 +53,7 @@ class Proposals extends CapsPage {
             query[e.target.name] = e.target.value;
         }
         await this.setStateAsync({query});
+        sessionStorage.setItem('proposals-filter', JSON.stringify(query));
         this.load();
     }
 
@@ -154,9 +159,22 @@ class Proposals extends CapsPage {
 
                 // delete selected forms one by one
                 this.state.rows.forEach(row => {
-                    if (row.selected) this.deleteProposal(row.form);
+                    if (row.selected) this.deleteProposal(row.proposal);
                 });
             }
+    }
+
+    async downloadSelected() {
+        this.state.rows.forEach(row => {
+            if (row.selected) {
+                const proposal = row.proposal;
+                const url = `${this.props.root}proposals/pdf/${proposal.id}`;
+                // We create an <a download href="..."> element, which forces 
+                // the file to be downloaded and not opened in a new tab. 
+                const el = document.createElement('a');
+                el.href = url; el.download = "1"; el.click();
+            }
+        });
     }
 
     renderPage() {
@@ -182,7 +200,7 @@ class Proposals extends CapsPage {
                     </FilterButton>
 
                     <ActionButtons>
-                        <ActionButton onClick={() => this.approveSelected()}>
+                        <ActionButton className="btn-success" onClick={() => this.approveSelected()}>
                             ✓ Approva i piani di studio selezionati
                         </ActionButton>
                         <ActionButton className="btn-danger" onClick={() => this.rejectSelected()}>
@@ -196,6 +214,9 @@ class Proposals extends CapsPage {
                         </ActionButton>
                         <ActionButton className="btn-danger" onClick={() => this.deleteSelected()}> 
                             🗑 Elimina i piani di studio selezionati
+                        </ActionButton>
+                        <ActionButton onClick={() => this.downloadSelected()}>
+                            🡇 Scarica i piani selezionati in PDF
                         </ActionButton>
                     </ActionButtons>
 
@@ -213,6 +234,13 @@ class Proposals extends CapsPage {
                                 filename="caps-piani.csv"
                                 target="_blank" /> 
                             : null }
+                        <button type="button" className="btn btn-sm btn-primary" onClick={() => { location.pathname += '.xlsx' }}>
+                            <i className="fas fw fa-file-excel"></i>
+                                <span className="ml-2 d-none d-md-inline">
+                                    <span className="d-none d-xl-inline">Esporta in </span>Excel
+                                </span>
+                        </button>
+
                     </div>
                 </div>
                 <FilterBadges 
@@ -235,12 +263,14 @@ class Proposals extends CapsPage {
                         <tbody>
                         { this.state.rows === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento piani di studio...</LoadingMessage></td></tr>
-                            : this.state.rows.map(row => <ProposalRow 
-                                key={row.proposal.id} 
-                                row={row} 
-                                onToggle={() => {this.toggleProposal(row.proposal)}}
-                                href={`${this.props.root}forms/view/${row.proposal.id}`}
-                                />)
+                            : this.state.rows.map(row => 
+                                <ProposalRow 
+                                    key={row.proposal.id} 
+                                    row={row} 
+                                    onToggle={() => {this.toggleProposal(row.proposal)}}
+                                    href={`${this.props.root}proposal/view/${row.proposal.id}`}
+                                    href_pdf={`${this.props.root}}proposal/pdf/${row.proposal.id}`}
+                                    />)
                         }
                         </tbody>
                     </table>
@@ -308,7 +338,7 @@ class Proposals extends CapsPage {
 }
 
 function ProposalRow(props) {
-    const {row: {selected, proposal}, href, onToggle} = props;
+    const {row: {selected, proposal}, href, href_pdf, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><ProposalBadge proposal={proposal}></ProposalBadge></td>
@@ -325,7 +355,21 @@ function ProposalRow(props) {
                     Visualizza
                     </button>
                 </a>
+
+                <a href={`${href_pdf}`}>
+                    <button type="button" className="btn btn-sm btn-secondary mr-2">
+                        <i className="fas fa-file-pdf mr-2"></i>
+                        Scarica
+                    </button>
+                </a>
+                <a href={`${href_pdf}show_comments=1`}> 
+                    <button type="button" className="btn btn-sm btn-secondary">
+                        <i className="fas fa-file-pdf mr-2"></i>
+                        Commenti
+                    </button>
+                </a>
             </div>
+
         </td>
     </tr>
 }
