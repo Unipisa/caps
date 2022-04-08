@@ -101,8 +101,8 @@ class Proposal extends React.Component {
         const proposal = await restClient.get(`proposals/${id}`);
         const selected_curriculum = await restClient.get(`curricula/${proposal.curriculum.id}`);
         const selected_degree = selected_curriculum.degree;
-        const curricula = await restClient.get(`curricula`, { 'degree_id': degree.id });
-        const groups = await this.loadGroups(degree);
+        const curricula = await restClient.get(`curricula`, { 'degree_id': selected_degree.id });
+        const groups = await this.loadGroups(selected_degree);
 
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
