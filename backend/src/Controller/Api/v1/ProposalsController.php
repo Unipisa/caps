@@ -31,7 +31,8 @@ class ProposalsController extends RestController
                 'dbfield' => "ChoosenExams.Exams.name"],
         'free_exam.name' => ['type' => String::class,
                 'dbfield' => "ChosenFreeChoiceExams.name",
-                'modifier' => "LIKE"]
+                'modifier' => "LIKE"], 
+        'modified' => Integer::class
     ];
 
     function index() {
@@ -45,8 +46,6 @@ class ProposalsController extends RestController
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
-
-        $proposals = $this->paginateQuery($proposals);
 
         // clean the resulting data
         foreach($proposals as $proposal) {

@@ -33,10 +33,17 @@ class RestController extends AppController {
     private $paginationData = [
         'offset' => 0,
         'limit' => null,
-        'total' => null
+        'total' => null,
+        'sort' => null,
+        'direction' => null
     ];
 
     protected function applyFilters($query) {
+        $limit = $this->request->getQuery('_limit');
+        $offset = $this->request->getQuery('_offset');
+        $sort = $this->request->getQuery('_sort');
+        $direction = $this->request->getQuery('_direction');
+
         foreach($this->allowedFilters as $field => $opts) {
             if (is_array($opts)) {
                 $type = array_get_default('type', $opts);
@@ -48,6 +55,22 @@ class RestController extends AppController {
                 $options = null;
                 $dbfield = $field;
                 $modifier = null;
+            }
+
+            if ($sort != null && $sort == $field) {
+                if ($direction == 'desc') {
+                    $d = 'desc';
+                }
+                else if ($direction == 'asc' || $direction == null) {
+                    $d = 'asc';
+                }
+                else {
+                    throw new BadRequestException('Invalid direction for sorting: ' . $direction);
+                }
+    
+                $query = $query->order([ $dbfield => $d ]);
+                $this->paginationData['sort'] = $sort;
+                $this->paginationData['direction'] = $d;
             }
             
             // !!! PHP converts dots to underscores in query strings 
@@ -63,7 +86,7 @@ class RestController extends AppController {
             } else if ($type === String::class) {
                 // pass
             } else {
-                throw new InternalErrorRequestException("internal error: '" . $field ."' has unknown type");
+                throw new InternalErrorException("internal error: '" . $field ."' has unknown type");
             }
 
             if ($options !== null && !in_array($value, $options)) {
@@ -75,9 +98,22 @@ class RestController extends AppController {
             } else if ($modifier === null) {
                 $query = $query->where([ $dbfield => $value ]);
             } else {
-                throw new InternalErrorRequestException("internal error: '" . $field ."' has unknown modifier");
-            }
+                throw new InternalErrorException("internal error: '" . $field ."' has unknown modifier");
+            }            
         }
+
+        // FIXME: Are there any performance conerns with this?
+        $this->paginationData['total'] = $query->count();
+
+        if ($limit !== null) {
+            $query = $query->limit($limit);
+            $this->paginationData['limit'] = intval($limit);
+        }
+
+        if ($offset != null) {
+            $query = $query->offset($offset);
+            $this->paginationData['offset'] = intval($offset);
+        }        
 
         return $query;
     }
@@ -136,22 +172,6 @@ class RestController extends AppController {
     }
 
     protected function paginateQuery($query) {
-        $limit = $this->request->getQuery('_limit');
-        $offset = $this->request->getQuery('_offset');
-
-        // FIXME: Are there any performance conerns with this?
-        $this->paginationData['total'] = $query->count();
-
-        if ($limit !== null) {
-            $query = $query->limit($limit);
-            $this->paginationData['limit'] = intval($limit);
-        }
-
-        if ($offset != null) {
-            $query = $query->offset($offset);
-            $this->paginationData['offset'] = intval($offset);
-        }
-
         return $query;
     }
 

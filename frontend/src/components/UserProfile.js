@@ -59,7 +59,11 @@ class UserProfile extends CapsPage {
 
     async loadProposals() {
         try {
-            const proposals = await restClient.get('proposals', { 'user_id': this.state.user.id });
+            let proposals = await restClient.get('proposals', { 
+                'user_id': this.state.user.id,
+                '_sort': 'modified', 
+                '_direction': 'desc'
+            });
             this.setState({ proposals });
         } catch (err) {
             this.flashCatch(err);
@@ -68,7 +72,11 @@ class UserProfile extends CapsPage {
 
     async loadForms() {
         try {
-            const forms = await restClient.get('forms', { 'user_id': this.state.user.id });
+            const forms = await restClient.get('forms', { 
+                'user_id': this.state.user.id,
+                '_sort': 'modified', 
+                '_direction': 'desc'
+            });
             this.setState({ forms });
         } catch(err) {
             this.flashCatch(err);
