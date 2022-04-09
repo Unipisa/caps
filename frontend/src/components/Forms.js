@@ -3,161 +3,28 @@
 import React, { useState } from 'react';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import FormBadge from './FormBadge';
-import CapsPage from './CapsPage';
+import StateBadge from './StateBadge';
+import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
         ActionButtons, ActionButton } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
-import { Dropdown } from 'react-bootstrap';
 
-class Forms extends CapsPage {
+class Forms extends ItemsBase {
     constructor(props) {
         super(props);
-
-        this.state = {
-            ...this.state,
-            'rows': null,
-            'query': this.props.query,
-            'total': null
-        };
-    }
-    
-    async componentDidMount() {
-        // await new Promise(r => setTimeout(r, 5000)); // sleep 5
-        this.load();
     }
 
-    async load() {
-        try {
-            const forms = await restClient.get(`forms/`, this.state.query);
-            const rows = forms.map(form => {return {
-                form,
-                selected: false
-            }})
-            rows.total = forms.total;
-            this.setState({ rows });
-        } catch(err) {
-            this.flashCatch(err);
-        }
+    items_name() {
+        return "forms";
     }
 
-    async onFilterChange(e) {
-        let query = {...this.state.query};
-        if (e.target.value === '') {
-            delete query[e.target.name];
-        } else {
-            query[e.target.name] = e.target.value;
-        }
-        await this.setStateAsync({query});
-        this.load();
+    item_items_noun() {
+        return "modulo/i";
     }
 
-    async onFilterRemoveField(field) {
-        let query = {...this.state.query};
-        delete query[field];
-        await this.setStateAsync({query});
-        this.load();
-    }
-
-    async extendLimit() {
-        let _limit = this.state.query._limit;
-        if (_limit) {
-            _limit += 10;
-            let query = {...this.state.query, _limit}
-            await this.setStateAsync({query});
-            this.load();
-        }
-    }
-
-    async updateForm(form, state, message) {
-        try {
-            form = await restClient.patch(`forms/${ form.id }`, {state});
-            const rows = this.state.rows.map(
-                row => { return (row.form.id === form.id
-                    ? {...row, form, "selected": false}
-                    : row);});
-            rows.total = this.state.rows.total;
-            this.flashSuccess(<>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b> { message }</>);
-            this.setStateAsync({rows});
-        } catch(err) {
-            this.flashCatch(err);
-        }
-}
-
-    async deleteForm(form) {
-        try {
-            await restClient.delete(`forms/${form.id}`);
-
-            // elimina la form dall'elenco
-            let prev_length = this.state.rows.length;
-            const rows = this.state.rows.filter(row => (row.form.id !== form.id));
-            rows.total = this.state.rows.total + rows.length - prev_length;
-
-            this.flashMessage(<>Modulo <i>{ form.form_template.name }</i> di <b>{ form.user.name }</b> eliminato.</>);
-            this.setState({ rows });
-        } catch(err) {
-            this.flashCatch(err);
-        }
-
-    }
-
-    toggleForm(form) {
-        const rows = this.state.rows.map(row => {
-            return row.form.id === form.id
-            ? {...row, "selected": !row.selected}
-            : row;});
-        rows.total = this.state.rows.total;
-        this.setState({rows});
-    }
-
-    updateRows(state, message) {
-        this.state.rows.forEach(row => {
-            if (row.selected) this.updateForm(row.form, state, message);
-        });
-    }
-
-    countSelected() {
-        return this.state.rows.filter(row => row.selected).length;
-    }
-
-    async approveSelected() {
-        if (await this.confirm("Confermi approvazione?", 
-            `Vuoi approvare ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("approved", "approvato");
-        }
-    }
-
-    async rejectSelected() {
-        if (await this.confirm("Confermi rifiuto?", 
-            `Vuoi rifiutare ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("rejected", "respinto");
-        }
-    }
-
-    async resubmitSelected() {
-        if (await this.confirm("Riporta in valutazione?", 
-            `Vuoi risottomettere ${this.countSelected()} modulo/i selezionati?`)) {
-            this.updateRows("submitted", "riportato in valutazione"); 
-        }    
-    }
-
-    async redraftSelected() {
-        if (await this.confirm("Riporta in bozza?", 
-            `Vuoi riportare in bozza ${this.countSelected()} modulo/i selezionati?`)) {
-                this.updateRows("draft", "riportato in bozza");
-        }
-    }
-
-    async deleteSelected() {
-        if (await this.confirm("Confermi cancellazione?", 
-            `Vuoi rimuovere ${this.countSelected()} modulo/i selezionati?`)) {
-
-                // delete selected forms one by one
-                this.state.rows.forEach(row => {
-                    if (row.selected) this.deleteForm(row.form);
-                });
-            }
+    shortItemRender(form) {
+        return <>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b></>
     }
 
     renderPage() {
@@ -233,10 +100,10 @@ class Forms extends CapsPage {
                         { this.state.rows === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento moduli...</LoadingMessage></td></tr>
                             : this.state.rows.map(row => <FormRow 
-                                key={row.form.id} 
+                                key={row.item.id} 
                                 row={row} 
-                                onToggle={() => {this.toggleForm(row.form)}}
-                                href={`${this.props.root}forms/view/${row.form.id}`}
+                                onToggle={() => {this.toggleForm(row.item)}}
+                                href={`${this.props.root}forms/view/${row.item.id}`}
                                 />)
                         }
                         </tbody>
@@ -254,66 +121,21 @@ class Forms extends CapsPage {
     </div>
     }
 
-    async csvData() {
-        try {
-            let query = {...this.state.query};
-
-            // carica tutti i dati, rimuovi "limit"
-            // ma mantieni eventuali filtri (e ordinamento)
-            delete query._limit;
-            const data = await restClient.get("forms/", query);
-
-            // collect all keys from all forms
-            let keys = [];
-
-            function addKey(key) {
-                if (!keys.includes(key)) keys.push(key);
-            }
-
-            function addKeys(prefix, obj) {
-                for(let key in obj) {
-                    const val=obj[key];
-                    if (typeof(val) === 'object') {
-                        addKeys(`${prefix}${key}.`, val);
-                    } else {
-                        addKey(`${prefix}${key}`);
-                    }
-                }
-            }
-
-            data.forEach(form => addKeys("", form));
-
-            keys.sort();
-
-            // compose user friendly column name
-            function label_for_key(key) {
-                let label = key;
-                label = label.replace(/^(data\.)/,''); // i campi dei moduli hanno il prefisso data che è fuorviante
-                label = label.replaceAll('.', ' ');
-                label = label.replaceAll('_', ' ');
-                return label;
-            }
-
-            const headers = (keys.map(key => { return {
-                    label: label_for_key(key),
-                    key }}));
-
-            return {headers, data};
-        } catch(err) {
-            this.flashCatch(err);
-        }
+    // compose user friendly column name
+    csv_label_for_key(key) {
+        return super.csv_label_for_key(key.replace(/^(data\.)/,'')); // i campi dei moduli hanno il prefisso data che è fuorviante
     }
 }
 
 function FormRow(props) {
-    const {row: {selected, form}, href, onToggle} = props;
+    const {row: {selected, item}, href, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
-        <td><FormBadge form={form}></FormBadge></td>
-        <td>{form.user.name}</td>
-        <td>{form.form_template.name}</td>
-        <td>{form.date_submitted}</td>
-        <td>{form.date_managed}</td>
+        <td><StateBadge state={item.state}></StateBadge></td>
+        <td>{item.user.name}</td>
+        <td>{item.form_template.name}</td>
+        <td>{item.date_submitted}</td>
+        <td>{item.date_managed}</td>
         <td>
             <div className="d-none d-xl-inline-flex flex-row align-items-center">
                 <a href={href}>

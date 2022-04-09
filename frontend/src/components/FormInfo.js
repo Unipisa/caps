@@ -1,7 +1,7 @@
 import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
-import FormBadge from './FormBadge';
+import StateBadge from './StateBadge';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
 
@@ -12,18 +12,6 @@ class FormInfo extends React.Component {
             this.props.onDeleteClicked(this);
         }
         evt.stopPropagation();
-    }
-
-    renderBadge() {
-        if (this.props.form.state == "draft") {
-            return <span className="badge badge-sm badge-secondary">Bozza</span>;
-        }
-        if (this.props.form.state == "submitted") {
-            return <span className="badge badge-sm badge-warning">Inviato</span>;
-        }
-        if (this.props.form.state == "approved") {
-            return <span className="badge badge-sm badge-success">Approvato</span>;
-        }
     }
 
     renderButtons() {
@@ -56,7 +44,7 @@ class FormInfo extends React.Component {
             <SmallCard onClick={this.onClick.bind(this)} className="border-left-primary clickable-card">
                 <div className="d-flex">
                     <div className="mb-2 mr-auto">
-                        <FormBadge form={this.props.form}></FormBadge>
+                        <StateBadge state={this.props.form.state}></StateBadge>
                     </div>
                     {this.renderButtons()}
                 </div>

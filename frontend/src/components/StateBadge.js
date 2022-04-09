@@ -1,21 +1,20 @@
 import React from "react";
 
-function ProposalBadge(props) {
-    if (props.proposal.state == "draft") {
+function StateBadge({state}) {
+    if (state == "draft") {
         return <span className="badge badge-sm badge-secondary">Bozza</span>;
     }
-    if (props.proposal.state == "submitted") {
+    if (state == "submitted") {
         return <span className="badge badge-sm badge-warning">Inviato</span>;
     }
-    if (props.proposal.state == "approved") {
+    if (state == "approved") {
         return <span className="badge badge-sm badge-success">Approvato</span>;
     }
-    if (props.proposal.state == "rejected") {
+    if (state == "rejected") {
         return <span className="badge badge-sm badge-danger">Rifiutato</span>;
     }
-
-    return <></>;
+    throw new RangeError(`invalid state '${state}'`);
 }
 
-export default ProposalBadge;
+export default StateBadge;
 
