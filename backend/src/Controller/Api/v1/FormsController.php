@@ -12,6 +12,7 @@ class FormsController extends RestController {
     // TODO: decidere come specificare i filtri per i campi associati
     public $allowedFilters = [ 
         'form_id' => Integer::class, 
+        'user_id' => Integer::class,
         'state' => ['type' => String::class, 
                     'options' => ["draft", "submitted", "approved", "rejected"]],
         'user.surname' => [ 'type' => String::class, 
@@ -19,7 +20,8 @@ class FormsController extends RestController {
                             'modifier' => "LIKE" ],
         'form_template.name' => [ 'type' =>  String::class,
                                 'dbfield' => "FormTemplates.name",
-                                'modifier' => "LIKE" ]
+                                'modifier' => "LIKE" ],
+        'modified' => Integer::class
         ];
 
     public function index() {
@@ -35,8 +37,6 @@ class FormsController extends RestController {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
-
-        $forms = $this->paginateQuery($forms);
 
         // clean the resulting data
         foreach($forms as $form) {

@@ -22,7 +22,7 @@ class DocumentsController extends RestController {
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($d));
+        $this->JSONResponse(ResponseCode::Ok, $d);
     }
 
     public function post() {

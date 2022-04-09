@@ -16,7 +16,6 @@ class CurriculaController extends RestController {
         ]);
 
         $c = $this->applyFilters($c);
-        $c = $this->paginateQuery($c);
 
         $this->JSONResponse(ResponseCode::Ok, $c);
     }

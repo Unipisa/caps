@@ -55,8 +55,12 @@ class ProposalInfo extends React.Component {
     }
 
     onClick() {
-        // Redirect the user to the view page 
-        window.location.href = Caps.root + 'proposals/view/' + this.props.proposal.id;
+        // Redirect the user to the view page, or to the edit page if the proposal
+        // is still in the draft state. 
+        if (this.props.proposal.state == 'draft')
+            window.location.href = Caps.root + 'proposals/edit/' + this.props.proposal.id;
+        else
+            window.location.href = Caps.root + 'proposals/view/' + this.props.proposal.id;
     }
 
     render() {

@@ -117,9 +117,9 @@ class Proposals extends ItemsBase {
                                 <ProposalRow 
                                     key={row.item.id} 
                                     row={row} 
-                                    onToggle={() => {this.toggleProposal(row.item)}}
-                                    href={`${this.props.root}proposal/view/${row.item.id}`}
-                                    href_pdf={`${this.props.root}}proposal/pdf/${row.item.id}`}
+                                    onToggle={() => {this.toggleItem(row.item)}}
+                                    href={`${this.props.root}proposals/view/${row.item.id}`}
+                                    href_pdf={`${this.props.root}proposals/pdf/${row.item.id}`}
                                     />)
                         }
                         </tbody>
@@ -127,9 +127,10 @@ class Proposals extends ItemsBase {
                     { this.state.rows && 
                             <p>
                             {this.state.rows.length < this.state.rows.total 
-                            ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
+                            ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
+                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length}`} da mostrare)
+                            </button>
                             : null}
-                            {` [${this.state.rows.length}/${this.state.rows.total} piani di studio mostrati]`}
                             </p>
                         }
                 </div>
@@ -157,13 +158,13 @@ function ProposalRow(props) {
                     </button>
                 </a>
 
-                <a href={`${href_pdf}`}>
+                <a href={href_pdf}>
                     <button type="button" className="btn btn-sm btn-secondary mr-2">
                         <i className="fas fa-file-pdf mr-2"></i>
                         Scarica
                     </button>
                 </a>
-                <a href={`${href_pdf}show_comments=1`}> 
+                <a href={`${href_pdf}?show_comments=1`}> 
                     <button type="button" className="btn btn-sm btn-secondary">
                         <i className="fas fa-file-pdf mr-2"></i>
                         Commenti
