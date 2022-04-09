@@ -268,8 +268,8 @@ class Proposals extends CapsPage {
                                     key={row.proposal.id} 
                                     row={row} 
                                     onToggle={() => {this.toggleProposal(row.proposal)}}
-                                    href={`${this.props.root}proposal/view/${row.proposal.id}`}
-                                    href_pdf={`${this.props.root}}proposal/pdf/${row.proposal.id}`}
+                                    href={`${this.props.root}proposals/view/${row.proposal.id}`}
+                                    href_pdf={`${this.props.root}proposals/pdf/${row.proposal.id}`}
                                     />)
                         }
                         </tbody>
@@ -356,13 +356,13 @@ function ProposalRow(props) {
                     </button>
                 </a>
 
-                <a href={`${href_pdf}`}>
+                <a href={href_pdf}>
                     <button type="button" className="btn btn-sm btn-secondary mr-2">
                         <i className="fas fa-file-pdf mr-2"></i>
                         Scarica
                     </button>
                 </a>
-                <a href={`${href_pdf}show_comments=1`}> 
+                <a href={`${href_pdf}?show_comments=1`}> 
                     <button type="button" className="btn btn-sm btn-secondary">
                         <i className="fas fa-file-pdf mr-2"></i>
                         Commenti
