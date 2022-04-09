@@ -6,7 +6,7 @@ import LoadingMessage from './LoadingMessage';
 import StateBadge from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
-        ActionButtons, ActionButton } from './Table';
+        ActionButtons, ActionButton, ColumnHeader } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
 
@@ -28,12 +28,11 @@ class Forms extends ItemsBase {
     }
 
     renderPage() {
-        const onFilterChange = this.onFilterChange.bind(this);
         return <div>
             <h1>Moduli</h1>
             <Card>
                 <div className="d-flex mb-2">
-                    <FilterButton onChange={onFilterChange}>
+                    <FilterButton onChange={ this.onFilterChange.bind(this) }>
                         <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
                             <option value="">tutti</option> 
                             <option value="draft">bozze</option>
@@ -88,11 +87,11 @@ class Forms extends ItemsBase {
                         <thead>
                             <tr>
                             <th></th>
-                            <th><a href="#">Stato</a></th>
-                            <th>Nome</th>
-                            <th>Modello</th>
-                            <th>Inviato</th>
-                            <th>Gestito</th>
+                            <th><ColumnHeader self={ this } name="state">Stato</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="user.surname">Nome</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="form_template.name">Modello</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="date_submitted">Inviato</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="date_approved">Gestito</ColumnHeader></th>
                             <th></th>
                             </tr>
                         </thead>

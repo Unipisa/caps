@@ -53,6 +53,24 @@ class ItemsBase extends CapsPage {
         }
     }
 
+    async toggleSort(name) {
+        if ( this.state.query._sort == name) {
+            let _direction = null;
+            if (this.state.query._direction == 'asc') _direction = 'desc';
+            else if (this.state.query._direction == 'desc') _direction = 'asc';
+            else throw new RangeError(`invalid value for _direction: ${ this.state.query._direction }`);
+            const query = { ...this.state.query, _direction};
+            await this.setStateAsync({ query });
+            this.load();
+        } else {
+            const _sort = name;
+            const _direction = 'asc';
+            const query = {...this.state.query, _sort, _direction};
+            await this.setStateAsync({ query });
+            this.load();
+        }
+    }
+
     async onFilterChange(e) {
         let query = {...this.state.query};
         if (e.target.value === '') {

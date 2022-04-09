@@ -6,7 +6,7 @@ import LoadingMessage from './LoadingMessage';
 import StateBadge from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
-        ActionButtons, ActionButton } from './Table';
+        ActionButtons, ActionButton, ColumnHeader } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
 
@@ -28,12 +28,11 @@ class Proposals extends ItemsBase {
     }
  
     renderPage() {
-        const onFilterChange = this.onFilterChange.bind(this);
         return <div>
             <h1>Piani di Studio</h1>
             <Card>
                 <div className="d-flex mb-2">
-                    <FilterButton onChange={onFilterChange}>
+                    <FilterButton onChange={ this.onFilterChange.bind(this) }>
                         <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
                             <option value="">tutti</option> 
                             <option value="draft">bozze</option>
@@ -101,12 +100,12 @@ class Proposals extends ItemsBase {
                         <thead>
                             <tr>
                             <th></th>
-                            <th><a href="#">Stato</a></th>
-                            <th>Nome</th>
-                            <th>Anno</th>
-                            <th>Laurea</th>
-                            <th>Piano di studio</th>
-                            <th>Ultima modifica</th>
+                            <th><ColumnHeader self={this} name="state">Stato</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="user.surname">Nome</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.degree.academic_year">Anno</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.degree.name">Laurea</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.name">Piano di studio</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="modified">Ultima modifica</ColumnHeader></th>
                             <th></th>
                             </tr>
                         </thead>
@@ -145,7 +144,7 @@ function ProposalRow(props) {
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><StateBadge state={item.state}></StateBadge></td>
         <td>{item.user.name}</td>
-        <td>{item.curriculum.degree.year}</td>
+        <td>{item.curriculum.degree.academic_year}</td>
         <td>{item.curriculum.degree.name}</td>
         <td>{item.curriculum.name}</td>
         <td>{item.modified}</td>
