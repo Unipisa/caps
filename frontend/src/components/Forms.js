@@ -101,7 +101,7 @@ class Forms extends ItemsBase {
                             : this.state.rows.map(row => <FormRow 
                                 key={row.item.id} 
                                 row={row} 
-                                onToggle={() => {this.toggleForm(row.item)}}
+                                onToggle={() => {this.toggleItem(row.item)}}
                                 href={`${this.props.root}forms/view/${row.item.id}`}
                                 />)
                         }
