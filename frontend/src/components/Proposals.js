@@ -277,9 +277,10 @@ class Proposals extends CapsPage {
                     { this.state.rows && 
                             <p>
                             {this.state.rows.length < this.state.rows.total 
-                            ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
+                            ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
+                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length}`} da mostrare)
+                            </button>
                             : null}
-                            {` [${this.state.rows.length}/${this.state.rows.total} piani di studio mostrati]`}
                             </p>
                         }
                 </div>
