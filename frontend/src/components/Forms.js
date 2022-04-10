@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { useState } from 'react';
+import Moment from 'moment';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import StateBadge from './StateBadge';
@@ -92,6 +93,7 @@ class Forms extends ItemsBase {
                             <th><ColumnHeader self={ this } name="form_template.name">Modello</ColumnHeader></th>
                             <th><ColumnHeader self={ this } name="date_submitted">Inviato</ColumnHeader></th>
                             <th><ColumnHeader self={ this } name="date_approved">Gestito</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="modified">Modificato</ColumnHeader></th>
                             <th></th>
                             </tr>
                         </thead>
@@ -134,8 +136,9 @@ function FormRow(props) {
         <td><StateBadge state={item.state}></StateBadge></td>
         <td>{item.user.name}</td>
         <td>{item.form_template.name}</td>
-        <td>{item.date_submitted}</td>
-        <td>{item.date_managed}</td>
+        <td>{ item.date_submitted && Moment(item.date_submitted).format("DD/MM/YYYY") }</td>
+        <td>{ item.date_managed && Moment(item.date_managed).format("DD/MM/YYYY") }</td>
+        <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY") }</td>
         <td>
             <div className="d-none d-xl-inline-flex flex-row align-items-center">
                 <a href={href}>

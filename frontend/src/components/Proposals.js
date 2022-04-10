@@ -1,6 +1,7 @@
 'use strict';
 
-import React, { useState } from 'react';
+import React from 'react';
+import Moment from 'moment';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import StateBadge from './StateBadge';
@@ -10,7 +11,6 @@ import { FilterButton, FilterInput, FilterSelect, FilterBadges,
         ResponsiveButton, ResponsiveButtons 
         } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
-import restClient from '../modules/api';
 
 class Proposals extends ItemsBase {
     constructor(props) {
@@ -145,11 +145,11 @@ function ProposalRow(props) {
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><StateBadge state={item.state}></StateBadge></td>
-        <td>{item.user.name}</td>
-        <td>{item.curriculum.degree.academic_year}</td>
-        <td>{item.curriculum.degree.name}</td>
-        <td>{item.curriculum.name}</td>
-        <td>{item.modified}</td>
+        <td>{ item.user.name }</td>
+        <td>{ item.curriculum.degree.academic_year }</td>
+        <td>{ item.curriculum.degree.name }</td>
+        <td>{ item.curriculum.name }</td>
+        <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY H:mm") }</td>
         <td>
             <ResponsiveButtons>
                 <ResponsiveButton className="btn-primary" key="view" href={ href }>
