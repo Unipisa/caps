@@ -9,7 +9,6 @@ class CapsAppController {
     constructor(root = "/") {
         this.root = root;
         this.enhanceAttachments();
-        this.setupBadges();
         this.setupCKEditor();
         this.setupSelect();
     }

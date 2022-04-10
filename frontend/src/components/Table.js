@@ -113,3 +113,35 @@ export function ColumnHeader({self, name, children}) {
         return children;
     }
 }
+
+export function ResponsiveButton({xl, href, children}) {
+    if (xl) return <a href={ href }>
+        <button type="button" className="btn btn-sm btn-primary mr-2">
+            { children }
+        </button>
+    </a>
+    else return <li>
+        <a className="dropdown-item" href={ href }>
+            { children }
+        </a>
+    </li>
+}
+
+export function ResponsiveButtons({children}) {
+    return <>
+        <div className="d-xl-none">
+            <div className="dropdown">
+                <a className="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
+                id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i className="fas fa-cog" />
+                </a>
+                <ul className="dropdown-menu">
+                    { children }
+                </ul>
+            </div>
+        </div>
+        <div className="d-none d-xl-inline-flex flex-row align-items-center">
+            { children.map(button => React.cloneElement(button, { xl: true })) }
+        </div>
+    </>
+}

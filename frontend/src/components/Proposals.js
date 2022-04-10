@@ -6,7 +6,9 @@ import LoadingMessage from './LoadingMessage';
 import StateBadge from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
-        ActionButtons, ActionButton, ColumnHeader } from './Table';
+        ActionButtons, ActionButton, ColumnHeader,
+        ResponsiveButton, ResponsiveButtons 
+        } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
 
@@ -149,28 +151,17 @@ function ProposalRow(props) {
         <td>{item.curriculum.name}</td>
         <td>{item.modified}</td>
         <td>
-            <div className="d-none d-xl-inline-flex flex-row align-items-center">
-                <a href={href}>
-                    <button type="button" className="btn btn-sm btn-primary mr-2">
-                    <i className="fas fa-eye mr-2"></i>
-                    Visualizza
-                    </button>
-                </a>
-
-                <a href={href_pdf}>
-                    <button type="button" className="btn btn-sm btn-secondary mr-2">
-                        <i className="fas fa-file-pdf mr-2"></i>
-                        Scarica
-                    </button>
-                </a>
-                <a href={`${href_pdf}?show_comments=1`}> 
-                    <button type="button" className="btn btn-sm btn-secondary">
-                        <i className="fas fa-file-pdf mr-2"></i>
-                        Commenti
-                    </button>
-                </a>
-            </div>
-
+            <ResponsiveButtons>
+                <ResponsiveButton key="view" href={ href }>
+                    <i className="fas fa-eye mr-2" />Visualizza
+                </ResponsiveButton>
+                <ResponsiveButton key="pdf" href={href_pdf}>
+                    <i className="fas fa-file-pdf mr-2" />Scarica
+                </ResponsiveButton>
+                <ResponsiveButton key="pdf2" href={`${href_pdf}?show_comments=1`}>
+                    <i className="fas fa-file-pdf mr-2" />Scarica (con commenti)
+                </ResponsiveButton>
+            </ResponsiveButtons>
         </td>
     </tr>
 }
