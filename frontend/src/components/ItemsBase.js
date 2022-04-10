@@ -1,14 +1,9 @@
 'use strict';
 
-import React, { useState } from 'react';
-import Card from './Card';
-import LoadingMessage from './LoadingMessage';
-import ProposalBadge from './StateBadge';
+import React from 'react';
 import CapsPage from './CapsPage';
-import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
-        ActionButtons, ActionButton } from './Table';
-import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
+import jQuery from 'jquery';
 
 class ItemsBase extends CapsPage {
     constructor(props) {
@@ -37,6 +32,10 @@ class ItemsBase extends CapsPage {
     async componentDidMount() {
         // await new Promise(r => setTimeout(r, 5000)); // sleep 5
         this.load();
+    }
+
+    async componentDidUpdate() {
+        jQuery('span.filter-badge').tooltip();
     }
 
     async load() {
