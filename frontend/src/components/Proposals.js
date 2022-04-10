@@ -152,14 +152,14 @@ function ProposalRow(props) {
         <td>{item.modified}</td>
         <td>
             <ResponsiveButtons>
-                <ResponsiveButton key="view" href={ href }>
+                <ResponsiveButton className="btn-primary" key="view" href={ href }>
                     <i className="fas fa-eye mr-2" />Visualizza
                 </ResponsiveButton>
-                <ResponsiveButton key="pdf" href={href_pdf}>
+                <ResponsiveButton className="btn-secondary" key="pdf" href={href_pdf}>
                     <i className="fas fa-file-pdf mr-2" />Scarica
                 </ResponsiveButton>
-                <ResponsiveButton key="pdf2" href={`${href_pdf}?show_comments=1`}>
-                    <i className="fas fa-file-pdf mr-2" />Scarica (con commenti)
+                <ResponsiveButton className="btn-secondary" key="pdf2" href={`${href_pdf}?show_comments=1`}>
+                    <i className="fas fa-file-pdf mr-2" />Scarica (con&nbsp;commenti)
                 </ResponsiveButton>
             </ResponsiveButtons>
         </td>

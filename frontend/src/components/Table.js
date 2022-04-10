@@ -114,9 +114,9 @@ export function ColumnHeader({self, name, children}) {
     }
 }
 
-export function ResponsiveButton({xl, href, children}) {
+export function ResponsiveButton({className, href, children, xl}) {
     if (xl) return <a href={ href }>
-        <button type="button" className="btn btn-sm btn-primary mr-2">
+        <button type="button" className={"btn btn-sm mr-2 "+className}>
             { children }
         </button>
     </a>
