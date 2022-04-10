@@ -246,7 +246,7 @@ class ItemsBase extends CapsPage {
             keys.sort();
 
             const headers = (keys.map(key => { return {
-                    label: this.label_for_key(key),
+                    label: this.csv_label_for_key(key),
                     key }}));
 
             return {headers, data};
