@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Moment from 'moment';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import StateBadge from './StateBadge';
+import { FormStateBadge } from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
         ActionButtons, ActionButton, ColumnHeader } from './Table';
@@ -133,7 +133,7 @@ function FormRow(props) {
     const {row: {selected, item}, href, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
-        <td><StateBadge state={item.state}></StateBadge></td>
+        <td><FormStateBadge form={ item } /></td>
         <td>{item.user.name}</td>
         <td>{item.form_template.name}</td>
         <td>{ item.date_submitted && Moment(item.date_submitted).format("DD/MM/YYYY") }</td>

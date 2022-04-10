@@ -1,7 +1,7 @@
 import React from "react";
 import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
-import StateBadge from './StateBadge';
+import { FormStateBadge } from './StateBadge';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
 
@@ -44,7 +44,7 @@ class FormInfo extends React.Component {
             <SmallCard onClick={this.onClick.bind(this)} className="border-left-primary clickable-card">
                 <div className="d-flex">
                     <div className="mb-2 mr-auto">
-                        <StateBadge state={this.props.form.state}></StateBadge>
+                        <FormStateBadge form={ this.props.form } />
                     </div>
                     {this.renderButtons()}
                 </div>

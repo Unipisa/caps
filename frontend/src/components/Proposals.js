@@ -4,7 +4,7 @@ import React from 'react';
 import Moment from 'moment';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import StateBadge from './StateBadge';
+import { ProposalStateBadge } from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
         ActionButtons, ActionButton, ColumnHeader,
@@ -144,7 +144,7 @@ function ProposalRow(props) {
     const {row: {selected, item}, href, href_pdf, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
-        <td><StateBadge state={item.state}></StateBadge></td>
+        <td><ProposalStateBadge proposal={ item } /></td>
         <td>{ item.user.name }</td>
         <td>{ item.curriculum.degree.academic_year }</td>
         <td>{ item.curriculum.degree.name }</td>
