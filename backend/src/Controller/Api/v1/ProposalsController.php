@@ -96,6 +96,26 @@ class ProposalsController extends RestController
         }       
     }
 
+    function post($id) {
+        try {
+            $p = $this->Proposals->get($id, [ 'contain' => array_merge(ProposalsController::$associations, [ 'ProposalAuths' ]) ]);
+        }
+        catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::NotFound, null, "Cannot share proposal");
+            return;
+        }
+        // TODO: check the path of the request
+
+        if (!$this->user->canShareProposal($p)) {
+            $this->JSONResponse(ResponseCode::Forbidden, null, "Cannot share proposal");
+            return;
+        }
+        
+        $this->JSONResponse(ResponseCode::Error, "work in progress!");
+
+        $this->JSONResponse(ResponseCode::Ok, $p);
+    }
+
     function delete($id) {
         // We only get the proposal without all the associated tables, 
         // as we do not need that much data to decide wheather the proposal
