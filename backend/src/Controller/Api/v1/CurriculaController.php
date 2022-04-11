@@ -8,6 +8,7 @@ class CurriculaController extends RestController {
     public static $associations = [ 'Degrees', 'CompulsoryExams', 
         'FreeChoiceExams', 'CompulsoryGroups', 'CompulsoryExams.Exams', 
         'CompulsoryGroups.Groups' ];
+        
     public $allowedFilters = [ 'degree_id' => Integer::class ];
 
     public function index() {

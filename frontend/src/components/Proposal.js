@@ -90,6 +90,11 @@ class Proposal extends React.Component {
     async loadGroups(degree) {
         let groups = await restClient.get('groups', { 'degree_id': degree.id });
 
+        if (degree.default_group_id) {
+            let default_group = await restClient.get(`groups/${degree.default_group_id}`);
+            groups.push(default_group);
+        }
+
         // We need to re-index the groups based on their ids, for easy lookups 
         // later on when we build the form. 
         groups = Object.fromEntries(groups.map(el => [el.id, el]));

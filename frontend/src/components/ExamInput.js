@@ -125,13 +125,13 @@ class ExamInput extends React.Component {
                 break;
             case "compulsory_group":
                 options.push(
-                    <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.exam.group.name}</option>
+                    <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.groups[this.props.exam.group_id].name}</option>
                 );
                 break;
             case "free_choice_exam":
                 options.push(
                     this.props.exam.group_id ? 
-                        <option key="dummy" value="-1" disabled="1">Un esame a scelta del gruppo {this.props.exam.group.name}</option> : 
+                        <option key="dummy" value="-1" disabled="1">Un esame a scelta del gruppo {this.props.groups[this.props.exam.group_id].name}</option> : 
                         <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
                 );
                 break;

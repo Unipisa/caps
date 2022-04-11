@@ -15,4 +15,9 @@ class GroupsController extends RestController {
         $this->JSONResponse(ResponseCode::Ok, $groups);
     }
 
+    public function get($id) {
+        $group = $this->Groups->get($id, [ 'contain' => GroupsController::$associations ]);
+        $this->JSONResponse(ResponseCode::Ok, $group);
+    }
+
 }
