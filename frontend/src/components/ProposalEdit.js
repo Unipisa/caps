@@ -10,7 +10,7 @@ import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import ProposalYear from './ProposalYear';
 
-class Proposal extends React.Component {
+export class ProposalEdit extends React.Component {
     constructor(props) {
         super(props);
 
@@ -614,4 +614,4 @@ class Proposal extends React.Component {
     }
 }
 
-export default Proposal;
+export default ProposalEdit;

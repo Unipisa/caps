@@ -107,6 +107,11 @@ class User extends Entity implements IdentityInterface
         return $this['admin'] || ($this['id'] == $proposal['user_id']) || $proposal->checkSecrets($secrets);
     }
 
+    public function canShareProposal(Proposal $proposal) : bool
+    {
+        return $this['admin'] || ($this['id'] == $proposal['user_id']);
+    }
+
     public function canDeleteProposal(Proposal $proposal) : bool
     {
         return $this['admin'] || (($this['id'] == $proposal['user_id']) && ($proposal['state'] == 'draft'));

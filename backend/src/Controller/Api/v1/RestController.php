@@ -164,6 +164,9 @@ class RestController extends AppController {
             'approval-signature-text' => $settings['approval-signature-text']
         ];
 
+        // clean unwanted information
+        unset($this->user['password']);
+            
         $this->JSONResponse(ResponseCode::Ok, [
             'settings' => $safe_settings, 
             'user' => $this->user,

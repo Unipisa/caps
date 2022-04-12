@@ -14,6 +14,7 @@
     "bootstrap-select": "^1.13.18",
     "esm": "^3.2.25",
     "jquery-easing": "0.0.1",
+    "moment": "^2.29.2",
     "react": "^17.0.2",
     "react-bootstrap": "^2.2.3",
     "react-csv": "^2.2.2",

@@ -3,6 +3,7 @@ import SmallCard from "./SmallCard";
 import { formatDate } from '../modules/dates';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle, faEdit, faCopy } from '@fortawesome/free-solid-svg-icons'
+import { ProposalStateBadge } from "./StateBadge";
 
 
 class ProposalInfo extends React.Component {
@@ -12,21 +13,6 @@ class ProposalInfo extends React.Component {
             this.props.onDeleteClicked(this);
         }
         evt.stopPropagation();
-    }
-
-    renderStateBadge() {
-        if (this.props.proposal.state == "draft") {
-            return <span className="badge badge-sm badge-secondary">Bozza</span>;
-        }
-        if (this.props.proposal.state == "submitted") {
-            return <span className="badge badge-sm badge-warning">Sottomesso il {formatDate(this.props.proposal.submitted_date)}</span>;
-        }
-        if (this.props.proposal.state == "approved") {
-            return <span className="badge badge-sm badge-success">Approvato il {formatDate(this.props.proposal.approved_date)}</span>;
-        }
-        if (this.props.proposal.state == "rejected") {
-            return <span className="badge badge-sm badge-danger">Rigettato il {formatDate(this.props.proposal.modified)}</span>;
-        }
     }
 
     renderButtons() {
@@ -55,8 +41,12 @@ class ProposalInfo extends React.Component {
     }
 
     onClick() {
-        // Redirect the user to the view page 
-        window.location.href = Caps.root + 'proposals/view/' + this.props.proposal.id;
+        // Redirect the user to the view page, or to the edit page if the proposal
+        // is still in the draft state. 
+        if (this.props.proposal.state == 'draft')
+            window.location.href = Caps.root + 'proposals/edit/' + this.props.proposal.id;
+        else
+            window.location.href = Caps.root + 'proposals/view/' + this.props.proposal.id;
     }
 
     render() {
@@ -65,7 +55,9 @@ class ProposalInfo extends React.Component {
         return <div className="my-2 col-xxl-3 col-xl-4 col-lg-6 col-12">
             <SmallCard className="clickable-card" title={proposal.curriculum.degree.name} onClick={this.onClick.bind(this)}>
                 <div className="d-flex">
-                    <div className="mb-2 mr-auto">{this.renderStateBadge()}</div>
+                    <div className="mb-2 mr-auto">
+                        <ProposalStateBadge proposal={this.props.proposal} />
+                    </div>
                     <div>
                         {this.renderButtons()}
                     </div>

@@ -47,6 +47,7 @@ class CapsPage extends React.Component {
     }
 
     flashCatch(error) {
+        console.log(error);
         this.flashError(`${error.name}: ${error.message}`);
     }
 

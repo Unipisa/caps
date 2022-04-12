@@ -1,189 +1,40 @@
 'use strict';
 
-import React, { useState } from 'react';
+import React from 'react';
+import Moment from 'moment';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import ProposalBadge from './ProposalBadge';
-import CapsPage from './CapsPage';
+import { ProposalStateBadge } from './StateBadge';
+import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
-        ActionButtons, ActionButton } from './Table';
+        ActionButtons, ActionButton, ColumnHeader,
+        ResponsiveButton, ResponsiveButtons 
+        } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
-import restClient from '../modules/api';
-import CapsController from '../caps-controller';
-import { faThList } from '@fortawesome/free-solid-svg-icons';
 
-class Proposals extends CapsPage {
+class Proposals extends ItemsBase {
     constructor(props) {
         super(props);
-
-        const stored_query = JSON.parse(sessionStorage.getItem('proposals-filter'));
-
-        this.state = {
-            ...this.state,
-            'rows': null,
-            'query': this.props.query || stored_query || {},
-            'total': null
-        };
-    }
-    
-    async componentDidMount() {
-        // await new Promise(r => setTimeout(r, 5000)); // sleep 5
-        this.load();
     }
 
-    async load() {
-        try {
-            const forms = await restClient.get(`proposals/`, this.state.query);
-            const rows = forms.map(proposal => {return {
-                proposal,
-                selected: false
-            }})
-            rows.total = forms.total;
-            this.setState({ rows });
-        } catch(err) {
-            this.flashCatch(err);
-        }
+    items_name() { 
+        return "proposals";
     }
 
-    async onFilterChange(e) {
-        let query = {...this.state.query};
-        if (e.target.value === '') {
-            delete query[e.target.name];
-        } else {
-            query[e.target.name] = e.target.value;
-        }
-        await this.setStateAsync({query});
-        sessionStorage.setItem('proposals-filter', JSON.stringify(query));
-        this.load();
+    item_items_noun() {
+        return "piano/i di studio";
     }
 
-    async onFilterRemoveField(field) {
-        let query = {...this.state.query};
-        delete query[field];
-        await this.setStateAsync({query});
-        this.load();
+    shortItemRender(proposal) {
+        return <>piano <i>{ proposal }</i> di <b>{ proposal.user.name }</b></>
     }
-
-    async extendLimit() {
-        let _limit = this.state.query._limit;
-        if (_limit) {
-            _limit += 10;
-            let query = {...this.state.query, _limit}
-            await this.setStateAsync({query});
-            this.load();
-        }
-    }
-
-    async updateProposal(proposal, state, message) {
-        try {
-            form = await restClient.patch(`proposals/${ proposal.id }`, {state});
-            const rows = this.state.rows.map(
-                row => { return (row.proposal.id === form.id
-                    ? {...row, proposal, "selected": false}
-                    : row);});
-            rows.total = this.state.rows.total;
-            this.flashSuccess(<>piano <i>{ proposal }</i> di <b>{ proposal.user.name }</b> { message }</>);
-            this.setStateAsync({rows});
-        } catch(err) {
-            this.flashCatch(err);
-        }
-}
-
-    async deleteProposal(proposal) {
-        try {
-            await restClient.delete(`proposals/${proposal.id}`);
-
-            // elimina la form dall'elenco
-            let prev_length = this.state.rows.length;
-            const rows = this.state.rows.filter(row => (row.proposal.id !== proposal.id));
-            rows.total = this.state.rows.total + rows.length - prev_length;
-
-            this.flashMessage(<>Piano <i>{ proposal }</i> di <b>{ proposal.user.name }</b> eliminato.</>);
-            this.setState({ rows });
-        } catch(err) {
-            this.flashCatch(err);
-        }
-
-    }
-
-    toggleProposal(proposal) {
-        const rows = this.state.rows.map(row => {
-            return row.proposal.id === proposal.id
-            ? {...row, "selected": !row.selected}
-            : row;});
-        rows.total = this.state.rows.total;
-        this.setState({rows});
-    }
-
-    updateRows(state, message) {
-        this.state.rows.forEach(row => {
-            if (row.selected) this.updateProposal(row.proposal, state, message);
-        });
-    }
-
-    countSelected() {
-        return this.state.rows.filter(row => row.selected).length;
-    }
-
-    async approveSelected() {
-        if (await this.confirm("Confermi approvazione?", 
-            `Vuoi approvare ${this.countSelected()} piano/i selezionati?`)) {
-            this.updateRows("approved", "approvato");
-        }
-    }
-
-    async rejectSelected() {
-        if (await this.confirm("Confermi rifiuto?", 
-            `Vuoi rifiutare ${this.countSelected()} piano/i selezionati?`)) {
-            this.updateRows("rejected", "respinto");
-        }
-    }
-
-    async resubmitSelected() {
-        if (await this.confirm("Riporta in valutazione?", 
-            `Vuoi risottomettere ${this.countSelected()} pianoo/i selezionati?`)) {
-            this.updateRows("submitted", "riportato in valutazione"); 
-        }    
-    }
-
-    async redraftSelected() {
-        if (await this.confirm("Riporta in bozza?", 
-            `Vuoi riportare in bozza ${this.countSelected()} piano/i selezionati?`)) {
-                this.updateRows("draft", "riportato in bozza");
-        }
-    }
-
-    async deleteSelected() {
-        if (await this.confirm("Confermi cancellazione?", 
-            `Vuoi rimuovere ${this.countSelected()} piano/i selezionati?`)) {
-
-                // delete selected forms one by one
-                this.state.rows.forEach(row => {
-                    if (row.selected) this.deleteProposal(row.proposal);
-                });
-            }
-    }
-
-    async downloadSelected() {
-        this.state.rows.forEach(row => {
-            if (row.selected) {
-                const proposal = row.proposal;
-                const url = `${this.props.root}proposals/pdf/${proposal.id}`;
-                // We create an <a download href="..."> element, which forces 
-                // the file to be downloaded and not opened in a new tab. 
-                const el = document.createElement('a');
-                el.href = url; el.download = "1"; el.click();
-            }
-        });
-    }
-
+ 
     renderPage() {
-        const onFilterChange = this.onFilterChange.bind(this);
         return <div>
             <h1>Piani di Studio</h1>
             <Card>
                 <div className="d-flex mb-2">
-                    <FilterButton onChange={onFilterChange}>
+                    <FilterButton onChange={ this.onFilterChange.bind(this) }>
                         <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
                             <option value="">tutti</option> 
                             <option value="draft">bozze</option>
@@ -251,12 +102,12 @@ class Proposals extends CapsPage {
                         <thead>
                             <tr>
                             <th></th>
-                            <th><a href="#">Stato</a></th>
-                            <th>Nome</th>
-                            <th>Anno</th>
-                            <th>Laurea</th>
-                            <th>Piano di studio</th>
-                            <th>Ultima modifica</th>
+                            <th><ColumnHeader self={this} name="state">Stato</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="user.surname">Nome</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.degree.academic_year">Anno</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.degree.name">Laurea</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="curriculum.name">Piano di studio</ColumnHeader></th>
+                            <th><ColumnHeader self={this} name="modified">Ultima modifica</ColumnHeader></th>
                             <th></th>
                             </tr>
                         </thead>
@@ -265,11 +116,11 @@ class Proposals extends CapsPage {
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento piani di studio...</LoadingMessage></td></tr>
                             : this.state.rows.map(row => 
                                 <ProposalRow 
-                                    key={row.proposal.id} 
+                                    key={row.item.id} 
                                     row={row} 
-                                    onToggle={() => {this.toggleProposal(row.proposal)}}
-                                    href={`${this.props.root}proposal/view/${row.proposal.id}`}
-                                    href_pdf={`${this.props.root}}proposal/pdf/${row.proposal.id}`}
+                                    onToggle={() => {this.toggleItem(row.item)}}
+                                    href={`${this.props.root}proposals/view/${row.item.id}`}
+                                    href_pdf={`${this.props.root}proposals/pdf/${row.item.id}`}
                                     />)
                         }
                         </tbody>
@@ -277,99 +128,40 @@ class Proposals extends CapsPage {
                     { this.state.rows && 
                             <p>
                             {this.state.rows.length < this.state.rows.total 
-                            ? <button className="btn btn-primary" onClick={this.extendLimit.bind(this)}>Carica più righe</button>
+                            ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
+                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length}`} da mostrare)
+                            </button>
                             : null}
-                            {` [${this.state.rows.length}/${this.state.rows.total} piani di studio mostrati]`}
                             </p>
                         }
                 </div>
             </Card>
     </div>
     }
-
-    async csvData() {
-        try {
-            let query = {...this.state.query};
-
-            // carica tutti i dati, rimuovi "limit"
-            // ma mantieni eventuali filtri (e ordinamento)
-            delete query._limit;
-            const data = await restClient.get("proposals/", query);
-
-            // collect all keys from all forms
-            let keys = [];
-
-            function addKey(key) {
-                if (!keys.includes(key)) keys.push(key);
-            }
-
-            function addKeys(prefix, obj) {
-                for(let key in obj) {
-                    const val=obj[key];
-                    if (typeof(val) === 'object') {
-                        addKeys(`${prefix}${key}.`, val);
-                    } else {
-                        addKey(`${prefix}${key}`);
-                    }
-                }
-            }
-
-            data.forEach(proposal => addKeys("", proposal));
-
-            keys.sort();
-
-            // compose user friendly column name
-            function label_for_key(key) {
-                let label = key;
-                label = label.replaceAll('.', ' ');
-                label = label.replaceAll('_', ' ');
-                return label;
-            }
-
-            const headers = (keys.map(key => { return {
-                    label: label_for_key(key),
-                    key }}));
-
-            return {headers, data};
-        } catch(err) {
-            this.flashCatch(err);
-        }
-    }
 }
 
 function ProposalRow(props) {
-    const {row: {selected, proposal}, href, href_pdf, onToggle} = props;
+    const {row: {selected, item}, href, href_pdf, onToggle} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
-        <td><ProposalBadge proposal={proposal}></ProposalBadge></td>
-        <td>{proposal.user.name}</td>
-        <td>{proposal.curriculum.degree.year}</td>
-        <td>{proposal.curriculum.degree.name}</td>
-        <td>{proposal.curriculum.name}</td>
-        <td>{proposal.modified}</td>
+        <td><ProposalStateBadge proposal={ item } /></td>
+        <td>{ item.user.name }</td>
+        <td>{ item.curriculum.degree.academic_year }</td>
+        <td>{ item.curriculum.degree.name }</td>
+        <td>{ item.curriculum.name }</td>
+        <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY H:mm") }</td>
         <td>
-            <div className="d-none d-xl-inline-flex flex-row align-items-center">
-                <a href={href}>
-                    <button type="button" className="btn btn-sm btn-primary mr-2">
-                    <i className="fas fa-eye mr-2"></i>
-                    Visualizza
-                    </button>
-                </a>
-
-                <a href={`${href_pdf}`}>
-                    <button type="button" className="btn btn-sm btn-secondary mr-2">
-                        <i className="fas fa-file-pdf mr-2"></i>
-                        Scarica
-                    </button>
-                </a>
-                <a href={`${href_pdf}show_comments=1`}> 
-                    <button type="button" className="btn btn-sm btn-secondary">
-                        <i className="fas fa-file-pdf mr-2"></i>
-                        Commenti
-                    </button>
-                </a>
-            </div>
-
+            <ResponsiveButtons>
+                <ResponsiveButton className="btn-primary" key="view" href={ href }>
+                    <i className="fas fa-eye mr-2" />Visualizza
+                </ResponsiveButton>
+                <ResponsiveButton className="btn-secondary" key="pdf" href={href_pdf}>
+                    <i className="fas fa-file-pdf mr-2" />Scarica
+                </ResponsiveButton>
+                <ResponsiveButton className="btn-secondary" key="pdf2" href={`${href_pdf}?show_comments=1`}>
+                    <i className="fas fa-file-pdf mr-2" />Scarica (con&nbsp;commenti)
+                </ResponsiveButton>
+            </ResponsiveButtons>
         </td>
     </tr>
 }

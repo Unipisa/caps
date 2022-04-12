@@ -9,7 +9,6 @@ class CapsAppController {
     constructor(root = "/") {
         this.root = root;
         this.enhanceAttachments();
-        this.setupBadges();
         this.setupCKEditor();
         this.setupSelect();
     }
@@ -35,7 +34,6 @@ class CapsAppController {
     }
 
     setupCKEditor() {
-
         for (const el of document.getElementsByClassName('caps-settings-html')) {
             ClassicEditor
                 .create(el, {
@@ -46,22 +44,6 @@ class CapsAppController {
                     console.log('CAPS::CKEditor Error while loading the CKEditor component:');
                     console.error(error);
                 });
-        }
-    }
-
-    // Add tooltips to badge, and setup onclick handlers 
-    setupBadges() {
-        jQuery('span.filter-badge').tooltip();
-
-        // Attach the onclick handlers: they remove the parameters from 
-        // the query when executed. 
-        for (const el of document.getElementsByClassName('filter-badge-link')) {
-            const key = el.getAttribute('data-badge-key');
-            el.addEventListener('click', () => {
-                var url = location.search;
-                var rx = new RegExp('[&?]' + key + '=[^&]*');
-                location.search = url.replace(rx, '');
-            });
         }
     }
     

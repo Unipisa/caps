@@ -49,7 +49,31 @@ class ProposalsController extends RestController
 
         // clean the resulting data
         foreach($proposals as $proposal) {
+            unset($proposal['attachments']);
+            unset($proposal['chosen_free_choice_exams']);
+            unset($proposal['chosen_exams']);
             unset($proposal['user']['password']);
+            unset($proposal['user']['username']);
+            unset($proposal['user']['number']);
+            unset($proposal['user']['email']);
+            unset($proposal['user']['admin']);
+            unset($proposal['user']['name']);
+            unset($proposal['user']['password']);
+            unset($proposal['curriculum']['notes']);
+            unset($proposal['curriculum']['notes']);
+            unset($proposal['curriculum']['credits']); // non si cancella così
+            unset($proposal['curriculum']['credits_per_year']);
+            unset($proposal['curriculum']['degree']['years']);
+            unset($proposal['curriculum']['degree']['enable_sharing']);
+            unset($proposal['curriculum']['degree']['approval_confirmation']);
+            unset($proposal['curriculum']['degree']['rejection_confirmation']);
+            unset($proposal['curriculum']['degree']['submission_confirmation']);
+            unset($proposal['curriculum']['degree']['free_choice_message']);
+            unset($proposal['curriculum']['degree']['approval_message']);
+            unset($proposal['curriculum']['degree']['rejection_message']);
+            unset($proposal['curriculum']['degree']['submission_message']);
+            unset($proposal['curriculum']['degree']['enabled']);
+            unset($proposal['curriculum']['degree']['default_group_id']);            
         }        
 
         $this->JSONResponse(ResponseCode::Ok, $proposals);
@@ -70,6 +94,26 @@ class ProposalsController extends RestController
         else {
             $this->JSONResponse(ResponseCode::Ok, $p);
         }       
+    }
+
+    function post($id) {
+        try {
+            $p = $this->Proposals->get($id, [ 'contain' => array_merge(ProposalsController::$associations, [ 'ProposalAuths' ]) ]);
+        }
+        catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::NotFound, null, "Cannot share proposal");
+            return;
+        }
+        // TODO: check the path of the request
+
+        if (!$this->user->canShareProposal($p)) {
+            $this->JSONResponse(ResponseCode::Forbidden, null, "Cannot share proposal");
+            return;
+        }
+        
+        $this->JSONResponse(ResponseCode::Error, "work in progress!");
+
+        $this->JSONResponse(ResponseCode::Ok, $p);
     }
 
     function delete($id) {

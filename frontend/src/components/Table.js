@@ -94,3 +94,54 @@ export function ActionButton(props) {
                     { props.children}
             </button>
 }
+
+export function ColumnHeader({self, name, children}) {
+    if (self) {
+        let direction = 0;
+        if (self.state.query._sort == name) {
+            if (self.state.query._direction == "asc") direction = 1;
+            else if (self.state.query._direction == "desc") direction = -1;
+            else if (self.state.query) {
+                throw RangeError(`invalid _direction ${ self.state._direction }`);
+            }
+        }
+
+        return <a href="#" onClick={() => self.toggleSort(name)}>
+            {children}&nbsp;{direction ? (direction>0 ? <>↑</> : <>↓</>) : ""}
+            </a>;
+    } else {
+        return children;
+    }
+}
+
+export function ResponsiveButton({className, href, children, xl}) {
+    if (xl) return <a href={ href }>
+        <button type="button" className={"btn btn-sm mr-2 "+className}>
+            { children }
+        </button>
+    </a>
+    else return <li>
+        <a className="dropdown-item" href={ href }>
+            { children }
+        </a>
+    </li>
+}
+
+export function ResponsiveButtons({children}) {
+    return <>
+        <div className="d-xl-none">
+            <div className="dropdown">
+                <a className="btn-sm btn-secondary dropdown-toggle" href="#" role="button"
+                id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i className="fas fa-cog" />
+                </a>
+                <ul className="dropdown-menu">
+                    { children }
+                </ul>
+            </div>
+        </div>
+        <div className="d-none d-xl-inline-flex flex-row align-items-center">
+            { children.map(button => React.cloneElement(button, { xl: true })) }
+        </div>
+    </>
+}
