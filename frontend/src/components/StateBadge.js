@@ -48,6 +48,6 @@ export function ProposalStateBadge({ proposal }) {
 }
 
 export function FormStateBadge({ form }) {
-    const color = formColor(proposal);
+    const color = formColor(form);
     return <span className={ `badge badge-sm badge-${color}` }>{ stateNames[form.state] }</span>
 }
