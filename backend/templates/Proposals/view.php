@@ -21,7 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
-<app id="app"></app>
+<!--app id="app"></app-->
 
 <h1>Piano di Studi di <?php echo $proposal['user']['name']; ?></h1>
 
