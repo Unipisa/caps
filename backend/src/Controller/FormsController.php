@@ -73,7 +73,7 @@ class FormsController extends AppController
                 if ($this->request->getData($i)) {
                     if ($action) {
                         $this->Flash->error(__('Richiesta non valida'));
-                        return $this->redirect($this->referer());
+                        return $this->redirect([]);
                     }
                     $action = $i;
                 }
@@ -109,7 +109,7 @@ class FormsController extends AppController
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
                     $this->Flash->error(__('Nessun modulo selezionato'));
-                    return $this->redirect($this->referer());
+                    return $this->redirect([]);
                 }
 
                 $count = 0;
