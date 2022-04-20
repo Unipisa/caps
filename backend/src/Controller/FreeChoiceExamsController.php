@@ -52,9 +52,7 @@ class FreeChoiceExamsController extends AppController
             if ($this->FreeChoiceExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
 
-                return $this->redirect(
-                    $this->request->referer()
-                );
+                return $this->redirect(["controller" => "Curricula", "action" => "edit", $newexam['curriculum_id']]);
             }
         }
     }
@@ -70,6 +68,7 @@ class FreeChoiceExamsController extends AppController
         }
 
         $free_choice_exam = $this->FreeChoiceExams->findById($id)->firstOrFail();
+        $curriculum_id = $free_choice_exam['curriculum_id'];
         if (!$free_choice_exam) {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
@@ -84,8 +83,6 @@ class FreeChoiceExamsController extends AppController
             }
         }
 
-        return $this->redirect(
-            $this->request->referer()
-        );
+        return $this->redirect(["controller" => "Curricula", "action" => "edit", $curriculum_id]);
     }
 }
