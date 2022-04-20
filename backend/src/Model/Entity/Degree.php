@@ -58,6 +58,7 @@ class Degree extends Entity
         'submission_confirmation' => true,
         'rejection_confirmation' => true,
         'free_choice_message' => true,
+        'groups' => true
     ];
 
     public function academic_years() {
