@@ -12,8 +12,11 @@ per eventualmente controllare se sono stati inseriti i dati.
 
 Poi, in un terminale separato:
 ```bash
+npm update # una tantum
 npm start
 ```
+
+Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
 
 Alcune prove con le API si possono fare direttamente con curl (qui si usa jq per 
 fare il pretty print del JSON):
@@ -46,3 +49,11 @@ $ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/exams
 }
 
 ```
+
+# struttura dei dati
+
+Possibili princìpi da seguire:
+
+* dovrà essere possibile migrare automaticamente i dati vecchi nella nuova struttura
+* https://www.scylladb.com/glossary/nosql-design-principles/
+* https://www.mongodb.com/nosql-explained/data-modeling
