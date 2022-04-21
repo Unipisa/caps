@@ -15,8 +15,15 @@ Poi, in un terminale separato:
 npm update # una tantum
 npm start
 ```
-
 Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
+
+Per compilare e tenere aggiornato il codice javascript durante lo sviluppo:
+```bash
+cd frontend
+npm run watch:dev
+```
+
+Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/index.html
 
 Alcune prove con le API si possono fare direttamente con curl (qui si usa jq per 
 fare il pretty print del JSON):

@@ -11,6 +11,7 @@ import CapsFormsController from './controllers/forms-controller';
 import CapsFormTemplatesController from './controllers/form-templates-controller';
 import CapsUsersController from './controllers/users-controller';
 import CapsDashboardController from './controllers/dashboard-controller';
+import CapsSinglePage from './controllers/singlepage-controller';
 
 'use strict'
 
@@ -28,7 +29,8 @@ const routes = {
     "Forms": CapsFormsController,
     "FormTemplates": CapsFormTemplatesController,
     "Users": CapsUsersController,
-    "Dashboard": CapsDashboardController
+    "Dashboard": CapsDashboardController,
+    "SinglePage": CapsSinglePage,
 }
 
 /**
