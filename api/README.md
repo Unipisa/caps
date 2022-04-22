@@ -23,7 +23,7 @@ cd frontend
 npm run watch:dev
 ```
 
-Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/index.html
+Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/
 
 Alcune prove con le API si possono fare direttamente con curl (qui si usa jq per 
 fare il pretty print del JSON):
@@ -31,7 +31,7 @@ fare il pretty print del JSON):
 $ curl -s -H 'Content-Type: application/json' \
     -X POST \
     -d '{ "name": "Analisi Numerica", "credits": 6, "sector": "MAT/08", "code": "AA112" }' \
-    http://localhost:3000/exams | jq
+    http://localhost:3000/api/v0/exams | jq
 {
   "code": 200,
   "message": "OK"
@@ -39,7 +39,7 @@ $ curl -s -H 'Content-Type: application/json' \
 ```
 ... e poi
 ```bash
-$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/exams | jq
+$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v0/exams | jq
 {
   "code": 200,
   "message": "OK",
