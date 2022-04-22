@@ -13,7 +13,7 @@ class Exams extends React.Component {
         super(props);
 
         this.state = {
-            query: {},
+            query: {_limit: 20},
             csvData: null,
             rows: null,
         };
@@ -40,6 +40,15 @@ class Exams extends React.Component {
         } catch(err) {
             this.Page.flashCatch(err);
         }
+    }
+
+    toggleItem(item) {
+        const rows = this.state.rows.map(row => {
+            return row.item === item
+            ? {...row, "selected": !row.selected}
+            : row;});
+        rows.total = this.state.rows.total;
+        this.setState({rows});
     }
 
     onFilterChange() {
