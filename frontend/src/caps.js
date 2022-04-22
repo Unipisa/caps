@@ -7,12 +7,19 @@ import '@fortawesome/fontawesome-free/js/solid';
 // import '@fortawesome/fontawesome-free/js/regular';
 // import '@fortawesome/fontawesome-free/js/brands';
 
-// These libraries need to be available as global variables
-import CapsController from './caps-controller.js';
-global.CapsController = CapsController;
+import SinglePage from './components/SinglePage';
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+function capsStart() {
+    ReactDOM.render(
+        <SinglePage />, 
+        document.getElementById("app")
+    );
+}
+global.capsStart = capsStart;
 
 // These are only used inside this code
 import 'jquery.easing';
 import 'popper.js';
 import 'bootstrap';
-import './sb-admin-2.js';

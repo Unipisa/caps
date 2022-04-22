@@ -3,6 +3,7 @@ import {
     BrowserRouter, Routes, Route, Link
   } from "react-router-dom";
 import Exams from "./Exams";
+import caps_version from "../modules/version";
 
 class SinglePage extends React.Component {
     constructor(props) {
@@ -17,16 +18,14 @@ class SinglePage extends React.Component {
     }
 
     render() {
-        const capsVersion="vv.ww.xx";
-
         return <>
         <div id="wrapper">
             <BrowserRouter>
-                <NavBar capsVersion= { capsVersion }/>
+                <NavBar capsVersion= { caps_version }/>
                 <div id="content-wrapper" className="d-flex flex-column">
                     <TopBar />
                     <Content />
-                    <Footer capsVersion={ capsVersion }/>
+                    <Footer capsVersion={ caps_version }/>
                 </div>
             </BrowserRouter>
         </div>
