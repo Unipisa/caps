@@ -1,20 +1,49 @@
 import React from "react";
 import {
     BrowserRouter, Routes, Route, Link
-  } from "react-router-dom";
-import Exams from "./Exams";
+} from "react-router-dom";
 import caps_version from "../modules/version";
+import Exams from "./Exams";
+import Modal from './Modal';
+import Flash from "./Flash";
 
 class SinglePage extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-        };
-
+            capsFlash: []
+        }
+        this.modal_ref = React.createRef();
     }
 
-    async componentDidMount() {
+    async confirm(title, message) {
+        return new Promise((resolve) => {
+            this.modal_ref.current.show(title, message, resolve);
+        });
+    }
+    
+    flashMessage(message, type="primary") {
+        this.setState({
+            capsFlash: [...this.state.capsFlash, 
+                { type, message }]
+        });
+    }
+
+    flashSuccess(message) {
+        this.flashMessage(message, 'success');
+    }
+
+    flashError(message) {
+        this.flashMessage(message, 'error');
+    }
+
+    flashCatch(error) {
+        console.log(error);
+        this.flashError(`${error.name}: ${error.message}`);
+    }
+
+    hideFlash() {
+        this.setState({ 'capsFlash': [] });
     }
 
     render() {
@@ -24,7 +53,9 @@ class SinglePage extends React.Component {
                 <NavBar capsVersion= { caps_version }/>
                 <div id="content-wrapper" className="d-flex flex-column">
                     <TopBar />
-                    <Content />
+                    <Modal ref={this.modal_ref}></Modal>
+                    <Flash messages={this.state.capsFlash} onClick={this.hideFlash.bind(this)}></Flash>
+                    <Content Page={ this } />
                     <Footer capsVersion={ caps_version }/>
                 </div>
             </BrowserRouter>
@@ -39,12 +70,12 @@ function Splash(props) {
     return <p>Splash!</p>
 }
 
-function Content(props) {
+function Content({ Page }) {
     return <div id="content">
         <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/index.html" element={<Splash />} />
-            <Route path="/exams" element={<Exams />} />
+            <Route path="/exams" element={<Exams Page={ Page }/>} />
         </Routes>
     </div>
 }

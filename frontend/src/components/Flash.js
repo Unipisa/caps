@@ -14,7 +14,7 @@ function FlashCard(props) {
     </Card>;
 }
 
-function Flash(props) {
+function Flash({ messages, onClick }) {
     function classForType(type) {
         switch(type) {
             case 'error': return "danger";
@@ -23,12 +23,12 @@ function Flash(props) {
         }
     }
 
-    return props.messages.map((message, i) => 
+    return messages.map((message, i) => 
         <FlashCard 
             key={i}
             className={ classForType(message.type) }
             message={ message.message }
-            onClick={ props.onClick }
+            onClick={ onClick }
             >
         </FlashCard>);
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+const api_root = '/api/v0/';
+
 class BaseRestClient {
 
     constructor() {
@@ -14,7 +16,7 @@ class BaseRestClient {
         let response = {}
 
         try {
-            const res = await fetch(Caps.root + 'api/v1/' + uri, {
+            const res = await fetch(api_root + uri, {
                 method: method, 
                 headers: {
                     'Content-Type': 'application/json', 
@@ -92,9 +94,15 @@ class RestClient extends BaseRestClient {
         }
         if (res.data instanceof Array) {
             // data is a queryset, add metadata
-            res.data.total = res.pagination.total;
-            res.data.limit = res.pagination.limit;
-            res.data.offset = res.pagination.offset;
+            if (res.pagination !== undefined) {
+                res.data.total = res.pagination.total;
+                res.data.limit = res.pagination.limit;
+                res.data.offset = res.pagination.offset;
+            } else {
+                res.data.total = res.data.length;
+                res.data.limit = null;
+                res.data.offset = 0;
+            }
         } 
         return res.data;
     }

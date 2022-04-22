@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import RestClient from '../modules/api';
+import restClient from '../modules/api';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import { FilterButton, FilterInput, FilterBadges, ColumnHeader } from './Table';
@@ -17,10 +17,32 @@ class Exams extends React.Component {
             csvData: null,
             rows: null,
         };
+
+        this.Page = props.Page;
+
+        this.load();
+    }
+
+    items_name() {
+        return "exams";
+    }
+
+    async load() {
+        try {
+            const items = await restClient.get(`${this.items_name()}/`, this.state.query);
+            const rows = items.map(item => {return {
+                item,
+                selected: false
+            }});
+            rows.total = items.total;
+            this.setState({ rows });
+            this.Page.flashMessage("flash!");
+        } catch(err) {
+            this.Page.flashCatch(err);
+        }
     }
 
     onFilterChange() {
-
     }
 
     render() {
