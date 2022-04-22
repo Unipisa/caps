@@ -56,6 +56,30 @@ $ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v
 }
 
 ```
+# import dati da mysql
+
+Prima di tutto devi ottenere un dump del database:
+```bash
+ssh root@caps.dm.unipi.it 'cd docker/caps-develop && . caps.env && docker-compose exec caps-db mysqldump caps -u caps -p${MYSQL_PASSWORD}' > dump.sql
+```
+Controlla che nel dump non ci siano messaggi di errore (cancellali!)
+
+Poi devi avviare un server mysql:
+```bash
+$ docker run --name mysql -e MYSQL_RANDOM_ROOT_PASSWORD=yes -e MYSQL_DATABASE=caps -e MYSQL_USER=caps -e MYSQL_PASSWORD=secret -p3306:3306 -d mysql
+$ docker exec -i mysql mysql caps -u caps -psecret < dump.sql 
+```
+
+Ora puoi avviare lo script di importazione:
+```bash
+node migrate-mysql.js
+```
+
+Quando hai finito:
+```
+$ docker stop mysql
+$ docker rm mysql
+```
 
 # struttura dei dati
 

@@ -12,10 +12,10 @@
   "dependencies": {
     "express": "^4.17.3",
     "express-router": "^0.0.1",
-    "mongoose": "^6.2.9"
+    "mongoose": "^6.2.9",
+    "mysql2": "^2.3.3"
   },
   "devDependencies": {
-    "mysql": "^2.18.1",
     "nodemon": "^2.0.15"
   }
 }

@@ -1,4 +1,4 @@
-var mysql      = require('mysql');
+var mysql      = require('mysql2');
 var Exam = require('./models/Exam');
 var User = require('./models/User');
 var mongoose = require('mongoose');
@@ -25,7 +25,8 @@ async function importData() {
         host     : process.env.MYSQL_HOST || 'localhost',
         user     : process.env.MYSQL_USER || 'caps',
         password : process.env.MYSQL_PASSWORD || 'secret',
-        database : process.env.MYSQL_DATABASE || 'caps'
+        database : process.env.MYSQL_DATABASE || 'caps',
+        port     : process.env.MYSQL_PORT || '3306'
     });
     
     connection.connect();

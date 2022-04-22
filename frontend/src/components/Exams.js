@@ -106,8 +106,8 @@ class Exams extends React.Component {
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
                             : this.state.rows.map(row => 
                                 <ExamRow 
-                                    key={row.item.id} 
-                                    row={row} 
+                                    key={ row.item._id } 
+                                    row={ row } 
                                     onToggle={() => {this.toggleItem(row.item)}}
                                     href={`${this.props.root}exams/view/${row.item.id}`}
                                     />)
@@ -132,7 +132,7 @@ class Exams extends React.Component {
 
 export default Exams;
 
-function ExamRow({ key, row, onToggle, href }) {
+function ExamRow({ row: { item, selected }, onToggle, href }) {
     return <tr style={selected?{background: "lightgray"}:{}}>
     <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
     <td><a href={ href }>{ item.name }</a></td>
