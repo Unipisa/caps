@@ -5,16 +5,13 @@ use App\Controller\Api\v1\RestController;
 
 class DegreesController extends RestController {
 
-    public static $associations = [];
-    public $allowedFilters = [ 'enabled' ];
+    public static $associations = [ 'Groups', 'Curricula' ];
+    public $allowedFilters = [ 'enabled' => Boolean::class ];
 
     public function index() {
-        $c = $this->Degrees->find('all', [
-            'contains' => DegreesController::$associations
-        ]);
+        $c = $this->Degrees->find('all');
 
         $c = $this->applyFilters($c);
-        $c = $this->paginateQuery($c);
 
         $this->JSONResponse(ResponseCode::Ok, $c);
     }

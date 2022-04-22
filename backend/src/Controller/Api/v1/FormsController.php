@@ -8,9 +8,25 @@ use App\Controller\Api\v1\RestController;
 class FormsController extends RestController {
 
     private static $associations = [ 'Users', 'FormTemplates' ];
-    public $allowedFilters = [ 'user_id' ];
+
+    // TODO: decidere come specificare i filtri per i campi associati
+    public $allowedFilters = [ 
+        'form_id' => Integer::class, 
+        'user_id' => Integer::class,
+        'state' => ['type' => String::class, 
+                    'options' => ["draft", "submitted", "approved", "rejected"]],
+        'user.surname' => [ 'type' => String::class, 
+                            'dbfield' => "Users.surname",
+                            'modifier' => "LIKE" ],
+        'form_template.name' => [ 'type' =>  String::class,
+                                'dbfield' => "FormTemplates.name",
+                                'modifier' => "LIKE" ],
+        'modified' => Integer::class
+        ];
 
     public function index() {
+        $query = $this->request->getQuery();
+
         $forms = $this->Forms->find('all', 
             [ 'contain' => FormsController::$associations ]);
 
@@ -22,7 +38,15 @@ class FormsController extends RestController {
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($forms));
+        // clean the resulting data
+        foreach($forms as $form) {
+            $form['data'] = json_decode($form['data']);
+            unset($form['user']['password']);
+            unset($form['form_template']['text']);
+            unset($form['form_template']['code']);
+        }
+
+        $this->JSONResponse(ResponseCode::Ok, $forms);
     }
 
     public function get($id) {
@@ -59,6 +83,38 @@ class FormsController extends RestController {
         }
 
         $this->JSONResponse(ResponseCode::Ok);
+    }
+
+    public function patch($id) {
+        $form = $this->Forms->get($id, [ 'contain' => FormsController::$associations ]); // TODO: catch exception
+        $payload = json_decode($this->request->getBody());
+
+        if (!$form || !($this->user['admin'] || $this->user['id'] == $form['user_id'])) {
+            // don't leak information:
+            // if the form does not exist give the same error as if you cannot access it
+            $this->JSONResponse(ResponseCode::Error, null, 'The current user can not edit this form or form does not exist.');
+        }
+
+        foreach($payload as $field => $value) {
+            if ($field == "state") {
+                // Solo il proprietario e l'amministratore possono modifica
+                if ($this->user['admin'] || $form['state'] == "draft") {
+                    $form[$field] = $value;
+                } else {
+                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted form');
+                    return;
+                }
+            } else if ($field == "data") {
+                if ($form['state'] == "draft") {
+                    $form[$field] = $value;
+                } else {
+                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot modify the data of a submitted form');
+                    return;
+                }
+            }
+        }
+        $this->Forms->save($form);
+        $this->JSONResponse(ResponseCode::Ok, $form);
     }
 
 }

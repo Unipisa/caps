@@ -48,7 +48,7 @@ return function (RouteBuilder $routes) {
                     ['controller' => $controller, 'action' => 'index']
                 )->setMethods([ 'GET' ]);
 
-                foreach ([ 'GET', 'POST', 'DELETE'] as $method) {
+                foreach ([ 'GET', 'POST', 'DELETE', 'PATCH', 'PUT'] as $method) {
                     $routes->connect('/' . $uri . '/*', 
                         [ 'controller' => $controller, 'action' => strtolower($method) ]
                     )->setMethods([ $method ]);

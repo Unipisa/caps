@@ -85,9 +85,9 @@ class DegreesController extends AppController
                 if ($delete_count > 1) {
                     $this->Flash->success(__('{delete_count} corsi cancellati con successo', ['delete_count' => $delete_count]));
                 } elseif ($delete_count == 1) {
-                    $this->Flash->success(__('corso cancellato con successo'));
+                    $this->Flash->success(__('Corso cancellato con successo'));
                 } else {
-                    $this->Flash->success(__('nessun corso cancellato'));
+                    $this->Flash->success(__('Nessun corso cancellato'));
                 }
 
                 return $this->redirect(['action' => 'index']);
@@ -106,11 +106,13 @@ class DegreesController extends AppController
                     $degree = $this->Degrees
                         ->findById($degree_id)
                         ->contain([
-                            'Curricula' => ['CompulsoryGroups', 'CompulsoryExams', 'FreeChoiceExams'],
-                            'Groups' => ['Exams']])
+                            'Curricula', 'Curricula.CompulsoryGroups', 'Curricula.CompulsoryExams', 
+                            'Curricula.FreeChoiceExams', 'Groups', 'Groups.Exams', 'default_group'
+                        ])
                         ->firstOrFail();
                     // We set the id and the id of all the children entities to null, so that a call to save will
                     // automatically create new entities.
+
                     $degree['id'] = null;
                     $degree['academic_year'] = $year;
                     $degree['enabled'] = false;
@@ -132,7 +134,6 @@ class DegreesController extends AppController
                             $fce['id'] = null;
                             $fce->isNew(true);
                         }
-
                     }
 
                     foreach($degree['groups'] as $group) {
@@ -201,7 +202,7 @@ class DegreesController extends AppController
     public function view($id = null)
     {
         $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula', 'Groups']
+            'contain' => ['Curricula', 'Groups', 'default_group']
         ]);
 
         $this->set('degree', $degree);
@@ -222,7 +223,7 @@ class DegreesController extends AppController
         }
 
         if ($id != null) {
-            $degree = $this->Degrees->findById($id)->contain(['Groups'])->firstOrFail();
+            $degree = $this->Degrees->findById($id)->contain(['Groups', 'default_group'])->firstOrFail();
         } else {
             $degree = new Degree();
             // For new entities we set some reasonable default values in the text fields, to

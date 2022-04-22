@@ -1,6 +1,6 @@
 'use strict';
 
-import RestClient from '../modules/api';
+import restClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
 
@@ -10,7 +10,7 @@ import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import ProposalYear from './ProposalYear';
 
-class Proposal extends React.Component {
+export class ProposalEdit extends React.Component {
     constructor(props) {
         super(props);
 
@@ -49,151 +49,99 @@ class Proposal extends React.Component {
     }
 
     async loadDegreesAndExams() {
-        if (this.state.degrees === null) {
-            const [response, rexams] = await Promise.all([
-                RestClient.get(`degrees`, { 'enabled': true }), 
-                RestClient.get('exams')
+        if (this.state.degrees !== null) return;
+
+        let [degrees, exams] = await Promise.all([
+            restClient.get('degrees', { 'enabled': true }), 
+            restClient.get('exams')
             ]);
 
-            if (response.code != 200) {
-                this.reportError('Impossibile caricare la lista dei corsi di Laurea attivi.');
-                return;
+        degrees.sort((a, b) => {
+            if (a.academic_year > b.academic_year) return -1;
+            if (a.academic_year < b.academic_year) return 1;
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });
+        let selected_degree = null;
+        if (this.degree_id) {
+            selected_degree = degrees.filter(degree => (degree.id === this.degree_id))[0];
+            if (!selected_degree) {
+                // il degree passato dalla querystring potrebbe non essere attivo
+                // in tal caso lo aggiungiamo comunque alla lista
+                const selected_degree = await restClient.get(`degrees/${this.degree_id}`);
+                degrees.push(selected_degree);
             }
-
-            if (rexams.code != 200) {
-                this.reportError('Impossibile caricare la lista degli esami.');
-                return;
-            }
-            const exams = rexams.data;
-
-            let degrees = response.data.sort((a, b) => {
-                if (a.academic_year > b.academic_year) return -1;
-                if (a.academic_year < b.academic_year) return 1;
-                if (a.name < b.name) return -1;
-                if (a.name > b.name) return 1;
-                return 0;
-                });
-            let selected_degree = null;
-            if (this.degree_id) {
-                selected_degree = degrees.filter(degree => (degree.id === this.degree_id))[0];
-                if (!selected_degree) {
-                    // il degree passato dalla querystring potrebbe non essere attivo
-                    // in tal caso lo aggiungiamo comunque alla lista
-                    const response = RestClient.get(`degrees/${this.degree_id}`);
-                    if (response.code != 200) {
-                        this.reportError(`Impossibile caricare il corso di Laurea con ID = ${this.degree_id}`);
-                        return;
-                    }
-                    selected_degree = response.data;
-                    degrees.push(selected_degree);
-                }
-            }
-
-            this.setState({
-                'degrees': degrees, 
-                'selected_degree': selected_degree, 
-                'exams': exams
-            }, () => {
-                if (this.props.id !== undefined) {
-                    this.loadProposal(this.props.id);
-                } else if (selected_degree) {
-                    this.loadCurricula();
-                }
-            });
         }
+
+        this.setState({
+            'degrees': degrees, 
+            'selected_degree': selected_degree, 
+            'exams': exams
+        }, () => {
+            if (this.props.id !== undefined) {
+                this.loadProposal(this.props.id);
+            } else if (selected_degree) {
+                this.loadCurricula();
+            }
+        });
     }
 
     async loadGroups(degree) {
-        const group_response = await RestClient.get('groups', { 'degree_id': degree.id });
+        let groups = await restClient.get('groups', { 'degree_id': degree.id });
 
-        if (group_response.code != 200) {
-            this.reportError(`Impossibile caricare i gruppi per il corso di Laurea ${degree.name}`);
-            return;
+        if (degree.default_group_id) {
+            let default_group = await restClient.get(`groups/${degree.default_group_id}`);
+            groups.push(default_group);
         }
 
         // We need to re-index the groups based on their ids, for easy lookups 
         // later on when we build the form. 
-        const groups = Object.fromEntries(group_response.data.map(el => [el.id, el]));
+        groups = Object.fromEntries(groups.map(el => [el.id, el]));
 
         return groups;
     }
 
     async loadProposal(id) {
-        const response = await RestClient.get(`proposals/${id}`);
-        if (response.code != 200) {
-            this.reportError(`Impossibile caricare il piano di studi con ID = ${id}.`);
-            return;
-        }
-        const proposal = response['data'];
-
-        const curriculum_response = await RestClient.get(`curricula/${proposal.curriculum.id}`);
-        if (curriculum_response.code != 200) {
-            this.reportError(`Impossibile caricare il curriculum con ID = ${proposal.curriculum.id}.`);
-            return;
-        }
-
-        const curriculum = curriculum_response['data'];
-        const degree = curriculum.degree;
-
-        const curricula_response = await RestClient.get(`curricula`, { 'degree_id': degree.id });
-        if (curricula_response.code != 200) {
-            this.reportError(`Impossibile caricare i curricula per il corso di Laurea con ID = ${degree.id}`);
-            return;
-        }
-
-        const curricula = curricula_response['data'];
-
-        const groups = await this.loadGroups(degree);
+        const proposal = await restClient.get(`proposals/${id}`);
+        const selected_curriculum = await restClient.get(`curricula/${proposal.curriculum.id}`);
+        const selected_degree = selected_curriculum.degree;
+        const curricula = await restClient.get(`curricula`, { 'degree_id': selected_degree.id });
+        const groups = await this.loadGroups(selected_degree);
 
         // Read the exam selection in the proposal, and use them to populate 
         // the selected exams array in the correct way.
         // console.log(proposal);
 
-        const chosen_exams = this.createInitialState(curriculum, proposal.chosen_exams, proposal.chosen_free_choice_exams, true);
+        const chosen_exams = this.createInitialState(selected_curriculum, proposal.chosen_exams, proposal.chosen_free_choice_exams, true);
 
-        this.setState((s) => {
-            return {
-                'curricula': curricula,
-                'selected_curriculum': curriculum,
-                'selected_degree': degree,
-                'chosen_exams': chosen_exams,
-                'proposal': proposal,
-                'groups': groups,
+        this.setState({
+                curricula,
+                selected_curriculum,
+                selected_degree,
+                chosen_exams,
+                proposal,
+                groups,
                 'saving': false // this is set to true when save is clicked, to avoid double requests
-            }
         });
     }
 
     async loadCurricula() {
         const degree = this.state.selected_degree;
-        const curricula_response = await RestClient.get('curricula', { 'degree_id': degree.id });
-
-        if (curricula_response.code != 200) {
-            this.reportError(`Impossibile caricare i curricula per la il corso di Laurea: ${degree.name}, con ID = ${degree.id}`);
-            return;
-        }
-
-        const curricula = curricula_response.data;
+        const curricula = await restClient.get('curricula', { 'degree_id': degree.id });
 
         var chosen_exams = null;
         let selected_curriculum = null;
         if (this.curriculum_id) {
             // seleziona il curriculum indicato nella querystring
-            const response = await RestClient.get(`curricula/${this.curriculum_id}`);
-            if (response.code != 200) {
-                this.reportError(`Impossibile caricare il curriculum con ID = ${id}`);
-                return;
-            }
-            selected_curriculum = response.data;
-            if (selected_curriculum !== null) {
-                chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
-            }
+            const selected_curriculum = await restClient.get(`curricula/${this.curriculum_id}`);
+            chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
         }
 
         this.setState({
-            curricula: curricula, 
-            selected_curriculum: selected_curriculum, 
-            chosen_exams: chosen_exams, 
+            curricula, 
+            selected_curriculum, 
+            chosen_exams, 
             groups: await this.loadGroups(degree)
         });
     }
@@ -257,17 +205,12 @@ class Proposal extends React.Component {
                 'chosen_exams': null
             }, async () => {
                 const curriculum_id = this.state.curricula[idx].id;
-                const response = await RestClient.get(`curricula/${curriculum_id}`);
-                if (response.code != 200) {
-                    this.reportError(`Impossibile caricare il Curriculum con ID = ${id}`);
-                    return;
-                }
-                const curriculum = response.data;
-                var chosen_exams = this.createInitialState(curriculum, [], [], true);
+                const selected_curriculum = await restClient.get(`curricula/${curriculum_id}`);
+                var chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
 
                 this.setState({
-                    'selected_curriculum': curriculum,
-                    'chosen_exams': chosen_exams
+                    selected_curriculum,
+                    chosen_exams
                 });
             });
         }
@@ -671,4 +614,4 @@ class Proposal extends React.Component {
     }
 }
 
-export default Proposal;
+export default ProposalEdit;

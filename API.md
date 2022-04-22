@@ -6,12 +6,13 @@ interfaccia utente sviluppata in React.
 
 ## Metodi disponibili
 
-I Controller sono in `backend/src/Controller/Api/v1/` e i vari endpoint supportano i metodi HTTP GET, POST, PUT, e DELETE. Attualmente non tutti gli endpoint sono implementati. Alcuni esempi:
+I Controller sono in `backend/src/Controller/Api/v1/` e i vari endpoint supportano i metodi HTTP GET, POST, PATCH e DELETE. 
+Attualmente non tutti gli endpoint sono implementati. Alcuni esempi:
 * `GET /proposals/?user_id=996&limit=10&offset=20` ritorna una versione paginata dei proposals. 
 * `DELETE /proposals/1800` cancella il proposal con id=1800.
 * `GET /forms` ritorna tutte le form nel sistema.
 * `POST /forms` crea un nuovo form in base al payload JSON che viene passato (non implementato)
-* `PUT /forms/45` aggiorna una form in base al nuovo payload JSON che gli viene passato.
+* `PATCH /forms/45` aggiorna una form in base al nuovo payload JSON che gli viene passato.
 
 La maggior parte dei metodi `PUT` e `POST` non sono ancora stati implementati.
 
@@ -20,7 +21,7 @@ I dati vengono ritornadi dentro un capo `data` del JSON restituito, che contiene
 
 Esempi:
 ```
-GET /proposals/?user=996&limit=1
+GET /proposals/?user=996&_limit=1
 
 {
   "data": [
@@ -67,20 +68,22 @@ GET /api/v1/proposals/1823
 
 ## Libraria Javascript
 
-C'è una libreria minimal Javascript in `frontend/modules/api.js`, che si può usare per fare la richieste; tutti i metodi sono marcati come `async`, ecco qualche esempio di utilizzo:
+C'è una libreria minimal Javascript in `frontend/modules/api.js`, che si può usare per fare la richieste; tutti i metodi sono marcati come `async`. 
+Se il response code non è 200 viene sollevato un errore di tipo RestError. Altrimenti viene restituito il campo `data` del response.
+Se `data` è una array ci vengono attaccate le proprietà: `limit`, `offset` e `total`.
+Ecco qualche esempio di utilizzo:
 
 ```javascript
-import RestClient from '../modules/api.js';
+import restClient from '../modules/api.js';
 
 async function example() {
-    const response = await RestClient.get('/proposals', { 'limit': 10 });
-    if (response.code == 200) {
-        ...
-    }
-    
-    const response = await RestClient.delete(`/proposals/${id}`);
-    if (response.code == 200) {
-        console.log("Proposal cancellato correttamente");
+    try {
+      const proposals = await restClient.get('/proposals', { '_limit': 10 });
+      console.log(`caricati ${proposals.length} piani su ${proposals.total} disponibili`);
+      
+      await restClient.delete(`/proposals/${id}`);
+    } catch(err) {
+      console.log(`ERRORE: ${err.message} [${err.code}]`);
     }
 }
 ```

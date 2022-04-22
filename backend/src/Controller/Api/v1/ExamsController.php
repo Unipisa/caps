@@ -10,7 +10,7 @@ class ExamsController extends RestController {
 
     public function index() {
         $exams = $this->Exams->find('all', ['contains' => ExamsController::$associations ]);
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($exams));
+        $this->JSONResponse(ResponseCode::Ok, $this->applyFilters($exams));
     }
 
 }
