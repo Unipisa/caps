@@ -35,19 +35,20 @@ class CapsFormsController extends CapsAppController {
     index(params) {
         var query = params["?"];
         if (query === undefined) {
-            query = [];
+            query = {};
         }
+
+        query = {_limit: 10,... query};
 
         sessionStorage.setItem('forms-filter', JSON.stringify(query));
 
-        // Disabilitato temporaneamente fino a che non sarà pronto. 
-        /* ReactDOM.render(
+        ReactDOM.render(
             <Forms
                 root={this.root}
                 query={query}
                 csrfToken={params._csrfToken}></Forms>,
             document.querySelector('#app')
-        ); */
+        );
     }
 }
 

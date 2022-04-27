@@ -10,10 +10,11 @@ class FormsBlock extends React.Component {
         return <div className={this.props.className}>
             <h2 className="d-flex">
                 <span className="mr-auto">Moduli</span>
+                {this.props.form_templates_enabled &&
                 <a href={this.props.root + 'forms/edit'} className="my-auto btn btn-sm btn-primary shadow-sm">
                     <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
                     <span className="d-none d-md-inline ml-2">Nuovo modulo</span>
-                </a>
+                </a>}
             </h2>
             { forms === undefined && <LoadingMessage>Caricamento dei moduli in corso</LoadingMessage>}
             {

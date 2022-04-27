@@ -1,28 +1,11 @@
 'use strict';
 
-import Groups from '../models/groups';
-import Exams from '../models/exams';
-
 import React from 'react';
 import TrashIcon from './TrashIcon';
 
 class ExamInput extends React.Component {
     constructor(props) {
         super(props);
-
-        var choices = null;
-
-        switch (this.props.exam.type) {
-            case "compulsory_group":
-                this.loadGroupChoices();
-                break;
-            case "free_choice_exam":
-                if (this.props.exam.group_id == null)
-                    this.loadChoices();
-                else
-                    this.loadGroupChoices();
-                break;
-        }
 
         var credits = 0;
         var name = "";
@@ -34,30 +17,11 @@ class ExamInput extends React.Component {
 
         this.state = {
             "selected_exam": this.props.exam.selection,
-            "choices": choices,
-
             // These two fields are only used for Free exams, which are 
             // typed in manually by the user
             "credits": credits,
             "name": name
         };
-    }
-
-    async loadChoices() {
-        const exams = await Exams.all();
-
-        this.setState({
-            choices: exams
-        });
-    }
-
-    async loadGroupChoices() {
-        const group = await Groups.get(this.props.exam.group_id);
-
-        this.setState({
-            group: group,
-            choices: group.exams
-        });
     }
 
     onFreeExamNameChanged(evt) {
@@ -121,7 +85,7 @@ class ExamInput extends React.Component {
     }
 
     async onExamSelected(evt) {
-        const selected_exam = this.state.choices[evt.target.value];
+        const selected_exam = this.props.choices[evt.target.value];
 
         this.setState({
             selected_exam: selected_exam
@@ -161,21 +125,21 @@ class ExamInput extends React.Component {
                 break;
             case "compulsory_group":
                 options.push(
-                    <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.exam.group.name}</option>
+                    <option key="dummy" value="-1" disabled="1">Un esame a scelta nel gruppo {this.props.groups[this.props.exam.group_id].name}</option>
                 );
                 break;
             case "free_choice_exam":
                 options.push(
                     this.props.exam.group_id ? 
-                        <option key="dummy" value="-1" disabled="1">Un esame a scelta del gruppo {this.props.exam.group.name}</option> : 
+                        <option key="dummy" value="-1" disabled="1">Un esame a scelta del gruppo {this.props.groups[this.props.exam.group_id].name}</option> : 
                         <option key="dummy" value="-1" disabled="1">Un esame a scelta libera</option>
                 );
                 break;
         }
 
         var selected_exam = -1;
-        if (this.state.choices !== null) {
-            this.state.choices.map((exam, i) =>
+        if (this.props.choices !== null) {
+            this.props.choices.map((exam, i) =>
                 options.push(<option key={"exam-choice-" + exam.id} value={i}>
                     {exam.code} &mdash; {exam.name}
                 </option>)
@@ -185,7 +149,7 @@ class ExamInput extends React.Component {
             // this proposal has been loaded as draft), we select the right element
             // in the dropdown list. 
             selected_exam = this.props.exam.selection ?
-                this.state.choices.map((e) => e.id).indexOf(this.props.exam.selection.id)
+                this.props.choices.map((e) => e.id).indexOf(this.props.exam.selection.id)
                 : -1;
         }
 

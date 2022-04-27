@@ -94,7 +94,7 @@ class User extends Entity implements IdentityInterface
 
     public function canDeleteForm(Form $form) : bool 
     {
-        return $this['admin'] || ($this['id'] == $form['user_id']);
+        return $this['admin'] || ($this['id'] == $form['user_id'] && $form['state'] != "submitted");
     }
 
     public function canViewForm(Form $form) : bool
@@ -105,6 +105,11 @@ class User extends Entity implements IdentityInterface
     public function canViewProposal(Proposal $proposal, $secrets = []) : bool 
     {
         return $this['admin'] || ($this['id'] == $proposal['user_id']) || $proposal->checkSecrets($secrets);
+    }
+
+    public function canShareProposal(Proposal $proposal) : bool
+    {
+        return $this['admin'] || ($this['id'] == $proposal['user_id']);
     }
 
     public function canDeleteProposal(Proposal $proposal) : bool

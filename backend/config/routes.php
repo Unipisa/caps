@@ -37,7 +37,8 @@ return function (RouteBuilder $routes) {
             $api_controllers = [ 
                 'Curricula', 'Degrees', 'Documents', 
                 'Exams', 'Forms', 'FormTemplates', 
-                'Groups', 'Proposals', 'Users' 
+                'Groups', 'Proposals', 'Users', 
+                'Dashboard' 
             ];
 
             foreach ($api_controllers as $controller) {
@@ -47,7 +48,7 @@ return function (RouteBuilder $routes) {
                     ['controller' => $controller, 'action' => 'index']
                 )->setMethods([ 'GET' ]);
 
-                foreach ([ 'GET', 'POST', 'DELETE'] as $method) {
+                foreach ([ 'GET', 'POST', 'DELETE', 'PATCH', 'PUT'] as $method) {
                     $routes->connect('/' . $uri . '/*', 
                         [ 'controller' => $controller, 'action' => strtolower($method) ]
                     )->setMethods([ $method ]);

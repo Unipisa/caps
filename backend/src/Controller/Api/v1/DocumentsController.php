@@ -8,7 +8,7 @@ use App\Model\Entity\Document;
 class DocumentsController extends RestController {
 
     public static $associations = [ 'Users' ];
-    public $allowedFilters = [ 'user_id' ];
+    public $allowedFilters = [ 'user_id' => Integer::class ];
 
     public function index() {
         $d = $this->Documents->find('all', 
@@ -22,7 +22,7 @@ class DocumentsController extends RestController {
             return;
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($d));
+        $this->JSONResponse(ResponseCode::Ok, $d);
     }
 
     public function post() {

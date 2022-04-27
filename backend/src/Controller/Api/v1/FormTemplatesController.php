@@ -6,7 +6,7 @@ use App\Controller\Api\v1\RestController;
 
 class FormTemplatesController extends RestController {
 
-    public $allowedFilters = [ 'enabled' ];
+    public $allowedFilters = [ 'enabled' => Boolean::class ];
 
     public function index() {
         $form_templates = $this->FormTemplates->find();
@@ -18,7 +18,7 @@ class FormTemplatesController extends RestController {
             return;   
         }
 
-        $this->JSONResponse(ResponseCode::Ok, $this->paginateQuery($form_templates));
+        $this->JSONResponse(ResponseCode::Ok, $form_templates);
     }
 
     public function get($id) {

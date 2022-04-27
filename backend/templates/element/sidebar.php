@@ -98,16 +98,15 @@ $actionName = $this->request->getParam('action');
             Gestione
         </div>
 
-        <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName == 'dashboard') ? ' active' : '' ?>">
+        <li class="nav-item<?= $controllerName == 'Dashboard' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build([
-                'controller' => 'proposals', 'action' => 'dashboard'
-            ]); ?>">
+                'controller' => 'dashboard' ]); ?>">
                 <i class="fas mr-1 fa-tachometer-alt"></i>
                 <span>Pannello di controllo</span>
             </a>
         </li>
 
-        <li class="nav-item<?= ($controllerName == 'Proposals' && $actionName != 'dashboard') ? ' active' : '' ?>">
+        <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
             <a class="nav-link caps-proposal-link" href="<?= $this->Url->build([
                 'controller' => 'proposals',
                 'action' => 'index'

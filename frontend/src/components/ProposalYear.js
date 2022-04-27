@@ -140,7 +140,26 @@ class ProposalYear extends React.Component {
             const deleteCallback = () => this.handleExamDelete(exam);
             const onChangeCallback = (exam, se) => this.handleExamSelected(exam, se);
 
+            // Compute the choices for this <ExamInput>
+            let choices = [];   
+
+            switch (exam.type) {
+                case "compulsory_group":
+                    choices = this.props.groups[exam.group_id].exams;
+                    break;
+                case "free_choice_exam":
+                    if (this.props.degree.default_group_id) {
+                        choices = this.props.groups[this.props.degree.default_group_id].exams;
+                    }
+                    else {
+                        choices = this.props.exams;
+                    }
+                    break;
+            }
+
             return <ExamInput exam={exam} key={"exam-input-" + exam.id}
+                groups={this.props.groups}
+                choices={choices}
                 deleteCallback={removable ? deleteCallback : undefined}
                 freeChoiceMessage={this.props.curriculum.degree.free_choice_message}
                 onChange={onChangeCallback} />;
@@ -162,7 +181,7 @@ class ProposalYear extends React.Component {
                     </div>
                     <div className="card-body">
                         {exam_inputs}
-                        <ProposalYearNavBar year={this.props.year}
+                        <ProposalYearNavBar year={this.props.year} groups={this.props.groups}
                             degree={this.props.degree}
                             onAddExamClicked={this.onAddExamClicked.bind(this)}
                             onAddFreeExamClicked={this.onAddFreeExamClicked.bind(this)} />

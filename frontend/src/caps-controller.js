@@ -10,6 +10,7 @@ import CapsSettingsController from './controllers/settings-controller';
 import CapsFormsController from './controllers/forms-controller';
 import CapsFormTemplatesController from './controllers/form-templates-controller';
 import CapsUsersController from './controllers/users-controller';
+import CapsDashboardController from './controllers/dashboard-controller';
 
 'use strict'
 
@@ -26,7 +27,8 @@ const routes = {
     "Degrees": CapsDegreesController,
     "Forms": CapsFormsController,
     "FormTemplates": CapsFormTemplatesController,
-    "Users": CapsUsersController
+    "Users": CapsUsersController,
+    "Dashboard": CapsDashboardController
 }
 
 /**
@@ -62,15 +64,6 @@ class CapsController {
                 const controller = new CapsAppController(root);
             }
         });
-    }
-
-    // Trigger a CSV download using Javascript. 
-    downloadCSV() {
-        location.pathname += '.csv';
-    }
-
-    downloadXLSX() {
-        location.pathname += '.xlsx';
     }
 
     // Submit a form by injecting the name and value of an element; this is used

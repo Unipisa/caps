@@ -20,7 +20,13 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-?>
 
-<div id="app">
-</div>
+namespace App\Controller;
+
+class DashboardController extends AppController
+{
+    public function index()
+    {
+    }
+
+}
