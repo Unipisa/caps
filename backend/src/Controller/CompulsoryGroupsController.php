@@ -52,9 +52,7 @@ class CompulsoryGroupsController extends AppController
             if ($this->CompulsoryGroups->save($newgroup)) {
                 $this->Flash->success(__('Gruppo aggiunto con successo.'));
 
-                return $this->redirect(
-                    $this->request->referer()
-                );
+                return $this->redirect(["action" => "edit", "controller" => "Curricula", $newgroup['curriculum_id']]);
             }
         }
     }
@@ -70,6 +68,7 @@ class CompulsoryGroupsController extends AppController
         }
 
         $compulsory_group = $this->CompulsoryGroups->findById($id)->firstOrFail();
+        $curriculum_id = $compulsory_group["curriculum_id"];
         if (!$compulsory_group) {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
@@ -78,16 +77,12 @@ class CompulsoryGroupsController extends AppController
             if ($this->CompulsoryGroups->delete($compulsory_group)) {
                 $this->Flash->success(__('Gruppo cancellato con successo.'));
 
-                return $this->redirect(
-                    $this->request->referer()
-                );
+                return $this->redirect(["action" => "edit", "controller" => "Curricula", $curriculum_id]);
             }
         }
 
         $this->Flash->error(Utils::error_to_string($compulsory_group->errors()));
 
-        return $this->redirect(
-            $this->request->referer()
-        );
+        return $this->redirect(["action" => "edit", "controller" => "Curricula", $curriculum_id]);
     }
 }

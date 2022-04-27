@@ -52,9 +52,7 @@ class CompulsoryExamsController extends AppController
             if ($this->CompulsoryExams->save($newexam)) {
                 $this->Flash->success(__('Esame aggiunto con successo.'));
 
-                return $this->redirect(
-                    $this->request->referer()
-                );
+                return $this->redirect(["controller" => "Curricula", "action" => "edit", $newexam['curriculum_id']]);
             }
         }
     }
@@ -70,6 +68,7 @@ class CompulsoryExamsController extends AppController
         }
 
         $compulsory_exam = $this->CompulsoryExams->findById($id)->firstOrFail();
+        $curriculum_id = $compulsory_exam['curriculum_id'];
         if (!$compulsory_exam) {
             throw new NotFoundException(__('Errore: esame non esistente.'));
         }
@@ -78,16 +77,13 @@ class CompulsoryExamsController extends AppController
             if ($this->CompulsoryExams->delete($compulsory_exam)) {
                 $this->Flash->success(__('Esame cancellato con successo.'));
 
-                return $this->redirect(
-                    $this->request->referer()
-                );
+                return $this->redirect(["controller" => "Curricula", "action" => "edit", $curriculum_id]);
             }
         }
 
         $this->Flash->error(Utils::error_to_string($compulsory_exam->error()));
 
-        return $this->redirect(
-            $this->request->referer()
-        );
+        return $this->redirect(["controller" => "Curricula", "action" => "edit", $curriculum_id]);
+
     }
 }

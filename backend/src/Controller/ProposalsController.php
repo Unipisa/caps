@@ -187,7 +187,7 @@ class ProposalsController extends AppController
                 if ($this->request->getData($i)) {
                     if ($action) {
                         $this->Flash->error(__('Richiesta non valida'));
-                        return $this->redirect($this->referer());
+                        return $this->redirect([]);
                     }
                     $action = $i;
                 }
@@ -223,7 +223,7 @@ class ProposalsController extends AppController
                 $selected = $this->request->getData('selection');
                 if (!$selected) {
                     $this->Flash->error(__('Nessun piano selezionato'));
-                    return $this->redirect($this->referer());
+                    return $this->redirect([]);
                 }
 
                 $count = 0;
@@ -277,7 +277,7 @@ class ProposalsController extends AppController
                     $this->Flash->success(__('Nessun piano {what}', ['what' => $context['singular']]));
                 }
 
-                return $this->redirect($this->referer());
+                return $this->redirect([]);
             }
         }
 
