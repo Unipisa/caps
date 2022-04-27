@@ -74,7 +74,7 @@ class Proposals extends ItemsBase {
                     <div className="flex-fill"></div>
 
                     <div className="col-auto">
-                        <button type="button" className="btn btn-sm btn-primary"
+                        <button type="button" className="btn btn-sm btn-primary mr-2"
                             onClick={async () => this.setState({csvData: await this.csvData()})}>
                             <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
                         </button>
@@ -119,8 +119,7 @@ class Proposals extends ItemsBase {
                                     key={row.item.id} 
                                     row={row} 
                                     onToggle={() => {this.toggleItem(row.item)}}
-                                    href={`${this.props.root}proposals/view/${row.item.id}`}
-                                    href_pdf={`${this.props.root}proposals/pdf/${row.item.id}`}
+                                    root={this.props.root}
                                     />)
                         }
                         </tbody>
@@ -140,25 +139,24 @@ class Proposals extends ItemsBase {
     }
 }
 
-function ProposalRow(props) {
-    const {row: {selected, item}, href, href_pdf, onToggle} = props;
+function ProposalRow({row: {selected, item}, root, onToggle}) {
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><ProposalStateBadge proposal={ item } /></td>
-        <td>{ item.user.name }</td>
+        <td><a href={root + "users/view/" +  item.user.id }>{ item.user.name }</a></td>
         <td>{ item.curriculum.degree.academic_year }</td>
         <td>{ item.curriculum.degree.name }</td>
         <td>{ item.curriculum.name }</td>
         <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY H:mm") }</td>
         <td>
             <ResponsiveButtons>
-                <ResponsiveButton className="btn-primary" key="view" href={ href }>
+                <ResponsiveButton className="btn-primary" key="view" href={`${root}proposals/view/${item.id}`}>
                     <i className="fas fa-eye mr-2" />Visualizza
                 </ResponsiveButton>
-                <ResponsiveButton className="btn-secondary" key="pdf" href={href_pdf}>
+                <ResponsiveButton className="btn-secondary" key="pdf" href={`${root}proposals/pdf/${item.id}`}>
                     <i className="fas fa-file-pdf mr-2" />Scarica
                 </ResponsiveButton>
-                <ResponsiveButton className="btn-secondary" key="pdf2" href={`${href_pdf}?show_comments=1`}>
+                <ResponsiveButton className="btn-secondary" key="pdf2" href={`${root}proposals/pdf/${item.id}?show_comments=1`}>
                     <i className="fas fa-file-pdf mr-2" />Scarica (con&nbsp;commenti)
                 </ResponsiveButton>
             </ResponsiveButtons>
