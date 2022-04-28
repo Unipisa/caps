@@ -7,13 +7,12 @@ import LoadingMessage from './LoadingMessage';
 import { FilterButton, FilterInput, FilterBadges, ColumnHeader } from './Table';
 import { CSVDownload, CSVLink } from "react-csv";
 
-
 class Exams extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            query: {_limit: 20},
+            query: {_limit: 10},
             csvData: null,
             rows: null,
         };
@@ -49,6 +48,15 @@ class Exams extends React.Component {
             : row;});
         rows.total = this.state.rows.total;
         this.setState({rows});
+    }
+
+    extendLimit() {
+        let _limit = this.state.query._limit;
+        if (_limit) {
+            _limit += 10;
+            let query = {...this.state.query, _limit}
+            this.setState({ query }, () => this.load());
+        }
     }
 
     onFilterChange() {
@@ -127,7 +135,7 @@ class Exams extends React.Component {
                             <p>
                             {this.state.rows.length < this.state.rows.total 
                             ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
-                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length}`} da mostrare)
+                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length} / ${this.state.rows.total}`} da mostrare)
                             </button>
                             : null}
                             </p>
