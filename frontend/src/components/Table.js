@@ -99,15 +99,11 @@ export function ColumnHeader({self, name, children}) {
     if (self) {
         let direction = 0;
         if (self.state.query._sort == name) {
-            if (self.state.query._direction == "asc") direction = 1;
-            else if (self.state.query._direction == "desc") direction = -1;
-            else if (self.state.query) {
-                throw RangeError(`invalid _direction ${ self.state._direction }`);
-            }
+            direction = self.state.query._direction;
         }
 
         return <a href="#" onClick={() => self.toggleSort(name)}>
-            {children}&nbsp;{direction ? (direction>0 ? <>↑</> : <>↓</>) : ""}
+            {children}&nbsp;{direction ? (direction > 0 ? <>↑</> : <>↓</>) : ""}
             </a>;
     } else {
         return children;

@@ -29,7 +29,9 @@ class Exams extends React.Component {
     async load() {
         try {
             const data = await restClient.get(`${this.items_name()}/`, this.state.query);
-            data.items = data.items.map(item => {return {...item, _selected: false}});
+            data.items = data.items.map(item => {
+                return {...item, _selected: false}
+            });
             this.setState({ data });
         } catch(err) {
             this.Page.flashCatch(err);
@@ -53,7 +55,36 @@ class Exams extends React.Component {
         }
     }
 
-    onFilterChange() {
+    toggleSort(name) {
+        if ( this.state.query._sort === name) {
+            let _direction = null;
+            if (this.state.query._direction === 1) _direction = -1;
+            else if (this.state.query._direction === -1) _direction = 1;
+            else throw new RangeError(`invalid value for _direction: ${ this.state.query._direction }`);
+            const query = { ...this.state.query, _direction};
+            this.setState({ query }, () => this.load());
+        } else {
+            const _sort = name;
+            const _direction = 1;
+            const query = {...this.state.query, _sort, _direction};
+            this.setState({ query }, () => this.load());
+        }
+    }
+
+    onFilterChange(e) {
+        let query = {...this.state.query};
+        if (e.target.value === '') {
+            delete query[e.target.name];
+        } else {
+            query[e.target.name] = e.target.value;
+        }
+        this.setState({ query }, () => this.load());
+    }
+
+    onFilterRemoveField(field) {
+        let query = {...this.state.query};
+        delete query[field];
+        this.setState({query}, () => this.load());
     }
 
     render() {

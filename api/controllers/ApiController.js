@@ -11,7 +11,7 @@ exports.model_index_data = async (req, {
         permitted_sort_keys }
     ) => {
     const filter = {};
-    const sort = "_id";
+    let sort = "_id";
     let direction = 1;
     let limit = 100;
 
@@ -34,10 +34,15 @@ exports.model_index_data = async (req, {
         }
     }
 
-    const [{ total, items }] = await Model.aggregate(
+    console.log(filter);
+
+    let total, items;
+    const $sort = {};
+    $sort[sort] = direction;
+    const res = await Model.aggregate(
         [
-            {$sort: { sort: direction}},
             {$match: filter},
+            {$sort},
             {$facet:{
                 "counting" : [ { "$group": {_id:null, count:{$sum:1}}} ],
                 "limiting" : [ { "$skip": 0}, {"$limit": limit} ]
@@ -49,12 +54,21 @@ exports.model_index_data = async (req, {
             }}
         ]);
 
+    if (res.length === 0) {
+        total = 0;
+        items = res;
+    } else {
+        [{ total, items }] = res;
+    }
+        
     console.log(`${items.length} / ${total} items collected`);
 
     return {
         items,
         limit,
         sort,
+        direction,
+        filter,
         total
     };
 }
