@@ -37,6 +37,7 @@ async function importData() {
     process.stdout.write("| Exams ")
     await Exam.deleteMany({}); // Drop all data
     results = await query(connection, 'SELECT * FROM exams');
+    console.log(`caricamento ${ results.length } esami...`);
     await Promise.all(results.map(element => {
         const e = new Exam(element);
         return e.save();
@@ -48,6 +49,7 @@ async function importData() {
     process.stdout.write("| Users ");
     await User.deleteMany({});
     results = await query(connection, 'SELECT * from users');
+    console.log(`caricamento ${ results.length } utenti...`);
     await Promise.all(results.map(element => {
         const u = new User(element);
         return u.save();

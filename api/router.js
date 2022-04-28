@@ -1,19 +1,22 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = new express.Router();
 
-const ApiController = require('./controllers/ApiController');
-const ExamsController = require('./controllers/ExamsController');
+const { exams_index_data, exam_post_data }  = require('./controllers/ExamsController');
 const { BadRequestError } = require('./exceptions/ApiException');
 
 // JSON parsing middleware
 router.use(express.json())
 
-router.get('/', ApiController.index);
 
 function response_envelope(controller) {
     return async function(req, res, next) {
-        try {
+        try {   
             const data = await controller(req);
+            if (data.length) {
+                console.log(`response with ${ data.length } objects`);
+            } else {
+                console.log(`response with single object`);
+            }
             res.json({
                 code: 200,
                 message: 'OK',
@@ -29,9 +32,11 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
+router.get('/', response_envelope(req => "Hello there!"));
+
 // Exams routes
 router.get('/error', test_error);
-router.get('/exams', response_envelope(ExamsController.index));
-router.post('/exams', response_envelope(ExamsController.post));
+router.get('/exams', response_envelope(exams_index_data));
+router.post('/exams', response_envelope(exam_post_data));
 
 module.exports = router;

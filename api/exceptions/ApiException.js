@@ -8,11 +8,18 @@ class ApiError extends Error {
 exports.ApiError = ApiError;
 
 class BadRequestError extends ApiError {
-    constructor(message) {
+    constructor(message = "Bad Request") {
         super(message, 400);
     }
 }
 exports.BadRequestError = BadRequestError;
+
+class NotImplementedError extends ApiError {
+    constructor(message = "Not Implemented") {
+        super(message, 501);
+    }
+}
+exports.NotImplementedError = NotImplementedError;
 
 function apiErrors(err, req, res, next) {
     if (err instanceof ApiError) {
