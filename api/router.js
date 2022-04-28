@@ -12,11 +12,6 @@ function response_envelope(controller) {
     return async function(req, res, next) {
         try {   
             const data = await controller(req);
-            if (data.length) {
-                console.log(`response with ${ data.length } objects`);
-            } else {
-                console.log(`response with single object`);
-            }
             res.json({
                 code: 200,
                 message: 'OK',

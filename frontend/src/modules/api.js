@@ -92,18 +92,6 @@ class RestClient extends BaseRestClient {
         if (res.code < 200 || res.code >= 300) {
             throw new ApiError(res, uri, method, data);
         }
-        if (res.data instanceof Array) {
-            // data is a queryset, add metadata
-            if (res.pagination !== undefined) {
-                res.data.total = res.pagination.total;
-                res.data.limit = res.pagination.limit;
-                res.data.offset = res.pagination.offset;
-            } else {
-                res.data.total = res.data.length;
-                res.data.limit = null;
-                res.data.offset = 0;
-            }
-        } 
         return res.data;
     }
 }

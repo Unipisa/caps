@@ -34,7 +34,7 @@ exports.model_index_data = async (req, {
         }
     }
 
-    const [{ count, data }] = await Model.aggregate(
+    const [{ total, items }] = await Model.aggregate(
         [
             {$sort: { sort: direction}},
             {$match: filter},
@@ -44,29 +44,17 @@ exports.model_index_data = async (req, {
             }},
             {$unwind: "$counting"},
             {$project:{
-                count: "$counting.count",
-                data: "$limiting"
+                total: "$counting.count",
+                items: "$limiting"
             }}
         ]);
 
-    console.log(count);
+    console.log(`${items.length} / ${total} items collected`);
 
-//    query = Model.aggregate(opts);
-    
-/*
-    let query = Model.find(filter);
-    if (sort !== null) {
-        query = query.sort({sort: direction});
-    }
-    
-    const total = await query.count();
-    query = query.limit(limit);
-    const data = await query;
-    */
-    data._pagination = {
+    return {
+        items,
         limit,
         sort,
-        total: count
-    }
-    return data;
+        total
+    };
 }

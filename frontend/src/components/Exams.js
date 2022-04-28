@@ -14,7 +14,7 @@ class Exams extends React.Component {
         this.state = {
             query: {_limit: 10},
             csvData: null,
-            rows: null,
+            data: null,
         };
 
         this.Page = props.Page;
@@ -28,26 +28,20 @@ class Exams extends React.Component {
 
     async load() {
         try {
-            const items = await restClient.get(`${this.items_name()}/`, this.state.query);
-            const rows = items.map(item => {return {
-                item,
-                selected: false
-            }});
-            rows.total = items.total;
-            this.setState({ rows });
-            this.Page.flashMessage("flash!");
+            const data = await restClient.get(`${this.items_name()}/`, this.state.query);
+            data.items = data.items.map(item => {return {...item, _selected: false}});
+            this.setState({ data });
         } catch(err) {
             this.Page.flashCatch(err);
         }
     }
 
     toggleItem(item) {
-        const rows = this.state.rows.map(row => {
-            return row.item === item
-            ? {...row, "selected": !row.selected}
-            : row;});
-        rows.total = this.state.rows.total;
-        this.setState({rows});
+        const items = this.state.data.items.map(it => {
+            return it._id === item._id
+            ? {...it, _selected: !it._selected}
+            : it;});
+        this.setState({data: {...this.state.data, items }});
     }
 
     extendLimit() {
@@ -119,23 +113,23 @@ class Exams extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                        { this.state.rows === null 
+                        { this.state.data === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
-                            : this.state.rows.map(row => 
+                            : this.state.data.items.map(item => 
                                 <ExamRow 
-                                    key={ row.item._id } 
-                                    row={ row } 
-                                    onToggle={() => {this.toggleItem(row.item)}}
-                                    href={`${this.props.root}exams/view/${row.item.id}`}
+                                    key={ item._id } 
+                                    item={ item } 
+                                    onToggle={() => {this.toggleItem(item)}}
+                                    href={`${this.props.root}exams/view/${item.id}`}
                                     />)
                         }
                         </tbody>
                     </table>
-                    { this.state.rows && 
+                    { this.state.data && 
                             <p>
-                            {this.state.rows.length < this.state.rows.total 
+                            {this.state.data.items.length < this.state.data.total 
                             ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
-                                Carica più righe (altri {`${this.state.rows.total - this.state.rows.length} / ${this.state.rows.total}`} da mostrare)
+                                Carica più righe (altri {`${this.state.data.total - this.state.data.items.length} / ${this.state.data.total}`} da mostrare)
                             </button>
                             : null}
                             </p>
@@ -149,9 +143,9 @@ class Exams extends React.Component {
 
 export default Exams;
 
-function ExamRow({ row: { item, selected }, onToggle, href }) {
-    return <tr style={selected?{background: "lightgray"}:{}}>
-    <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
+function ExamRow({ item, onToggle, href }) {
+    return <tr style={item._selected ? {background: "lightgray"} : {}}>
+    <td><input type="checkbox" checked={ item._selected } readOnly onClick={ onToggle }/></td>
     <td><a href={ href }>{ item.name }</a></td>
     <td>{ item.tags }</td>
     <td>{ item.code }</td>
