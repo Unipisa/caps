@@ -5,30 +5,68 @@
 
 const { BadRequestError, NotImplementedError } = require("../exceptions/ApiException");
 
-exports.model_index_data = async (req, { Model, permitted_filter_keys, permitted_sort_keys }) => {
+exports.model_index_data = async (req, { 
+        Model, 
+        permitted_filter_keys, 
+        permitted_sort_keys }
+    ) => {
     const filter = {};
-    const sort = {};
+    const sort = "_id";
     let direction = 1;
-    let limit = null;
+    let limit = 100;
 
     for (key in req.query) {
         const value = req.query[key];
         if (key == '_direction') {
             if (value=="1") direction = 1;
             else if (value=="-1") direction = -1;
-            else throw BadRequestError(`invalid _direction ${value}: 1 or -1 expected`);
+            else throw new BadRequestError(`invalid _direction ${value}: 1 or -1 expected`);
         } else if (key == '_limit') {
             limit = parseInt(value);
             if (isNaN(limit) || limit < 0) throw BadRequestError(`invalid _limit ${value}: positive integer expected`);
         } else if (key == '_sort') {
             if (!permitted_sort_keys.includes(value)) {
-                throw BadRequestError(`invalid _sort key ${value}: allowed keys: ${permitted_sort_keys}`);
+                throw new BadRequestError(`invalid _sort key ${value}: allowed keys: ${permitted_sort_keys}`);
             }
             sort = value;
         } else if (permitted_filter_keys.includes(key)) {
             filter[key] = value;
         }
     }
-    const data = await Model.find(filter).sort();
+
+    const [{ count, data }] = await Model.aggregate(
+        [
+            {$sort: { sort: direction}},
+            {$match: filter},
+            {$facet:{
+                "counting" : [ { "$group": {_id:null, count:{$sum:1}}} ],
+                "limiting" : [ { "$skip": 0}, {"$limit": limit} ]
+            }},
+            {$unwind: "$counting"},
+            {$project:{
+                count: "$counting.count",
+                data: "$limiting"
+            }}
+        ]);
+
+    console.log(count);
+
+//    query = Model.aggregate(opts);
+    
+/*
+    let query = Model.find(filter);
+    if (sort !== null) {
+        query = query.sort({sort: direction});
+    }
+    
+    const total = await query.count();
+    query = query.limit(limit);
+    const data = await query;
+    */
+    data._pagination = {
+        limit,
+        sort,
+        total: count
+    }
     return data;
 }
