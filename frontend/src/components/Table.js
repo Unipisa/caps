@@ -66,7 +66,7 @@ export function FilterBadges({query, onRemoveField}) {
                             style={{cursor: 'pointer'}} 
                             className="filter-badge-link" 
                             onClick={() => onRemoveField(field)}>
-                    <span className="filter-badge badge badge-secondary mr-2" title={`rimuovi il filtro ${field}: ${value}`}>
+                    <span className="filter-badge badge badge-secondary mr-2">
                         {`${field}: ${value} X`}
                     </span>
                 </a>;
