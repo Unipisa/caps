@@ -9,19 +9,22 @@ class ItemsBase extends CapsPage {
     constructor(props) {
         super(props);
 
-        const stored_query = JSON.parse(sessionStorage.getItem(`${this.items_name()}-filter`));
-        var query = undefined;
+        var query = { _limit: 10 };
 
-        if (window.location.search != '') {
+        const stored_query = JSON.parse(sessionStorage.getItem(`${this.items_name()}-filter`));
+        if (stored_query) {
+            query = { _limit: 10, ...stored_query }
+        }
+
+        if (window.location.search) {
             const urlSearchParams = new URLSearchParams(window.location.search);
-            query = Object.fromEntries(urlSearchParams);
-            query = {_limit: 10,... query};
+            query = { _limit: 10, ...Object.fromEntries(urlSearchParams) };
         }
 
         this.state = {
             ...this.state,
             'rows': null,
-            'query': query || stored_query || {},
+            'query': query,
             'total': null
         };
     }
