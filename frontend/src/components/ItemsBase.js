@@ -10,11 +10,18 @@ class ItemsBase extends CapsPage {
         super(props);
 
         const stored_query = JSON.parse(sessionStorage.getItem(`${this.items_name()}-filter`));
+        var query = undefined;
+
+        if (window.location.search != '') {
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            query = Object.fromEntries(urlSearchParams);
+            query = {_limit: 10,... query};
+        }
 
         this.state = {
             ...this.state,
             'rows': null,
-            'query': this.props.query || stored_query || {},
+            'query': query || stored_query || {},
             'total': null
         };
     }
@@ -86,6 +93,7 @@ class ItemsBase extends CapsPage {
         let query = {...this.state.query};
         delete query[field];
         await this.setStateAsync({query});
+        sessionStorage.setItem(`${this.items_name()}-filter`, JSON.stringify(query));
         this.load();
     }
 
