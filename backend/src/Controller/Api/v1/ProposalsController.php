@@ -113,6 +113,38 @@ class ProposalsController extends RestController
         }
     }
 
+    public function patch($id) {
+        $proposal = $this->Proposals->get($id, [ 'contain' => ProposalsController::$associations ]); // TODO: catch exception
+        $payload = json_decode($this->request->getBody());
+
+        if (!$proposal || !($this->user['admin'] || $this->user['id'] == $proposal['user_id'])) {
+            // don't leak information:
+            // if the form does not exist give the same error as if you cannot access it
+            $this->JSONResponse(ResponseCode::Error, null, 'The current user can not edit this proposal or proposal does not exist.');
+        }
+
+        foreach($payload as $field => $value) {
+            if ($field == "state") {
+                // Solo il proprietario e l'amministratore possono modifica
+                if ($this->user['admin'] || $proposal['state'] == "draft") {
+                    $proposal[$field] = $value;
+                } else {
+                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted proposal');
+                    return;
+                }
+            } else if ($field == "data") {
+                if ($proposal['state'] == "draft") {
+                    $proposal[$field] = $value;
+                } else {
+                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot modify the data of a submitted form');
+                    return;
+                }
+            }
+        }
+        $this->Proposals->save($proposal);
+        $this->JSONResponse(ResponseCode::Ok, $proposal);
+    }
+
     function delete($id) {
         // We only get the proposal without all the associated tables, 
         // as we do not need that much data to decide wheather the proposal

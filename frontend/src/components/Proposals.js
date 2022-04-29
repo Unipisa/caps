@@ -26,7 +26,7 @@ class Proposals extends ItemsBase {
     }
 
     shortItemRender(proposal) {
-        return <>piano <i>{ proposal }</i> di <b>{ proposal.user.name }</b></>
+        return <>piano <i>{ proposal.curriculum.name }</i> di <b>{ proposal.user.name }</b></>
     }
  
     renderPage() {
