@@ -1,12 +1,11 @@
 let express = require('express');
 let router = new express.Router();
 
-const { exams_index_data, exam_post_data }  = require('./controllers/ExamsController');
+const Exams  = require('./controllers/ExamsController');
 const { BadRequestError } = require('./exceptions/ApiException');
 
 // JSON parsing middleware
 router.use(express.json())
-
 
 function response_envelope(controller) {
     return async function(req, res, next) {
@@ -31,7 +30,7 @@ router.get('/', response_envelope(req => "Hello there!"));
 
 // Exams routes
 router.get('/error', test_error);
-router.get('/exams', response_envelope(exams_index_data));
-router.post('/exams', response_envelope(exam_post_data));
+router.get('/exams', response_envelope(Exams.index));
+router.post('/exams', response_envelope(Exams.post));
 
 module.exports = router;
