@@ -1,8 +1,5 @@
 FROM php:8.1-apache
 
-ENV NODE_VERSION=16.13.0
-ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
-
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -23,6 +20,9 @@ RUN apt-get update && apt-get install -y \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
     && docker-php-ext-install gd ldap pdo_mysql intl zip curl opcache pdo_pgsql
+
+ENV NODE_VERSION=16.13.0
+ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 	&& sed -i "s|session.gc_maxlifetime = .*|session.gc_maxlifetime = 86400|g" "$PHP_INI_DIR/php.ini"
