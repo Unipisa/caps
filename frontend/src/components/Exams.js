@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import restClient from '../modules/api';
+import api from '../modules/api';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
 import { FilterButton, FilterInput, FilterBadges, ColumnHeader } from './Table';
@@ -28,7 +28,7 @@ class Exams extends React.Component {
 
     async load() {
         try {
-            const data = await restClient.get(`${this.items_name()}/`, this.state.query);
+            const data = await api.get(`${this.items_name()}/`, this.state.query);
             data.items = data.items.map(item => {
                 return {...item, _selected: false}
             });
