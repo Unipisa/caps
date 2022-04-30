@@ -2,6 +2,22 @@
 
 import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { CSVDownload, CSVLink } from 'react-csv';
+
+export function TableTopButtons({ children }) {
+    return <div className="d-flex mb-2">
+        { children }
+    </div>
+} 
+
+export function ItemAddButton({ children }) {
+    return <button type="button" className="btn btn-sm btn-primary mr-2">
+        <i className="fas fa-plus"></i>
+        <span className="d-none d-md-inline ml-2">
+            { children }
+        </span>
+    </button>
+}
 
 export function FilterInput({name, label, value, onChange}) {
     
@@ -56,6 +72,39 @@ export function FilterButton({onChange, children }) {
             </Dropdown>
 }
 
+export function TableTopRightButtons({ children }) {
+    return <>
+        <div className="flex-fill" />
+        <div className="col-auto">
+            { children }
+        </div>
+    </>
+}
+
+export function CsvDownloadButton({ onClick, csvData, filename }) {
+    return <>
+        <button type="button" className="btn btn-sm btn-primary" onClick={ onClick }>
+                <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">CSV</span>
+        </button>
+        { csvData !== null 
+            ? <CSVDownload 
+                data={ csvData.data }
+                headers={ csvData.headers }
+                filename={ filename }
+                target="_blank" /> 
+            : null }
+    </>
+}
+
+export function ExcelDownloadButton() {
+    return <button type="button" className="btn btn-sm btn-primary">
+        <i className="fas fw fa-file-excel" />
+        <span className="ml-2 d-none d-md-inline">
+           <span className="d-none d-xl-inline">Esporta in</span> Excel
+        </span>
+    </button>
+}
+
 export function FilterBadges({query, onRemoveField}) {
     let entries = Object.entries(query).filter(([field, value]) => !field.startsWith('_'));
     if (entries.length == 0) return null;
@@ -72,6 +121,35 @@ export function FilterBadges({query, onRemoveField}) {
                 </a>;
                 })}
         </div>
+}
+
+export function ColumnHeaders({ children }) {
+    return <thead>
+        <tr>
+            <th></th>
+            { children }
+            <th></th>
+        </tr>
+    </thead>
+}
+
+export function ColumnHeader({self, name, children}) {
+    if (self) {
+        let direction = 0;
+        if (self.state.query._sort == name) {
+            direction = self.state.query._direction;
+        }
+
+        return <th>
+            <a href="#" onClick={() => self.toggleSort(name)}>
+            { children }&nbsp;{direction ? (direction > 0 ? <>↑</> : <>↓</>) : ""}
+            </a>
+        </th>
+    } else {
+        return <th>
+            { children }
+        </th>
+    }
 }
 
 export function ActionButtons(props) {
@@ -95,19 +173,16 @@ export function ActionButton({ className, onClick, children }) {
             </button>
 }
 
-export function ColumnHeader({self, name, children}) {
-    if (self) {
-        let direction = 0;
-        if (self.state.query._sort == name) {
-            direction = self.state.query._direction;
-        }
+export function TableContainer({ children }) {
+    return <div className="table-responsive-lg">
+        { children }
+    </div>
+}
 
-        return <a href="#" onClick={() => self.toggleSort(name)}>
-            {children}&nbsp;{direction ? (direction > 0 ? <>↑</> : <>↓</>) : ""}
-            </a>;
-    } else {
-        return children;
-    }
+export function Table({ children }) {
+    return <table className="table">
+        { children }
+    </table>
 }
 
 export function ResponsiveButton({className, href, children, xl}) {
@@ -140,4 +215,19 @@ export function ResponsiveButtons({children}) {
             { children.map(button => React.cloneElement(button, { xl: true })) }
         </div>
     </>
+}
+
+export function MoreLinesButton({ data, onClick }) {
+    if (data) {
+        return <p>
+        { data.items.length < data.total 
+        ? <button className="btn btn-primary mx-auto d-block" onClick={ onClick } >
+            Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
+        </button>
+        : null
+        }
+        </p>
+    } else {
+        return null;
+    }
 }

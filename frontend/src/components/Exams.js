@@ -4,8 +4,12 @@ import React from 'react';
 import api from '../modules/api';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import { FilterButton, FilterInput, FilterBadges, ColumnHeader } from './Table';
-import { CSVDownload, CSVLink } from "react-csv";
+import { 
+    TableTopButtons, TableTopRightButtons, FilterButton, FilterInput, FilterBadges, 
+    ItemAddButton, TableContainer, Table,
+    ColumnHeaders, ColumnHeader, MoreLinesButton, 
+    CsvDownloadButton, ExcelDownloadButton
+    } from './TableElements';
 
 class Exams extends React.Component {
     constructor(props) {
@@ -30,7 +34,10 @@ class Exams extends React.Component {
         try {
             const data = await api.get(`${this.items_name()}/`, this.state.query);
             data.items = data.items.map(item => {
-                return {...item, _selected: false}
+                return {
+                    ...item, 
+                    _selected: false
+                }
             });
             this.setState({ data });
         } catch(err) {
@@ -91,7 +98,7 @@ class Exams extends React.Component {
         return <>
             <h1>Esami</h1>
             <Card>
-                <div className="d-flex mb-2">
+                <TableTopButtons>
                     <FilterButton onChange={ this.onFilterChange.bind(this) }>
                         <FilterInput name="name" label="nome" value={ this.state.query.name || ""}/>
                         <FilterInput name="code" label="codice" value= { this.state.query.code || ""}/>
@@ -99,50 +106,36 @@ class Exams extends React.Component {
                         <FilterInput name="credits" label="crediti" value={ this.state.query.credits || "" } />
                     </FilterButton>
 
-                    <button type="button" className="btn btn-sm btn-primary mr-2">
-                        <i className="fas fa-plus"></i><span className="d-none d-md-inline ml-2">Aggiungi esame</span>
-                    </button>
+                    <ItemAddButton>
+                        Aggiungi esame
+                    </ItemAddButton>
 
-                    <div className="flex-fill"></div>
+                    <TableTopRightButtons>
+                        <CsvDownloadButton 
+                            onClick={ async () => this.setState({csvData: await this.csvData()}) } 
+                            csvData={ this.state.csvData }
+                            filename="caps-exams.csv"
+                            />
+                        <ExcelDownloadButton />
+                    </TableTopRightButtons>
+                </TableTopButtons>
 
-                    <div className="col-auto">
-                        <button type="button" className="btn btn-sm btn-primary"
-                            onClick={async () => this.setState({csvData: await this.csvData()})}>
-                            <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">CSV</span>
-                        </button>
-                        {this.state.csvData !== null 
-                            ? <CSVDownload 
-                                data={this.state.csvData.data}
-                                headers={this.state.csvData.headers}
-                                filename="caps-exams.csv"
-                                target="_blank" /> 
-                            : null }
-                        <button type="button" className="btn btn-sm btn-primary">
-                            <i className="fas fw fa-file-excel"></i>
-                                <span className="ml-2 d-none d-md-inline">
-                                    <span className="d-none d-xl-inline">Esporta in</span> Excel</span>
-                        </button>
-
-                    </div>
-                </div>
                 <FilterBadges 
                     query={this.state.query} 
-                    onRemoveField={field => this.onFilterRemoveField(field)}>
-                </FilterBadges>
+                    onRemoveField={field => this.onFilterRemoveField(field)}
+                    />
 
-                <div className="table-responsive-lg">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                            <th></th>
-                            <th><ColumnHeader self={this} name="name">Nome</ColumnHeader></th>
-                            <th><ColumnHeader self={this} name="tags">Tags</ColumnHeader></th>
-                            <th><ColumnHeader self={this} name="code">Codice</ColumnHeader></th>
-                            <th><ColumnHeader self={this} name="sector">Settore</ColumnHeader></th>
-                            <th><ColumnHeader self={this} name="credits">Crediti</ColumnHeader></th>
-                            <th></th>
-                            </tr>
-                        </thead>
+                <TableContainer>
+                    <Table>
+                        <ColumnHeaders>
+                        </ColumnHeaders>
+                        <ColumnHeaders>
+                            <ColumnHeader self={this} name="name">Nome</ColumnHeader>
+                            <ColumnHeader self={this} name="tags">Tags</ColumnHeader>
+                            <ColumnHeader self={this} name="code">Codice</ColumnHeader>
+                            <ColumnHeader self={this} name="sector">Settore</ColumnHeader>
+                            <ColumnHeader self={this} name="credits">Crediti</ColumnHeader>
+                        </ColumnHeaders>
                         <tbody>
                         { this.state.data === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
@@ -154,18 +147,10 @@ class Exams extends React.Component {
                                     href={`${this.props.root}exams/view/${item.id}`}
                                     />)
                         }
-                        </tbody>
-                    </table>
-                    { this.state.data && 
-                            <p>
-                            {this.state.data.items.length < this.state.data.total 
-                            ? <button className="btn btn-primary mx-auto d-block" onClick={this.extendLimit.bind(this)}>
-                                Carica più righe (altri {`${this.state.data.total - this.state.data.items.length} / ${this.state.data.total}`} da mostrare)
-                            </button>
-                            : null}
-                            </p>
-                        }
-                </div>
+                        </tbody>                    
+                    </Table>
+                    <MoreLinesButton data={ this.state.data } onClick={ this.extendLimit.bind(this) } />
+                </TableContainer>
             </Card>
     </>
     }

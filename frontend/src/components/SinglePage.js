@@ -75,7 +75,7 @@ function Content({ Page }) {
         <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/index.html" element={<Splash />} />
-            <Route path="/exams" element={<Exams Page={ Page }/>} />
+        <Route path="/exams" element={<Exams Page={ Page }/>} />
         </Routes>
     </div>
 }
