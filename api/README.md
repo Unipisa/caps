@@ -25,7 +25,9 @@ npm run watch:dev
 
 Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/
 
-Alcune prove con le API si possono fare direttamente con curl (qui si usa jq per 
+Per testare le API si può usare una applicazione 
+come `postman`. 
+Ma alcune prove si possono fare direttamente con curl (qui si usa jq per 
 fare il pretty print del JSON):
 ```bash
 $ curl -s -H 'Content-Type: application/json' \
@@ -58,27 +60,23 @@ $ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v
 ```
 # import dati da mysql
 
-Prima di tutto devi ottenere un dump del database:
+ottieni l'indirizzo IP della macchina docker remota:
 ```bash
-ssh root@caps.dm.unipi.it 'cd docker/caps-develop && . caps.env && docker-compose exec caps-db mysqldump caps -u caps -p${MYSQL_PASSWORD}' > dump.sql
+REMOTE_IP=$( ssh root@caps.dm.unipi.it docker inspect capsmatematica_caps-db_1 | grep IPAddress | tail -1 | cut -f4 -d\" )
 ```
-Controlla che nel dump non ci siano messaggi di errore (cancellali!)
-
-Poi devi avviare un server mysql:
+apri un tunnel ssh (blocca il terminale):
 ```bash
-$ docker run --name mysql -e MYSQL_RANDOM_ROOT_PASSWORD=yes -e MYSQL_DATABASE=caps -e MYSQL_USER=caps -e MYSQL_PASSWORD=secret -p3306:3306 -d mysql
-$ docker exec -i mysql mysql caps -u caps -psecret < dump.sql 
+ssh -L 3306:${REMOTE_IP}:3306 root@caps.dm.unipi.it cat
 ```
 
-Ora puoi avviare lo script di importazione:
+su un altro terminale 
+ottieni la password del database:
+```bash
+export MYSQL_PASSWORD=$( ssh root@caps.dm.unipi.it "grep CAPS_DB_PASSWORD docker/caps-matematica/caps.env" | cut -f2 -d= )
+```
+e avvia lo script di importazione
 ```bash
 node migrate-mysql.js
-```
-
-Quando hai finito:
-```
-$ docker stop mysql
-$ docker rm mysql
 ```
 
 # struttura dei dati
