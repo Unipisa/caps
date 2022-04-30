@@ -1,27 +1,30 @@
 const ModelController = require('./ModelController');
-const Exam = require('../models/Exam');
+const User = require('../models/User');
 
-const ExamsController = {
+const UsersController = {
 
     index: async req => {
         const common_keys = [
+            "username",
             "name", 
-            "code", 
-            "sector", 
-            "credits",
+            "number",
+            "givenname",
+            "surname",
+            "email",
+            "admin", 
         ];
 
         return await ModelController.index(req, {
             permitted_filter_keys: common_keys,
             permitted_sort_keys: common_keys,
-            Model: Exam,
+            Model: User,
         });
     }, 
 
     post: async req => {
-        const exam = new Exam(req.body);
+        const exam = new User(req.body);
         return await exam.save();
     }
 }
 
-module.exports = ExamsController;
+module.exports = UsersController;

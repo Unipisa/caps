@@ -2,8 +2,9 @@ import React from "react";
 import {
     BrowserRouter, Routes, Route, Link
 } from "react-router-dom";
-import caps_version from "../modules/version";
+import settings from "../modules/settings";
 import Exams from "./Exams";
+import Users from "./Users";
 import Modal from './Modal';
 import Flash from "./Flash";
 
@@ -50,13 +51,13 @@ class SinglePage extends React.Component {
         return <>
         <div id="wrapper">
             <BrowserRouter>
-                <NavBar capsVersion= { caps_version }/>
+                <NavBar capsVersion= { settings.caps_version }/>
                 <div id="content-wrapper" className="d-flex flex-column">
                     <TopBar />
                     <Modal ref={this.modal_ref}></Modal>
                     <Flash messages={this.state.capsFlash} onClick={this.hideFlash.bind(this)}></Flash>
-                    <Content Page={ this } />
-                    <Footer capsVersion={ caps_version }/>
+                    <Content flashCatch={ this.flashCatch.bind(this) } />
+                    <Footer capsVersion={ settings.caps_version }/>
                 </div>
             </BrowserRouter>
         </div>
@@ -70,12 +71,13 @@ function Splash(props) {
     return <p>Splash!</p>
 }
 
-function Content({ Page }) {
+function Content({ flashCatch }) {
     return <div id="content">
         <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/index.html" element={<Splash />} />
-        <Route path="/exams" element={<Exams Page={ Page }/>} />
+        <Route path="/exams" element={<Exams flashCatch={ flashCatch }/>} />
+        <Route path="/users" element={<Users flashCatch={ flashCatch }/>} />
         </Routes>
     </div>
 }

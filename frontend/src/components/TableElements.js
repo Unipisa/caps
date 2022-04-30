@@ -1,8 +1,10 @@
 'use strict';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Children } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { CSVDownload, CSVLink } from 'react-csv';
+import api from '../modules/api';
+import LoadingMessage from './LoadingMessage';
 
 export function TableTopButtons({ children }) {
     return <div className="d-flex mb-2">
@@ -19,26 +21,41 @@ export function ItemAddButton({ children }) {
     </button>
 }
 
-export function FilterInput({name, label, value, onChange}) {
-    
-    const [ my_value, setValue ] = useState(value);
+export const QueryContext = React.createContext({ 
+    query: {}, 
+    setQuery: () => null
+});
 
-    function onKeyDown(e) {
-        if (e.key == 'Enter') {
-            onChange(e);
+export function FilterInput({ name, label }) {
+    function Internal({ query, setQuery }) {
+        const [ my_value, setValue ] = useState(query[name] || "");
+
+        function onChange(e) {
+            setQuery({...query, [name]: my_value })
         }
+
+        return <div className="input form-group">
+                <label htmlFor={name}>{ label }</label>
+                <input className="form-control"
+                    name={name}
+                    value={my_value}
+                    placeholder={label}
+                    onChange={e => { setValue(e.target.value) }}
+                    onBlur={onChange} 
+                    onKeyDown={ e => {
+                            if (e.key == 'Enter') {
+                                onChange(e);
+                            }
+                        }}/>
+            </div> 
     }
 
-    return <div className="input form-group">
-            <label htmlFor={name}>{ label }</label>
-            <input className="form-control"
-                name={name}
-                value={my_value}
-                placeholder={label}
-                onChange={e => {setValue(e.target.value)}}
-                onBlur={onChange} 
-                onKeyDown={onKeyDown}/>
-        </div> 
+    return <QueryContext.Consumer>
+        { 
+        ({ query, setQuery }) =>
+        <Internal query={ query } setQuery={ setQuery } />
+    }
+    </QueryContext.Consumer>
 }
 
 export function FilterSelect({name, label, value, onChange, children}) {
@@ -51,25 +68,36 @@ export function FilterSelect({name, label, value, onChange, children}) {
 
 }
 
-export function FilterButton({onChange, children }) {
+export function FilterButton({ children }) {
     const [open, setOpen ] = useState(false);
-    function onItemChange(e) {
-        setOpen(false);
-        onChange(e);
-    }
-    // onClick={ () => setOpen(!open)
-    return <Dropdown className="mr-2" show={ open }>
+    return <QueryContext.Consumer>
+        { ({ query, setQuery }) => 
+            <Dropdown className="mr-2" show={ open }>
                 <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
                     <i className="fas fa-filter"></i>
                     <span className="ml-2 d-none d-md-inline">Filtra</span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="p-2" style={{width: "350px", margin: 0}}>
-                    { children.map((el,n) => {
+                    { Children.map(children, (el, n) => {
                         // inserisce la prop onChange in tutti i children
-                        return React.cloneElement(el, {key: el.key || n, "onChange": onItemChange})
-                        }) }
+                        return React.cloneElement(el, {
+                            key: el.key || n, 
+                            onChange: (e) => { 
+                                setOpen(false);
+                                let new_query = {...query};
+                                if (e.target.value === '') {
+                                    delete query[e.target.name];
+                                } else {
+                                    query[e.target.name] = e.target.value;
+                                }
+                                setQuery(new_query);
+                            }
+                        })
+                    }) }
                 </Dropdown.Menu>
             </Dropdown>
+        }
+    </QueryContext.Consumer>
 }
 
 export function TableTopRightButtons({ children }) {
@@ -81,18 +109,24 @@ export function TableTopRightButtons({ children }) {
     </>
 }
 
-export function CsvDownloadButton({ onClick, csvData, filename }) {
+export function CsvDownloadButton({ Model, query }) {
+    const [ csvData, setCsvData ] = useState(null);
+
+    async function onClick() {
+        setCsvData(await Model.csvData(query));
+    }
+
     return <>
         <button type="button" className="btn btn-sm btn-primary" onClick={ onClick }>
                 <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">CSV</span>
         </button>
-        { csvData !== null 
-            ? <CSVDownload 
+        { csvData &&
+            <CSVDownload 
                 data={ csvData.data }
                 headers={ csvData.headers }
-                filename={ filename }
+                filename={ csvData.filename }
                 target="_blank" /> 
-            : null }
+        }
     </>
 }
 
@@ -105,7 +139,13 @@ export function ExcelDownloadButton() {
     </button>
 }
 
-export function FilterBadges({query, onRemoveField}) {
+export function FilterBadges({ query, setQuery }) {
+    function onRemoveField(field) {
+        let new_query = {...query};
+        delete new_query[field];
+        setQuery(new_query);
+    }
+
     let entries = Object.entries(query).filter(([field, value]) => !field.startsWith('_'));
     if (entries.length == 0) return null;
     return <div className="d-flex align-left my-2">
@@ -173,17 +213,63 @@ export function ActionButton({ className, onClick, children }) {
             </button>
 }
 
-export function TableContainer({ children }) {
-    return <div className="table-responsive-lg">
-        { children }
-    </div>
-}
-
 export function Table({ children }) {
     return <table className="table">
         { children }
     </table>
 }
+
+export function TableBody({ data, setData, ItemRow }) {
+    if ( data === null ) {
+        return <tbody>
+            <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
+        </tbody>
+    } else {
+        return <tbody>
+            { data.items.map(item => 
+            <ItemRow 
+                key={ item._id } 
+                item={ item } 
+                data={ data }
+                setData= { setData }
+                />)
+            }
+        </tbody>                    
+    }
+}
+
+export function TableContainer({ flashCatch, Model, ItemRow, query, children }) {
+    const [data, setData] = useState(null);
+    const [limit, setLimit] = useState(10);
+
+    useEffect(async () => {
+        try {
+            const new_data = await api.get(
+                `${Model.api_url}`, 
+                {...query, _limit: limit});
+            new_data.items = new_data.items.map(item => {
+                return {
+                    ...item, 
+                    _selected: false
+                }
+            });
+            setData(new_data);
+        } catch(err) {
+            flashCatch(err);
+        }    
+    }, [ limit ]);
+
+    return <div className="table-responsive-lg">
+        <Table>
+            <ColumnHeaders>
+                { children }
+            </ColumnHeaders>
+            <TableBody data={ data } setData={ setData } ItemRow={ ItemRow } />
+        </Table>
+        <MoreLinesButton data={ data } onClick={ () => setLimit(limit+10) } />
+    </div>
+}
+    
 
 export function ResponsiveButton({className, href, children, xl}) {
     if (xl) return <a href={ href }>
@@ -212,7 +298,7 @@ export function ResponsiveButtons({children}) {
             </div>
         </div>
         <div className="d-none d-xl-inline-flex flex-row align-items-center">
-            { children.map(button => React.cloneElement(button, { xl: true })) }
+            { Children.map(children, button => React.cloneElement(button, { xl: true })) }
         </div>
     </>
 }
@@ -231,3 +317,4 @@ export function MoreLinesButton({ data, onClick }) {
         return null;
     }
 }
+
