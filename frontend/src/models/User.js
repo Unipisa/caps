@@ -33,5 +33,12 @@ export default class User extends Model {
         }];
     static sort_default = 'surname';
     static sort_default_direction = 1;
+
+    render_table_field(field) {
+        if (field == "admin") {
+            return this.item.admin ? "admin" : "";
+        }
+        return super.render_table_field(field);
+    }
 }
 

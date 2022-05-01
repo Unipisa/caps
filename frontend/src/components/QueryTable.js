@@ -91,7 +91,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
             return <a href="#" onClick={() => toggleSort(field)}>
                 { label }&nbsp;{
                     (sort == field) 
-                        ? (direction > 0 ? <>↑</> : <>↓</>) 
+                        ? (direction > 0 ? <>↓</> : <>↑</>) 
                         : ""}
             </a>
         } else {
