@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     BrowserRouter, Routes, Route, Link
 } from "react-router-dom";
@@ -13,65 +13,66 @@ export const PageContext = React.createContext({
     flashCatch: () => {}
 });
 
-export default class SinglePage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            capsFlash: []
-        }
-        this.modal_ref = React.createRef();
-    }
 
-    async confirm(title, message) {
+export default function SinglePage () {
+    const [ flashMessages, setFlashMessages ] = useState([]);
+    const [ modalConfirmData, setModalConfirmData ] = useState({
+        title: null,
+        content: null,
+        callback: null
+    })
+
+    async function modalConfirm(title, message) {
         return new Promise((resolve) => {
-            this.modal_ref.current.show(title, message, resolve);
+            async function callback(ans) {
+                await setModalConfirmData({ title: null, message: null, callback: null })
+                resolve(ans);
+            }
+            setModalConfirmData({ title, message, callback })
         });
     }
     
-    flashMessage(message, type="primary") {
-        this.setState({
-            capsFlash: [...this.state.capsFlash, 
-                { type, message }]
-        });
+    function flashMessage(message, type="primary") {
+        setFlashMessages([...flashMessages, 
+                { message, type }]);
     }
 
-    flashSuccess(message) {
-        this.flashMessage(message, 'success');
+    function flashSuccess(message) {
+        flashMessage(message, 'success');
     }
 
-    flashError(message) {
-        this.flashMessage(message, 'error');
+    function flashError(message) {
+        flashMessage(message, 'error');
     }
 
-    flashCatch(error) {
+    function flashCatch(error) {
         console.log(error);
-        this.flashError(`${error.name}: ${error.message}`);
+        flashError(`${error.name}: ${error.message}`);
     }
 
-    hideFlash() {
-        this.setState({ 'capsFlash': [] });
+    function hideFlash() {
+        setFlashMessages([]);
     }
 
-    render() {
-        return <>
-        <div id="wrapper">
-            <BrowserRouter>
-                <NavBar capsVersion= { settings.caps_version }/>
-                <div id="content-wrapper" className="d-flex flex-column">
-                    <TopBar />
-                    <Modal ref={this.modal_ref}></Modal>
-                    <Flash messages={this.state.capsFlash} onClick={this.hideFlash.bind(this)}></Flash>
-                    <PageContext.Provider value={{
-                        flashCatch: this.flashCatch.bind(this)
-                    }}>
-                        <Content flashCatch={ this.flashCatch.bind(this) } />
-                    </PageContext.Provider>
-                    <Footer capsVersion={ settings.caps_version }/>
-                </div>
-            </BrowserRouter>
-        </div>
-        </>
-    }
+    return <>
+    <div id="wrapper">
+        <BrowserRouter>
+            <NavBar />
+            <div id="content-wrapper" className="d-flex flex-column">
+                <TopBar />
+                <Modal title={ modalConfirmData.title } content={ modalConfirmData.content } callback={ modalConfirmData.callback }></Modal>
+                <Flash messages={ flashMessages } onClick={ hideFlash }></Flash>
+                <PageContext.Provider value={{
+                    flashCatch, hideFlash, flashError, flashMessage, flashSuccess,
+                    modalConfirm
+                }}>
+                    <Content flashCatch={ flashCatch } />
+                </PageContext.Provider>
+                <Footer />
+            </div>
+        </BrowserRouter>
+    </div>
+    </>
 }
 
 function Splash(props) {
@@ -141,25 +142,25 @@ function TopBar(props) {
 </nav>
 }
 
-function Footer({ capsVersion }) {
+function Footer() {
     return <footer className="sticky-footer bg-white">
     <div className="container my-auto">
         <div className="copyright text-center my-auto">
             <span>Copyright © Dipartimento di Matematica — Università di Pisa — 2021 2022</span>
             <div className="mx-4 d-inline"></div>
-            <span>CAPS version { capsVersion }</span>
+            <span>CAPS version { settings.caps_version }</span>
         </div>
     </div>
 </footer>
 }
 
-function NavBar({ capsVersion }) {
+function NavBar() {
     return <ul className="navbar-nav bg-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/">
         <div className="sidebar-brand-icon">
             <img src="/img/cherubino_white.png" className="mx-1" />
         </div>
-        <div className="sidebar-brand-text mx-3">CAPS<sup>{ capsVersion }</sup></div>
+        <div className="sidebar-brand-text mx-3">CAPS<sup>{ settings.caps_version }</sup></div>
     </Link>
     <div className="d-flex justify-content-center">
         <div className="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style={{fontSize: "0.7rem"}}>

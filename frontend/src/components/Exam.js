@@ -5,8 +5,15 @@ import { Link, useParams } from "react-router-dom";
 import api from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import Card from './Card';
+import { PageContext } from './SinglePage';
 
-export default function Exam({ flashCatch }) {
+export default function Exam() {
+    return <PageContext.Consumer>
+        { ({ flashCatch }) => <ExamWithContext flashCatch={ flashCatch } /> }
+    </PageContext.Consumer>
+}
+
+function ExamWithContext({ flashCatch }) {
     const { id } = useParams();
     const [ exam, setExam ] = useState(null);
 
