@@ -6,6 +6,7 @@ import settings from "../modules/settings";
 import Exams from "./Exams";
 import Exam from "./Exam";
 import Users from "./Users";
+import Degrees from "./Degrees";
 import Modal from './Modal';
 import Flash from "./Flash";
 
@@ -82,11 +83,12 @@ function Splash(props) {
 function Content({ flashCatch }) {
     return <div id="content">
         <Routes>
-            <Route path="/index.html" element={<Splash />} />
-            <Route path="/exams/:id" element={<Exam flashCatch={ flashCatch } />} />
-            <Route path="/exams" element={<Exams />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/" element={<Splash />} />
+        <Route path="/" element={<Splash />} />
+        <Route path="/index.html" element={<Splash />} />
+        <Route path="/exams/:id" element={<Exam flashCatch={ flashCatch } />} />
+        <Route path="/exams" element={<Exams />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/degrees" element={<Degrees />} />
         </Routes>
     </div>
 }

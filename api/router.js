@@ -3,6 +3,7 @@ let router = new express.Router();
 const { BadRequestError, NotFoundError } = require('./exceptions/ApiException');
 const Exams  = require('./controllers/ExamsController');
 const Users  = require('./controllers/UsersController');
+const Degrees = require('./controllers/DegreesController');
 
 // JSON parsing middleware
 router.use(express.json())
@@ -33,6 +34,8 @@ router.get('/error', test_error);
 router.get('/exams/:id', response_envelope(Exams.view));
 router.get('/exams', response_envelope(Exams.index));
 router.post('/exams', response_envelope(Exams.post));
+router.get('/degrees', response_envelope(Degrees.index));
+router.post('/degrees', response_envelope(Degrees.post));
 router.get('/users', response_envelope(Users.index));
 router.post('/users', response_envelope(Users.post));
 
