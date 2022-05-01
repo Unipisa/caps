@@ -51,10 +51,10 @@ export default function QueryTable({ flashCatch, Model, children }) {
             <thead>
                 <tr>
                     <th></th>
-                    { Model.table_headers.map( field => 
+                    { Model.table_headers.map( ({ field, label }) => 
                         <th key={ field }> 
                             <a href="#" onClick={() => toggleSort(field)}>
-                            { Model.verbose[field] }&nbsp;{
+                            { label }&nbsp;{
                                 (sort == field) 
                                     ? (direction > 0 ? <>↑</> : <>↓</>) 
                                     : ""}
@@ -65,7 +65,15 @@ export default function QueryTable({ flashCatch, Model, children }) {
             </thead>        
             <TableBody Model={ Model } data={ data } setData={ setData } />
         </table>
-        <MoreLinesButton data={ data } onClick={ () => setLimit(limit+10) } />
+        {data && <p>
+            { data.items.length < data.total 
+            ? <button className="btn btn-primary mx-auto d-block" onClick={ () => setLimit(limit + 10) } >
+                Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
+            </button>
+            : null
+            }
+        </p>
+        }
     </div>
     </QueryContext.Provider>
 }
@@ -95,28 +103,6 @@ function FilterBadges({ query, setQuery }) {
 }
 
 function TableBody({ Model, data, setData }) {
-    if ( data === null ) {
-        return <tbody>
-            <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
-        </tbody>
-    } else {
-        return <tbody>
-            { data.items.map(item =>
-            <ItemRow 
-                key={ item._id } 
-                item={ item } 
-                data={ data }
-                setData= { setData }>
-                    {Model.table_headers.map(field => 
-                    <td key={field}><a href={ new Model(item).view_url() }>
-                    { item[field] }</a></td>)}
-            </ItemRow>)
-            }
-        </tbody>            
-    }
-}
-
-function ItemRow({ item, data, setData, children }) {
     function onToggle() {
         const items = data.items.map(it => {
             return it._id === item._id
@@ -125,24 +111,30 @@ function ItemRow({ item, data, setData, children }) {
         setData({...data, items });
     }
 
-    return <tr style={ item._selected ? {background: "lightgray" } : {}}>
-    <td><input type="checkbox" checked={ item._selected } readOnly onClick={ onToggle }/></td>
-    { children }
-    <td></td>
-</tr>
-}
-
-function MoreLinesButton({ data, onClick }) {
-    if (data) {
-        return <p>
-        { data.items.length < data.total 
-        ? <button className="btn btn-primary mx-auto d-block" onClick={ onClick } >
-            Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
-        </button>
-        : null
+    function renderField(model, field, enable_link) {
+        const content = model.render_table_field(field);
+        if (enable_link) {
+            return <a href={ model.view_url() }>{ content }</a>
+        } else {
+            return content;
         }
-        </p>
+    }
+
+    if ( data === null ) {
+        return <tbody>
+            <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
+        </tbody>
     } else {
-        return null;
+        return <tbody>
+            { data.items.map(item => {
+                return <tr key={ item._id } style={ item._selected ? {background: "lightgray" } : {}}>
+                    <td><input type="checkbox" checked={ item._selected } readOnly onClick={ () => onToggle(item) }/></td>
+                    { Model.table_headers.map(({ field, enable_link }) => 
+                        <td key={ field }>{ renderField(new Model(item), field, enable_link) }</td>
+                        )}
+                    <td></td>
+                </tr>})
+            }
+        </tbody>            
     }
 }

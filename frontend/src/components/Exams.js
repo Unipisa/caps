@@ -1,17 +1,17 @@
 'use strict';
 
 import React from 'react';
-import models from '../modules/models';
+import Exam from '../models/Exam';
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from './TableElements';
 import QueryTable from './QueryTable';
 
-function Exams({ flashCatch }) {
+export default function Exams({ flashCatch }) {
     return <>
         <h1>Esami</h1>
-        <QueryTable Model={ models.Exam } flashCatch={ flashCatch } >
+        <QueryTable Model={ Exam } flashCatch={ flashCatch } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="code" label="codice" />
@@ -24,15 +24,10 @@ function Exams({ flashCatch }) {
             </ItemAddButton>
 
             <TableTopRightButtons>
-                <CsvDownloadButton 
-                    self={ this }
-                    filename="caps-exams.csv"
-                    />
+                <CsvDownloadButton />
                 <ExcelDownloadButton />
             </TableTopRightButtons>
         </QueryTable>
     </>
 }
-
-export default Exams;
 
