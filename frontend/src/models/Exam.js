@@ -6,19 +6,23 @@ export default class Exam extends Model {
         {   
             field: 'name',
             label: "Nome",
-            enable_link: true
+            enable_link: true,
+            enable_sort: true
         }, {   
             field: 'tags',
-            label: "Etichette" 
+            label: "Etichette"
         }, {   
             field: 'code',
-            label: "Codice" 
+            label: "Codice",
+            enable_sort: true
         }, {   
             field: 'sector',
-            label: "Settore" 
+            label: "Settore",
+            enable_sort: true
         }, {   
             field: 'credits',
-            label: "Crediti" 
+            label: "Crediti",
+            enable_sort: true 
         }];
     static sort_default = 'name';
     static sort_default_direction = 1;

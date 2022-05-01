@@ -4,42 +4,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import { QueryContext } from './TableElements';
+import { PageContext } from './SinglePage';
 
-export default function QueryTable({ flashCatch, Model, children }) {
+export default function QueryTable({ Model, children }) {
     const [ query, setQuery ] = useState({});
-    const [ limit, setLimit ] = useState(10);
-    const [ sort, setSort ] = useState(Model.sort_default);
-    const [ direction, setDirection ] = useState(Model.sort_default_direction);
-    const [ data, setData ] = useState(null);
-
-    useEffect(async () => {
-        try {
-            const new_data = await api.get(
-                `${Model.api_url}`, 
-                {...query, 
-                    _sort: sort,
-                    _direction: direction,
-                    _limit: limit});
-            new_data.items = new_data.items.map(item => {
-                return {
-                    ...item, 
-                    _selected: false
-                }
-            });
-            setData(new_data);
-        } catch(err) {
-            flashCatch(err);
-        }    
-    }, [ sort, direction, limit ]);
-
-    function toggleSort(field) {
-        if ( sort === field) {
-            setDirection(-direction);
-        } else {
-            setSort(field);
-            setDirection(1);
-        }
-    }
 
     return <QueryContext.Provider value={ { query, setQuery } }>
         <div className="d-flex mb-2">
@@ -47,33 +15,13 @@ export default function QueryTable({ flashCatch, Model, children }) {
         </div>
         <FilterBadges query={ query } setQuery={ setQuery } />
         <div className="table-responsive-lg">
-        <table className="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    { Model.table_headers.map( ({ field, label }) => 
-                        <th key={ field }> 
-                            <a href="#" onClick={() => toggleSort(field)}>
-                            { label }&nbsp;{
-                                (sort == field) 
-                                    ? (direction > 0 ? <>↑</> : <>↓</>) 
-                                    : ""}
-                            </a>
-                        </th> 
-                    )}
-                </tr>
-            </thead>        
-            <TableBody Model={ Model } data={ data } setData={ setData } />
-        </table>
-        {data && <p>
-            { data.items.length < data.total 
-            ? <button className="btn btn-primary mx-auto d-block" onClick={ () => setLimit(limit + 10) } >
-                Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
-            </button>
-            : null
-            }
-        </p>
-        }
+            <PageContext.Consumer>
+            { (pageContext) => <Table 
+                pageContext={ pageContext } 
+                query={ query }
+                Model={ Model }
+                />}
+            </PageContext.Consumer>
     </div>
     </QueryContext.Provider>
 }
@@ -100,6 +48,80 @@ function FilterBadges({ query, setQuery }) {
                 </a>;
                 })}
         </div>
+}
+
+function Table({ pageContext: { flashCatch }, Model, query }) {
+    const [ limit, setLimit ] = useState(10);
+    const [ sort, setSort ] = useState(Model.sort_default);
+    const [ direction, setDirection ] = useState(Model.sort_default_direction);
+    const [ data, setData ] = useState(null);
+
+    function toggleSort(field) {
+        if ( sort === field) {
+            setDirection(-direction);
+        } else {
+            setSort(field);
+            setDirection(1);
+        }
+    }
+
+    useEffect(async () => {
+        try {
+            const new_data = await api.get(
+                `${ Model.api_url }`, 
+                {...query, 
+                    _sort: sort,
+                    _direction: direction,
+                    _limit: limit});
+            new_data.items = new_data.items.map(item => {
+                return {
+                    ...item, 
+                    _selected: false
+                }
+            });
+            setData(new_data);
+        } catch(err) {
+            flashCatch(err);
+        }    
+    }, [ sort, direction, limit ]);
+
+    function Header({ field, label, enable_sort }) {
+        if (enable_sort) {
+            return <a href="#" onClick={() => toggleSort(field)}>
+                { label }&nbsp;{
+                    (sort == field) 
+                        ? (direction > 0 ? <>↑</> : <>↓</>) 
+                        : ""}
+            </a>
+        } else {
+            return label;
+        }
+    }
+
+    return <>
+    <table className="table">
+        <thead>
+            <tr>
+                <th></th>
+                { Model.table_headers.map( ({ field, label, enable_sort }) => 
+                    <th key={ field }> 
+                        <Header field={ field } label={ label } enable_sort={ enable_sort } />
+                    </th> 
+                )}
+            </tr>
+        </thead>        
+        <TableBody Model={ Model } data={ data } setData={ setData } />
+    </table>
+    {data && <p>
+        { data.items.length < data.total 
+        ? <button className="btn btn-primary mx-auto d-block" onClick={ () => setLimit(limit + 10) } >
+            Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
+        </button>
+        : null
+        }
+    </p>
+    }
+    </>
 }
 
 function TableBody({ Model, data, setData }) {

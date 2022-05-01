@@ -9,10 +9,10 @@ import {
     } from './TableElements';
 import QueryTable from './QueryTable';
 
-export default function Users({ flashCatch }) {
+export default function Users() {
     return <>
         <h1>Utenti</h1>
-        <QueryTable Model={ User } flashCatch={ flashCatch } >
+        <QueryTable Model={ User }>
             <FilterButton>
                 <FilterInput name="name" label="nome" />
             </FilterButton>

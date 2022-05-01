@@ -8,7 +8,11 @@ import Users from "./Users";
 import Modal from './Modal';
 import Flash from "./Flash";
 
-class SinglePage extends React.Component {
+export const PageContext = React.createContext({
+    flashCatch: () => {}
+});
+
+export default class SinglePage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +60,11 @@ class SinglePage extends React.Component {
                     <TopBar />
                     <Modal ref={this.modal_ref}></Modal>
                     <Flash messages={this.state.capsFlash} onClick={this.hideFlash.bind(this)}></Flash>
-                    <Content flashCatch={ this.flashCatch.bind(this) } />
+                    <PageContext.Provider value={{
+                        flashCatch: this.flashCatch.bind(this)
+                    }}>
+                        <Content />
+                    </PageContext.Provider>
                     <Footer capsVersion={ settings.caps_version }/>
                 </div>
             </BrowserRouter>
@@ -65,19 +73,17 @@ class SinglePage extends React.Component {
     }
 }
 
-export default SinglePage;
-
 function Splash(props) {
     return <p>Splash!</p>
 }
 
-function Content({ flashCatch }) {
+function Content() {
     return <div id="content">
         <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/index.html" element={<Splash />} />
-        <Route path="/exams" element={<Exams flashCatch={ flashCatch }/>} />
-        <Route path="/users" element={<Users flashCatch={ flashCatch }/>} />
+        <Route path="/exams" element={<Exams />} />
+        <Route path="/users" element={<Users />} />
         </Routes>
     </div>
 }

@@ -8,10 +8,10 @@ import {
     } from './TableElements';
 import QueryTable from './QueryTable';
 
-export default function Exams({ flashCatch }) {
+export default function Exams() {
     return <>
         <h1>Esami</h1>
-        <QueryTable Model={ Exam } flashCatch={ flashCatch } >
+        <QueryTable Model={ Exam } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="code" label="codice" />
