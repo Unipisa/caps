@@ -1,23 +1,37 @@
 const ModelController = require('./ModelController');
 const User = require('../models/User');
 
+const fields = { 
+    "username": { 
+        can_filter: true, 
+        can_sort: true},
+    "name": { 
+        can_filter: true, 
+        can_sort: true},  
+    "number": { 
+        can_filter: true, 
+        can_sort: true}, 
+    "givenname": { 
+        can_filter: true,
+        can_sort: true}, 
+    "surname": {
+        can_filter: true,
+        can_sort: true}, 
+    "email": {
+        can_filter: true,
+        can_sort: true}, 
+    "admin": {
+        can_filter: true,
+        can_sort: true}
+    };
+
+
+
 const UsersController = {
 
     index: async req => {
-        const common_keys = [
-            "username",
-            "name", 
-            "number",
-            "givenname",
-            "surname",
-            "email",
-            "admin", 
-        ];
-
         return await ModelController.index(req, {
-            permitted_filter_keys: common_keys,
-            permitted_sort_keys: common_keys,
-            Model: User,
+            Model: User, fields
         });
     }, 
 

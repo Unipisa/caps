@@ -8,9 +8,7 @@ const { BadRequestError, NotImplementedError } = require("../exceptions/ApiExcep
 const ModelController = {
 
     index: async (req, { 
-            Model, 
-            permitted_filter_keys, 
-            permitted_sort_keys }
+            Model, fields }
         ) => {
         const filter = {};
         let sort = "_id";
@@ -27,11 +25,11 @@ const ModelController = {
                 limit = parseInt(value);
                 if (isNaN(limit) || limit < 0) throw BadRequestError(`invalid _limit ${value}: positive integer expected`);
             } else if (key == '_sort') {
-                if (!permitted_sort_keys.includes(value)) {
-                    throw new BadRequestError(`invalid _sort key ${value}: allowed keys: ${permitted_sort_keys}`);
+                if (!(fields[value] && fields[value].can_sort)) {
+                    throw new BadRequestError(`invalid _sort key ${value}. Fields: ${ JSON.stringify(fields) }`);
                 }
                 sort = value;
-            } else if (permitted_filter_keys.includes(key)) {
+            } else if (fields[key] && fields[key].can_filter) {
                 filter[key] = value;
             }
         }

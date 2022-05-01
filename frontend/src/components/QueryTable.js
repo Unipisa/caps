@@ -83,7 +83,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
         } catch(err) {
             flashCatch(err);
         }    
-    }, [ sort, direction, limit ]);
+    }, [ sort, direction, limit, query ]);
 
     function Header({ field, label, enable_sort }) {
         if (enable_sort) {
