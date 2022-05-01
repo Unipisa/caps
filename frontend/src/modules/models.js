@@ -12,6 +12,13 @@ class Model {
 
 class Exam extends Model {
     static api_url = 'exams/';
+    static table_headers = ["name", "tags", "code", "sector", "credits"];
+    static verbose = {
+        'name': "Nome",
+        'tags': "Codice",
+        'code': "Settore",
+        'credits': "Crediti"
+    }
 }
 
 class User {

@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import api from '../modules/api';
 
 class Items extends React.Component {
     constructor(Model, props) {
@@ -20,14 +19,6 @@ class Items extends React.Component {
         this.load();
     }
 
-    toggleItem(item) {
-        const items = this.state.data.items.map(it => {
-            return it._id === item._id
-            ? {...it, _selected: !it._selected}
-            : it;});
-        this.setState({data: {...this.state.data, items }});
-    }
-
     toggleSort(name) {
         if ( this.state.query._sort === name) {
             let _direction = null;
@@ -42,16 +33,6 @@ class Items extends React.Component {
             const query = {...this.state.query, _sort, _direction};
             this.setState({ query }, () => this.load());
         }
-    }
-
-    onFilterChange(e) {
-        let query = {...this.state.query};
-        if (e.target.value === '') {
-            delete query[e.target.name];
-        } else {
-            query[e.target.name] = e.target.value;
-        }
-        this.setState({ query }, () => this.load());
     }
 
 }

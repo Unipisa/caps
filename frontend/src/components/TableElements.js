@@ -213,32 +213,53 @@ export function ActionButton({ className, onClick, children }) {
             </button>
 }
 
+export function QueryTable({ flashCatch, Model, children }) {
+    const [query, setQuery] = useState({});
+    return <QueryContext.Provider value={ { query, setQuery } }>
+        <p>query: { JSON.stringify(query) }</p>
+        <TableTopButtons>
+            { children }
+        </TableTopButtons>
+        <FilterBadges query={ query } setQuery={ setQuery } />
+        <TableContainer flashCatch={ flashCatch } Model={ Model } >
+            { Model.table_headers.map( field => 
+                    <ColumnHeader key={ field } name={ field }>
+                        { Model.verbose[field] }
+                    </ColumnHeader> 
+                ) }
+        </TableContainer>    
+    </QueryContext.Provider>
+}
+
 export function Table({ children }) {
     return <table className="table">
         { children }
     </table>
 }
 
-export function TableBody({ data, setData, ItemRow }) {
+export function TableBody({ Model, data, setData }) {
     if ( data === null ) {
         return <tbody>
             <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
         </tbody>
     } else {
         return <tbody>
-            { data.items.map(item => 
+            { data.items.map(item =>
             <ItemRow 
                 key={ item._id } 
                 item={ item } 
                 data={ data }
-                setData= { setData }
-                />)
+                setData= { setData }>
+                    {Model.table_headers.map(field => 
+                    <td key={field}><a href={ new Model(item).view_url() }>
+                    { item[field] }</a></td>)}
+            </ItemRow>)
             }
-        </tbody>                    
+        </tbody>            
     }
 }
 
-export function TableContainer({ flashCatch, Model, ItemRow, query, children }) {
+export function TableContainer({ flashCatch, Model, query, children }) {
     const [data, setData] = useState(null);
     const [limit, setLimit] = useState(10);
 
@@ -264,12 +285,26 @@ export function TableContainer({ flashCatch, Model, ItemRow, query, children }) 
             <ColumnHeaders>
                 { children }
             </ColumnHeaders>
-            <TableBody data={ data } setData={ setData } ItemRow={ ItemRow } />
+            <TableBody Model={ Model } data={ data } setData={ setData } />
         </Table>
         <MoreLinesButton data={ data } onClick={ () => setLimit(limit+10) } />
     </div>
 }
-    
+
+function ItemRow({ item, data, setData, children }) {
+    function onToggle() {
+        const items = data.items.map(it => {
+            return it._id === item._id
+            ? {...it, _selected: !it._selected}
+            : it;});
+        setData({...data, items });
+    }
+
+    return <tr style={ item._selected ? {background: "lightgray" } : {}}>
+    <td><input type="checkbox" checked={ item._selected } readOnly onClick={ onToggle }/></td>
+    { children }
+</tr>
+}
 
 export function ResponsiveButton({className, href, children, xl}) {
     if (xl) return <a href={ href }>
