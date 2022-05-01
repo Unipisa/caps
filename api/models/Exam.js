@@ -2,6 +2,10 @@
 const mongoose = require('mongoose');
 
 const Exam = mongoose.model('Exam', {
+    old_id: {
+        type: Number,
+        required: false
+    },
     name: { 
         type: String, 
         required: true
