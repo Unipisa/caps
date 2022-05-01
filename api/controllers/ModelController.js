@@ -80,7 +80,16 @@ const ModelController = {
             filter,
             total
         };
-    }
+    },
+
+    view: async (req, { Model, fields }) => {
+        const { id } = req.params;
+        try {
+            return await Model.findById(id);
+        } catch(err) {
+            throw new BadRequestError();
+        }
+    },
 }
 
 module.exports = ModelController;

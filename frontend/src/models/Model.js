@@ -6,7 +6,7 @@ export default class Model {
     }
 
     view_url() {
-        return `${settings.root_url}${this.constructor.api_url}view/${this.item._id}`
+        return `${settings.root_url}${this.constructor.api_url}${this.item._id}`
     }
 
     render_table_field(field) {

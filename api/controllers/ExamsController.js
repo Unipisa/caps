@@ -23,10 +23,17 @@ const ExamsController = {
 
     index: async req => {
         return await ModelController.index(req, {
-            fields,
             Model: Exam,
+            fields
         });
     }, 
+
+    view: async req => {
+        return await ModelController.view(req, {
+            Model: Exam,
+            fields
+        })
+    },
 
     post: async req => {
         const exam = new Exam(req.body);

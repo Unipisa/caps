@@ -4,6 +4,7 @@ import {
 } from "react-router-dom";
 import settings from "../modules/settings";
 import Exams from "./Exams";
+import Exam from "./Exam";
 import Users from "./Users";
 import Modal from './Modal';
 import Flash from "./Flash";
@@ -63,7 +64,7 @@ export default class SinglePage extends React.Component {
                     <PageContext.Provider value={{
                         flashCatch: this.flashCatch.bind(this)
                     }}>
-                        <Content />
+                        <Content flashCatch={ this.flashCatch.bind(this) } />
                     </PageContext.Provider>
                     <Footer capsVersion={ settings.caps_version }/>
                 </div>
@@ -77,13 +78,14 @@ function Splash(props) {
     return <p>Splash!</p>
 }
 
-function Content() {
+function Content({ flashCatch }) {
     return <div id="content">
         <Routes>
-        <Route path="/" element={<Splash />} />
-        <Route path="/index.html" element={<Splash />} />
-        <Route path="/exams" element={<Exams />} />
-        <Route path="/users" element={<Users />} />
+            <Route path="/index.html" element={<Splash />} />
+            <Route path="/exams/:id" element={<Exam flashCatch={ flashCatch } />} />
+            <Route path="/exams" element={<Exams />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/" element={<Splash />} />
         </Routes>
     </div>
 }

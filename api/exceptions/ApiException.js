@@ -12,7 +12,16 @@ class BadRequestError extends ApiError {
         super(message, 400);
     }
 }
+
 exports.BadRequestError = BadRequestError;
+
+class NotFoundError extends ApiError {
+    constructor(message = "Not Found") {
+        super(message, 404);
+    }
+}
+
+exports.NotFoundError = NotFoundError;
 
 class NotImplementedError extends ApiError {
     constructor(message = "Not Implemented") {

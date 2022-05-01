@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import api from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import { QueryContext } from './TableElements';
@@ -137,7 +138,7 @@ function TableBody({ Model, data, setData }) {
     function renderField(model, field, enable_link) {
         const content = model.render_table_field(field);
         if (enable_link) {
-            return <a href={ model.view_url() }>{ content }</a>
+            return <Link to={ model.view_url() }>{ content }</Link>
         } else {
             return content;
         }

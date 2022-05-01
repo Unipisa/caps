@@ -1,6 +1,6 @@
 let express = require('express');
 let router = new express.Router();
-const { BadRequestError } = require('./exceptions/ApiException');
+const { BadRequestError, NotFoundError } = require('./exceptions/ApiException');
 const Exams  = require('./controllers/ExamsController');
 const Users  = require('./controllers/UsersController');
 
@@ -30,9 +30,12 @@ router.get('/', response_envelope(req => "Hello there!"));
 
 // Exams routes
 router.get('/error', test_error);
+router.get('/exams/:id', response_envelope(Exams.view));
 router.get('/exams', response_envelope(Exams.index));
 router.post('/exams', response_envelope(Exams.post));
 router.get('/users', response_envelope(Users.index));
 router.post('/users', response_envelope(Users.post));
+
+router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 
 module.exports = router;
