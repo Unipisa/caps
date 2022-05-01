@@ -23,10 +23,13 @@ export default class User extends Model {
             enable_link: true,
             enable_sort: true
         }, {   
-            field: 'firstname',
+            field: 'givenname',
             label: "Nome",
             enable_link: true,
             enable_sort: true
+        }, {
+            field: 'admin',
+            label: "Ruolo"
         }];
     static sort_default = 'surname';
     static sort_default_direction = 1;

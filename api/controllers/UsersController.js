@@ -4,26 +4,37 @@ const User = require('../models/User');
 const fields = { 
     "username": { 
         can_filter: true, 
-        can_sort: true},
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    },
     "name": { 
         can_filter: true, 
-        can_sort: true},  
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    },  
     "number": { 
         can_filter: true, 
-        can_sort: true}, 
+        can_sort: true
+    }, 
     "givenname": { 
         can_filter: true,
-        can_sort: true}, 
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    }, 
     "surname": {
         can_filter: true,
-        can_sort: true}, 
+        can_sort: true, 
+        match_regex: q => new RegExp(q, "i")
+    }, 
     "email": {
         can_filter: true,
-        can_sort: true}, 
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    }, 
     "admin": {
         can_filter: true,
-        can_sort: true}
-    };
+        can_sort: true
+    }};
 
 
 

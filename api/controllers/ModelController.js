@@ -10,7 +10,8 @@ const ModelController = {
     index: async (req, { 
             Model, fields }
         ) => {
-        const filter = {};
+        let $match = {};
+        let filter = {};
         let sort = "_id";
         let direction = 1;
         let limit = 100;
@@ -30,18 +31,26 @@ const ModelController = {
                 }
                 sort = value;
             } else if (fields[key] && fields[key].can_filter) {
+                const field = fields[key];
                 filter[key] = value;
+                if (field.match_regex) {
+                    $match[key] = { $regex: field.match_regex(value) }
+                } else if (field.match_integer) {
+                    $match[key] = parseInt(value);
+                } else {
+                    $match[key] = value;
+                }
             }
         }
 
-        console.log(filter);
+        // console.log($match);
 
         let total, items;
         const $sort = {};
         $sort[sort] = direction;
         const res = await Model.aggregate(
             [
-                {$match: filter},
+                {$match},
                 {$sort},
                 {$facet:{
                     "counting" : [ { "$group": {_id:null, count:{$sum:1}}} ],

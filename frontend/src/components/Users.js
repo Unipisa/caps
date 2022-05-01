@@ -3,7 +3,8 @@
 import React from 'react';
 import User from '../models/User';
 import { 
-    TableTopRightButtons, FilterButton, FilterInput,
+    TableTopRightButtons, 
+    FilterButton, FilterInput, FilterCheckbox,
     ItemAddButton, 
     CsvDownloadButton, ExcelDownloadButton
     } from './TableElements';
@@ -14,7 +15,11 @@ export default function Users() {
         <h1>Utenti</h1>
         <QueryTable Model={ User }>
             <FilterButton>
-                <FilterInput name="name" label="nome" />
+            <FilterInput name="name" label="nome" />
+            <FilterInput name="username" label="username" />
+            <FilterInput name="number" label="matricola" />
+            <FilterInput name="email" label="email" />
+            <FilterCheckbox name="admin" label="admin" />
             </FilterButton>
 
             <ItemAddButton>

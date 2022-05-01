@@ -59,6 +59,13 @@ export function FilterSelect({name, label, value, onChange, children}) {
             </div>
 }
 
+export function FilterCheckbox({name, label, value, onChange }) {
+    return <div className="input form-group">
+        <label htmlFor={name}>{label}</label>
+        <input type="checkbox" className="form-control" name={name} value={value} onChange={onChange}/>
+    </div>
+}
+
 export function FilterButton({ children }) {
     const [open, setOpen ] = useState(false);
     return <QueryContext.Consumer>

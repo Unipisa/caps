@@ -99,6 +99,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
     }
 
     return <>
+    {data && `${data.items.length}/${data.total} elementi mostrati`}
     <table className="table">
         <thead>
             <tr>
@@ -125,7 +126,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
 }
 
 function TableBody({ Model, data, setData }) {
-    function onToggle() {
+    function onToggle(item) {
         const items = data.items.map(it => {
             return it._id === item._id
             ? {...it, _selected: !it._selected}

@@ -4,7 +4,9 @@ const Exam = require('../models/Exam');
 const fields = {
     "name": {
         can_filter: true,
-        can_sort: true}, 
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    }, 
     "code": {
         can_filter: true,
         can_sort: true}, 
@@ -13,7 +15,8 @@ const fields = {
         can_sort: true}, 
     "credits": {
         can_filter: true,
-        can_sort: true
+        can_sort: true,
+        match_integer: true
     }};
 
 const ExamsController = {
