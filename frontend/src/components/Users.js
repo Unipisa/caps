@@ -5,7 +5,6 @@ import settings from '../modules/settings';
 import models from '../modules/models';
 import Card from './Card';
 import LoadingMessage from './LoadingMessage';
-import Items from './Items';
 import { 
     TableTopButtons, TableTopRightButtons, FilterButton, FilterInput, FilterBadges, 
     ItemAddButton, TableContainer, Table,
@@ -13,7 +12,7 @@ import {
     CsvDownloadButton, ExcelDownloadButton
     } from './TableElements';
 
-class Users extends Items {
+class Users extends React.Component {
     constructor(props) {
         super(models.User, props);
     }

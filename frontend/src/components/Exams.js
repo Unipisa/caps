@@ -1,20 +1,17 @@
 'use strict';
 
-import React, { useState } from 'react';
+import React from 'react';
 import models from '../modules/models';
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
-    ItemAddButton, QueryTable, ColumnHeader,
-    CsvDownloadButton, ExcelDownloadButton,
+    ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from './TableElements';
+import QueryTable from './QueryTable';
 
 function Exams({ flashCatch }) {
     return <>
         <h1>Esami</h1>
-        <QueryTable 
-            flashCatch={ flashCatch } 
-            Model={ models.Exam }
-            >
+        <QueryTable Model={ models.Exam } flashCatch={ flashCatch } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="code" label="codice" />

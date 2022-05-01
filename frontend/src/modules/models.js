@@ -19,6 +19,8 @@ class Exam extends Model {
         'code': "Settore",
         'credits': "Crediti"
     }
+    static sort_default = 'name';
+    static sort_default_direction = 1;
 }
 
 class User {
