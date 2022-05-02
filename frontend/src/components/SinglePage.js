@@ -7,6 +7,7 @@ import Exams from "./Exams";
 import Exam from "./Exam";
 import Users from "./Users";
 import Degrees from "./Degrees";
+import Degree from "./Degree";
 import Modal from './Modal';
 import Flash from "./Flash";
 
@@ -88,6 +89,7 @@ function Content({ flashCatch }) {
         <Route path="/exams/:id" element={<Exam flashCatch={ flashCatch } />} />
         <Route path="/exams" element={<Exams />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/degree/:id" element={<Degree flashCatch={ flashCatch } />} />
         <Route path="/degrees" element={<Degrees />} />
         </Routes>
     </div>

@@ -82,11 +82,12 @@ const ModelController = {
         };
     },
 
-    view: async (req, { Model, fields }) => {
+    view: async (req, { Model }) => {
         const { id } = req.params;
         try {
             return await Model.findById(id);
         } catch(err) {
+            console.log(`not found ${id}`);
             throw new BadRequestError();
         }
     },

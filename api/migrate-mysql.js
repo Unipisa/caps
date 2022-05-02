@@ -4,18 +4,10 @@ var User = require('./models/User');
 var Degree = require('./models/Degree');
 var mongoose = require('mongoose');
 const e = require('express');
+const { count, estimatedDocumentCount } = require('./models/Exam');
 
-function query(connection, q) {
-    return new Promise((resolve, reject) => {
-        connection.query(q, (err, res) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(res);
-            }
-        })
-    })
+function write(s) {
+    console.log(s);
 }
 
 async function importData() {
@@ -32,60 +24,89 @@ async function importData() {
     
     connection.connect();
 
+    function query(q) {
+        return new Promise((resolve, reject) => {
+            connection.query(q, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(res);
+                }
+            })
+        })
+    }
+
+    async function count(Collection) {
+        return await Collection.countDocuments();
+    }
+
+
     var results = null;
     
-    // Load tags
-    process.stdout.write("| Tags ")
-    const tags_exams = await query(connection, 'SELECT * FROM tags_exams');
-    const tags = await query(connection, 'SELECT * FROM tags');
-    console.log(`caricati ${ tags.length } tags...`);
-
-    // Import exams
-    process.stdout.write("| Exams ")
-    await Exam.deleteMany({}); // Drop all data
-    results = await query(connection, 'SELECT * FROM exams');
-    console.log(`caricamento ${ results.length } esami...`);
-    await Promise.all(results.map(element => {
-        element.old_id = element.id;
-        const tag_ids = tags_exams.filter(t => t.exam_id == element.id).map(t => t.tag_id);
-        element.tags = tags.filter(t => tag_ids.includes(t.id)).map(t => t.name);
-        const e = new Exam(element);
-        return e.save();
-    }));
-    const examsImported = await Exam.countDocuments();
-    console.log("(" + examsImported + " documents imported)");
-
     // Import users
-    process.stdout.write("| Users ");
+    write("> Users ");
     await User.deleteMany({});
-    results = await query(connection, 'SELECT * from users');
-    console.log(`caricamento ${ results.length } utenti...`);
+    results = await query('SELECT * from users');
+    write(`caricamento ${ results.length } utenti...`);
     await Promise.all(results.map(element => {
         element.old_id = element.id;
         const u = new User(element);
         return u.save();
     }))
-    const usersImported = await User.countDocuments();
-    console.log("(" + usersImported + " documents imported)");
+
+    write("(" + (await count(User)) + " documents imported)");
+
+    // Load tags
+    write("| Tags ")
+    const tags_exams = await query('SELECT * FROM tags_exams');
+    const tags = await query('SELECT * FROM tags');
+    write(`caricati ${ tags.length } tags...`);
+    
+    // Import exams
+    write("> Exams ")
+    await Exam.deleteMany({}); // Drop all data
+    results = await query('SELECT * FROM exams');
+    write(`caricamento ${ results.length } esami...`);
+    exams={};
+    (await Promise.all(results.map(element => {
+        element.old_id = element.id;
+        const tag_ids = tags_exams.filter(t => t.exam_id == element.id).map(t => t.tag_id);
+        element.tags = tags.filter(t => tag_ids.includes(t.id)).map(t => t.name);
+        const e = new Exam(element);
+        return e.save()
+    }))).map(e => {exams[e.old_id] = e});
+    write("(" + await count(Exam) + " documents imported)");
+
+    // Import groups
+    write("| Groups ")
+    const groups = await query('SELECT * FROM `groups`');
+    const exams_groups = await query('SELECT * FROM exams_groups');
+    write(`caricati ${groups.length} elementi`);
 
     // Import degrees
-    process.stdout.write("| Degrees ")
+    write("> Degrees ")
     await Degree.deleteMany({}); // Drop all data
-    results = await query(connection, 'SELECT * FROM degrees');
-    console.log(`caricamento ${ results.length } corsi di laurea...`);
+    results = await query('SELECT * FROM degrees');
+    write(`caricamento ${ results.length } corsi di laurea...`);
     await Promise.all(results.map(element => {
         element.old_id = element.id;
+        element.groups = {}
+        groups
+            .filter(g => g.degree_id===element.id)
+            .map(g => {
+                element.groups[g.name] = exams_groups
+                    .filter(eg => eg.group_id===g.id)
+                    .map(eg => exams[eg.exam_id]._id)});
+        
         const e = new Degree(element);
         return e.save();
     }));
-    const degreesImported = await Degree.countDocuments();
-    console.log("(" + degreesImported + " documents imported)");
+    write("(" + await count(Degree) + " documents imported)");
 
     await mongoose.connection.close()
     connection.end();
-
-
 }
 
-console.log("Starting the import of the data from MySQL to MongoDB")
-importData().then((res) => console.log("Import done"));
+write("Starting the import of the data from MySQL to MongoDB")
+importData().then((res) => write("Import done"));

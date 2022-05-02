@@ -1,5 +1,6 @@
 
 const mongoose = require('mongoose');
+const Exam = require('./Exam');
 
 const Degree = mongoose.model('Degree', {
     old_id: {
@@ -18,6 +19,15 @@ const Degree = mongoose.model('Degree', {
         type: Number,
         required: true,
         default: 3
+    },
+    groups: {
+        type: Map,
+        of: [
+                { 
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: Exam
+                }
+            ]
     },
     enabled: {
         type: Boolean,
