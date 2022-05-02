@@ -26,5 +26,12 @@ export default class Exam extends Model {
         }];
     static sort_default = 'name';
     static sort_default_direction = 1;
-
+    
+    render_table_field(field) {
+        if (field == "tags") {
+            return this.item.tags.join(", ");
+        } else {
+            return super.render_table_field(field);
+        }
+    }
 }

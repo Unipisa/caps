@@ -34,6 +34,12 @@ async function importData() {
 
     var results = null;
     
+    // Load tags
+    process.stdout.write("| Tags ")
+    const tags_exams = await query(connection, 'SELECT * FROM tags_exams');
+    const tags = await query(connection, 'SELECT * FROM tags');
+    console.log(`caricati ${ tags.length } tags...`);
+
     // Import exams
     process.stdout.write("| Exams ")
     await Exam.deleteMany({}); // Drop all data
@@ -41,6 +47,8 @@ async function importData() {
     console.log(`caricamento ${ results.length } esami...`);
     await Promise.all(results.map(element => {
         element.old_id = element.id;
+        const tag_ids = tags_exams.filter(t => t.exam_id == element.id).map(t => t.tag_id);
+        element.tags = tags.filter(t => tag_ids.includes(t.id)).map(t => t.name);
         const e = new Exam(element);
         return e.save();
     }));
@@ -75,6 +83,8 @@ async function importData() {
 
     await mongoose.connection.close()
     connection.end();
+
+
 }
 
 console.log("Starting the import of the data from MySQL to MongoDB")

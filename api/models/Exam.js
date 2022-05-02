@@ -21,7 +21,8 @@ const Exam = mongoose.model('Exam', {
     credits: {
         type: Number,
         required: true
-    }
+    },
+    tags: [ String ]
 })
 
 module.exports = Exam;
