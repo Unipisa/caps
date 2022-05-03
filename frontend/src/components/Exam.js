@@ -93,24 +93,26 @@ function ExamWithContext({ flashCatch }) {
             <i className="fas fa-download mr-2"></i>
             Esporta in CSV
         </a>
-    </div>
+        </div>
 
-    <table className="table">
-    <tbody><tr>
-        </tr></tbody><thead>
-            <tr><th>Piani approvati</th>
-            <th>Anno accademico</th>
-            <th>Curriculum</th>
-            <th>Laurea</th>
-        </tr></thead>
-    
-        <tbody><tr>
-            <td>xyz</td>
-            <td>yyyy/yyyy</td>
-            <td>Bla bla</td>
-            <td>Bla Bla bla</td>
-        </tr>
-        </tbody></table>
+        <table className="table">
+            <thead>
+                <tr><th>Piani approvati</th>
+                    <th>Anno accademico</th>
+                    <th>Curriculum</th>
+                    <th>Laurea</th>
+                </tr>
+            </thead>
+        
+            <tbody>
+                <tr>
+                    <td>xyz</td>
+                    <td>yyyy/yyyy</td>
+                    <td>Bla bla</td>
+                    <td>Bla Bla bla</td>
+                </tr>
+            </tbody>
+        </table>
     </Card>
     </>
 }

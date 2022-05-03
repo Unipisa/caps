@@ -17,7 +17,13 @@ const fields = {
         can_filter: true,
         can_sort: true,
         match_integer: true
-    }};
+    },
+    "ids": {
+        can_filter: true,
+        can_sort: false,
+        match_ids: true
+    }
+};
 
 const ExamsController = {
 

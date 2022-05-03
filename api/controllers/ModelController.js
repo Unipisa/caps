@@ -3,6 +3,7 @@
  * other controllers inherit. 
  */
 
+const { default: mongoose } = require("mongoose");
 const { BadRequestError, NotImplementedError } = require("../exceptions/ApiException");
 
 const ModelController = {
@@ -37,13 +38,17 @@ const ModelController = {
                     $match[key] = { $regex: field.match_regex(value) }
                 } else if (field.match_integer) {
                     $match[key] = parseInt(value);
+                } else if (field.match_ids) {
+                    $match['_id'] = {
+                        $in: value.split(",").map(id => new mongoose.Types.ObjectId(id))
+                    };
                 } else {
                     $match[key] = value;
                 }
             }
         }
 
-        // console.log($match);
+        console.log($match);
 
         let total, items;
         const $sort = {};

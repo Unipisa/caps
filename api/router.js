@@ -35,6 +35,7 @@ router.get('/exams/:id', response_envelope(Exams.view));
 router.get('/exams', response_envelope(Exams.index));
 router.post('/exams', response_envelope(Exams.post));
 router.get('/degrees', response_envelope(Degrees.index));
+router.get('/degrees/:id', response_envelope(Degrees.view));
 router.post('/degrees', response_envelope(Degrees.post));
 router.get('/users', response_envelope(Users.index));
 router.post('/users', response_envelope(Users.post));
