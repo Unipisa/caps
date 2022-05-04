@@ -128,7 +128,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
 }
 
 function TableBody({ Model, data, setData }) {
-    const [cache, setCache] = useState({});
+    const [cache, setCache] = useState([{}]);
 
     function onToggle(item) {
         const items = data.items.map(it => {
