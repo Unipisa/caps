@@ -39,6 +39,7 @@ const Degree = mongoose.model('Degree', {
         required: true,
         default: true
     },
+    default_group: String,
     approval_confirmation: {
         type: Boolean,
         required: true,

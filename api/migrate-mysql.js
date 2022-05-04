@@ -2,17 +2,23 @@ var mysql      = require('mysql2');
 var Exam = require('./models/Exam');
 var User = require('./models/User');
 var Degree = require('./models/Degree');
+var Curriculum = require('./models/Curriculum');
+var {   CurriculumCompulsoryExam, 
+        CurriculumCompulsoryGroup, 
+        CurriculumFreeChoiceGroup, 
+        CurriculumExam } = require('./models/CurriculumExam');
 var mongoose = require('mongoose');
-const e = require('express');
-const { count, estimatedDocumentCount } = require('./models/Exam');
 
 function write(s) {
     console.log(s);
 }
 
 async function importData() {
+    console.log("here")
 
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/caps')
+
+    console.log("here1")
 
     var connection = mysql.createConnection({
         host     : process.env.MYSQL_HOST || 'localhost',
@@ -41,6 +47,7 @@ async function importData() {
         return await Collection.countDocuments();
     }
 
+    console.log("here2")
 
     var results = null;
     
@@ -84,6 +91,12 @@ async function importData() {
     const exams_groups = await query('SELECT * FROM exams_groups');
     write(`caricati ${groups.length} elementi`);
 
+    function group_by_id(id) {
+        const gs = groups.filter(g => g.id === id);
+        console.assert(gs.length === 1, gs, id, groups)
+        return gs[0]
+    }
+
     // Import degrees
     write("> Degrees ")
     await Degree.deleteMany({}); // Drop all data
@@ -98,11 +111,61 @@ async function importData() {
                 element.groups[g.name] = exams_groups
                     .filter(eg => eg.group_id===g.id)
                     .map(eg => exams[eg.exam_id]._id)});
-        
+        if (element.default_group_id) {
+            element.default_group = group_by_id(element.default_group_id).name;
+        } else {
+            element.default_group = "";
+        }
         const e = new Degree(element);
         return e.save();
     }));
     write("(" + await count(Degree) + " documents imported)");
+
+    write("| CurriculumExams")
+    compulsory_exams = await query("SELECT * FROM compulsory_exams")
+    compulsory_groups = await query("SELECT * FROM compulsory_groups")
+    free_choice_exams = await query("SELECT * FROM free_choice_exams")
+
+    // import curricula
+    write("> Curricula")
+    await Curriculum.deleteMany({}) // Drop all data
+    results = await query("SELECT * FROM curricula")
+    write(`caricamento ${ results.length } curricula...`);
+    await Promise.all(results.map(element => {
+        element.old_id = element.id;
+        element.years = []
+        compulsory_exams.filter(e => (e.curriculum_id === element.id))
+            .sort((a,b) => (b.position - a.position))
+            .map(e => {
+                element.years[e.year-1] = element.years[e.year-1] || []
+                element.years[e.year-1].push(new CurriculumCompulsoryExam({
+                    exam: e.exam_id
+                    }))
+            })
+        compulsory_groups.filter(g => (g.curriculum_id === element.id))
+            .sort((a,b) => (b.position - a.position))
+            .map(g => {
+                element.years[g.year-1] = element.years[g.year-1] || []
+                element.years[g.year-1].push(new CurriculumCompulsoryGroup({
+                    group: group_by_id(g.group_id).name
+                }))
+            })
+        free_choice_exams.filter(e => (e.curriculum_id === element.id))
+            .sort((a,b) => (b.position - a.position))
+            .map(e => {
+                if (e.group_id) {
+                    element.years[e.year-1] = element.years[e.year-1] || []
+                    element.years[e.year-1].push(new CurriculumFreeChoiceGroup({
+                        group: group_by_id(g.group_id).name
+                    }))
+                } else {
+                    element.years[e.year-1].push(new CurriculumExam())
+                }
+            })
+        const e = new Curriculum(element);
+        return e.save();
+    }))
+
 
     await mongoose.connection.close()
     connection.end();

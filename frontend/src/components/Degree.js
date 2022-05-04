@@ -99,7 +99,7 @@ function DegreeWithContext({ flashCatch }) {
                 </tr>
                 <tr>
                     <th>Gruppo esami per la scelta libera</th>
-                    <td> *** </td>
+                    <td> { degree.default_group || "tutti gli esami" } </td>
                 </tr>
                 <tr>
                     <th></th>
