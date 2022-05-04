@@ -8,6 +8,7 @@ import Exam from "./Exam";
 import Users from "./Users";
 import Degrees from "./Degrees";
 import Degree from "./Degree";
+import Curricula from "./Curricula";
 import Modal from './Modal';
 import Flash from "./Flash";
 
@@ -91,6 +92,7 @@ function Content({ flashCatch }) {
         <Route path="/users" element={<Users />} />
         <Route path="/degrees/:id" element={<Degree flashCatch={ flashCatch } />} />
         <Route path="/degrees" element={<Degrees />} />
+        <Route path="/curricula" element={<Curricula />} />
         </Routes>
     </div>
 }
@@ -244,13 +246,6 @@ function NavBar() {
             <Link className="nav-link" to="/curricula">
                 <svg className="svg-inline--fa fa-scroll fa-w-20 mr-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="scroll" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg=""><path fill="currentColor" d="M48 0C21.53 0 0 21.53 0 48v64c0 8.84 7.16 16 16 16h80V48C96 21.53 74.47 0 48 0zm208 412.57V352h288V96c0-52.94-43.06-96-96-96H111.59C121.74 13.41 128 29.92 128 48v368c0 38.87 34.65 69.65 74.75 63.12C234.22 474 256 444.46 256 412.57zM288 384v32c0 52.93-43.06 96-96 96h336c61.86 0 112-50.14 112-112 0-8.84-7.16-16-16-16H288z"></path></svg>
                 <span>Curricula</span>
-            </Link >
-        </li>
-
-        <li className="nav-item">
-            <Link className="nav-link" to="/groups">
-                <svg className="svg-inline--fa fa-toolbox fa-w-16 mr-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="toolbox" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M502.63 214.63l-45.25-45.25c-6-6-14.14-9.37-22.63-9.37H384V80c0-26.51-21.49-48-48-48H176c-26.51 0-48 21.49-48 48v80H77.25c-8.49 0-16.62 3.37-22.63 9.37L9.37 214.63c-6 6-9.37 14.14-9.37 22.63V320h128v-16c0-8.84 7.16-16 16-16h32c8.84 0 16 7.16 16 16v16h128v-16c0-8.84 7.16-16 16-16h32c8.84 0 16 7.16 16 16v16h128v-82.75c0-8.48-3.37-16.62-9.37-22.62zM320 160H192V96h128v64zm64 208c0 8.84-7.16 16-16 16h-32c-8.84 0-16-7.16-16-16v-16H192v16c0 8.84-7.16 16-16 16h-32c-8.84 0-16-7.16-16-16v-16H0v96c0 17.67 14.33 32 32 32h448c17.67 0 32-14.33 32-32v-96H384v16z"></path></svg>
-                <span>Gruppi</span>
             </Link >
         </li>
 

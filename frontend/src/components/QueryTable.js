@@ -6,6 +6,7 @@ import api from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import { QueryContext } from './TableElements';
 import { PageContext } from './SinglePage';
+import Cache from '../modules/Cache';
 
 export default function QueryTable({ Model, children }) {
     const [ query, setQuery ] = useState({});
@@ -112,7 +113,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
                 )}
             </tr>
         </thead>        
-        <TableBody Model={ Model } data={ data } setData={ setData } />
+        <TableBody Model={ Model } data={ data } setData={ setData } flashCatch={ flashCatch } />
     </table>
     {data && <p>
         { data.items.length < data.total 
@@ -127,6 +128,8 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
 }
 
 function TableBody({ Model, data, setData }) {
+    const [cache, setCache] = useState({});
+
     function onToggle(item) {
         const items = data.items.map(it => {
             return it._id === item._id
@@ -135,10 +138,10 @@ function TableBody({ Model, data, setData }) {
         setData({...data, items });
     }
 
-    function renderField(model, field, enable_link) {
-        const content = model.render_table_field(field);
+    function renderField(model_item, field, enable_link) {
+        const content = model_item.render_table_field(field);
         if (enable_link) {
-            return <Link to={ model.view_url() }>{ content }</Link>
+            return <Link to={ model_item.view_url() }>{ content }</Link>
         } else {
             return content;
         }
@@ -151,10 +154,12 @@ function TableBody({ Model, data, setData }) {
     } else {
         return <tbody>
             { data.items.map(item => {
+                const model_item = new Model(item);
+                model_item.load_related(cache, setCache);
                 return <tr key={ item._id } style={ item._selected ? {background: "lightgray" } : {}}>
                     <td><input type="checkbox" checked={ item._selected } readOnly onClick={ () => onToggle(item) }/></td>
                     { Model.table_headers.map(({ field, enable_link }) => 
-                        <td key={ field }>{ renderField(new Model(item), field, enable_link) }</td>
+                        <td key={ field }>{ renderField(model_item, field, enable_link) }</td>
                         )}
                     <td></td>
                 </tr>})

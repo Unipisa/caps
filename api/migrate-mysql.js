@@ -99,10 +99,11 @@ async function importData() {
 
     // Import degrees
     write("> Degrees ")
+    degrees = {}
     await Degree.deleteMany({}); // Drop all data
     results = await query('SELECT * FROM degrees');
     write(`caricamento ${ results.length } corsi di laurea...`);
-    await Promise.all(results.map(element => {
+    (await Promise.all(results.map(element => {
         element.old_id = element.id;
         element.groups = {}
         groups
@@ -118,7 +119,7 @@ async function importData() {
         }
         const e = new Degree(element);
         return e.save();
-    }));
+    }))).map(d => {degrees[d.old_id] = d})
     write("(" + await count(Degree) + " documents imported)");
 
     write("| CurriculumExams")
@@ -163,6 +164,7 @@ async function importData() {
                 }
             })
         element.years = years
+        element.degree = degrees[element.degree_id]
         const e = new Curriculum(element);
         return e.save();
     }))

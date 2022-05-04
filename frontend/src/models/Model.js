@@ -5,6 +5,9 @@ export default class Model {
         this.item = item;
     }
 
+    load_related(cache, setCache) {
+    }
+
     view_url() {
         return `${settings.root_url}${this.constructor.api_url}${this.item._id}`
     }

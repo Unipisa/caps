@@ -4,6 +4,7 @@ const { BadRequestError, NotFoundError } = require('./exceptions/ApiException');
 const Exams  = require('./controllers/ExamsController');
 const Users  = require('./controllers/UsersController');
 const Degrees = require('./controllers/DegreesController');
+const Curricula = require('./controllers/CurriculaController');
 
 // JSON parsing middleware
 router.use(express.json())
@@ -37,6 +38,8 @@ router.post('/exams', response_envelope(Exams.post));
 router.get('/degrees', response_envelope(Degrees.index));
 router.get('/degrees/:id', response_envelope(Degrees.view));
 router.post('/degrees', response_envelope(Degrees.post));
+router.get('/curricula', response_envelope(Curricula.index));
+router.get('/curricula/:id', response_envelope(Curricula.view));
 router.get('/users', response_envelope(Users.index));
 router.post('/users', response_envelope(Users.post));
 
