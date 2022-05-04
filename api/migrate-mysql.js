@@ -6,7 +6,7 @@ var Curriculum = require('./models/Curriculum');
 var {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
         CurriculumFreeChoiceGroup, 
-        CurriculumExam } = require('./models/CurriculumExam');
+        CurriculumFreeChoiceExam } = require('./models/CurriculumExam');
 var mongoose = require('mongoose');
 
 function write(s) {
@@ -133,20 +133,21 @@ async function importData() {
     write(`caricamento ${ results.length } curricula...`);
     await Promise.all(results.map(element => {
         element.old_id = element.id;
-        element.years = []
+        console.assert(element.credits_per_year.includes(","), element)
+        const credits = element.credits_per_year.split(',').map(x => parseInt(x))
+        console.assert(!credits.includes(NaN), credits, element);
+        let years = credits.map(c => ({ credits: c, exams: []}))
         compulsory_exams.filter(e => (e.curriculum_id === element.id))
             .sort((a,b) => (b.position - a.position))
             .map(e => {
-                element.years[e.year-1] = element.years[e.year-1] || []
-                element.years[e.year-1].push(new CurriculumCompulsoryExam({
-                    exam: e.exam_id
+                years[e.year-1].exams.push(new CurriculumCompulsoryExam({
+                    exam: exams[e.exam_id]._id
                     }))
             })
         compulsory_groups.filter(g => (g.curriculum_id === element.id))
             .sort((a,b) => (b.position - a.position))
             .map(g => {
-                element.years[g.year-1] = element.years[g.year-1] || []
-                element.years[g.year-1].push(new CurriculumCompulsoryGroup({
+                years[g.year-1].exams.push(new CurriculumCompulsoryGroup({
                     group: group_by_id(g.group_id).name
                 }))
             })
@@ -154,14 +155,14 @@ async function importData() {
             .sort((a,b) => (b.position - a.position))
             .map(e => {
                 if (e.group_id) {
-                    element.years[e.year-1] = element.years[e.year-1] || []
-                    element.years[e.year-1].push(new CurriculumFreeChoiceGroup({
+                    years[e.year-1].exams.push(new CurriculumFreeChoiceGroup({
                         group: group_by_id(g.group_id).name
                     }))
                 } else {
-                    element.years[e.year-1].push(new CurriculumExam())
+                    years[e.year-1].exams.push(new CurriculumFreeChoiceExam())
                 }
             })
+        element.years = years
         const e = new Curriculum(element);
         return e.save();
     }))

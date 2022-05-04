@@ -1,13 +1,47 @@
 
 const mongoose = require('mongoose');
 const Exam = require('./Exam')
+// const Curriculum = require('./Curriculum')
 
-const options = { discriminatorKey: 'kind' };
+const CurriculumExamSchema = new mongoose.Schema({})
 
+const CurriculumSchema = new mongoose.Schema({
+    old_id: {
+        type: Number,
+        required: false
+    },
+    name: { 
+        type: String, 
+        required: true
+    },
+    notes: {
+        type: String,
+        required: false,
+    },
+    degree: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Degree'
+    },
+    years: [
+        {
+            credits: Number,
+            exams: [
+                CurriculumExamSchema
+            ]
+        }
+    ]
+})
+
+exports.CurriculumSchema = CurriculumSchema;
+
+/*
 const CurriculumExam = mongoose.model("CurriculumExam", 
     new mongoose.Schema({ }, options));
 
 exports.CurriculumExam = CurriculumExam;
+*/
+
+const CurriculumExam = CurriculumSchema.path('years.exams')
 
 const CurriculumCompulsoryExam = CurriculumExam.discriminator("CompulsoryExam", new mongoose.Schema(
     {
@@ -15,18 +49,26 @@ const CurriculumCompulsoryExam = CurriculumExam.discriminator("CompulsoryExam", 
             type: mongoose.Schema.Types.ObjectId,
             ref: Exam
         }
-    }, options))
+    }))
+
+exports.CurriculumCompulsoryExam = CurriculumCompulsoryExam
 
 const CurriculumCompulsoryGroup = CurriculumExam.discriminator("CompulsoryGroup", new mongoose.Schema(
     {
         group: String
-    }, options))
+    }))
 
-const CurriculumFreeChoiceGroup = CurriculumExam.discriminator("FreeChoiceExam", new mongoose.Schema(
+exports.CurriculumCompulsoryGroup = CurriculumCompulsoryGroup
+
+const CurriculumFreeChoiceGroup = CurriculumExam.discriminator("FreeChoiceGroup", new mongoose.Schema(
     {
         group: String        
-    }, options))
+    }))
     
-exports.CurriculumCompulsoryExam = CurriculumCompulsoryExam
-exports.CurriculumCompulsoryGroup = CurriculumCompulsoryGroup
 exports.CurriculumFreeChoiceGroup = CurriculumFreeChoiceGroup
+
+const CurriculumFreeChoiceExam = CurriculumExam.discriminator("FreeChoiceExam", new mongoose.Schema(
+     {}
+))
+
+exports.CurriculumFreeChoiceExam = CurriculumFreeChoiceExam;
