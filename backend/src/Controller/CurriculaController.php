@@ -37,7 +37,9 @@ class CurriculaController extends AppController
         'sortableFields' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
-            'Degrees.academic_year' => 'desc'
+            'Degrees.academic_year' => 'desc',
+            'Degrees.name' => 'asc',
+            'Curricula.id' => 'asc'
         ]
     ];
 

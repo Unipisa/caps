@@ -42,7 +42,8 @@ class DegreesController extends AppController
         'sortWhitelist' => [ 'academic_year', 'name' ],
         'limit' => 10,
         'order' => [
-            'academic_year' => 'desc'
+            'academic_year' => 'desc',
+            'Degrees.id' => 'asc'
         ]
     ];
 
