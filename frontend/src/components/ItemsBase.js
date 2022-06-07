@@ -9,7 +9,7 @@ class ItemsBase extends CapsPage {
     constructor(props) {
         super(props);
 
-        var query = { _limit: 10 };
+        var query = { _limit: 10, _sort: 'modified', _direction: 'desc' };
 
         const stored_query = JSON.parse(sessionStorage.getItem(`${this.items_name()}-filter`));
         if (stored_query) {

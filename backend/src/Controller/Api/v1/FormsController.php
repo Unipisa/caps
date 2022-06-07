@@ -21,7 +21,9 @@ class FormsController extends RestController {
         'form_template.name' => [ 'type' =>  String::class,
                                 'dbfield' => "FormTemplates.name",
                                 'modifier' => "LIKE" ],
-        'modified' => Integer::class
+        'modified' => Integer::class,
+        'date_submitted' => Integer::class,
+        'date_managed' => Integer::class
         ];
 
     public function index() {

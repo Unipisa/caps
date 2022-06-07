@@ -92,7 +92,7 @@ class Forms extends ItemsBase {
                             <th><ColumnHeader self={ this } name="user.surname">Nome</ColumnHeader></th>
                             <th><ColumnHeader self={ this } name="form_template.name">Modello</ColumnHeader></th>
                             <th><ColumnHeader self={ this } name="date_submitted">Inviato</ColumnHeader></th>
-                            <th><ColumnHeader self={ this } name="date_approved">Gestito</ColumnHeader></th>
+                            <th><ColumnHeader self={ this } name="date_managed">Gestito</ColumnHeader></th>
                             <th><ColumnHeader self={ this } name="modified">Modificato</ColumnHeader></th>
                             <th></th>
                             </tr>
