@@ -54,7 +54,7 @@ export class ProposalEdit extends React.Component {
         let [degrees, exams] = await Promise.all([
             restClient.get('degrees', { 'enabled': true }), 
             restClient.get('exams')
-            ]);
+        ]);
 
         degrees.sort((a, b) => {
             if (a.academic_year > b.academic_year) return -1;
@@ -63,6 +63,7 @@ export class ProposalEdit extends React.Component {
             if (a.name > b.name) return 1;
             return 0;
         });
+        
         let selected_degree = null;
         if (this.degree_id) {
             selected_degree = degrees.filter(degree => (degree.id === this.degree_id))[0];
