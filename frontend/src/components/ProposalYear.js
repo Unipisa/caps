@@ -158,8 +158,8 @@ class ProposalYear extends React.Component {
             }
 
             // Make sure we sort the choices in a sensible way for the end user. 
-            choices.sort((a, b) => a.name > b.name);
-
+            choices.sort((a, b) => a.name > b.name ? 1 : -1);
+            
             return <ExamInput exam={exam} key={"exam-input-" + exam.id}
                 groups={this.props.groups}
                 choices={choices}
