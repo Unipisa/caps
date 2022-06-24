@@ -128,6 +128,12 @@ class GroupsController extends AppController
         if (!$group) {
             throw new NotFoundException(__('Errore: gruppo non esistente.'));
         }
+
+        // Make sure that the exams are sorted
+        usort($group['exams'], function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
         $this->set('group', $group);
         $this->viewBuilder()->setOption('serialize', 'group');
     }
