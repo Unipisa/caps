@@ -147,7 +147,7 @@
                     </tr>
                     <?php foreach ($curriculum['free_choice_exams'] as $free_choice_exam) { ?>
                         <tr>
-                            <td>Esame a scelta libera</td>
+                            <td><?php echo $free_choice_exam['group']?"Esame a scelta libera nel gruppo: ".$free_choice_exam['group']['name']:"esame a scelta libera qualunque"; ?></td>
                             <td><?php echo $free_choice_exam['year']; ?></td>
                         </tr>
                     <?php } ?>

@@ -130,12 +130,11 @@ export class ProposalEdit extends React.Component {
     async loadCurricula() {
         const degree = this.state.selected_degree;
         const curricula = await restClient.get('curricula', { 'degree_id': degree.id });
-
-        var chosen_exams = null;
-        let selected_curriculum = null;
+        var selected_curriculum = this.state.selected_curriculum;
+        var chosen_exams = this.state.chosen_exams;
         if (this.curriculum_id) {
             // seleziona il curriculum indicato nella querystring
-            const selected_curriculum = await restClient.get(`curricula/${this.curriculum_id}`);
+            selected_curriculum = await restClient.get(`curricula/${this.curriculum_id}`);
             chosen_exams = this.createInitialState(selected_curriculum, [], [], true);
         }
 
