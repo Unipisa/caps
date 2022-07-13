@@ -65,15 +65,10 @@ class Dashboard extends CapsPage {
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">Piani inviati</div>
-                        <div className="h5 mb-0 text-gray-800">Mese corrente: 
-                            <strong>
-                            <span id="current-month-proposal-submission-count"></span>
-                            </strong>
+                        <div className="h5 mb-0 text-gray-800">Mese corrente: <strong><span id="current-month-proposal-submission-count"></span></strong>
                         </div>
-                        <div className="h5 mb-0 text-gray-800">Ultimi 12 mesi:
-                            <strong>
-                                <span id="current-year-proposal-submission-count"></span>
-                            </strong>
+                        <div className="h5 mb-0 text-gray-800">
+                            Ultimi 12 mesi: <strong><span id="current-year-proposal-submission-count"></span></strong>
                         </div>
                     </div>
                     <div className="col-auto">
@@ -91,15 +86,11 @@ class Dashboard extends CapsPage {
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">Moduli inviati</div>
-                        <div className="h5 mb-0 text-gray-800">Mese corrente: 
-                            <strong>
-                            <span id="current-month-form-submission-count"></span>
-                            </strong>
+                        <div className="h5 mb-0 text-gray-800">
+                            Mese corrente: <strong><span id="current-month-form-submission-count"></span></strong>
                         </div>
-                        <div className="h5 mb-0 text-gray-800">Ultimi 12 mesi:
-                            <strong>
-                                <span id="current-year-form-submission-count"></span>
-                            </strong>
+                        <div className="h5 mb-0 text-gray-800">
+                            Ultimi 12 mesi: <strong><span id="current-year-form-submission-count"></span></strong>
                         </div>
                     </div>
                     <div className="col-auto">
