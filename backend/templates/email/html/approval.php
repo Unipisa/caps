@@ -28,3 +28,7 @@ $this->extend('/email/html/proposal_base');
     <?= $settings['department'] ?>, curriculum <?= $proposal['curriculum']['name'] ?>
     è stato <strong>approvato</strong>.
 </p>
+<p>
+<?= $this->Html->link("Vai al piano di studi", 
+        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id']]) ?>
+</p>
