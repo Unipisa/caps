@@ -148,7 +148,9 @@ class ProposalYear extends React.Component {
                     choices = this.props.groups[exam.group_id].exams;
                     break;
                 case "free_choice_exam":
-                    if (this.props.degree.default_group_id) {
+                    if (exam.group_id) {
+                        choices = this.props.groups[exam.group_id].exams;
+                    } else if (this.props.degree.default_group_id) {
                         choices = this.props.groups[this.props.degree.default_group_id].exams;
                     }
                     else {
