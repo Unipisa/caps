@@ -33,13 +33,15 @@ class FormAttachmentsController extends RestController {
 
         $d = new FormAttachment();
 
-        $data = json_decode($this->request->getBody());
+        $body = $this->request->getBody();
+
+        $data = json_decode($body);
 
         $d['filename'] = $data->filename;
         $d['mimetype'] = $data->mimetype;
         $d['data'] = base64_decode($data->data);
         $d['user_id'] = $this->user['id'];
-        $d['user'] = $this->FormAttachments->Users->get($data->user_id);
+        $d['user'] = $this->FormAttachments->Users->get($this->user['id']);
         $d['form_id'] = $data->form_id;
         $d['comment'] = $data->comment;
 

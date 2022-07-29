@@ -10,7 +10,7 @@ function DocumentsBlock(props) {
     var document_rows = documents.map((d) => {
         return <Attachment 
             root={props.root} 
-            controller="documents" 
+            controller={props.controller}
             attachment={d} 
             key={"document-" + d.id}
             onDeleteClicked={props.onDeleteClicked}

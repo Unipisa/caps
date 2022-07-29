@@ -210,7 +210,9 @@ class UserProfile extends CapsPage {
                     onNewAttachment={this.onNewAttachment.bind(this)}
                     onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
                     root={this.props.root}
-                    info_text={info_text}>
+                    info_text={info_text}
+                    controller="documents"
+                    >
                 </DocumentsBlock>
                 </>
                 }

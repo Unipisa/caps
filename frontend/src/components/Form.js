@@ -357,7 +357,9 @@ class Form extends CapsPage {
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
                     onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
-                    root={this.props.root}>
+                    root={this.props.root}
+                    controller="formAttachments"
+                    >
             </DocumentsBlock> }
             </>;
         }
