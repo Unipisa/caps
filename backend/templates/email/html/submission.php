@@ -27,3 +27,7 @@ $this->extend('/email/html/proposal_base');
 <p>
     Il piano di studi è stato correttamente sottomesso.
 </p>
+<p>
+<?= $this->Html->link("Vai al piano di studi", 
+        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id']]) ?>
+</p>

@@ -54,6 +54,9 @@
         "sort-packages": true,
         "platform": {
             "php": "7.2.24"
+        },
+        "allow-plugins": {
+            "cakephp/plugin-installer": true
         }
     }
 }
