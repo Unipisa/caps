@@ -214,6 +214,16 @@ bin/cake migrations migrate
         <- Curricula
         <- Group
 
+    Documents
+        id       
+        filename 
+        owner_id 
+        user_id  
+        data     
+        created  
+        comment  
+        mimetype 
+
     Exam [exams]
         id
         name
@@ -237,6 +247,16 @@ bin/cake migrations migrate
         date_submitted
         date_managed
         data
+
+    FormAttachment [form_attachments]
+        id
+        filename
+        user -> User [user_id]
+        form -> Form [form_id]
+        data
+        mimetype
+        comment
+        created
 
     FormTemplate [form_templates]
         id
