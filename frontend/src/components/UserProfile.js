@@ -2,7 +2,7 @@ import React from "react";
 import Card from "./Card";
 import LoadingMessage from './LoadingMessage';
 import FormsBlock from "./FormsBlock";
-import UserDocumentsBlock from "./UserDocumentsBlock";
+import DocumentsBlock from "./DocumentsBlock";
 import ProposalsBlock from "./ProposalsBlock";
 import CapsPage from "./CapsPage";
 import restClient from "../modules/api";
@@ -181,6 +181,8 @@ class UserProfile extends CapsPage {
     }
 
     renderPage() {
+        const info_text = "I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma sono visibili solo per gli amministratori.";
+
         if (this.state.user == undefined) {
             return <Card><LoadingMessage>Loading the user profile</LoadingMessage></Card>;
         }
@@ -199,13 +201,21 @@ class UserProfile extends CapsPage {
                     root={this.props.root}
                     form_templates_enabled={this.state.form_templates_enabled}>
                 </FormsBlock>}
-                {this.state.logged_user.admin && <UserDocumentsBlock className="mt-4"
+                {this.state.logged_user.admin && 
+                <>
+                <h2>Documenti e allegati</h2>
+                <DocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
                     onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
-                    root={this.props.root}>
-                </UserDocumentsBlock>}
+                    root={this.props.root}
+                    info_text={info_text}
+                    controller="documents"
+                    >
+                </DocumentsBlock>
+                </>
+                }
             </div>;
         }
     }

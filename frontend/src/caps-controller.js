@@ -8,6 +8,7 @@ import CapsExamsController from './controllers/exams-controller';
 import CapsProposalsController from './controllers/proposals-controller';
 import CapsSettingsController from './controllers/settings-controller';
 import CapsFormsController from './controllers/forms-controller';
+import CapsLogsController from './controllers/logs-controller';
 import CapsFormTemplatesController from './controllers/form-templates-controller';
 import CapsUsersController from './controllers/users-controller';
 import CapsDashboardController from './controllers/dashboard-controller';
@@ -26,6 +27,7 @@ const routes = {
     "Exams": CapsExamsController,
     "Degrees": CapsDegreesController,
     "Forms": CapsFormsController,
+    "Logs": CapsLogsController,
     "FormTemplates": CapsFormTemplatesController,
     "Users": CapsUsersController,
     "Dashboard": CapsDashboardController

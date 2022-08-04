@@ -4,13 +4,13 @@ import Card from "./Card";
 import LoadingMessage from "./LoadingMessage";
 import NewAttachmentForm from "./NewAttachmentForm";
 
-function UserDocumentsBlock(props) {
+function DocumentsBlock(props) {
     const documents = props.documents ? props.documents : [];
 
     var document_rows = documents.map((d) => {
         return <Attachment 
             root={props.root} 
-            controller="documents" 
+            controller={props.controller}
             attachment={d} 
             key={"document-" + d.id}
             onDeleteClicked={props.onDeleteClicked}
@@ -29,25 +29,13 @@ function UserDocumentsBlock(props) {
             </div>
         )
     }
-
-    const info_text = <p>
-        I documenti e le annotazioni inserite in questa sezione
-        sono associate allo studente, ma sono visibili solo 
-        per gli amministratori.
-    </p>
-
-    // Default output when no documents are in the database, this will be overriden
-    // if documents.length > 0
-    var output = <>
-            {info_text}
-            <p>Nessun documento allegato.</p>
-        </>;
+    const output = [];
+    if (props.info_text) output.push(<p key="info_text">{ props.info_text }</p>);
 
     if (document_rows.length > 0) {
-        output = <>
-            {info_text}
-            {document_rows}
-        </>;
+        output.push(<div key="document_rows">{ document_rows }</div>)
+    } else {
+        output.push(<p key="no_document">Nessun documento allegato.</p>)
     }
 
     const newAttachmentCallback = (a) => {
@@ -57,7 +45,6 @@ function UserDocumentsBlock(props) {
     }
 
     return <div className={props.className}>
-        <h2>Documenti e allegati</h2>
         <Card>
             {output}
             <NewAttachmentForm onNewAttachment={newAttachmentCallback}></NewAttachmentForm>
@@ -65,4 +52,4 @@ function UserDocumentsBlock(props) {
     </div>;
 }
 
-export default UserDocumentsBlock;
+export default DocumentsBlock;

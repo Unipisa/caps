@@ -92,6 +92,25 @@ class User extends Entity implements IdentityInterface
             $this['id'] == $attachment['user_id'];
     }
 
+    public function canAddFormAttachment(Form $form, $secrets = []) : bool
+    {
+        return $this['admin'] ||
+            $this['id'] == $form['user_id'];
+    }
+
+    public function canViewFormAttachment(FormAttachment $attachment, $secrets = []) : bool
+    {
+        return $this['admin'] ||
+            $this['username'] == $attachment->user['username'] ||
+            ($attachment->form != null && $this['id'] == $attachment->form['user_id']);
+    }
+
+    public function canDeleteFormAttachment(FormAttachment $attachment) : bool
+    {
+        return $this['admin'] ||
+            $this['id'] == $attachment['user_id'];
+    }
+
     public function canDeleteForm(Form $form) : bool 
     {
         return $this['admin'] || ($this['id'] == $form['user_id'] && $form['state'] != "submitted");

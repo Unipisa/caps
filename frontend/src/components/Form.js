@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Card from './Card';
+import CapsPage from "./CapsPage";
+import DocumentsBlock from "./DocumentsBlock";
 import restClient from '../modules/api';
 
 import submitForm from '../modules/form-submission';
@@ -12,15 +14,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import ReactDOM from 'react-dom';
 import DatePicker from 'react-datepicker';
 
-class Form extends React.Component {
+class Form extends CapsPage {
     constructor(props) {
         super(props);
 
         this.state = {
+            ...this.state,
             'form': null,
             'form_template': null,
             'form_templates': null,
-            'html': ""
+            'html': "",
+            'documents': null,
+            'loadingDocument': false
         };
 
         this.edit = this.props.edit || false;
@@ -37,6 +42,7 @@ class Form extends React.Component {
             form = await restClient.get(`forms/${this.props.id}`);
             form_template = form.form_template;
             html = this.compile_html(form_template.text, form.data, form.state, form.user);
+            // this.loadDocuments(form.id);
         }
         if (form_template === null && this.props.form_template_id) {
             form_template = await restClient.get(`form_templates/${this.props.form_template_id}`);
@@ -46,6 +52,16 @@ class Form extends React.Component {
             form_templates = await restClient.get('form_templates', { 'enabled': true });            
         }
         this.setState({form, form_template, form_templates, html});
+        this.loadDocuments(form.id);
+    }
+
+    async loadDocuments(form_id) {
+        try {
+            const documents = await restClient.get('form_attachments', { 'form_id': form_id });
+            this.setState({ documents });
+        } catch(err) {
+            this.flashCatch(err);
+        }
     }
 
     onFormTemplateSelected(evt) {
@@ -199,6 +215,39 @@ class Form extends React.Component {
         return false;
     }
 
+    async onNewAttachment(attachment) {
+        try {
+            attachment['form_id'] = this.state.form.id;
+            await this.setStateAsync({
+                loadingDocument: true
+            });
+            const document = await restClient.post('form_attachments', attachment);        
+            this.flashSuccess('Allegato aggiunto al modulo.');
+            this.setState({
+                'documents': [...this.state.documents, document], 
+            });
+        } catch(err) {
+            this.flashCatch(err);
+        } finally {
+            this.setState({ 
+                loadingDocument: false 
+            });
+        }
+    }
+
+    async onAttachmentDeleteClicked(a) {
+        try {
+            if (!await this.confirm('Eliminare il documento?', 
+                'Questa operazione non è reversibile.')) return;
+            await restClient.delete(`form_attachments/${a.id}`);
+            let documents = this.state.documents.filter(d => d!==a);
+            this.flashMessage('Allegato rimosso.');
+            this.setState({ documents });
+        } catch(err) {
+            this.flashCatch(err);
+        }
+    }
+
     renderTemplateSelection() {
         if (this.state.form_templates === null) {
             return <LoadingMessage key="loading-degrees">
@@ -292,17 +341,27 @@ class Form extends React.Component {
         }
     }
 
-    render() {
+    renderPage() {
         if (this.state.form_template === null) {
             return <Card>
                 {this.renderTemplateSelection()}
             </Card>;
         } else {
-            return <Card title={this.state.form_template.name}>
+            return <><Card title={this.state.form_template.name}>
                 {this.renderBadges()}
                 {this.renderDraftNotice()}
                 {this.renderForm()}
-            </Card>;
+            </Card>
+            { this.state.documents !== null && <DocumentsBlock className="mt-4"
+                    loadingDocument={this.state.loadingDocument} 
+                    documents={this.state.documents} 
+                    onNewAttachment={this.onNewAttachment.bind(this)}
+                    onDeleteClicked={this.onAttachmentDeleteClicked.bind(this)}
+                    root={this.props.root}
+                    controller="formAttachments"
+                    >
+            </DocumentsBlock> }
+            </>;
         }
     }
 

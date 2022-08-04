@@ -34,6 +34,7 @@ use Cake\Mailer\TransportFactory;
 use stdClass;
 use Cake\Event\EventInterface;
 use App\Model\Entity\User;
+use App\Model\Entity\Log;
 
 function is_associative_array($item)
 {
@@ -329,5 +330,20 @@ class AppController extends Controller
                 $this->set($var, $data);
             }
         }
+    }
+
+    protected function logProposalAction($proposal, $action, $details_data)
+    {
+        $logs_table = TableRegistry::getTableLocator()->get('Logs');
+        $log = new Log();
+        $logs_table->patchEntity($log,[
+            "user_id" => $this->user["id"],
+            "external_type" => "proposal",
+            "external_id" => $proposal["id"],
+            "timestamp" => FrozenTime::now(),
+            "action" => $action,
+            "detail" => json_encode($details_data)
+        ]);
+        $logs_table->save($log);
     }
 }

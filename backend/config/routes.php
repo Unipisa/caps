@@ -36,9 +36,9 @@ return function (RouteBuilder $routes) {
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
             $api_controllers = [ 
                 'Curricula', 'Degrees', 'Documents', 
-                'Exams', 'Forms', 'FormTemplates', 
+                'Exams', 'FormAttachments', 'Forms', 'FormTemplates', 
                 'Groups', 'Proposals', 'Users', 
-                'Dashboard' 
+                'Dashboard', 'Logs'
             ];
 
             foreach ($api_controllers as $controller) {

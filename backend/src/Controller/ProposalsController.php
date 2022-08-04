@@ -397,6 +397,7 @@ class ProposalsController extends AppController
         }
 
         if ($this->Proposals->delete($proposal)) {
+            $this->logProposalAction($proposal, "delete", $proposal);
             $this->Flash->success('Piano eliminato');
         } else {
             $this->log('Errore nella cancellazione del piano con ID = ' . $proposal['id']);
@@ -450,6 +451,7 @@ class ProposalsController extends AppController
 
         // Save the proposal and redirect the user to the new plan
         if ($this->Proposals->save($newp)) {
+            $this->logProposalAction($newp, "cloned", ["old_proposal_id" => $proposal['id']]);
             return $this->redirect([ 'action' => 'edit', $newp['id'] ]);
         } else {
             $this->Flash->error('Errore nel salvataggio del piano');
@@ -468,7 +470,9 @@ class ProposalsController extends AppController
 
     public function edit($proposal_id = null)
     {
+        $action = null;
         if ($proposal_id != null) {
+            $action = "update";
             $proposal = $this->Proposals->find()->contain([
                 'Curricula', 'Users', 'ChosenExams', 'ChosenFreeChoiceExams' ])
                 ->where([ 'Proposals.id' => $proposal_id ])
@@ -479,6 +483,7 @@ class ProposalsController extends AppController
                 throw new ForbiddenException();
             }
         } else {
+            $action = "create";
             $proposal = new Proposal();
             $proposal->user = $this->user;
         }
@@ -549,6 +554,7 @@ class ProposalsController extends AppController
             $proposal['curriculum_id'] = $cur_id;
 
             if ($this->Proposals->save($proposal)) {
+                $this->logProposalAction($proposal, $action, []);
                 if ($proposal['state'] == 'submitted') {
                     $this->notifySubmission($proposal['id']);
 
@@ -624,6 +630,7 @@ class ProposalsController extends AppController
             }
 
             if ($this->Proposals->ProposalAuths->save($proposal_auth)) {
+                $this->logProposalAction($proposal, "share", ["email" => $proposal_auth['email']]);
                 $email = $this->createProposalEmail($proposal)
                 ->setTo($proposal_auth['email'])
                 ->setSubject('[CAPS] richiesta di parere su piano di studi');
@@ -669,6 +676,7 @@ class ProposalsController extends AppController
             $this->Flash->error('Impossibile approvare il piano.');
         }
         else {
+            $this->logProposalAction($proposal, "approve", []);
             Log::write('debug', 
                 'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
                 . ' approved the proposal with ID = ' . $proposal->id);
@@ -700,6 +708,7 @@ class ProposalsController extends AppController
         $proposal['state'] = 'rejected';
         $proposal['approved_date'] = null;
         $this->Proposals->save($proposal);
+        $this->logProposalAction($proposal, "reject", []);
         Log::write('debug', 
             'User ' . $this->user->getDisplayName() . ' (user id = ' . $this->user->id . ')'
             . ' rejected the proposal with ID = ' . $proposal->id);
