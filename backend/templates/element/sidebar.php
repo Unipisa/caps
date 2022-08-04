@@ -126,6 +126,16 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <li class="nav-item<?= $controllerName == 'Logs' ? ' active' : '' ?>">
+            <a class="nav-link caps-form-link" href="<?= $this->Url->build([
+                'controller' => 'logs',
+                'action' => 'index'
+            ]) ?>">
+                <i class="fas mr-1 fa-history"></i>
+                <span>Azioni</span>
+            </a>
+        </li>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 

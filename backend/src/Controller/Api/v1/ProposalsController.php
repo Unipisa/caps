@@ -128,6 +128,7 @@ class ProposalsController extends RestController
                 // Solo il proprietario e l'amministratore possono modifica
                 if ($this->user['admin'] || $proposal['state'] == "draft") {
                     $proposal[$field] = $value;
+                    $this->logProposalAction($proposal, $value, []);
                 } else {
                     $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted proposal');
                     return;
@@ -135,8 +136,9 @@ class ProposalsController extends RestController
             } else if ($field == "data") {
                 if ($proposal['state'] == "draft") {
                     $proposal[$field] = $value;
+                    $this->logProposalAction($proposal, "update", [$field => $value]);
                 } else {
-                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot modify the data of a submitted form');
+                    $this->JSONResponse(ResponseCode::Error, null, 'Cannot modify the data of a submitted proposal');
                     return;
                 }
             }
