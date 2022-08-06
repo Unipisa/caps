@@ -6,8 +6,9 @@ import Card from './Card';
 import CapsPage from "./CapsPage";
 import DocumentsBlock from "./DocumentsBlock";
 import restClient from '../modules/api';
-
 import submitForm from '../modules/form-submission';
+import AdminTools from './AdminTools';
+import ShareButton from './ShareButton';
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -29,7 +30,10 @@ class Form extends CapsPage {
         };
 
         this.edit = this.props.edit || false;
+    }
 
+    async componentDidMount() {
+        super.componentDidMount();
         this.load();
     }
 
@@ -348,6 +352,10 @@ class Form extends CapsPage {
             </Card>;
         } else {
             return <><Card title={this.state.form_template.name}>
+                <div className="d-flex mb-2">
+                    <AdminTools self={ this } />
+                    <ShareButton self={ this } />
+                </div>
                 {this.renderBadges()}
                 {this.renderDraftNotice()}
                 {this.renderForm()}
@@ -362,6 +370,39 @@ class Form extends CapsPage {
                     >
             </DocumentsBlock> }
             </>;
+        }
+    }
+
+    async approve() {
+        try {
+            const proposal = await restClient.patch(
+                `proposals/${this.state.proposal.id}`, 
+                { state: "approved" })
+            this.flashSuccess("Piano di studi approvato");
+            this.setState({ proposal });
+        } catch(e) {
+            this.flashCatch(e);
+        }
+    }
+
+    async reject() {
+        try {
+            const proposal = await restClient.patch(
+                `proposals/${this.state.proposal.id}`, 
+                { state: "rejected" })
+            this.flashDanger("Piano di studi rigettato");
+            this.setState({ proposal });
+        } catch(e) {
+            this.flashCatch(e);
+        }
+    }
+
+    async share(email) {
+        try {
+            await restClient.post(`proposals/${this.state.proposal.id}/share`, { email });
+            this.flashSuccess(`Inviata richiesta di commento a: ${email}`);
+        } catch(e) {
+            this.flashCatch(e);
         }
     }
 

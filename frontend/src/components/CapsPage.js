@@ -14,9 +14,19 @@ class CapsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            capsFlash: []
+            capsFlash: [],
+            user: null
         }
         this.modal_ref = React.createRef();
+    }
+
+    async componentDidMount() {
+        try {
+            const status = await restClient.get(`status`);
+            this.setState({ user: status.user });
+        } catch(e) {
+            this.flashCatch(e);
+        }
     }
 
     confirm(title, message) {
