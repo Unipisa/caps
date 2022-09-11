@@ -11,6 +11,7 @@ class LogsController extends RestController {
 
     // TODO: decidere come specificare i filtri per i campi associati
     public $allowedFilters = [
+        'timestamp' => Integer::class,
         'proposal_id' => Integer::class, 
         'user_id' => Integer::class
         ];

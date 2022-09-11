@@ -14,6 +14,8 @@ import restClient from '../modules/api';
 class Logs extends ItemsBase {
     constructor(props) {
         super(props);
+        this.state.query._sort = "timestamp"
+        this.state.query._direction = "desc"
     }
 
     items_name() {
