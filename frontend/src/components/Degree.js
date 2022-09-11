@@ -5,15 +5,8 @@ import { Link, useParams } from "react-router-dom";
 import api from '../modules/api';
 import LoadingMessage from './LoadingMessage';
 import Card from './Card';
-import { PageContext } from './SinglePage';
 
-export default function Degree() {
-    return <PageContext.Consumer>
-        { ({ flashCatch }) => <DegreeWithContext flashCatch={ flashCatch } /> }
-    </PageContext.Consumer>
-}
-
-function Group({ name, exam_ids, flashCatch }) {
+function Group({ engine, name, exam_ids }) {
     const [ exams, setExams ] = useState(null);
 
     useEffect(async () => {
@@ -21,7 +14,7 @@ function Group({ name, exam_ids, flashCatch }) {
             const queryset = await api.get('exams', {'ids': exam_ids.join(",")})
             setExams(queryset.items);
         } catch(err) {
-            flashCatch(err);
+            engine.flashCatch(err);
         }
     }, [ exam_ids ])
 
@@ -35,7 +28,7 @@ function Group({ name, exam_ids, flashCatch }) {
     </tr>
 }
 
-function DegreeWithContext({ flashCatch }) {
+export default function Degree({ engine }) {
     const { id } = useParams();
     const [ degree, setDegree ] = useState(null);
 
@@ -44,7 +37,7 @@ function DegreeWithContext({ flashCatch }) {
             const new_degree = await api.get(`degrees/${id}`);
             setDegree(new_degree);
         } catch(err) {
-            flashCatch(err);
+            engine.flashCatch(err);
         }
     }, [ id ])
 
@@ -161,7 +154,7 @@ function DegreeWithContext({ flashCatch }) {
             <table className="table">
                 <tbody>
                     { Object.entries(degree.groups).map(([name, exams]) => 
-                        <Group flashCatch={ flashCatch } key={ name } name={ name } exam_ids={ exams }/>)}
+                        <Group engine={ engine } key={ name } name={ name } exam_ids={ exams }/>)}
                 </tbody>
             </table>
         </Card>

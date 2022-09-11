@@ -13,7 +13,7 @@ export default function Exam() {
     </PageContext.Consumer>
 }
 
-function ExamWithContext({ flashCatch }) {
+function ExamWithContext() {
     const { id } = useParams();
     const [ exam, setExam ] = useState(null);
 
