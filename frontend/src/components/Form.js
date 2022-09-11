@@ -381,6 +381,7 @@ class Form extends CapsPage {
         }
     }
 
+    /*
     async approve() {
         try {
             const proposal = await restClient.patch(
@@ -404,10 +405,11 @@ class Form extends CapsPage {
             this.flashCatch(e);
         }
     }
+    */
 
     async share(email) {
         try {
-            await restClient.post(`proposals/${this.state.proposal.id}/share`, { email });
+            await restClient.post(`forms/${this.state.form.id}/share`, { email });
             this.flashSuccess(`Inviata richiesta di commento a: ${email}`);
         } catch(e) {
             this.flashCatch(e);

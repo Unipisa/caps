@@ -2,9 +2,13 @@
 
 namespace App\Controller\Api\v1;
 
-use App\Controller\AppController;
 use App\Controller\Api\v1\RestController;
 use Cake\I18n\Time;
+use App\Model\Entity\FormAuth;
+use Cake\Utility\Security;
+use Cake\Validation\Validation;
+use Cake\Mailer\Email;
+
 
 class FormsController extends RestController {
 
@@ -121,6 +125,96 @@ class FormsController extends RestController {
         $this->JSONResponse(ResponseCode::Ok, $form);
     }
 
+    public function post($id) {
+        error_log("post form ".$id);
+        // $path is something like /api/v1/forms/2050/share
+        $path = parse_url($this->getRequest()->getRequestTarget(), PHP_URL_PATH);
+        if (str_ends_with($path, "/share")) {
+            return $this->share($id);
+        } else {
+            $this->JSONResponse(ResponseCode::Forbidden, null, "Bad request");
+            return;
+        }
+    }
+
+    function share($id) {
+        error_log("share form ".$id);
+        try {
+            $form = $this->Forms->get($id, [ 'contain' => array_merge(FormsController::$associations, [ 'FormAuths' ]) ]);
+        } catch (\Exception $e) {
+            $this->JSONResponse(ResponseCode::NotFound, null, "Form not found");
+            return;
+        }
+        if (!$this->user['admin'] && $this->user['id'] != $form['user_id']) {
+            $this->JSONResponse(ResponseCode::Forbidden, null, "User cannot share this form");
+            return;
+        }
+
+        if ($form['state'] != 'submitted') {
+            $this->JSONResponse(ResponseCode::Forbidden, null, 'Si può chiedere un parere solo su form inviati.');
+            return;
+        }
+
+        $data = json_decode($this->request->getBody());
+        
+        $form_auth = new FormAuth();
+        $form_auth['form_id'] = $form['id'];
+        $form_auth['email'] = $data->email;
+        $form_auth['secret'] = base64_encode(Security::randomBytes(8));
+
+        // Validate the email
+        if (! Validation::email($form_auth['email']))
+        {
+            $this->JSONResponse(ResponseCode::BadRequest, 
+                null, 'Email non valida');
+            return;
+        }
+
+        if ($this->Forms->FormAuths->save($form_auth)) {
+            $email = $this->createFormEmail($form)
+            ->setTo($form_auth['email'])
+            ->setSubject('[CAPS] richiesta di parere su modulo inviato');
+            $email->setViewVars(['form_auth' => $form_auth]);
+            $email->viewBuilder()->setTemplate('share_form');
+            
+            try {
+                $email->send();
+            } catch (\Exception $e) {
+                $this->log("Could not send the email: " . $e->getMessage());
+            }
+            $this->JSONResponse(ResponseCode::Ok, null, "inviato email a <{$form_auth['email']}> con richiesta di parere");
+            return;
+        } else {
+            $this->JSONResponse(ResponseCode::Error, null, "Errore interno (database)");
+            return;
+        }
+    }
+
+    private function createFormEmail($form)
+    {
+        $email = new Email();
+
+        // Find the address that need to be notified in Cc, if any
+        $cc_addresses = array_map(
+            function ($address) {
+                return trim($address);
+            },
+            array_merge(
+                explode(',', $this->getSetting('notified-emails')),
+                explode(',', $form['form_template']['notify_emails']))
+        );
+        $cc_addresses = array_filter($cc_addresses, function ($address) {
+            return trim($address) != "";
+        });
+        if (count($cc_addresses) > 0) {
+            $email->addCc($cc_addresses);
+        }
+
+        $email->setViewVars([ 'settings' => $this->getSettings(), 'form' => $form ])
+            ->setEmailFormat('html');
+
+        return $email;
+    }
 }
 
 ?>
