@@ -1,6 +1,12 @@
 'use strict';
 
 import React, { useState } from 'react';
+import Moment from 'moment';
+import "react-datepicker/dist/react-datepicker.css";
+import ReactDOM from 'react-dom';
+import DatePicker from 'react-datepicker';
+
+
 import LoadingMessage from './LoadingMessage';
 import Card from './Card';
 import CapsPage from "./CapsPage";
@@ -10,10 +16,6 @@ import submitForm from '../modules/form-submission';
 import AdminTools from './AdminTools';
 import ShareButton from './ShareButton';
 
-import "react-datepicker/dist/react-datepicker.css";
-
-import ReactDOM from 'react-dom';
-import DatePicker from 'react-datepicker';
 
 class Form extends CapsPage {
     constructor(props) {
@@ -252,6 +254,12 @@ class Form extends CapsPage {
         }
     }
 
+    async onSetState(state, message) {
+        const form = await restClient.patch(`forms/${ this.state.form.id }`, {state})
+        this.flashSuccess(<>{ message }</>);
+        this.setStateAsync({ form });
+    }
+
     renderTemplateSelection() {
         if (this.state.form_templates === null) {
             return <LoadingMessage key="loading-degrees">
@@ -300,19 +308,19 @@ class Form extends CapsPage {
 
         if (this.state.form.date_submitted) {
             badges.push(<span key="submitted-badge" className="badge badge-secondary mr-2 mb-2">
-                Inviato il {this.state.form.date_submitted}
+                Inviato in data { Moment(this.state.form.date_submitted).format("DD/MM/YYYY")}
             </span>);
         }
 
         if (this.state.form.state == "approved") {
             badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-                Approvato il {this.state.form.date_managed}
+                Approvato in data { Moment(item.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 
         if (this.state.form.state == "rejected") {
             badges.push(<span key="rejected-badge" className="badge badge-danger mr-2 mb-2">
-                Rifiutato il {this.state.form.date_managed}
+                Rifiutato in data {Moment(this.state.form.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 
@@ -353,7 +361,7 @@ class Form extends CapsPage {
         } else {
             return <><Card title={this.state.form_template.name}>
                 <div className="d-flex mb-2">
-                    <AdminTools self={ this } />
+                    <AdminTools self={ this } items_name="forms" />
                     <ShareButton self={ this } />
                 </div>
                 {this.renderBadges()}

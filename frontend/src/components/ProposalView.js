@@ -80,7 +80,7 @@ export class ProposalView extends CapsPage {
             <ProposalMessage proposal={proposal} />
             <Card>
                 <div className="d-flex mb-2">
-                    <AdminTools self={ this } />
+                    <AdminTools self={ this } items_name="proposals" />
                     <ShareButton self={ this } />
                 </div>
                 <p>TO BE COMPLETED...</p>
