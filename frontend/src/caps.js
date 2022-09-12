@@ -7,7 +7,7 @@ import '@fortawesome/fontawesome-free/js/solid';
 // import '@fortawesome/fontawesome-free/js/regular';
 // import '@fortawesome/fontawesome-free/js/brands';
 
-import SinglePage from './components/SinglePage';
+import SinglePage from './pages/SinglePage';
 import React from 'react';
 import ReactDOM from 'react-dom';
 

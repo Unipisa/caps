@@ -1,17 +1,18 @@
 'use strict';
 
-import React from 'react';
-import Degree from '../models/Degree';
+import React from 'react'
+
+import Degree from '../models/Degree'
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
-    } from './TableElements';
-import QueryTable from './QueryTable';
+    } from '../components/TableElements'
+import QueryTable from '../components/QueryTable'
 
-export default function Degrees() {
+export default function Degrees({ engine }) {
     return <>
         <h1>Corsi di Laurea</h1>
-        <QueryTable Model={ Degree } >
+        <QueryTable engine={engine} Model={ Degree } >
             <FilterButton>
             <FilterInput name="enabled" label="attivo" />
             <FilterInput name="enable_sharing" label="richiesta parere" />

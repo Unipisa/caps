@@ -1,18 +1,18 @@
 'use strict'
 
 import React from 'react'
+
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
-    } from './TableElements'
-import QueryTable from './QueryTable'
+    } from '../components/TableElements'
+import QueryTable from '../components/QueryTable'
 import FormTemplate from '../models/FormTemplate'
-import Cache from '../modules/Cache'
 
-export default function FormTemplates() {
+export default function FormTemplates({engine}) {
     return <>
         <h1>Modelli</h1>
-        <QueryTable Model={ FormTemplate } >
+        <QueryTable engine={engine} Model={ FormTemplate } >
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="enabled" label="attivato" />

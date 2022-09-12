@@ -1,31 +1,32 @@
 'use strict';
 
-import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
-import api from '../modules/api';
-import LoadingMessage from './LoadingMessage';
-import { QueryContext } from './TableElements';
-import { PageContext } from './SinglePage';
-import Cache from '../modules/Cache';
+import React, { useState, useEffect } from 'react'
 
-export default function QueryTable({ Model, children }) {
+import api from '../modules/api'
+import { Link } from "react-router-dom"
+import LoadingMessage from './LoadingMessage'
+
+export default function QueryTable({ engine, Model, children }) {
     const [ query, setQuery ] = useState({});
 
-    return <QueryContext.Provider value={ { query, setQuery } }>
+    return <>
         <div className="d-flex mb-2">
-            { children }
+        { React.Children.map(children, child => {
+            if (React.isValidElement(child)) {
+                return React.cloneElement(child, { engine, query, setQuery })
+            }
+            return child;
+        })}
         </div>
         <FilterBadges query={ query } setQuery={ setQuery } />
         <div className="table-responsive-lg">
-            <PageContext.Consumer>
-            { (pageContext) => <Table 
-                pageContext={ pageContext } 
+            <Table
+                engine={ engine } 
                 query={ query }
                 Model={ Model }
-                />}
-            </PageContext.Consumer>
-    </div>
-    </QueryContext.Provider>
+                />
+        </div>
+    </>
 }
 
 function FilterBadges({ query, setQuery }) {
@@ -52,7 +53,7 @@ function FilterBadges({ query, setQuery }) {
         </div>
 }
 
-function Table({ pageContext: { flashCatch }, Model, query }) {
+function Table({ engine, Model, query }) {
     const [ limit, setLimit ] = useState(10);
     const [ sort, setSort ] = useState(Model.sort_default);
     const [ direction, setDirection ] = useState(Model.sort_default_direction);
@@ -83,7 +84,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
             });
             setData(new_data);
         } catch(err) {
-            flashCatch(err);
+            engine.flashCatch(err);
         }    
     }, [ sort, direction, limit, query ]);
 
@@ -113,7 +114,7 @@ function Table({ pageContext: { flashCatch }, Model, query }) {
                 )}
             </tr>
         </thead>        
-        <TableBody Model={ Model } data={ data } setData={ setData } flashCatch={ flashCatch } />
+        <TableBody Model={ Model } data={ data } setData={ setData } />
     </table>
     {data && <p>
         { data.items.length < data.total 

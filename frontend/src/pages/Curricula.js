@@ -1,26 +1,25 @@
 'use strict';
 
 import React from 'react';
-import Exam from '../models/Exam';
+import Degree from '../models/Curriculum'
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
-    } from './TableElements';
-import QueryTable from './QueryTable';
+    } from '../components/TableElements'
+import QueryTable from '../components/QueryTable'
 
-export default function Exams() {
+export default function Curricula({ engine }) {
     return <>
-        <h1>Esami</h1>
-        <QueryTable Model={ Exam } >
+        <h1>Curricula</h1>
+        <QueryTable engine={engine} Model={ Degree } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
-                <FilterInput name="code" label="codice" />
-                <FilterInput name="sector" label="settore" />
-                <FilterInput name="credits" label="crediti" />
+                <FilterInput name="academic_year" label="anno" />
+                <FilterInput name="degree" label="laurea" />
             </FilterButton>
 
             <ItemAddButton>
-                Aggiungi esame
+                Aggiungi Curriculum
             </ItemAddButton>
 
             <TableTopRightButtons>

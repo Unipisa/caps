@@ -4,18 +4,20 @@ import {
 } from "react-router-dom"
 
 import useEngine from "../modules/Engine"
-import Exams from "./Exams"
-import Exam from "./Exam"
-import Users from "./Users"
+
 import Degrees from "./Degrees"
 import Degree from "./Degree"
 import Curricula from "./Curricula"
-import Modal from './Modal'
-import Flash from "./Flash"
-import NavBar from './NavBar'
-import TopBar from './TopBar'
-import Footer from './Footer'
 import FormTemplates from './FormTemplates'
+import Exams from "./Exams"
+import Exam from "./Exam"
+import Users from "./Users"
+
+import Modal from '../components/Modal'
+import Flash from "../components/Flash"
+import NavBar from '../components/NavBar'
+import TopBar from '../components/TopBar'
+import Footer from '../components/Footer'
 
 export const PageContext = React.createContext({
     flashCatch: () => {}
@@ -38,13 +40,14 @@ export default function SinglePage () {
                     <Routes>
                         <Route path="/" element={<Splash />} />
                         <Route path="/index.html" element={<Splash />} />
+                        {/*<Route path="/forms" element={<Form />} />*/}
+                        <Route path="/degrees" element={<Degrees />} />
+                        <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
+                        <Route path="/curricula" element={<Curricula />} />
+                        <Route path="/form-templates" element={<FormTemplates />} />
                         <Route path="/exams/:id" element={<Exam engine={ engine } />} />
                         <Route path="/exams" element={<Exams />} />
                         <Route path="/users" element={<Users />} />
-                        <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
-                        <Route path="/degrees" element={<Degrees />} />
-                        <Route path="/curricula" element={<Curricula />} />
-                        <Route path="/form-templates" element={<FormTemplates />} />
                     </Routes>
                 </div>
                 <Footer />

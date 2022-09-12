@@ -1,19 +1,13 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from "react-router-dom";
-import api from '../modules/api';
-import LoadingMessage from './LoadingMessage';
-import Card from './Card';
-import { PageContext } from './SinglePage';
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from "react-router-dom"
 
-export default function Exam() {
-    return <PageContext.Consumer>
-        { ({ flashCatch }) => <ExamWithContext flashCatch={ flashCatch } /> }
-    </PageContext.Consumer>
-}
+import api from '../modules/api'
+import LoadingMessage from '../components/LoadingMessage'
+import Card from '../components/Card'
 
-function ExamWithContext() {
+export default function Exam({engine}) {
     const { id } = useParams();
     const [ exam, setExam ] = useState(null);
 
@@ -22,7 +16,7 @@ function ExamWithContext() {
             const new_exam = await api.get(`exams/${id}`);
             setExam(new_exam);
         } catch(err) {
-            flashCatch(err);
+            engine.flashCatch(err);
         }
     }, [ id ])
 

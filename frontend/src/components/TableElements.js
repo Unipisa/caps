@@ -13,41 +13,27 @@ export function ItemAddButton({ children }) {
     </button>
 }
 
-export const QueryContext = React.createContext({ 
-    query: {}, 
-    setQuery: () => null
-});
+export function FilterInput({ query, setQuery, name, label }) {
+    const [ my_value, setValue ] = useState(query[name] || "");
 
-export function FilterInput({ name, label }) {
-    function Internal({ query, setQuery }) {
-        const [ my_value, setValue ] = useState(query[name] || "");
-
-        function onChange(e) {
-            setQuery({...query, [name]: my_value })
-        }
-
-        return <div className="input form-group">
-                <label htmlFor={name}>{ label }</label>
-                <input className="form-control"
-                    name={name}
-                    value={my_value}
-                    placeholder={label}
-                    onChange={e => { setValue(e.target.value) }}
-                    onBlur={onChange} 
-                    onKeyDown={ e => {
-                            if (e.key == 'Enter') {
-                                onChange(e);
-                            }
-                        }}/>
-            </div> 
+    function onChange(e) {
+        setQuery({...query, [name]: my_value })
     }
 
-    return <QueryContext.Consumer>
-        { 
-        ({ query, setQuery }) =>
-        <Internal query={ query } setQuery={ setQuery } />
-        }
-    </QueryContext.Consumer>
+    return <div className="input form-group">
+            <label htmlFor={name}>{ label }</label>
+            <input className="form-control"
+                name={name}
+                value={my_value}
+                placeholder={label}
+                onChange={e => { setValue(e.target.value) }}
+                onBlur={onChange} 
+                onKeyDown={ e => {
+                        if (e.key == 'Enter') {
+                            onChange(e);
+                        }
+                    }}/>
+        </div> 
 }
 
 export function FilterSelect({name, label, value, onChange, children}) {
@@ -66,36 +52,35 @@ export function FilterCheckbox({name, label, value, onChange }) {
     </div>
 }
 
-export function FilterButton({ children }) {
+export function FilterButton({ engine, query, setQuery, children }) {
     const [open, setOpen ] = useState(false);
-    return <QueryContext.Consumer>
-        { ({ query, setQuery }) => 
-            <Dropdown className="mr-2" show={ open }>
-                <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
-                    <i className="fas fa-filter"></i>
-                    <span className="ml-2 d-none d-md-inline">Filtra</span>
-                </Dropdown.Toggle>
-                <Dropdown.Menu className="p-2" style={{width: "350px", margin: 0}}>
-                    { Children.map(children, (el, n) => {
-                        // inserisce la prop onChange in tutti i children
-                        return React.cloneElement(el, {
-                            key: el.key || n, 
-                            onChange: (e) => { 
-                                setOpen(false);
-                                let new_query = {...query};
-                                if (e.target.value === '') {
-                                    delete query[e.target.name];
-                                } else {
-                                    query[e.target.name] = e.target.value;
-                                }
-                                setQuery(new_query);
-                            }
-                        })
-                    }) }
-                </Dropdown.Menu>
-            </Dropdown>
-        }
-    </QueryContext.Consumer>
+    return <Dropdown className="mr-2" show={ open }>
+        <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
+            <i className="fas fa-filter"></i>
+            <span className="ml-2 d-none d-md-inline">Filtra</span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="p-2" style={{width: "350px", margin: 0}}>
+            { Children.map(children, (el, n) => {
+                // inserisce la prop onChange in tutti i children
+                return React.cloneElement(el, {
+                    engine,
+                    query,
+                    setQuery,
+                    key: el.key || n, 
+                    onChange: (e) => { 
+                        setOpen(false);
+                        let new_query = {...query};
+                        if (e.target.value === '') {
+                            delete query[e.target.name];
+                        } else {
+                            query[e.target.name] = e.target.value;
+                        }
+                        setQuery(new_query);
+                    }
+                })
+            }) }
+        </Dropdown.Menu>
+    </Dropdown>
 }
 
 export function TableTopRightButtons({ children }) {

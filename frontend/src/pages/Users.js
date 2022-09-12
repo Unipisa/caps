@@ -1,19 +1,20 @@
 'use strict';
 
-import React from 'react';
-import User from '../models/User';
+import React from 'react'
+
+import User from '../models/User'
 import { 
     TableTopRightButtons, 
     FilterButton, FilterInput, FilterCheckbox,
     ItemAddButton, 
     CsvDownloadButton, ExcelDownloadButton
-    } from './TableElements';
-import QueryTable from './QueryTable';
+    } from '../components/TableElements'
+import QueryTable from '../components/QueryTable'
 
-export default function Users() {
+export default function Users({engine}) {
     return <>
         <h1>Utenti</h1>
-        <QueryTable Model={ User }>
+        <QueryTable engine={engine} Model={ User }>
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="username" label="username" />
