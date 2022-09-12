@@ -1,13 +1,15 @@
-var mysql      = require('mysql2');
-var Exam = require('./models/Exam');
-var User = require('./models/User');
-var Degree = require('./models/Degree');
-var Curriculum = require('./models/Curriculum');
-var {   CurriculumCompulsoryExam, 
+let mysql      = require('mysql2')
+let Exam = require('./models/Exam')
+let User = require('./models/User')
+let Degree = require('./models/Degree')
+let Curriculum = require('./models/Curriculum')
+let FormTemplate = require('./models/FormTemplate')
+
+let {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
         CurriculumFreeChoiceGroup, 
-        CurriculumFreeChoiceExam } = require('./models/CurriculumExam');
-var mongoose = require('mongoose');
+        CurriculumFreeChoiceExam } = require('./models/CurriculumExam')
+let mongoose = require('mongoose')
 
 function write(s) {
     console.log(s);
@@ -169,6 +171,19 @@ async function importData() {
         return e.save();
     }))
 
+    // import form_templates
+    write("> Form templates")
+    await FormTemplate.deleteMany({}) // Drop all data
+    results = await query("SELECT * FROM form_templates")
+    write(`caricamento ${ results.length } form_templates...`)
+    await Promise.all(results.map(element => {
+        element.old_id = element.id
+        element.notify_emails = element.notify_emails
+            .split(',')
+            .map(x => x.trim())
+        const e = new FormTemplate(element)
+        return e.save() 
+    }))
 
     await mongoose.connection.close()
     connection.end();

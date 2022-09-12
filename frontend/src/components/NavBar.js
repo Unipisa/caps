@@ -1,3 +1,8 @@
+import React from 'react'
+import { Link } from "react-router-dom"
+
+import settings from "../modules/settings"
+
 export default function NavBar() {
     return <ul className="navbar-nav bg-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/">

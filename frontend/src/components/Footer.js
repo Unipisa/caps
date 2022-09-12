@@ -1,3 +1,7 @@
+import React from 'react'
+
+import settings from "../modules/settings"
+
 export default function Footer() {
     return <footer className="sticky-footer bg-white">
     <div className="container my-auto">
