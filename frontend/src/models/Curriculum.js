@@ -23,18 +23,18 @@ export default class Curriculum extends Model {
     static sort_default_direction = 1;
 
     load_related(cache, setCache) {
-        const id = this.item.degree;
-        this.degree = cache[0][id];
+        this.degree_id = this.degree;
+        this.degree = cache[0][this.degree_id];
         if (this.degree === undefined) {
             // cache[0] is modified in place on purpose
             // so that the state is not changed
             // set the value to null !== undefined
             // so that we know that this value has already been requested
-            cache[0][id] = null;
-            api.get(`degrees/${ id }`).then(
+            cache[0][this.degree_id] = null;
+            api.get(`degrees/${ this.degree_id }`).then(
                 ( degree ) => {
                     // modify volatile cache[0]
-                    cache[0][id] = degree; 
+                    cache[0][this.degree_id] = degree; 
                     // finally modify the state so that
                     // react is going to redraw the component
                     setCache([cache[0]]);  

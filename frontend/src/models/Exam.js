@@ -29,7 +29,7 @@ export default class Exam extends Model {
     
     render_table_field(field) {
         if (field == "tags") {
-            return this.item.tags.join(", ");
+            return this.tags.join(", ");
         } else {
             return super.render_table_field(field);
         }

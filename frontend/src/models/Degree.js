@@ -28,9 +28,9 @@ export default class Degree extends Model {
 
     render_table_field(field) {
         if (field == "enabled") {
-            return this.item.enabled ? "attivo" : "non attivo";
+            return this.enabled ? "attivo" : "non attivo";
         } else if (field == "enable_sharing") {
-            return this.item.enable_sharing ? "abilitata" : "non abilitata";
+            return this.enable_sharing ? "abilitata" : "non abilitata";
         } else {
             return super.render_table_field(field);
         }

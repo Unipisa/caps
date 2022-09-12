@@ -68,25 +68,20 @@ function Table({ engine, Model, query }) {
         }
     }
 
-    useEffect(async () => {
+    useEffect(() => {(async () => {
         try {
-            const new_data = await api.get(
-                `${ Model.api_url }`, 
+            const new_data = await api.getItems(
+                Model, 
                 {...query, 
                     _sort: sort,
                     _direction: direction,
-                    _limit: limit});
-            new_data.items = new_data.items.map(item => {
-                return {
-                    ...item, 
-                    _selected: false
-                }
-            });
-            setData(new_data);
+                    _limit: limit})
+            new_data.items.forEach(item => {item._selected = false})
+            setData(new_data)
         } catch(err) {
-            engine.flashCatch(err);
+            engine.flashCatch(err)
         }    
-    }, [ sort, direction, limit, query ]);
+    })()}, [ sort, direction, limit, query ]);
 
     function Header({ field, label, enable_sort }) {
         if (enable_sort) {
@@ -139,10 +134,10 @@ function TableBody({ Model, data, setData }) {
         setData({...data, items });
     }
 
-    function renderField(model_item, field, enable_link) {
-        const content = model_item.render_table_field(field);
+    function renderField(item, field, enable_link) {
+        const content = item.render_table_field(field);
         if (enable_link) {
-            return <Link to={ model_item.view_url() }>{ content }</Link>
+            return <Link to={ item.view_url() }>{ content }</Link>
         } else {
             return content;
         }
@@ -155,12 +150,13 @@ function TableBody({ Model, data, setData }) {
     } else {
         return <tbody>
             { data.items.map(item => {
-                const model_item = new Model(item);
-                model_item.load_related(cache, setCache);
+//                const model_item = new Model(item);
+//                model_item.load_related(cache, setCache);
+                item.load_related(cache, setCache)
                 return <tr key={ item._id } style={ item._selected ? {background: "lightgray" } : {}}>
                     <td><input type="checkbox" checked={ item._selected } readOnly onClick={ () => onToggle(item) }/></td>
                     { Model.table_headers.map(({ field, enable_link }) => 
-                        <td key={ field }>{ renderField(model_item, field, enable_link) }</td>
+                        <td key={ field }>{ renderField(item, field, enable_link) }</td>
                         )}
                     <td></td>
                 </tr>})

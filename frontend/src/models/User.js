@@ -36,7 +36,7 @@ export default class User extends Model {
 
     render_table_field(field) {
         if (field == "admin") {
-            return this.item.admin ? "admin" : "";
+            return this.admin ? "admin" : "";
         }
         return super.render_table_field(field);
     }

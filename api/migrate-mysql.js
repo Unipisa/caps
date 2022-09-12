@@ -4,6 +4,7 @@ let User = require('./models/User')
 let Degree = require('./models/Degree')
 let Curriculum = require('./models/Curriculum')
 let FormTemplate = require('./models/FormTemplate')
+let Form = require('./models/Form')
 
 let {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
@@ -16,11 +17,11 @@ function write(s) {
 }
 
 async function importData() {
-    console.log("here")
+    // console.log("here")
 
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/caps')
 
-    console.log("here1")
+    // console.log("here1")
 
     var connection = mysql.createConnection({
         host     : process.env.MYSQL_HOST || 'localhost',
@@ -49,20 +50,21 @@ async function importData() {
         return await Collection.countDocuments();
     }
 
-    console.log("here2")
+    // console.log("here2")
 
     var results = null;
     
     // Import users
     write("> Users ");
     await User.deleteMany({});
-    results = await query('SELECT * from users');
+    results = await query('SELECT * from users')
+    users = {}
     write(`caricamento ${ results.length } utenti...`);
-    await Promise.all(results.map(element => {
+    (await Promise.all(results.map(element => {
         element.old_id = element.id;
         const u = new User(element);
         return u.save();
-    }))
+    }))).forEach(u => {users[u.old_id] = u})
 
     write("(" + (await count(User)) + " documents imported)");
 
@@ -176,13 +178,28 @@ async function importData() {
     await FormTemplate.deleteMany({}) // Drop all data
     results = await query("SELECT * FROM form_templates")
     write(`caricamento ${ results.length } form_templates...`)
-    await Promise.all(results.map(element => {
+    form_templates = {};
+    (await Promise.all(results.map(element => {
         element.old_id = element.id
         element.notify_emails = element.notify_emails
             .split(',')
             .map(x => x.trim())
         const e = new FormTemplate(element)
         return e.save() 
+    }))).forEach(f => { form_templates[f.old_id] = f})
+
+    // import forms
+    write("> Forms")
+    await Form.deleteMany({}) // Drop all data
+    results = await query("SELECT * FROM forms")
+    write(`caricamento ${results.length} forms...`)
+    await Promise.all(results.map(element => {
+        element.old_id = element.id
+        element.form_template = form_templates[element.old_id]
+        element.user = users[element.user_id]
+        element.data = JSON.parse(element.data)
+        const e = new Form(element)
+        return e.save()
     }))
 
     await mongoose.connection.close()

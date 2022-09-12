@@ -43,7 +43,7 @@ class Engine {
         this.setState({
             ...this.state,
             flashMessages: [
-                ...flashMessages, 
+                ...this.state.flashMessages, 
                 { message, type }]
         })
     }

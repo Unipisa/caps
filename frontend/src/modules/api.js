@@ -44,7 +44,7 @@ class BaseRestClient {
         return await this.fetch(uri, 'DELETE');
     }
 
-    async get(uri, query = {}) { 
+    async get(uri, query = {}) {
         const params = new URLSearchParams(query);
         return await this.fetch(uri + '?' + params.toString(), 'GET');
     }
@@ -57,6 +57,11 @@ class BaseRestClient {
         return await this.fetch(uri, 'PATCH', data);
     }
 
+    async getItems(Model, query) {
+        let data = await this.get(`${ Model.api_url }`, query)
+        data.items = data.items.map(item => new Model(item))
+        return data
+    }
 }
 
 class ApiError extends Error {

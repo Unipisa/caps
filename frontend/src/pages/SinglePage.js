@@ -5,6 +5,7 @@ import {
 
 import useEngine from "../modules/Engine"
 
+import Forms from "./Forms"
 import Degrees from "./Degrees"
 import Degree from "./Degree"
 import Curricula from "./Curricula"
@@ -38,16 +39,16 @@ export default function SinglePage () {
                 <Flash messages={ engine.state.flashMessages } onClick={ () => engine.hideFlash() }></Flash>
                 <div id="content">
                     <Routes>
-                        <Route path="/" element={<Splash />} />
-                        <Route path="/index.html" element={<Splash />} />
-                        {/*<Route path="/forms" element={<Form />} />*/}
-                        <Route path="/degrees" element={<Degrees />} />
+                        <Route path="/" element={<Splash engine={engine}/>} />
+                        <Route path="/index.html" element={<Splash engine={engine} />} />
+                        <Route path="/forms" element={<Forms engine={engine} />} />
+                        <Route path="/degrees" element={<Degrees engine={engine} />} />
                         <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
-                        <Route path="/curricula" element={<Curricula />} />
-                        <Route path="/form-templates" element={<FormTemplates />} />
+                        <Route path="/curricula" element={<Curricula engine={engine} />} />
+                        <Route path="/form-templates" element={<FormTemplates engine={engine} />} />
                         <Route path="/exams/:id" element={<Exam engine={ engine } />} />
-                        <Route path="/exams" element={<Exams />} />
-                        <Route path="/users" element={<Users />} />
+                        <Route path="/exams" element={<Exams engine={engine} />} />
+                        <Route path="/users" element={<Users engine={engine} />} />
                     </Routes>
                 </div>
                 <Footer />
