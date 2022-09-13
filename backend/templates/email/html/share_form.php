@@ -21,12 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
     $this->extend('/email/html/form_base');
-    $url = $this->Url->build([
-        "controller" => "forms",
-        "action" => "view",
-        $form['id'],
-        "?" => ["secret" => $form_auth['secret']],
-        "_full" => true ]);
+    $url = $this->Url->build("/forms/view/" . $form['id'], [ 'fullBase' => true ]);
 ?>
 
 <h3>Richiesta di parere sul modulo <?= $form['form_template']['name'] ?></h3>

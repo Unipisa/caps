@@ -199,12 +199,14 @@ class ExamsController extends AppController
             $exam = $this->Exams->patchEntity($exam, $this->request->getData());
 
             // If there are new tags to add, do it
-            foreach (explode(',', $this->request->getData('new-tags')) as $tag) {
-                $tag = trim($tag);
-                if ($tag != "") {
-                    $t = new Tag();
-                    $t['name'] = $tag;
-                    $exam['tags'][] = $t;
+            if ($this->request->getData('new-tags')) {
+                foreach (explode(',', $this->request->getData('new-tags')) as $tag) {
+                    $tag = trim($tag);
+                    if ($tag != "") {
+                        $t = new Tag();
+                        $t['name'] = $tag;
+                        $exam['tags'][] = $t;
+                    }
                 }
             }
 

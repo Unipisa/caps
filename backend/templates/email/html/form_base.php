@@ -41,8 +41,7 @@
 <?= $this->fetch('content') ?>
 
 <p>
-<?= $this->Html->link("Visualizza modulo", 
-        ['controller' => 'Forms', 'action' => 'view', '_full' => true, $form['id']]) ?>
+    <a href="<?= $this->Url->build('forms/view/' . $form['id'], [ 'fullBase' => true ]) ?>">Visualizza modulo</a>
 </p>
 <p>
     Nome e cognome: <?= h($form['user']['name']) ?><br>

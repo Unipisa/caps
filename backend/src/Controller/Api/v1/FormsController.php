@@ -141,7 +141,9 @@ class FormsController extends RestController {
         error_log("share form ".$id);
         try {
             $form = $this->Forms->get($id, [ 'contain' => array_merge(FormsController::$associations, [ 'FormAuths' ]) ]);
+            $form['data_expanded'] = json_decode($form['data']);
         } catch (\Exception $e) {
+            $this->log($e);
             $this->JSONResponse(ResponseCode::NotFound, null, "Form not found");
             return;
         }
@@ -180,6 +182,7 @@ class FormsController extends RestController {
             try {
                 $email->send();
             } catch (\Exception $e) {
+                $this->log($e);
                 $this->log("Could not send the email: " . $e->getMessage());
             }
             $this->JSONResponse(ResponseCode::Ok, null, "inviato email a <{$form_auth['email']}> con richiesta di parere");
