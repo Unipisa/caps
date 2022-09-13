@@ -150,8 +150,6 @@ function TableBody({ Model, data, setData }) {
     } else {
         return <tbody>
             { data.items.map(item => {
-//                const model_item = new Model(item);
-//                model_item.load_related(cache, setCache);
                 item.load_related(cache, setCache)
                 return <tr key={ item._id } style={ item._selected ? {background: "lightgray" } : {}}>
                     <td><input type="checkbox" checked={ item._selected } readOnly onClick={ () => onToggle(item) }/></td>

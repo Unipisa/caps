@@ -1,8 +1,12 @@
-import Model from './Model';
-import api from '../modules/api';
+import Model from './Model'
+import Degree from './Degree'
 
 export default class Curriculum extends Model {
-    static api_url = 'curricula/';
+    constructor(json) {
+        super(json)
+    }
+    static related_fields = { degree: Degree }
+    static api_url = 'curricula/'
     static table_headers = [
         {   
             field: 'degree.academic_year',
@@ -19,29 +23,8 @@ export default class Curriculum extends Model {
             enable_sort: true,
             enable_link: true
         }];
-    static sort_default = 'name';
+    static sort_default = 'name'
     static sort_default_direction = 1;
-
-    load_related(cache, setCache) {
-        this.degree_id = this.degree;
-        this.degree = cache[0][this.degree_id];
-        if (this.degree === undefined) {
-            // cache[0] is modified in place on purpose
-            // so that the state is not changed
-            // set the value to null !== undefined
-            // so that we know that this value has already been requested
-            cache[0][this.degree_id] = null;
-            api.get(`degrees/${ this.degree_id }`).then(
-                ( degree ) => {
-                    // modify volatile cache[0]
-                    cache[0][this.degree_id] = degree; 
-                    // finally modify the state so that
-                    // react is going to redraw the component
-                    setCache([cache[0]]);  
-                }
-            )// .catch( err => { flashCatch(err) })
-        }
-    }
 
     render_table_field(field) {
         if (field === "degree.name") {

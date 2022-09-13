@@ -6,11 +6,11 @@ const Form = mongoose.model('Form', {
         type: Number,
         required: false
     },
-    form_template: {
+    form_template_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'FormTemplate'
     },
-    user: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'   
     },

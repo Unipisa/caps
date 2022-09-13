@@ -57,6 +57,12 @@ class BaseRestClient {
         return await this.fetch(uri, 'PATCH', data);
     }
 
+    async getItem(Model, id) {
+        // console.log(`getItem ${Model.api_url} ${id}`)
+        const data = await this.get(`${ Model.api_url }${ id }`)
+        return new Model(data)
+    }
+
     async getItems(Model, query) {
         let data = await this.get(`${ Model.api_url }`, query)
         data.items = data.items.map(item => new Model(item))

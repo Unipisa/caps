@@ -168,7 +168,7 @@ async function importData() {
                 }
             })
         element.years = years
-        element.degree = degrees[element.degree_id]
+        element.degree_id = degrees[element.degree_id]
         const e = new Curriculum(element);
         return e.save();
     }))
@@ -195,8 +195,8 @@ async function importData() {
     write(`caricamento ${results.length} forms...`)
     await Promise.all(results.map(element => {
         element.old_id = element.id
-        element.form_template = form_templates[element.old_id]
-        element.user = users[element.user_id]
+        element.form_template_id = form_templates[element.form_template_id]
+        element.user_id = users[element.user_id]
         element.data = JSON.parse(element.data)
         const e = new Form(element)
         return e.save()

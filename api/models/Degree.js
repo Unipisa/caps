@@ -1,6 +1,6 @@
 
-const mongoose = require('mongoose');
-const Exam = require('./Exam');
+const mongoose = require('mongoose')
+const Exam = require('./Exam')
 
 const Degree = mongoose.model('Degree', {
     old_id: {
@@ -39,7 +39,7 @@ const Degree = mongoose.model('Degree', {
         required: true,
         default: true
     },
-    default_group: String,
+    default_group: String, 
     approval_confirmation: {
         type: Boolean,
         required: true,

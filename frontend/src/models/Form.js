@@ -1,6 +1,8 @@
 import Moment from 'moment'
 
 import Model from './Model'
+import User from './User'
+import FormTemplate from './FormTemplate'
 
 export default class Form extends Model {
     constructor(json) {
@@ -9,6 +11,10 @@ export default class Form extends Model {
         this.date_managed = Moment(this.date_managed)
     }
 
+    static related_fields = {
+        user: User,
+        form_template: FormTemplate
+    }
     static api_url = 'forms/'
     static table_headers = [
         {

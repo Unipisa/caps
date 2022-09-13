@@ -18,7 +18,7 @@ const CurriculumSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    degree: {
+    degree_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Degree'
     },
@@ -45,7 +45,7 @@ const CurriculumExam = CurriculumSchema.path('years.exams')
 
 const CurriculumCompulsoryExam = CurriculumExam.discriminator("CompulsoryExam", new mongoose.Schema(
     {
-        exam: {
+        exam_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: Exam
         }
