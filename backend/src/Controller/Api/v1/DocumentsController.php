@@ -18,8 +18,15 @@ class DocumentsController extends RestController {
         $d = $this->applyFilters($d);
 
         if (!$this->user['admin']) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
+            $d = $d->where(["owner_id" => $this->user['id']]);
+        }
+
+        foreach($d as $x) {
+            unset($x['user']['password']);
+            unset($x['user']['username']);
+            unset($x['user']['number']);
+            unset($x['user']['email']);
+            unset($x['user']['admin']);
         }
 
         $this->JSONResponse(ResponseCode::Ok, $d);

@@ -63,7 +63,12 @@ class Form extends CapsPage {
 
     async loadDocuments(form_id) {
         try {
-            const documents = await restClient.get('form_attachments', { 'form_id': form_id });
+            let documents = await restClient.get('form_attachments', { 'form_id': form_id });
+            const auths = await restClient.get('form_auths', {'form_id': form_id })
+            documents.forEach(d => {d.type="document"})
+            auths.forEach(d => {d.type="auth"})
+            documents = documents.concat(auths)
+            documents.sort((a,b) => {if (a.created<b.created) return -1;return 1;})
             this.setState({ documents });
         } catch(err) {
             this.flashCatch(err);
@@ -368,7 +373,8 @@ class Form extends CapsPage {
                 {this.renderDraftNotice()}
                 {this.renderForm()}
             </Card>
-            { this.state.documents !== null && <DocumentsBlock className="mt-4"
+            { this.state.documents !== null && 
+            <DocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
