@@ -1,18 +1,21 @@
 'use strict';
 
 import React, { useState } from 'react';
+import Moment from 'moment';
+import "react-datepicker/dist/react-datepicker.css";
+import ReactDOM from 'react-dom';
+import DatePicker from 'react-datepicker';
+
+
 import LoadingMessage from './LoadingMessage';
 import Card from './Card';
 import CapsPage from "./CapsPage";
 import DocumentsBlock from "./DocumentsBlock";
 import restClient from '../modules/api';
-
 import submitForm from '../modules/form-submission';
+import AdminTools from './AdminTools';
+import ShareButton from './ShareButton';
 
-import "react-datepicker/dist/react-datepicker.css";
-
-import ReactDOM from 'react-dom';
-import DatePicker from 'react-datepicker';
 
 class Form extends CapsPage {
     constructor(props) {
@@ -29,7 +32,10 @@ class Form extends CapsPage {
         };
 
         this.edit = this.props.edit || false;
+    }
 
+    async componentDidMount() {
+        super.componentDidMount();
         this.load();
     }
 
@@ -57,7 +63,12 @@ class Form extends CapsPage {
 
     async loadDocuments(form_id) {
         try {
-            const documents = await restClient.get('form_attachments', { 'form_id': form_id });
+            let documents = await restClient.get('form_attachments', { 'form_id': form_id });
+            const auths = await restClient.get('form_auths', {'form_id': form_id })
+            documents.forEach(d => {d.type="document"})
+            auths.forEach(d => {d.type="auth"})
+            documents = documents.concat(auths)
+            documents.sort((a,b) => {if (a.created<b.created) return -1;return 1;})
             this.setState({ documents });
         } catch(err) {
             this.flashCatch(err);
@@ -248,6 +259,12 @@ class Form extends CapsPage {
         }
     }
 
+    async onSetState(state, message) {
+        const form = await restClient.patch(`forms/${ this.state.form.id }`, {state})
+        this.flashSuccess(<>{ message }</>);
+        this.setStateAsync({ form });
+    }
+
     renderTemplateSelection() {
         if (this.state.form_templates === null) {
             return <LoadingMessage key="loading-degrees">
@@ -296,19 +313,19 @@ class Form extends CapsPage {
 
         if (this.state.form.date_submitted) {
             badges.push(<span key="submitted-badge" className="badge badge-secondary mr-2 mb-2">
-                Inviato il {this.state.form.date_submitted}
+                Inviato in data { Moment(this.state.form.date_submitted).format("DD/MM/YYYY")}
             </span>);
         }
 
         if (this.state.form.state == "approved") {
             badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-                Approvato il {this.state.form.date_managed}
+                Approvato in data { Moment(item.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 
         if (this.state.form.state == "rejected") {
             badges.push(<span key="rejected-badge" className="badge badge-danger mr-2 mb-2">
-                Rifiutato il {this.state.form.date_managed}
+                Rifiutato in data {Moment(this.state.form.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 
@@ -348,11 +365,16 @@ class Form extends CapsPage {
             </Card>;
         } else {
             return <><Card title={this.state.form_template.name}>
+                <div className="d-flex mb-2">
+                    <AdminTools self={ this } items_name="forms" />
+                    <ShareButton self={ this } />
+                </div>
                 {this.renderBadges()}
                 {this.renderDraftNotice()}
                 {this.renderForm()}
             </Card>
-            { this.state.documents !== null && <DocumentsBlock className="mt-4"
+            { this.state.documents !== null && 
+            <DocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 
                     onNewAttachment={this.onNewAttachment.bind(this)}
@@ -362,6 +384,41 @@ class Form extends CapsPage {
                     >
             </DocumentsBlock> }
             </>;
+        }
+    }
+
+    /*
+    async approve() {
+        try {
+            const proposal = await restClient.patch(
+                `proposals/${this.state.proposal.id}`, 
+                { state: "approved" })
+            this.flashSuccess("Piano di studi approvato");
+            this.setState({ proposal });
+        } catch(e) {
+            this.flashCatch(e);
+        }
+    }
+
+    async reject() {
+        try {
+            const proposal = await restClient.patch(
+                `proposals/${this.state.proposal.id}`, 
+                { state: "rejected" })
+            this.flashDanger("Piano di studi rigettato");
+            this.setState({ proposal });
+        } catch(e) {
+            this.flashCatch(e);
+        }
+    }
+    */
+
+    async share(email) {
+        try {
+            await restClient.post(`forms/${this.state.form.id}/share`, { email });
+            this.flashSuccess(`Inviata richiesta di commento a: ${email}`);
+        } catch(e) {
+            this.flashCatch(e);
         }
     }
 

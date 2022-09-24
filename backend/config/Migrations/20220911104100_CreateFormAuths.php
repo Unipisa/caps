@@ -20,41 +20,40 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-?>
-<style>
-    table, td, tr, th {
-        text-align: left;
-        border-collapse: collapse;
-        border: 1px;
-    }
-    .proposal-tag {
-        display: inline-block;
-        border-radius: 2px;
-        border: 1px solid black;
-        padding: 1px 4px 1px 4px;
-        font-size: 80%;
-        margin-left: 6px;
-        font-weight: bold;
-    }
-</style>
+use Migrations\AbstractMigration;
 
-<?= $this->fetch('content') ?>
+class CreateFormAuths extends AbstractMigration
+{
+    /**
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * http://docs.phinx.org/en/latest/migrations.html#the-change-method
+     * @return void
+     */
+    public function change()
+    {
+        $table = $this->table('form_auths');
+        
+        $table->addColumn('form_id', 'integer', [
+            'default' => null,
+            'limit' => 11,
+            'null' => false,
+        ]);
+        $table->addColumn('email', 'string', [
+            'null' => false,
+        ]);
+        $table->addColumn('secret', 'string', [
+            'default' => null,
+            'limit' => 255,
+            'null' => false,
+        ]);
+        $table->addColumn('created', 'datetime',[
+            'default' => null,
+            'null' => null,
+        ]);
+        $table->create();
 
-<p>
-    <a href="<?= $this->Url->build('forms/view/' . $form['id'], [ 'fullBase' => true ]) ?>">Visualizza modulo</a>
-</p>
-<p>
-    Nome e cognome: <?= h($form['user']['name']) ?><br>
-    Matricola: <?= h($form['user']['number']) ?><br>
-    Modello: <?= h($form['form_template']['name']) ?><br>
-    <table>
-        <?php foreach($form['data_expanded'] as $key => $val) : ?>
-            <tr>
-                <td><?= h(str_replace("_", " ", $key)) ?>: </td>
-                <td><?= h($val) ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-    <br>
-    <?= h($settings['department']) ?><br>
-<p>
+        $table->addForeignKey('form_id', 'forms')->save();
+    }
+}

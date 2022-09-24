@@ -73,6 +73,10 @@ class FormsTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
         ]);
+        $this->hasMany('FormAuths', [
+            'foreignKey' => 'form_id',
+            'dependent' => true
+        ]);
     }
 
     /**

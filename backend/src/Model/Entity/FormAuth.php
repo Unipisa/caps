@@ -20,41 +20,39 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-?>
-<style>
-    table, td, tr, th {
-        text-align: left;
-        border-collapse: collapse;
-        border: 1px;
-    }
-    .proposal-tag {
-        display: inline-block;
-        border-radius: 2px;
-        border: 1px solid black;
-        padding: 1px 4px 1px 4px;
-        font-size: 80%;
-        margin-left: 6px;
-        font-weight: bold;
-    }
-</style>
+namespace App\Model\Entity;
 
-<?= $this->fetch('content') ?>
+use Cake\ORM\Entity;
 
-<p>
-    <a href="<?= $this->Url->build('forms/view/' . $form['id'], [ 'fullBase' => true ]) ?>">Visualizza modulo</a>
-</p>
-<p>
-    Nome e cognome: <?= h($form['user']['name']) ?><br>
-    Matricola: <?= h($form['user']['number']) ?><br>
-    Modello: <?= h($form['form_template']['name']) ?><br>
-    <table>
-        <?php foreach($form['data_expanded'] as $key => $val) : ?>
-            <tr>
-                <td><?= h(str_replace("_", " ", $key)) ?>: </td>
-                <td><?= h($val) ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-    <br>
-    <?= h($settings['department']) ?><br>
-<p>
+/**
+ * ProposalAuth Entity
+ *
+ * @property int $id
+ * @property int|null $form_id
+ * @property string|null $email
+ * @property string|null $secret
+ * @property \Cake\I18n\FrozenTime|null $created
+ *
+ * @property \App\Model\Entity\Form $form
+ * @property \App\Model\Entity\User $user
+ */
+class FormAuth extends Entity
+{
+    /**
+     * Fields that can be mass assigned using newEntity() or patchEntity().
+     *
+     * Note that when '*' is set to true, this allows all unspecified fields to
+     * be mass assigned. For security purposes, it is advised to set '*' to false
+     * (or remove it), and explicitly make individual fields accessible as needed.
+     *
+     * @var array
+     */
+    protected $_accessible = [
+        'form_id' => true,
+        'email' => true,
+        'secret' => true,
+        'created' => true,
+        'proposal' => true,
+        'user' => true,
+    ];
+}

@@ -38,7 +38,7 @@ return function (RouteBuilder $routes) {
                 'Curricula', 'Degrees', 'Documents', 
                 'Exams', 'FormAttachments', 'Forms', 'FormTemplates', 
                 'Groups', 'Proposals', 'Users', 
-                'Dashboard', 'Logs'
+                'Dashboard', 'Logs', 'FormAuths'
             ];
 
             foreach ($api_controllers as $controller) {
