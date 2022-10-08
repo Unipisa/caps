@@ -30,11 +30,17 @@ function CompulsoryExam({ engine, exam_id }) {
     })(),[engine, exam_id])
 
     if (exam === null) return <tr><td>...</td><td></td></tr>
-    return <tr><th>esame obbligatorio</th><td>{ exam.name }</td><td>{ exam.cfu }</td></tr>
+    return <tr><th>esame obbligatorio</th><td>{ exam.name }</td><td>{ exam.credits }</td><td>{ exam.code }</td><td>{ exam.sector }</td></tr>
+}
+
+function CompulsoryGroup({ engine, group }) {
+    return <tr><th>esame a scelta in un gruppo</th><td>{ group }</td></tr>
 }
 
 function ExamEntry({ engine, entry }) {
     if (entry.__t === "CompulsoryExam") return <CompulsoryExam engine={engine} exam_id={entry.exam_id} />
+    if (entry.__t === "CompulsoryGroup") return <CompulsoryGroup engine={engine} group={entry.group} />
+    if (entry.__t === "FreeChoiceExam") return <tr><th>esame a scelta libera</th></tr>
     else return <tr><td>???</td></tr>
 }
 
