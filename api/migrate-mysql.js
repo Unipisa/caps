@@ -146,7 +146,7 @@ async function importData() {
             .sort((a,b) => (b.position - a.position))
             .map(e => {
                 years[e.year-1].exams.push(new CurriculumCompulsoryExam({
-                    exam: exams[e.exam_id]._id
+                    exam_id: exams[e.exam_id]._id
                     }))
             })
         compulsory_groups.filter(g => (g.curriculum_id === element.id))

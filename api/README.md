@@ -7,7 +7,7 @@ Per provare il repository si può avviare un database mongo di prova con
 ```
 sudo docker-compose up
 ```
-che poi è possibile interrogare direttamente con ```sudo docker-compose exec mongo mongsh```,
+che poi è possibile interrogare direttamente con ```sudo docker-compose exec mongo mongosh```,
 per eventualmente controllare se sono stati inseriti i dati. 
 
 Poi, in un terminale separato:
