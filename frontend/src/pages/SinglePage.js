@@ -3,12 +3,13 @@ import {
     BrowserRouter, Routes, Route, Link
 } from "react-router-dom"
 
-import useEngine from "../modules/Engine"
+import engine from "../modules/engine"
 
 import Forms from "./Forms"
 import Degrees from "./Degrees"
 import Degree from "./Degree"
 import Curricula from "./Curricula"
+import Curriculum from "./Curriculum"
 import FormTemplates from './FormTemplates'
 import Exams from "./Exams"
 import Exam from "./Exam"
@@ -24,9 +25,8 @@ export const PageContext = React.createContext({
     flashCatch: () => {}
 });
 
-
 export default function SinglePage () {
-    const engine = useEngine()
+    engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
 
     return <>
@@ -45,6 +45,7 @@ export default function SinglePage () {
                         <Route path="/degrees" element={<Degrees engine={engine} />} />
                         <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
                         <Route path="/curricula" element={<Curricula engine={engine} />} />
+                        <Route path="/curricula/:id" element={<Curriculum engine={engine} />} />
                         <Route path="/form-templates" element={<FormTemplates engine={engine} />} />
                         <Route path="/exams/:id" element={<Exam engine={ engine } />} />
                         <Route path="/exams" element={<Exams engine={engine} />} />
