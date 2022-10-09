@@ -14,6 +14,7 @@ import FormTemplates from './FormTemplates'
 import Exams from "./Exams"
 import Exam from "./Exam"
 import Users from "./Users"
+import User from "./User"
 
 import Modal from '../components/Modal'
 import Flash from "../components/Flash"
@@ -50,6 +51,7 @@ export default function SinglePage () {
                         <Route path="/exams/:id" element={<Exam engine={ engine } />} />
                         <Route path="/exams" element={<Exams engine={engine} />} />
                         <Route path="/users" element={<Users engine={engine} />} />
+                        <Route path="/users/:id" element={<User engine={engine} />} />
                     </Routes>
                 </div>
                 <Footer />

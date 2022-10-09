@@ -46,9 +46,15 @@ const UsersController = {
         });
     }, 
 
+    view: async req => {
+        return await ModelController.view(req, {
+            Model: User, fields
+        })
+    },
+
     post: async req => {
-        const exam = new User(req.body);
-        return await exam.save();
+        const item = new User(req.body);
+        return await item.save();
     }
 }
 

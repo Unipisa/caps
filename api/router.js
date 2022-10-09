@@ -47,6 +47,7 @@ router.get('/exams/:id', response_envelope(Exams.view))
 router.get('/exams', response_envelope(Exams.index))
 router.post('/exams', response_envelope(Exams.post))
 router.get('/users', response_envelope(Users.index))
+router.get('/users/:id', response_envelope(Users.view))
 router.post('/users', response_envelope(Users.post))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
