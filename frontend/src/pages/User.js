@@ -26,9 +26,9 @@ export default function User({engine}) {
     return <>
         <Card>
         <h3>
-            { user.givenname } { user.surname } 
-            <span class="d-none d-md-inline h5 text-muted ml-2">
-                matricola: { user.number }
+            { user.first_name } <b>{ user.last_name }</b> 
+            <span className="d-none d-md-inline h5 text-muted ml-2">
+                matricola: { user.id_number }
             </span>
         </h3>
         </Card>

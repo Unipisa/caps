@@ -11,20 +11,21 @@ export default class Form extends Model {
         this.date_managed = Moment(this.date_managed)
     }
 
-    static related_fields = {
-        user: User,
-        form_template: FormTemplate
-    }
     static api_url = 'forms/'
     static table_headers = [
         {
-            field: 'user.name',
-            label: 'studente',
-            enable_link: true,
+            field: 'user_last_name',
+            label: 'cognome',
+            enable_sort: true,
         }, {   
-            field: 'form_template.name',
+            field: 'user_first_name',
+            label: 'nome',
+            enable_sort: true,
+        }, {   
+            field: 'form_template_name',
             label: "modello",
             enable_sort: true,
+            enable_link: true,
         }, {
             field: 'date_submitted',
             label: 'data invio',

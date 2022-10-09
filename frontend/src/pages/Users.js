@@ -18,7 +18,7 @@ export default function Users({engine}) {
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="username" label="username" />
-            <FilterInput name="number" label="matricola" />
+            <FilterInput name="id_number" label="matricola" />
             <FilterInput name="email" label="email" />
             <FilterCheckbox name="admin" label="admin" />
             </FilterButton>

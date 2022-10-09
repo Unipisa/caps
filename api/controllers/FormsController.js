@@ -27,6 +27,13 @@ const FormsController = {
         });
     }, 
 
+    view: async req => {
+        return await ModelController.view(req, {
+            Model: Form,
+            fields
+        })
+    },
+
     post: async req => {
         const form = new Form(req.body);
         return await form.save();

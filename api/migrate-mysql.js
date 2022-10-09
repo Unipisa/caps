@@ -17,11 +17,7 @@ function write(s) {
 }
 
 async function importData() {
-    // console.log("here")
-
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/caps')
-
-    // console.log("here1")
 
     var connection = mysql.createConnection({
         host     : process.env.MYSQL_HOST || 'localhost',
@@ -62,6 +58,9 @@ async function importData() {
     write(`caricamento ${ results.length } utenti...`);
     (await Promise.all(results.map(element => {
         element.old_id = element.id;
+        element.first_name = element.givenname
+        element.last_name = element.surname
+        element.id_number = element.number
         const u = new User(element);
         return u.save();
     }))).forEach(u => {users[u.old_id] = u})
@@ -194,10 +193,19 @@ async function importData() {
     results = await query("SELECT * FROM forms")
     write(`caricamento ${results.length} forms...`)
     await Promise.all(results.map(element => {
+        const user = users[element.user_id]
+        const form_template = form_templates[element.form_template_id]
         element.old_id = element.id
-        element.form_template_id = form_templates[element.form_template_id]
-        element.user_id = users[element.user_id]
+        element.form_template_id = form_template
+        element.user_id = user
         element.data = JSON.parse(element.data)
+        element.user_last_name = user.last_name
+        element.user_first_name = user.first_name
+        element.user_id_number = user.id_number
+        element.user_email = user.email
+        element.user_username = user.username
+        element.form_template_name = form_template.name
+
         const e = new Form(element)
         return e.save()
     }))

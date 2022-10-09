@@ -6,6 +6,7 @@ import {
 import engine from "../modules/engine"
 
 import Forms from "./Forms"
+import Form from "./Form"
 import Degrees from "./Degrees"
 import Degree from "./Degree"
 import Curricula from "./Curricula"
@@ -43,6 +44,7 @@ export default function SinglePage () {
                         <Route path="/" element={<Splash engine={engine}/>} />
                         <Route path="/index.html" element={<Splash engine={engine} />} />
                         <Route path="/forms" element={<Forms engine={engine} />} />
+                        <Route path="/forms/:id" element={<Form engine={ engine } />} />
                         <Route path="/degrees" element={<Degrees engine={engine} />} />
                         <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
                         <Route path="/curricula" element={<Curricula engine={engine} />} />

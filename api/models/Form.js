@@ -10,9 +10,27 @@ const Form = mongoose.model('Form', {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'FormTemplate'
     },
+    form_template_name: {
+        type: String,
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'   
+    },
+    user_last_name: {
+        type: String,
+    },
+    user_first_name: {
+        type: String,
+    },
+    user_id_number: {
+        type: String,
+    },
+    user_email: {
+        type: String,
+    },
+    user_username: {
+        type: String,
     },
     state: {
         type: String,

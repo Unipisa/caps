@@ -12,13 +12,13 @@ const User = mongoose.model('User', {
     name: {
         type: String
     }, 
-    number: {
+    id_number: {
         type: String
     },
-    givenname: {
+    first_name: {
         type: String
     },
-    surname: {
+    last_name: {
         type: String
     },
     email: {

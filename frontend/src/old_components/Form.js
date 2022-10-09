@@ -59,19 +59,6 @@ class Form extends React.Component {
         }
     }
 
-    compile_html(s, data, form_state, user) {
-        const user_data = {
-            'firstname': user['givenname'],
-            'lastname': user['surname'],
-            'code': user['number'],
-            'email': user['email'],
-            'username': user['username']
-        }
-
-        s = s.replace(/{\s*user\.([A-Za-z_]*)\s*}/g, (match, s) => user_data[s]);
-
-        return s;
-    }
 
     enhanceDatePickers(form) {
         Array.from(form.getElementsByClassName("datepicker")).forEach((el) => {
@@ -239,59 +226,6 @@ class Form extends React.Component {
     /**
      * Show badges for this form, such as "submitted on ...", or "approved on ...", and so on.
      */
-    renderBadges() {
-        let badges = [];
-
-        if (! this.state.form)
-            return badges;
-
-        if (this.state.form.date_submitted) {
-            badges.push(<span key="submitted-badge" className="badge badge-secondary mr-2 mb-2">
-                Inviato il {this.state.form.date_submitted}
-            </span>);
-        }
-
-        if (this.state.form.state == "approved") {
-            badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-                Approvato il {this.state.form.date_managed}
-            </span>);
-        }
-
-        if (this.state.form.state == "rejected") {
-            badges.push(<span key="rejected-badge" className="badge badge-danger mr-2 mb-2">
-                Rifiutato il {this.state.form.date_managed}
-            </span>);
-        }
-
-        if (! this.state.form_template.require_approval) {
-            badges.push(<span key="no-approval-badge" className="badge badge-success mr-2 mb-2">
-                Questo modulo non richiede l'approvazione
-            </span>);
-        }
-
-        return badges;
-    }
-
-    /*
-     * If the form is in a draft state, and we are in the view action, then show a warning
-     * for the user, as he/she needs to submit the form before it can be properly evaluated.
-     */
-    renderDraftNotice() {
-        if ( (!this.props.edit) && this.state.form && this.state.form.state == "draft") {
-            return <div className="card shadow border-left-warning mb-2">
-                <div className="card-body">
-                    <p>Questo modulo è una bozza: è necessario modificarlo ed inviarlo perché venga valutato.</p>
-                    <a href={"../edit/" + this.state.form.id}>
-                        <button className="btn btn-primary btn-sm">Modifica</button>
-                    </a>
-                </div>
-            </div>;
-        }
-        else {
-            return [];
-        }
-    }
-
     render() {
         if (this.state.form_template === null) {
             return <Card>

@@ -1,5 +1,5 @@
-const ModelController = require('./ModelController');
-const User = require('../models/User');
+const ModelController = require('./ModelController')
+const User = require('../models/User')
 
 const fields = { 
     "username": { 
@@ -12,16 +12,16 @@ const fields = {
         can_sort: true,
         match_regex: q => new RegExp(q, "i")
     },  
-    "number": { 
+    "id_number": { 
         can_filter: true, 
         can_sort: true
     }, 
-    "givenname": { 
+    "first_name": { 
         can_filter: true,
         can_sort: true,
         match_regex: q => new RegExp(q, "i")
     }, 
-    "surname": {
+    "last_name": {
         can_filter: true,
         can_sort: true, 
         match_regex: q => new RegExp(q, "i")
@@ -34,9 +34,8 @@ const fields = {
     "admin": {
         can_filter: true,
         can_sort: true
-    }};
-
-
+    }
+}
 
 const UsersController = {
 

@@ -13,7 +13,7 @@ export default function FormTemplate({ engine }) {
 
     useEffect(async () => {
         try {
-            const new_form_template = await api.get(`form_template/${id}`)
+            const new_form_template = await api.get(`form_templates/${id}`)
             setFormTemplate(new_form_template)
         } catch(err) {
             engine.flashCatch(err);

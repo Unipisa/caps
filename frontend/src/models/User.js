@@ -4,7 +4,7 @@ export default class User extends Model {
     static api_url = 'users/';
     static table_headers = [
         {   
-            field: 'number',
+            field: 'id_number',
             label: "Matricola",
             enable_link: true,
             enable_sort: true
@@ -18,12 +18,12 @@ export default class User extends Model {
             label: "Email",
             enable_sort: true
         }, {   
-            field: 'surname',
+            field: 'last_name',
             label: "Cognome",
             enable_link: true,
             enable_sort: true
         }, {   
-            field: 'givenname',
+            field: 'first_name',
             label: "Nome",
             enable_link: true,
             enable_sort: true
@@ -31,7 +31,7 @@ export default class User extends Model {
             field: 'admin',
             label: "Ruolo"
         }];
-    static sort_default = 'surname';
+    static sort_default = 'last_name';
     static sort_default_direction = 1;
 
     render_table_field(field) {
