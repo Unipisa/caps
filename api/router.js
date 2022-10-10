@@ -7,6 +7,7 @@ const Degrees = require('./controllers/DegreesController')
 const Curricula = require('./controllers/CurriculaController')
 const FormTemplates = require('./controllers/FormTemplates')
 const Forms = require('./controllers/FormsController')
+const Proposals = require('./controllers/ProposalsController')
 
 // JSON parsing middleware
 router.use(express.json())
@@ -30,10 +31,9 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
-router.get('/', response_envelope(req => "Hello there!"));
-
-// Exams routes
-router.get('/error', test_error)
+router.get('/', response_envelope(req => "Hello there!"))
+router.get('/proposals', response_envelope(Proposals.index))
+router.get('/proposals/:id', response_envelope(Proposals.view))
 router.get('/forms', response_envelope(Forms.index))
 router.get('/forms/:id', response_envelope(Forms.view))
 router.get('/degrees', response_envelope(Degrees.index))

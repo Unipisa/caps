@@ -1,15 +1,23 @@
-let mysql      = require('mysql2')
+let mysql = require('mysql2')
 let Exam = require('./models/Exam')
 let User = require('./models/User')
 let Degree = require('./models/Degree')
 let Curriculum = require('./models/Curriculum')
 let FormTemplate = require('./models/FormTemplate')
 let Form = require('./models/Form')
+let Proposal = require('./models/Proposal')
 
 let {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
         CurriculumFreeChoiceGroup, 
         CurriculumFreeChoiceExam } = require('./models/CurriculumExam')
+let {   ProposalCompulsoryExam,
+        ProposalCompulsoryGroup,
+        ProposalFreeChoiceExam,
+        ProposalExternalExam,
+        ProposalAuthAttachment,
+        ProposalFileAttachment,
+        ProposalCommentAttachment } = require('./models/ProposalSchema')
 let mongoose = require('mongoose')
 
 function write(s) {
@@ -132,10 +140,11 @@ async function importData() {
 
     // import curricula
     write("> Curricula")
+    curricula = {}
     await Curriculum.deleteMany({}) // Drop all data
     results = await query("SELECT * FROM curricula")
     write(`caricamento ${ results.length } curricula...`);
-    await Promise.all(results.map(element => {
+    (await Promise.all(results.map(element => {
         element.old_id = element.id;
         console.assert(element.credits_per_year.includes(","), element)
         const credits = element.credits_per_year.split(',').map(x => parseInt(x))
@@ -170,6 +179,123 @@ async function importData() {
         element.degree_id = degrees[element.degree_id]
         const e = new Curriculum(element);
         return e.save();
+    }))).map(c => {curricula[c.old_id] = c})
+
+    write("| ProposalExams")
+    chosen_exams = await query("SELECT * FROM chosen_exams")
+    chosen_free_choice_exams = await query("SELECT * FROM chosen_free_choice_exams")
+
+    write("| ProposalAuths")
+    proposal_auths = await query("SELECT * FROM proposal_auths")
+
+    // import proposals
+    write("> Proposals")
+    await Proposal.deleteMany({}) // Drop all data
+    results = await query("SELECT * FROM proposals")
+    write(`caricamento ${results.length} proposals...`)
+    await Promise.all(results.map(async element => {
+        const user = users[element.user_id]
+        const curriculum = curricula[element.curriculum_id]
+
+        element.old_id = element.id
+        element.state = element.state
+        element.curriculum_id = curricula[element.curriculum_id]
+
+        element.date_modified = element.modified
+        element.date_submitted = element.submitted_date
+        element.date_managed = element.approved_date
+
+        element.user_id = users[element.user_id]
+        element.user_last_name = user.last_name
+        element.user_first_name = user.first_name
+        element.user_id_number = user.id_number
+        element.user_email = user.email 
+        element.user_username = user.username
+
+        element.degree_name = curriculum.degree_id.name
+
+        element.exams = []
+
+        /* not working yet!
+
+        chosen_exams.filter(e => (e.proposal_id === element.old_id))
+        .forEach(e => {
+            exam = exams[e.exam_id]
+            console.assert(e.exam_id === exam.old_id)
+            data = {
+                exam_id: exam._id,
+                exam_name: exam.name,
+                exam_code: exam.code,
+                exam_credits: exam.credits,
+                year: e.chosen_year,
+            }
+            if (e.compulsory_exam_id) {
+                element.exams.push(new ProposalCompulsoryExam({
+                    ...data
+                }))
+            } else if (e.compulsory_group_id) {
+                element.exams.push(new ProposalCompulsoryGroup({
+                    ...data,
+                    group: group_by_id(e.compulsory_group_id).name
+                }))
+            } else if (e.free_choice_exam_id) {
+                element.exams.push(new ProposalFreeChoiceExam({
+                    ...data
+                }))
+            } else {
+                element.exams.push(new ProposalFreeChoiceExam({
+                    ...data
+                }))
+            }
+        })
+
+        chosen_free_choice_exams.filter(e => (e.proposal_id === element.old_id))
+            .forEach(e => {
+                element.exams.push(new ProposalExternalExam({
+                    exam_name: e.name,
+                    exam_credits: e.credits,
+                    year: e.chosen_year,
+                }))
+            })
+
+        element.attachments = []
+
+        proposal_auths.filter(p => (p.proposal_id === element.old_id))
+            .forEach(p => {
+                element.attachments.push(new ProposalAuthAttachment({
+                    email: p.email,
+                    secret: p.secret,
+                    date_created: p.created
+                }))
+            })
+
+        q = await query(`SELECT * FROM attachments WHERE proposal_id=${element.old_id}`)
+        q.foreach(a => {
+                if (a.filename) {
+                    element.attachments.push(new ProposalFileAttachment({
+                        filename: a.filename,
+                        data: a.data,
+                        mimetype: a.mimetype,
+                        comment: a.comment,
+                        date_created: a.date
+                    }))
+                } else {
+                    element.attachments.push(new ProposalCommentAttachment({
+                        comment: a.comment,
+                        date_created: a.date
+                    }))
+                }
+            })
+
+        element.attachments.sort((a,b) => {
+            if (a.date_created < b.date_created) return 1
+            if (a.date_created === b.date_created) return 0
+            return -1
+        })
+
+        */
+        const e = new Proposal(element)
+        return e.save()
     }))
 
     // import form_templates

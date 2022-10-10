@@ -36,6 +36,9 @@ const Form = mongoose.model('Form', {
         type: String,
         enum: ['draft', 'submitted', 'approved', 'rejected'],
     }, 
+    date_modified: {
+        type: Date,
+    },
     date_submitted: {
         type: Date,
     },
