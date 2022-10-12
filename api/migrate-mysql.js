@@ -199,7 +199,8 @@ async function importData() {
 
         element.old_id = element.id
         element.state = element.state
-        element.curriculum_id = curricula[element.curriculum_id]
+        element.curriculum_id = curriculum
+        element.curriculum_name = curriculum.name
 
         element.date_modified = element.modified
         element.date_submitted = element.submitted_date
@@ -208,11 +209,13 @@ async function importData() {
         element.user_id = users[element.user_id]
         element.user_last_name = user.last_name
         element.user_first_name = user.first_name
+        element.user_name = user.name
         element.user_id_number = user.id_number
         element.user_email = user.email 
         element.user_username = user.username
 
         element.degree_name = curriculum.degree_id.name
+        element.degree_academic_year = curriculum.degree_id.academic_year
 
         element.exams = []
 

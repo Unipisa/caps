@@ -6,6 +6,7 @@ import {
 import engine from "../modules/engine"
 
 import Proposals from "./Proposals"
+import Proposal from "./Proposal"
 import Forms from "./Forms"
 import Form from "./Form"
 import Degrees from "./Degrees"
@@ -45,7 +46,7 @@ export default function SinglePage () {
                         <Route path="/" element={<Splash engine={engine}/>} />
                         <Route path="/index.html" element={<Splash engine={engine} />} />
                         <Route path="/proposals" element={<Proposals engine={engine} />} />
-                        {/*<Route path="/proposals/:id" element={<Proposal engine={ engine } />} />*/}
+                        <Route path="/proposals/:id" element={<Proposal engine={ engine } />} />
                         <Route path="/forms" element={<Forms engine={engine} />} />
                         <Route path="/forms/:id" element={<Form engine={ engine } />} />
                         <Route path="/degrees" element={<Degrees engine={engine} />} />

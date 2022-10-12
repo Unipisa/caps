@@ -16,16 +16,13 @@ export default class Proposal extends Model {
             label: 'stato',
         },
         {
-            field: 'user_last_name',
-            label: 'cognome',
+            field: 'user_name',
+            label: 'studente',
             enable_sort: true,
-        }, {   
-            field: 'user_first_name',
-            label: 'nome',
-            enable_sort: true,
+            enable_link: true,
         }, 
         {
-            field: 'curriculum_year',
+            field: 'degree_academic_year',
             label: 'anno',
             enable_sort: true,
         }, {
@@ -36,7 +33,6 @@ export default class Proposal extends Model {
             field: 'curriculum_name',
             label: "piano di studio",
             enable_sort: true,
-            enable_link: true,
         }, {
             field: 'date_submitted',
             label: 'data invio',

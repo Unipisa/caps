@@ -5,6 +5,18 @@ const fields = {
     "state": {
         can_filter: true,
     },
+    date_managed: {
+        can_filter: true,
+        can_sort: true,
+    },
+    date_submitted: {
+        can_filter: true,
+        can_sort: true,
+    },
+    date_modified: {
+        can_filter: true,
+        can_sort: true,
+    },    
     "user_last_name": {
         can_filter: true,
         can_sort: true,
@@ -15,9 +27,18 @@ const fields = {
         can_sort: true,
         match_regex: q => new RegExp(q, "i")
     }, 
+    "user_name": {
+        can_filter: true,
+        can_sort: true,
+        match_regex: q => new RegExp(q, "i")
+    }, 
     "curriculum_year": {
         can_filter: true,
         can_sort: true 
+    },
+    "curriculum_name": {
+        can_filter: true,
+        can_sort: true
     },
     "degree_name": {
         can_filter: true,
@@ -25,26 +46,26 @@ const fields = {
     }
 };
 
-const CurriculaController = {
+const ProposalsController = {
 
     index: async req => {
         return await ModelController.index(req, {
-            Model: Curriculum,
+            Model: Proposal,
             fields
         });
     }, 
 
     view: async req => {
         return await ModelController.view(req, {
-            Model: Curriculum,
+            Model: Proposal,
             fields
         })
     },
 
     post: async req => {
-        const curriculum = new Curriculum(req.body);
-        return await curriculum.save();
+        const proposal = new Proposal(req.body);
+        return await proposal.save();
     }
 }
 
-module.exports = CurriculaController;
+module.exports = ProposalsController;

@@ -18,7 +18,7 @@ ProposalSchema = new mongoose.Schema({
     curriculum_name: {
         type: String,
     },
-    curriculum_year: {
+    degree_academic_year: {
         type: Number,
     },
     degree_name: {
@@ -32,6 +32,9 @@ ProposalSchema = new mongoose.Schema({
         type: String,
     },
     user_first_name: {
+        type: String,
+    },
+    user_name: {
         type: String,
     },
     user_id_number: {

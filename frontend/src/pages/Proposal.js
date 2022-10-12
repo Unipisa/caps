@@ -25,7 +25,7 @@ export default function Proposal({ engine }) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     }
     
-    return <Card title="Piano di studi">
+    return <Card title={`Piano di studi di ${proposal.user_first_name} ${proposal.user_last_name}`}>
         ...
     </Card>;
 }
