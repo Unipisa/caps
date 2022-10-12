@@ -12,7 +12,7 @@ per eventualmente controllare se sono stati inseriti i dati.
 
 Poi, in un terminale separato:
 ```bash
-npm update # una tantum
+npm ci # una tantum
 npm start
 ```
 Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
@@ -20,6 +20,7 @@ Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
 Per compilare e tenere aggiornato il codice javascript durante lo sviluppo:
 ```bash
 cd frontend
+npm ci # una tantum
 npm run watch:dev
 ```
 

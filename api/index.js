@@ -11,8 +11,8 @@ const port = process.env.PORT || 3000;
 app.use('/api/v0/', router);
 
 app.use('/js/', express.static('../frontend/js'));
-app.use('/img/', express.static('../backend/webroot/img'));
-app.use('/favicon.ico', express.static('../backend/webroot/favicon.ico'));
+app.use('/img/', express.static('./webroot/img'));
+app.use('/favicon.ico', express.static('./webroot/favicon.ico'));
 
 const spa = (req, res) => res.sendFile(path.join(__dirname, "../frontend/index.html"))
 app.use("/", spa)
