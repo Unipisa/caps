@@ -60,25 +60,11 @@ $ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v
 ```
 # import dati da mysql
 
-ottieni l'indirizzo IP della macchina docker remota:
+Devi avere una chiave SSH per entrare sul server CAPS.
+Allora puoi dare il comando:
 ```bash
-REMOTE_IP=$( ssh root@caps.dm.unipi.it docker inspect capsmatematica_caps-db_1 | grep IPAddress | tail -1 | cut -f4 -d\" )
+bash migrate-mysql.sh
 ```
-apri un tunnel ssh (blocca il terminale):
-```bash
-ssh -L 3306:${REMOTE_IP}:3306 root@caps.dm.unipi.it cat
-```
-
-su un altro terminale 
-ottieni la password del database:
-```bash
-export MYSQL_PASSWORD=$( ssh root@caps.dm.unipi.it "grep CAPS_DB_PASSWORD docker/caps-matematica/caps.env" | cut -f2 -d= )
-```
-e avvia lo script di importazione
-```bash
-node migrate-mysql.js
-```
-
 # struttura dei dati
 
 Possibili princìpi da seguire:
