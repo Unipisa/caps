@@ -64,6 +64,10 @@ class FormsController extends AppController
             $data = $this->request->getData();
             $form = $this->Forms->patchEntity($form, $data);
             $form->user_id = $this->user['id'];
+
+            $form_template = $this->Forms->FormTemplates->get($form['form_template_id']);
+            $form->template_text = $form_template['text'];
+
             if ($data['action'] == 'submit') {
                 $form->date_submitted = Time::now();
                 $form->state = "submitted";

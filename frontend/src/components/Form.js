@@ -47,7 +47,12 @@ class Form extends CapsPage {
         if (form === null && this.props.id !== undefined) {
             form = await restClient.get(`forms/${this.props.id}`);
             form_template = form.form_template;
-            html = this.compile_html(form_template.text, form.data, form.state, form.user);
+            // We reload the template for drafts, but we use the one at "save-time"
+            // for submitted forms. 
+            html = this.compile_html(
+                this.props.edit ? form_template.text : form.template_text, 
+                form.data, form.state, form.user
+            );
             // this.loadDocuments(form.id);
         }
         if (form_template === null && this.props.form_template_id) {

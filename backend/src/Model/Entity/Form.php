@@ -41,6 +41,7 @@ class Form extends Entity
         'data' => true,
         'state' => true,
         'date_submitted' => true,
-        'date_managed' => true
+        'date_managed' => true,
+        'template_text' => true
     ];
 }
