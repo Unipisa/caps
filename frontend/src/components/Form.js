@@ -57,8 +57,12 @@ class Form extends CapsPage {
         if (form_template === null && form_templates === null) {
             form_templates = await restClient.get('form_templates', { 'enabled': true });            
         }
-        this.setState({form, form_template, form_templates, html});
-        this.loadDocuments(form.id);
+
+        this.setState({form, form_template, form_templates, html}, () => {
+            if (form && form.id)
+                this.loadDocuments(form.id);
+        });
+        
     }
 
     async loadDocuments(form_id) {

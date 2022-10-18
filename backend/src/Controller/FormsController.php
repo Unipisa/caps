@@ -174,16 +174,30 @@ class FormsController extends AppController
     {
         $email = new Email();
 
+        $form_data = json_decode($form['data'], true);
+
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(
-            function ($address) {
-                return trim($address);
+            function ($address) use ($form_data) {
+                $address = trim($address);
+
+                if ($address && $address[0] == '$') {
+                    // Try to find the field in the form data for the substituion
+                    $key = substr($address, 1);
+                    if (array_key_exists($key, $form_data)) {
+                        return trim($form_data[$key]);
+                    }
+                }
+
+                return $address;
             },
             explode(',', $form['form_template']['notify_emails'])
         );
+
         $cc_addresses = array_filter($cc_addresses, function ($address) {
             return trim($address) != "";
         });
+
         if (count($cc_addresses) > 0) {
             $email->addCc($cc_addresses);
         }
@@ -202,7 +216,7 @@ class FormsController extends AppController
             $this->log("User " . $form['user']['username'] . " has no email");
             return False;
         }
-        $email = $this->createEmail($form)
+        $email = $this->createEmail($form)        
             ->setTo($form['user']['email'])
             ->setSubject($subject . ": " . $form['form_template']['name']);
         $email->viewBuilder()->setTemplate($template_name);
