@@ -30,7 +30,7 @@ jobs:
         id: meta
         uses: crazy-max/ghaction-docker-meta@v2
         with:
-          images: registry.cs.dm.unipi.it/getcaps/caps
+          images: registry.cs.dm.unipi.it/caps/caps
           tags: |
             type=ref,event=tag
             type=ref,event=branch
