@@ -328,7 +328,7 @@ class Form extends CapsPage {
 
         if (this.state.form.state == "approved") {
             badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-                Approvato in data { Moment(item.date_managed).format("DD/MM/YYYY") }
+                Approvato in data { Moment(this.state.form.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 
