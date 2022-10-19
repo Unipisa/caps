@@ -35,18 +35,19 @@ class Logs extends ItemsBase {
             <h1>Azioni</h1>
             <Card>
                 <div className="d-flex mb-2">
-                    <FilterButton onChange={ this.onFilterChange.bind(this) }>
-                        <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
-                            <option value="">tutti</option> 
-                            <option value="draft">bozze</option>
-                            <option value="submitted">da valutare</option>
-                            <option value="approved">approvati</option>
-                            <option value="rejected">rifiutati</option>
-                        </FilterSelect>
-                        <FilterInput name="user.surname" label="cognome" value={ this.state.query.surname || ""}/>
-                        <FilterInput name="form_template.name" label="modello" value={ this.state.query['form_template.name'] || ""} />
-                    </FilterButton>
-
+                  {
+                  //  <FilterButton onChange={ this.onFilterChange.bind(this) }>
+                  //      <FilterSelect name="state" label="stato" value={ this.state.query.state || ""}>
+                  //          <option value="">tutti</option> 
+                  //          <option value="draft">bozze</option>
+                  //          <option value="submitted">da valutare</option>
+                  //          <option value="approved">approvati</option>
+                  //          <option value="rejected">rifiutati</option>
+                  //      </FilterSelect>
+                  //      <FilterInput name="user.surname" label="cognome" value={ this.state.query.surname || ""}/>
+                  //      <FilterInput name="form_template.name" label="modello" value={ this.state.query['form_template.name'] || ""} />
+                  //  </FilterButton>
+                  }
                     <div className="flex-fill"></div>
 
                 </div>
