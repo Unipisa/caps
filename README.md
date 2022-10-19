@@ -5,6 +5,6 @@ Questo repository contiene CAPS, il portale utilizzato per sottomettere ed appro
 presso il Dipartimento di Matematica, Università di Pisa.
 
 Per informazioni sullo sviluppo di CAPS, si veda [DEVELOP.md](DEVELOP.md). È possibile provare 
-ad utilizzare CAPS anche tramite le immagini [Docker](https://hub.docker.com/r/getcaps/caps), 
+ad utilizzare CAPS anche tramite le immagini [Docker](https://github.com/unipisa/caps/pkg/container/caps), 
 per cui sono disponibile [istruzioni specifiche](https://github.com/Unipisa/caps/blob/develop/docker/README.md). 
 

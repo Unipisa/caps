@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   caps:
-    image: getcaps/caps:master
+    image: ghcr.io/unipisa/caps:master
     container_name: caps
     ports:
       - 80:80

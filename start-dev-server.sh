@@ -96,7 +96,7 @@ if [ "$VARIANT" = "" ]; then
   VARIANT="dev"
 fi
 
-sudo docker build -t getcaps/caps:develop .
+sudo docker build -t ghcr.io/caps/caps:develop .
 ${DOCKERCOMPOSE} -f docker/docker-compose-$VARIANT.yml up &
 
 echo "Node Configuration"
