@@ -28,6 +28,7 @@ use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
 use Cake\Mailer\Email;
+use Cake\Validation\Validation;
 
 
 class FormsController extends AppController
@@ -198,8 +199,9 @@ class FormsController extends AppController
             explode(',', $form['form_template']['notify_emails'])
         );
 
+        // We only select valid email addresses, the remaining are ignored.
         $cc_addresses = array_filter($cc_addresses, function ($address) {
-            return trim($address) != "";
+            return Validation::email($address);
         });
 
         if (count($cc_addresses) > 0) {
