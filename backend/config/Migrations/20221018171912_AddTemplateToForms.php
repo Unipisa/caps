@@ -23,8 +23,14 @@ class AddTemplateToForms extends AbstractMigration
 
         $table->update();
 
-        // FIXME: This does not work on SQLite
-        $this->execute('UPDATE forms, form_templates set forms.template_text=form_templates.text WHERE forms.form_template_id=form_templates.id');
+        $conn = $this->getAdapter()->getConnection();
+        if ($conn->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql") {
+            $this->execute('UPDATE forms, form_templates set forms.template_text=form_templates.text WHERE forms.form_template_id=form_templates.id');
+        }
+        else {
+            // The SQLite version of the above            
+            $this->execute('UPDATE forms set template_text=(SELECT form_templates.text FROM form_templates WHERE forms.form_template_id=form_templates.id)');
+        }
     }
 
     public function down() 
