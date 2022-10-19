@@ -1,7 +1,3 @@
-docker/id_rsa
-docker/database
-docker/caps.env
-docker/logs/
 api/webroot/css/style.min.css
 api/webroot/js/caps.js.version
 api/webroot/js/caps.min.js.version
@@ -11,6 +7,5 @@ api/webroot/js/caps-*.min.js
 api/webroot/js/ver
 api/webroot/css/style.min.css.map
 api/webroot/node_modules
-caps.sqlite
-node_modules
-node-v*
+api/node_modules
+db

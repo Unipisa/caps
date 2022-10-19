@@ -1,7 +1,4 @@
-# Prototipo di CAPS API
-
-Questa cartella contiene un prototipo di API per CAPS usando Mongo + Express, che 
-potrebbero (in prospettiva) sostituire CakePHP. 
+# Nuovo sviluppo CAPS api+react
 
 Per provare il repository si può avviare un database mongo di prova con 
 ```
@@ -10,21 +7,25 @@ sudo docker-compose up
 che poi è possibile interrogare direttamente con ```sudo docker-compose exec mongo mongosh```,
 per eventualmente controllare se sono stati inseriti i dati. 
 
-Poi, in un terminale separato:
+# import dati da mysql
+
+Devi avere una chiave SSH per entrare sul server CAPS.
+Allora puoi dare il comando:
 ```bash
+bash migrate-mysql.sh
+```
+
+# avvio server side
+
+Il codice del server si trova nella cartella `api`.
+Avviare il server da un terminale
+
+```bash
+cd api
 npm ci # una tantum
 npm start
 ```
 Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
-
-Per compilare e tenere aggiornato il codice javascript durante lo sviluppo:
-```bash
-cd frontend
-npm ci # una tantum
-npm run watch:dev
-```
-
-Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/
 
 Per testare le API si può usare una applicazione 
 come `postman`. 
@@ -57,15 +58,21 @@ $ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v
     }
   ]
 }
-
 ```
-# import dati da mysql
 
-Devi avere una chiave SSH per entrare sul server CAPS.
-Allora puoi dare il comando:
+# avvio lato client
+
+Il codice `react` del client si trova nella cartella `frontend`.
+
+Per compilare e tenere aggiornato il codice javascript durante lo sviluppo:
 ```bash
-bash migrate-mysql.sh
+cd frontend
+npm ci # una tantum
+npm run watch:dev
 ```
+
+Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/
+
 # struttura dei dati
 
 Possibili princìpi da seguire:
