@@ -33,24 +33,25 @@ jobs:
         id: meta
         uses: crazy-max/ghaction-docker-meta@v2
         with:
-          images: getcaps/caps
+          images: registry.cs.dm.unipi.it/getcaps/caps
           tags: |
             type=ref,event=tag
             type=ref,event=branch
             type=semver,pattern={{version}}
-      - name: Login to DockerHub
+      - name: Login to Docker Registry
         uses: docker/login-action@v1 
         if: ${{ github.event_name != 'pull_request' }}
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.REGISTRY_CS_USERNAME }}
+          password: ${{ secrets.REGISTRY_CS_PASSWORD }}
+          registry: registry.cs.dm.unipi.it
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         if: ${{ github.event_name != 'pull_request' }}
         with:
           push: true
-          cache-from: type=registry,ref=getcaps/caps:develop
+          cache-from: type=registry,ref=registry.cs.dm.unipi.it/getcaps/caps:develop
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Trigger update on Watchtower
