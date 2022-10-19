@@ -17,7 +17,8 @@ class AddTemplateToForms extends AbstractMigration
         $table = $this->table('forms');
 
         $table->addColumn('template_text', 'text', [
-            'default' => null
+            'default' => null,
+            'null' => false,
         ]);
 
         $table->update();
