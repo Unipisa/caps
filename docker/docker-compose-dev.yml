@@ -24,11 +24,6 @@ services:
     environment:
       # Enable DebugKit on the development server
       DEBUG: "true"
-      CAPS_DB_DRIVER: "Mysql"
-      CAPS_DB_HOST: "caps-db"
-      CAPS_DB_USERNAME: "caps"
-      CAPS_DB_PASSWORD: "secret"
-      CAPS_DB_DATABASE: "caps"
     security_opt:
       - apparmor:unconfined
       - seccomp:unconfined
@@ -40,13 +35,10 @@ services:
   caps-db:
     image: mysql:8
     container_name: caps-db
+    env_file:
+      - caps.env
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes: 
       - ./database:/var/lib/mysql
-    environment:
-      - MYSQL_USER=caps
-      - MYSQL_PASSWORD=secret
-      - MYSQL_DATABASE=caps
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
     cap_add:
       - SYS_NICE  # CAP_SYS_NICE to avoid mbind messages in the log. 

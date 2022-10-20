@@ -65,6 +65,8 @@ class FormsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Timestamp');
+
         $this->belongsTo('FormTemplates', [
             'foreignKey' => 'form_template_id',
             'joinType' => 'INNER',
