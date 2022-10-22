@@ -12,17 +12,11 @@ export default function Proposal() {
     const { id } = useParams()
     const [ proposal, setProposal ] = useState(null)
     const edit = false
-
-    useEffect(() => (async () => {
-        try {
-            const got_proposal = await api.get(`proposals/${id}`)
-            setProposal(got_proposal)
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    })(), [ setProposal, engine ])
+    const engine = useEngine()
+    const query = engine.useGet('proposals', id)
 
     if (proposal === null) {
+        if (query.isSuccess) setProposal(query.data)
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     }
     

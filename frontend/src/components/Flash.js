@@ -3,10 +3,10 @@ import Card from "./Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-function FlashCard(props) {
-    return <Card className={`border-left-${props.className} mb-2`} onClick={props.onClick}>
+function FlashCard({className, message, onClick}) {
+    return <Card className={`border-left-${className} mb-2`} onClick={onClick}>
         <div className="d-flex align-middle">
-            <div className="mr-auto">{props.message}</div>
+            <div className="mr-auto">{message}</div>
             <div className="align-middle" style={{ cursor: 'pointer' }}>
                 <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
             </div>

@@ -9,19 +9,13 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
 export default function User() {
-    engine = useEngine()
-    const { id } = useParams();
-    const [ user, setUser ] = useState(null);
-
-    useEffect(async () => {
-        try {
-            setUser(await api.get(`users/${id}`))
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ id ])
+    const { id } = useParams()
+    const [ user, setUser ] = useState(null)
+    const engine = useEngine()
+    const query = engine.useGet('users', id)
 
     if (user === null) {
+        if (query.isSuccess) setUser(query.data)
         return <LoadingMessage>caricamento utente...</LoadingMessage>
     }
 

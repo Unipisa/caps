@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from './modules/engine'
+import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
-function Group({ engine, name, exam_ids }) {
+function Group({ name, exam_ids }) {
     const engine = useEngine()
     const [ exams, setExams ] = useState(null);
 
