@@ -6,19 +6,19 @@ import {
 import engine from "../modules/engine"
 import {useCreateEngine, EngineProvider} from '../modules/engine'
 
-import Proposals from "./Proposals"
-import Proposal from "./Proposal"
-import Forms from "./Forms"
-import Form from "./Form"
-import Degrees from "./Degrees"
-import Degree from "./Degree"
-import Curricula from "./Curricula"
-import Curriculum from "./Curriculum"
-import FormTemplates from './FormTemplates'
-import Exams from "./Exams"
-import Exam from "./Exam"
-import Users from "./Users"
-import User from "./User"
+import ProposalsPage from "./ProposalsPage"
+import ProposalPage from "./ProposalPage"
+import FormsPage from "./FormsPage"
+import FormPage from "./FormPage"
+import DegreesPage from "./DegreesPage"
+import DegreePage from "./DegreePage"
+import CurriculaPage from "./CurriculaPage"
+import CurriculumPage from "./CurriculumPage"
+import FormTemplatesPage from './FormTemplatesPage'
+import ExamsPage from "./ExamsPage"
+import ExamPage from "./ExamPage"
+import UsersPage from "./UsersPage"
+import UserPage from "./UserPage"
 
 import Modal from '../components/Modal'
 import Flash from "../components/Flash"
@@ -47,19 +47,19 @@ function SinglePageInternal () {
                         <Routes>
                             <Route path="/" element={<Splash/>}/>
                             <Route path="/index.html" element={<Splash/>}/>
-                            <Route path="/proposals" element={<Proposals/>}/>
-                            <Route path="/proposals/:id" element={<Proposal/>}/>
-                            <Route path="/forms" element={<Forms/>}/>
-                            <Route path="/forms/:id" element={<Form/>}/>
-                            <Route path="/degrees" element={<Degrees/>}/>
-                            <Route path="/degrees/:id" element={<Degree/>}/>
-                            <Route path="/curricula" element={<Curricula/>}/>
-                            <Route path="/curricula/:id" element={<Curriculum/>}/>
-                            <Route path="/form-templates" element={<FormTemplates/>}/>
-                            <Route path="/exams/:id" element={<Exam/>}/>
-                            <Route path="/exams" element={<Exams/>}/>
-                            <Route path="/users" element={<Users/>}/>
-                            <Route path="/users/:id" element={<User/>}/>
+                            <Route path="/proposals" element={<ProposalsPage/>}/>
+                            <Route path="/proposals/:id" element={<ProposalPage/>}/>
+                            <Route path="/forms" element={<FormsPage/>}/>
+                            <Route path="/forms/:id" element={<FormPage/>}/>
+                            <Route path="/degrees" element={<DegreesPage/>}/>
+                            <Route path="/degrees/:id" element={<DegreePage/>}/>
+                            <Route path="/curricula" element={<CurriculaPage/>}/>
+                            <Route path="/curricula/:id" element={<CurriculumPage/>}/>
+                            <Route path="/form-templates" element={<FormTemplatesPage/>}/>
+                            <Route path="/exams/:id" element={<ExamPage/>}/>
+                            <Route path="/exams" element={<ExamsPage/>}/>
+                            <Route path="/users" element={<UsersPage/>}/>
+                            <Route path="/users/:id" element={<UserPage/>}/>
                         </Routes>
                     </div>
                     <Footer/>

@@ -1,35 +1,37 @@
 'use strict';
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
 
-export default function QueryTable({ Model, children }) {
-    const [ query, setQuery ] = useState({});
 
-    return <>
-        <div className="d-flex mb-2">
-        { React.Children.map(children, child => {
-            if (React.isValidElement(child)) {
-                return React.cloneElement(child, { query, setQuery })
-            }
-            return child;
-        })}
-        </div>
-        <FilterBadges query={ query } setQuery={ setQuery } />
-        <div className="table-responsive-lg">
-            <Table
-                query={ query }
-                Model={ Model }
-                />
-        </div>
-    </>
+export const QueryTableContext = createContext(null)
+
+export const QueryTableProvider = QueryTableContext.Provider
+  
+export function useQuery() {
+    return useContext(QueryTableContext)
 }
 
-function FilterBadges({ query, setQuery }) {
+export default function QueryTable({ Model, children }) {
+    const [ query, setQuery ] = useState({})
+
+    return <QueryTableProvider value={{query, setQuery}}>
+        <div className="d-flex mb-2">
+            {children}
+        </div>
+        <FilterBadges/>
+        <div className="table-responsive-lg">
+            <Table Model={ Model }/>
+        </div>
+    </QueryTableProvider>
+}
+
+function FilterBadges() {
+    const { query, setQuery } = useQuery()
     function onRemoveField(field) {
         let new_query = {...query};
         delete new_query[field];
@@ -53,12 +55,19 @@ function FilterBadges({ query, setQuery }) {
         </div>
 }
 
-function Table({ Model, query }) {
+function Table({ Model }) {
     const engine = useEngine()
-    const [ limit, setLimit ] = useState(10);
-    const [ sort, setSort ] = useState(Model.sort_default);
-    const [ direction, setDirection ] = useState(Model.sort_default_direction);
-    const [ data, setData ] = useState(null);
+    const { query } = useQuery()
+    const [ limit, setLimit ] = useState(10)
+    const [ sort, setSort ] = useState(Model.sort_default)
+    const [ direction, setDirection ] = useState(Model.sort_default_direction)
+    const [ data, setData ] = useState(null)
+    const indexQuery = engine.useIndex(Model, query)
+
+    if (data===null && indexQuery.isSuccess) {
+        indexQuery.data.items.forEach(item => {item._selected=false})
+        setData(indexQuery.data)
+    }
 
     function toggleSort(field) {
         if ( sort === field) {
@@ -68,21 +77,6 @@ function Table({ Model, query }) {
             setDirection(1);
         }
     }
-
-    useEffect(() => {(async () => {
-        try {
-            const new_data = await api.getItems(
-                Model, 
-                {...query, 
-                    _sort: sort,
-                    _direction: direction,
-                    _limit: limit})
-            new_data.items.forEach(item => {item._selected = false})
-            setData(new_data)
-        } catch(err) {
-            engine.flashCatch(err)
-        }    
-    })()}, [ sort, direction, limit, query ]);
 
     function Header({ field, label, enable_sort }) {
         if (enable_sort) {

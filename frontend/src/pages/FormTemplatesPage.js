@@ -1,27 +1,25 @@
-'use strict';
+'use strict'
 
 import React from 'react'
 
-import Exam from '../models/Exam'
-import {
+import { 
     TableTopRightButtons, FilterButton, FilterInput,
-    ItemAddButton, CsvDownloadButton, ExcelDownloadButton
+    ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
+import FormTemplate from '../models/FormTemplate'
 
-export default function Exams() {
+export default function FormTemplatesPage() {
     return <>
-        <h1>Esami</h1>
-        <QueryTable Model={ Exam } >
+        <h1>Modelli</h1>
+        <QueryTable Model={ FormTemplate } >
             <FilterButton>
-                <FilterInput name="name" label="nome" />
-                <FilterInput name="code" label="codice" />
-                <FilterInput name="sector" label="settore" />
-                <FilterInput name="credits" label="crediti" />
+            <FilterInput name="name" label="nome" />
+            <FilterInput name="enabled" label="attivato" />
             </FilterButton>
 
             <ItemAddButton>
-                Aggiungi esame
+                Aggiungi Modello
             </ItemAddButton>
 
             <TableTopRightButtons>

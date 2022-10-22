@@ -7,12 +7,13 @@ import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
+import User from '../models/User'
 
-export default function User() {
+export default function UserPage() {
     const { id } = useParams()
     const [ user, setUser ] = useState(null)
     const engine = useEngine()
-    const query = engine.useGet('users', id)
+    const query = engine.useGet(User, id)
 
     if (user === null) {
         if (query.isSuccess) setUser(query.data)

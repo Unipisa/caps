@@ -1,39 +1,56 @@
-'use strict'
+'use strict';
 
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
-import LoadingMessage from '../components/LoadingMessage'
+import Degree from '../models/Degree'
 import Card from '../components/Card'
+import LoadingMessage from '../components/LoadingMessage'
 
-export default function FormTemplate() {
+function Group({ name, exam_ids }) {
     const engine = useEngine()
-    const { id } = useParams()
-    const [ formTemplate, setFormTemplate ] = useState(null)
+    const [ exams, setExams ] = useState(null)
 
     useEffect(async () => {
         try {
-            const new_form_template = await api.get(`form_templates/${id}`)
-            setFormTemplate(new_form_template)
+            const queryset = await api.get('exams', {'ids': exam_ids.join(",")})
+            setExams(queryset.items);
         } catch(err) {
             engine.flashCatch(err);
         }
-    }, [ id ])
+    }, [ exam_ids ])
+
+    return <tr>
+        <th>{ name }</th>
+        <td>{ exams === null 
+                ? "...loading..."
+                : exams.map(e => e.name).join(", ")
+            }
+        </td>
+    </tr>
+}
+
+export default function DegreePage() {
+    const engine = useEngine()
+    const { id } = useParams();
+    const [ degree, setDegree ] = useState(null);
+    const query = engine.useGet(Curriculum, id)
 
     if (degree === null) {
-        return <LoadingMessage>caricamento modelli...</LoadingMessage>
+        if (query.isSuccess) setDegree(query.data)
+        return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
     }
 
     return <>
-        <h1>{ formTemplate.name }</h1>
+        <h1>{ degree.name }</h1>
         <Card>
             <div className="d-flex mb-2">
-                <Link to="/form-templates">
+                <Link to="/degrees">
                     <button type="button" className="btn btn-sm mr-2 btn-primary">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Tutti i modelli
+                        Tutti i corsi di studi
                     </button>
                 </Link>
                 <a href="#">
@@ -51,11 +68,9 @@ export default function FormTemplate() {
             </div>
             <table className="table">
                 <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <td>{ form_template.name }</td>
-                    </tr>
-                </thead>
+                    <tr><th>Nome</th>
+                    <td>{ degree.name }</td>
+                    </tr></thead>
                 <tbody>
                 <tr>
                     <th>Anno accademico</th>

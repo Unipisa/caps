@@ -1,63 +1,33 @@
-'use strict';
+'use strict'
 
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
-
-import Card from '../components/Card'
+import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
+import Card from '../components/Card'
 
-function Group({ name, exam_ids }) {
+export default function FormTemplatePage() {
     const engine = useEngine()
-    const [ exams, setExams ] = useState(null);
-
-    useEffect(async () => {
-        try {
-            const queryset = await api.get('exams', {'ids': exam_ids.join(",")})
-            setExams(queryset.items);
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ exam_ids ])
-
-    return <tr>
-        <th>{ name }</th>
-        <td>{ exams === null 
-                ? "...loading..."
-                : exams.map(e => e.name).join(", ")
-            }
-        </td>
-    </tr>
-}
-
-export default function Degree() {
-    const engine = useEngine()
-    const { id } = useParams();
-    const [ degree, setDegree ] = useState(null);
-
-    useEffect(async () => {
-        try {
-            const new_degree = await api.get(`degrees/${id}`);
-            setDegree(new_degree);
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ id ])
+    const { id } = useParams()
+    const [ formTemplate, setFormTemplate ] = useState(null)
+    const query = engine.useGet(FormTemplate, id)
 
     if (degree === null) {
-        return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
+        if (query.isSuccess) setFormTemplate(query.data)
+        return <LoadingMessage>caricamento modelli...</LoadingMessage>
     }
 
     return <>
-        <h1>{ degree.name }</h1>
+        <h1>{ formTemplate.name }</h1>
         <Card>
             <div className="d-flex mb-2">
-                <Link to="/degrees">
+                <Link to="/form-templates">
                     <button type="button" className="btn btn-sm mr-2 btn-primary">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Tutti i corsi di studi
+                        Tutti i modelli
                     </button>
                 </Link>
                 <a href="#">
@@ -75,9 +45,11 @@ export default function Degree() {
             </div>
             <table className="table">
                 <thead>
-                    <tr><th>Nome</th>
-                    <td>{ degree.name }</td>
-                    </tr></thead>
+                    <tr>
+                        <th>Nome</th>
+                        <td>{ form_template.name }</td>
+                    </tr>
+                </thead>
                 <tbody>
                 <tr>
                     <th>Anno accademico</th>

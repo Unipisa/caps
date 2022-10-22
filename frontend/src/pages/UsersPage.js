@@ -11,7 +11,7 @@ import {
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
 
-export default function Users({engine}) {
+export default function UsersPage({engine}) {
     return <>
         <h1>Utenti</h1>
         <QueryTable Model={ User }>

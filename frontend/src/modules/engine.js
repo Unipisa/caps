@@ -1,5 +1,6 @@
 import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
+import Model from '../models/Model'
 
 import api from './api'
 
@@ -31,6 +32,8 @@ export function useCreateEngine() {
                 { message, type }]
         }))
     }
+
+    const onError = (err) => flashMessage(`${err.name}: ${err.message}`, 'error')
 
     return {
         state,
@@ -77,9 +80,26 @@ export function useCreateEngine() {
             }))
         },
 
-        useGet: (path,id) => useQuery(
-            [path, id], 
-            () => api.get(`${path}/${id}`),
-            { onError: (err) => flashMessage(`${err.name}: ${err.message}`, 'error') }),
+        useGet: (Model, id) => useQuery(
+            [Model.api_url, id], 
+            async () => {
+                const obj = await api.get(`${Model.api_url}${id}`)
+                return new Model(obj)
+            },
+            { 
+                onError, 
+                enabled: id !== null 
+            }
+        ),
+
+        useIndex: (Model, query) => useQuery(
+            [Model.api_url, query],
+            async () => {
+                let data = await api.get(`${ Model.api_url }`, query)
+                data.items = data.items.map(item => new Model(item))
+                return data
+            },
+            { onError }
+        ),
     }
 }

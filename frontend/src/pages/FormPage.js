@@ -5,6 +5,8 @@ import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
+import Form from '../models/Form'
+import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
@@ -69,13 +71,15 @@ function DraftNotice({edit, form}) {
     </div>;
 }
 
-export default function Form() {
+export default function FormPage() {
     const engine = useEngine()
     const { id } = useParams()
     const [ form, setForm ] = useState(null)
     const [ formTemplate, setFormTemplate] = useState(null)
     const html = "html"
     const edit = false
+    const queryForm = engine.useGet(Form, id)
+    const queryFormTemplate = engine.useGet(FormTemplate, form ? form.form_template_id : null)
 
     useEffect(() => (async () => {
         try {
@@ -90,6 +94,8 @@ export default function Form() {
     //  if (formTemplate === null) return <TemplateSelection />
 
     if (form === null || formTemplate === null) {
+        if (form === null && queryForm.isSuccess) setForm(queryForm.data)
+        if (formTemplate === null && queryFormTemplate.isSuccess) setFormTemplate(queryFormTemplate.data)
         return <LoadingMessage>caricamento modulo...</LoadingMessage>
     }
     

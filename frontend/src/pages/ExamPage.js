@@ -5,24 +5,18 @@ import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
+import Exam from '../models/Exam'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
-export default function Exam() {
+export default function ExamPage() {
     const engine = useEngine()
     const { id } = useParams()
     const [ exam, setExam ] = useState(null)
-
-    useEffect(async () => {
-        try {
-            const new_exam = await api.get(`exams/${id}`);
-            setExam(new_exam);
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ id ])
+    const query = engine.useGet(Exam, id)
 
     if (exam === null) {
+        if (query.isSuccess) setExam(query.data)
         return <LoadingMessage>caricamento esame...</LoadingMessage>
     }
 

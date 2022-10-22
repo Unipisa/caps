@@ -1,8 +1,11 @@
 'use strict';
 
-import React, { useState, Children } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { CSVDownload, CSVLink } from 'react-csv';
+import React, { useState, Children } from 'react'
+import { Dropdown } from 'react-bootstrap'
+import { CSVDownload, CSVLink } from 'react-csv'
+
+import { useQuery } from './QueryTable'
+import { useEngine } from '../modules/engine'
 
 export function ItemAddButton({ children }) {
     return <button type="button" className="btn btn-sm btn-primary mr-2">
@@ -13,7 +16,8 @@ export function ItemAddButton({ children }) {
     </button>
 }
 
-export function FilterInput({ query, setQuery, name, label }) {
+export function FilterInput({ name, label }) {
+    const { query, setQuery } = useQuery()
     const [ my_value, setValue ] = useState(query[name] || "");
 
     function onChange(e) {
@@ -52,7 +56,9 @@ export function FilterCheckbox({name, label, value, onChange }) {
     </div>
 }
 
-export function FilterButton({ engine, query, setQuery, children }) {
+export function FilterButton({ children }) {
+    const engine = useEngine()
+    const { query, setQuery } = useQuery()
     const [open, setOpen ] = useState(false);
     return <Dropdown className="mr-2" show={ open }>
         <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
@@ -92,7 +98,8 @@ export function TableTopRightButtons({ children }) {
     </>
 }
 
-export function CsvDownloadButton({ Model, query }) {
+export function CsvDownloadButton({ Model }) {
+    const { query } = useQuery()
     const [ csvData, setCsvData ] = useState(null);
 
     async function onClick() {
@@ -122,14 +129,14 @@ export function ExcelDownloadButton() {
     </button>
 }
 
-export function ActionButtons(props) {
+export function ActionButtons({children}) {
     return <div className="dropdown">
                 <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Azioni
                 </button>
                 <div className="dropdown-menu p-2 shadow" style={{"width": "450px"}}>
-                    { props.children }
+                    { children }
                 </div>
             </div>
 }

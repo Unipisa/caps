@@ -1,22 +1,29 @@
-'use strict'
+'use strict';
 
 import React from 'react'
 
+import Degree from '../models/Degree'
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
-import Proposal from '../models/Proposal'
 
-export default function Proposals() {
+export default function DegreesPage() {
     return <>
-        <h1>Piani di studio</h1>
-        <QueryTable Model={ Proposal } >
+        <h1>Corsi di Laurea</h1>
+        <QueryTable Model={ Degree } >
             <FilterButton>
+            <FilterInput name="enabled" label="attivo" />
+            <FilterInput name="enable_sharing" label="richiesta parere" />
             <FilterInput name="name" label="nome" />
-            <FilterInput name="enabled" label="attivato" />
+            <FilterInput name="academic_year" label="anno" />
+            <FilterInput name="years" label="anni" />
             </FilterButton>
+
+            <ItemAddButton>
+                Aggiungi corso di Laurea
+            </ItemAddButton>
 
             <TableTopRightButtons>
                 <CsvDownloadButton />

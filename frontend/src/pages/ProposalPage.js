@@ -1,19 +1,19 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from "react-router-dom"
+import React, { useState } from 'react'
+import { useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
-import api from '../modules/api'
+import Proposal from '../models/Proposal'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
-export default function Proposal() {
+export default function ProposalPage() {
     const { id } = useParams()
     const [ proposal, setProposal ] = useState(null)
     const edit = false
     const engine = useEngine()
-    const query = engine.useGet('proposals', id)
+    const query = engine.useGet(Proposal, id)
 
     if (proposal === null) {
         if (query.isSuccess) setProposal(query.data)

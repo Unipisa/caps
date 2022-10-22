@@ -7,12 +7,12 @@ import {
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
-import Form from '../models/Form'
+import Proposal from '../models/Proposal'
 
-export default function Forms() {
+export default function ProposalsPage() {
     return <>
-        <h1>Moduli</h1>
-        <QueryTable Model={ Form } >
+        <h1>Piani di studio</h1>
+        <QueryTable Model={ Proposal } >
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="enabled" label="attivato" />

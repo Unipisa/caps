@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
 import api from '../modules/api'
-
+import Curriculum from '../models/Curriculum'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
@@ -46,21 +46,14 @@ function ExamEntry({ entry }) {
     else return <tr><td>???</td></tr>
 }
 
-export default function Curriculum() {
+export default function CurriculumPage() {
     const engine = useEngine()
-    const { id } = useParams();
-    const [ curriculum, setCurriculum ] = useState(null);
-
-    useEffect(async () => {
-        try {
-            const new_curriculum = await api.get(`curricula/${id}`);
-            setCurriculum(new_curriculum);
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ id ])
+    const { id } = useParams()
+    const [ curriculum, setCurriculum ] = useState(null)
+    const query = engine.useGet(Curriculum, id)
 
     if (curriculum === null) {
+        if (query.isSuccess) setCurriculum(query.data)
         return <LoadingMessage>caricamento curriculum...</LoadingMessage>
     }
 
