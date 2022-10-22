@@ -3,13 +3,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
+import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
-export default function Exam({engine}) {
-    const { id } = useParams();
-    const [ exam, setExam ] = useState(null);
+export default function Exam() {
+    const engine = useEngine()
+    const { id } = useParams()
+    const [ exam, setExam ] = useState(null)
 
     useEffect(async () => {
         try {

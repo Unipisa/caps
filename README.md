@@ -12,6 +12,7 @@ per eventualmente controllare se sono stati inseriti i dati.
 Devi avere una chiave SSH per entrare sul server CAPS.
 Allora puoi dare il comando:
 ```bash
+cd api
 bash migrate-mysql.sh
 ```
 

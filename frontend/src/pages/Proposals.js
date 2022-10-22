@@ -9,10 +9,10 @@ import {
 import QueryTable from '../components/QueryTable'
 import Proposal from '../models/Proposal'
 
-export default function Proposals({engine}) {
+export default function Proposals() {
     return <>
         <h1>Piani di studio</h1>
-        <QueryTable engine={engine} Model={ Proposal } >
+        <QueryTable Model={ Proposal } >
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="enabled" label="attivato" />

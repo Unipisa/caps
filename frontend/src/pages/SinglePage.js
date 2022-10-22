@@ -4,6 +4,7 @@ import {
 } from "react-router-dom"
 
 import engine from "../modules/engine"
+import {useCreateEngine, EngineProvider} from '../modules/engine'
 
 import Proposals from "./Proposals"
 import Proposal from "./Proposal"
@@ -25,49 +26,55 @@ import NavBar from '../components/NavBar'
 import TopBar from '../components/TopBar'
 import Footer from '../components/Footer'
 
-export const PageContext = React.createContext({
-    flashCatch: () => {}
-});
+import {QueryClient, QueryClientProvider } from 'react-query'
 
-export default function SinglePage () {
-    engine.sync(useState(engine.state))
+const queryClient = new QueryClient()
+
+function SinglePageInternal () {
+    const engine = useCreateEngine()
+    // engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
 
-    return <>
-    <div id="wrapper">
-        <BrowserRouter>
-            <NavBar />
-            <div id="content-wrapper" className="d-flex flex-column">
-                <TopBar />
-                <Modal title={ modalConfirmData.title } content={ modalConfirmData.content } callback={ modalConfirmData.callback }></Modal>
-                <Flash messages={ engine.state.flashMessages } onClick={ () => engine.hideFlash() }></Flash>
-                <div id="content">
-                    <Routes>
-                        <Route path="/" element={<Splash engine={engine}/>} />
-                        <Route path="/index.html" element={<Splash engine={engine} />} />
-                        <Route path="/proposals" element={<Proposals engine={engine} />} />
-                        <Route path="/proposals/:id" element={<Proposal engine={ engine } />} />
-                        <Route path="/forms" element={<Forms engine={engine} />} />
-                        <Route path="/forms/:id" element={<Form engine={ engine } />} />
-                        <Route path="/degrees" element={<Degrees engine={engine} />} />
-                        <Route path="/degrees/:id" element={<Degree engine={ engine } />} />
-                        <Route path="/curricula" element={<Curricula engine={engine} />} />
-                        <Route path="/curricula/:id" element={<Curriculum engine={engine} />} />
-                        <Route path="/form-templates" element={<FormTemplates engine={engine} />} />
-                        <Route path="/exams/:id" element={<Exam engine={ engine } />} />
-                        <Route path="/exams" element={<Exams engine={engine} />} />
-                        <Route path="/users" element={<Users engine={engine} />} />
-                        <Route path="/users/:id" element={<User engine={engine} />} />
-                    </Routes>
+    return <EngineProvider value={engine}>
+        <div id="wrapper">
+            <BrowserRouter>
+                <NavBar/>
+                <div id="content-wrapper" className="d-flex flex-column">
+                    <TopBar/>
+                    <Modal title={ modalConfirmData.title } content={ modalConfirmData.content } callback={ modalConfirmData.callback }></Modal>
+                    <Flash messages={ engine.state.flashMessages } onClick={ () => engine.hideFlash() }></Flash>
+                    <div id="content">
+                        <Routes>
+                            <Route path="/" element={<Splash/>}/>
+                            <Route path="/index.html" element={<Splash/>}/>
+                            <Route path="/proposals" element={<Proposals/>}/>
+                            <Route path="/proposals/:id" element={<Proposal/>}/>
+                            <Route path="/forms" element={<Forms/>}/>
+                            <Route path="/forms/:id" element={<Form/>}/>
+                            <Route path="/degrees" element={<Degrees/>}/>
+                            <Route path="/degrees/:id" element={<Degree/>}/>
+                            <Route path="/curricula" element={<Curricula/>}/>
+                            <Route path="/curricula/:id" element={<Curriculum/>}/>
+                            <Route path="/form-templates" element={<FormTemplates/>}/>
+                            <Route path="/exams/:id" element={<Exam/>}/>
+                            <Route path="/exams" element={<Exams/>}/>
+                            <Route path="/users" element={<Users/>}/>
+                            <Route path="/users/:id" element={<User/>}/>
+                        </Routes>
+                    </div>
+                    <Footer/>
                 </div>
-                <Footer />
-            </div>
-        </BrowserRouter>
-    </div>
-    </>
+            </BrowserRouter>
+        </div>
+    </EngineProvider>
+}
+
+export default function SinglePage() {
+    return <QueryClientProvider client={queryClient}>
+    <SinglePageInternal/>
+    </QueryClientProvider> 
 }
 
 function Splash(props) {
     return <p>Splash!</p>
 }
-

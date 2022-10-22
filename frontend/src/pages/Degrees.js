@@ -9,10 +9,10 @@ import {
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
 
-export default function Degrees({ engine }) {
+export default function Degrees() {
     return <>
         <h1>Corsi di Laurea</h1>
-        <QueryTable engine={engine} Model={ Degree } >
+        <QueryTable Model={ Degree } >
             <FilterButton>
             <FilterInput name="enabled" label="attivo" />
             <FilterInput name="enable_sharing" label="richiesta parere" />

@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
+import { useEngine } from './modules/engine'
 import api from '../modules/api'
 
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
 function Group({ engine, name, exam_ids }) {
+    const engine = useEngine()
     const [ exams, setExams ] = useState(null);
 
     useEffect(async () => {
@@ -30,7 +32,8 @@ function Group({ engine, name, exam_ids }) {
     </tr>
 }
 
-export default function Degree({ engine }) {
+export default function Degree() {
+    const engine = useEngine()
     const { id } = useParams();
     const [ degree, setDegree ] = useState(null);
 
@@ -156,7 +159,7 @@ export default function Degree({ engine }) {
             <table className="table">
                 <tbody>
                     { Object.entries(degree.groups).map(([name, exams]) => 
-                        <Group engine={ engine } key={ name } name={ name } exam_ids={ exams }/>)}
+                        <Group key={ name } name={ name } exam_ids={ exams }/>)}
                 </tbody>
             </table>
         </Card>

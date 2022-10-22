@@ -9,10 +9,10 @@ import {
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
 
-export default function Exams({engine}) {
+export default function Exams() {
     return <>
         <h1>Esami</h1>
-        <QueryTable engine={engine} Model={ Exam } >
+        <QueryTable Model={ Exam } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="code" label="codice" />

@@ -2,18 +2,19 @@
 
 import React, { useState, useEffect } from 'react'
 
+import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
 
-export default function QueryTable({ engine, Model, children }) {
+export default function QueryTable({ Model, children }) {
     const [ query, setQuery ] = useState({});
 
     return <>
         <div className="d-flex mb-2">
         { React.Children.map(children, child => {
             if (React.isValidElement(child)) {
-                return React.cloneElement(child, { engine, query, setQuery })
+                return React.cloneElement(child, { query, setQuery })
             }
             return child;
         })}
@@ -21,7 +22,6 @@ export default function QueryTable({ engine, Model, children }) {
         <FilterBadges query={ query } setQuery={ setQuery } />
         <div className="table-responsive-lg">
             <Table
-                engine={ engine } 
                 query={ query }
                 Model={ Model }
                 />
@@ -53,7 +53,8 @@ function FilterBadges({ query, setQuery }) {
         </div>
 }
 
-function Table({ engine, Model, query }) {
+function Table({ Model, query }) {
+    const engine = useEngine()
     const [ limit, setLimit ] = useState(10);
     const [ sort, setSort ] = useState(Model.sort_default);
     const [ direction, setDirection ] = useState(Model.sort_default_direction);

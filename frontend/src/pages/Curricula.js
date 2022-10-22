@@ -8,10 +8,10 @@ import {
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
 
-export default function Curricula({ engine }) {
+export default function Curricula() {
     return <>
         <h1>Curricula</h1>
-        <QueryTable engine={engine} Model={ Degree } >
+        <QueryTable Model={ Degree } >
             <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="academic_year" label="anno" />

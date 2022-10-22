@@ -9,10 +9,10 @@ import {
 import QueryTable from '../components/QueryTable'
 import FormTemplate from '../models/FormTemplate'
 
-export default function FormTemplates({engine}) {
+export default function FormTemplates() {
     return <>
         <h1>Modelli</h1>
-        <QueryTable engine={engine} Model={ FormTemplate } >
+        <QueryTable Model={ FormTemplate } >
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="enabled" label="attivato" />

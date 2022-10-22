@@ -14,7 +14,7 @@ import QueryTable from '../components/QueryTable'
 export default function Users({engine}) {
     return <>
         <h1>Utenti</h1>
-        <QueryTable engine={engine} Model={ User }>
+        <QueryTable Model={ User }>
             <FilterButton>
             <FilterInput name="name" label="nome" />
             <FilterInput name="username" label="username" />
