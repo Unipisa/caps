@@ -30,7 +30,7 @@ jobs:
         id: meta
         uses: crazy-max/ghaction-docker-meta@v2
         with:
-          images: ghcr.io/unipisa/caps
+          images: harbor.cs.dm.unipi.it/caps/caps
           tags: |
             type=ref,event=tag
             type=ref,event=branch
@@ -39,9 +39,9 @@ jobs:
         uses: docker/login-action@v1 
         if: ${{ github.event_name != 'pull_request' }}
         with:
-          username: ${{ secrets.GHCR_PA_USERNAME }}
-          password: ${{ secrets.GHCR_PA_TOKEN }}
-          registry: ghcr.io
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+          registry: harbor.cs.dm.unipi.it
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
