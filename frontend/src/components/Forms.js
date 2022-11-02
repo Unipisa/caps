@@ -100,11 +100,11 @@ class Forms extends ItemsBase {
                         <tbody>
                         { this.state.rows === null 
                             ? <tr><td colSpan="4"><LoadingMessage>Caricamento moduli...</LoadingMessage></td></tr>
-                            : this.state.rows.map(row => <FormRow 
+                            : this.state.rows.map(row => <FormRow
+                                root={this.props.root}
                                 key={row.item.id} 
                                 row={row} 
                                 onToggle={() => {this.toggleItem(row.item)}}
-                                href={`${this.props.root}forms/view/${row.item.id}`}
                                 />)
                         }
                         </tbody>
@@ -130,18 +130,18 @@ class Forms extends ItemsBase {
 }
 
 function FormRow(props) {
-    const {row: {selected, item}, href, onToggle} = props;
+    const {row: {selected, item}, onToggle, root} = props;
     return <tr style={selected?{background: "lightgray"}:{}}>
         <td><input type="checkbox" checked={ selected } readOnly onClick={ onToggle }/></td>
         <td><FormStateBadge form={ item } /></td>
-        <td>{item.user.name}</td>
+        <td><a href={`${root}users/view/${item.user.id}`}>{item.user.name}</a></td>
         <td>{item.form_template.name}</td>
         <td>{ item.date_submitted && Moment(item.date_submitted).format("DD/MM/YYYY") }</td>
         <td>{ item.date_managed && Moment(item.date_managed).format("DD/MM/YYYY") }</td>
         <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY") }</td>
         <td>
             <div className="d-none d-xl-inline-flex flex-row align-items-center">
-                <a href={href}>
+                <a href={`${root}forms/view/${item.id}`}>
                     <button type="button" className="btn btn-sm btn-primary mr-2">
                     <i className="fas fa-eye mr-2"></i>
                     Visualizza
