@@ -85,6 +85,7 @@ class FormsController extends RestController {
         try {
             $this->Forms->deleteOrFail($form);
         } catch (\Exception $e) {
+            $this->log($e);
             $this->JSONResponse(ResponseCode::Error, null, 'Error while deleting the proposal');
             return;
         }

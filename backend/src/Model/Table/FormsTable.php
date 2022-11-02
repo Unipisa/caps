@@ -79,6 +79,10 @@ class FormsTable extends Table
             'foreignKey' => 'form_id',
             'dependent' => true
         ]);
+        $this->hasMany('FormAttachments', [
+            'foreignKey' => 'form_id',
+            'dependent' => true
+        ]);
     }
 
     /**
