@@ -15,27 +15,34 @@ class FormAttachmentsController extends RestController {
             [ 'contain' => FormAttachmentsController::$associations ]
         );
 
-        $d = $this->applyFilters($d);
-
-        if (!$this->user['admin']) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
+        // If the user is not the admin, then we restrict the view to forms 
+        // which he/she has control over
+        if (! $this->user['admin']) {
+            $d = $d->where([ 'Forms.user_id' => $this->user->id ]);
         }
+
+        $d = $this->applyFilters($d);
 
         $this->JSONResponse(ResponseCode::Ok, $d);
     }
 
     public function post() {
-        if (! $this->user['admin']) {
-            $this->JSONResponse(ResponseCode::Forbidden);
-            return;
-        }
-
         $d = new FormAttachment();
-
         $body = $this->request->getBody();
-
         $data = json_decode($body);
+
+        if (! $this->user['admin']) {
+            // We need to check if the user can submit an attachment for this form,
+            // which is only possible if he/she is the author of the given form.
+            $form = $this->FormAttachments->Forms->get($data->form_id, [
+                'contain' => 'Users'
+            ]);
+
+            if ($form['user']['username'] != $this->user->username) {
+                $this->JSONResponse(ResponseCode::Forbidden);
+                return;
+            }
+        }
 
         $d['filename'] = $data->filename;
         $d['mimetype'] = $data->mimetype;
@@ -54,12 +61,13 @@ class FormAttachmentsController extends RestController {
     }
 
     public function delete($id) {
-        if (! $this->user['admin']) {
+        $d = $this->FormAttachments->get($id, [ 'contain' => 'Users' ]);
+
+        if (!$this->user['admin'] && $d['user']['username'] != $this->user->username) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
 
-        $d = $this->FormAttachments->get($id);
         if (! $this->FormAttachments->delete($d)) {
             $this->JSONResponse(ResponseCode::Error, [], 'Error deleting the document with id = ' . $id);
             return;

@@ -103,7 +103,7 @@ class RestController extends AppController {
             }            
         }
 
-        // FIXME: Are there any performance conerns with this?
+        // FIXME: Are there any performance concerns with this?
         $this->paginationData['total'] = $query->count();
 
         if ($limit !== null) {
