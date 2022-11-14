@@ -34,11 +34,9 @@ class FormAttachmentsController extends RestController {
         if (! $this->user['admin']) {
             // We need to check if the user can submit an attachment for this form,
             // which is only possible if he/she is the author of the given form.
-            $form = $this->FormAttachments->Forms->get($data->form_id, [
-                'contain' => 'Users'
-            ]);
+            $form = $this->FormAttachments->Forms->get($data->form_id);
 
-            if ($form['user']['username'] != $this->user->username) {
+            if ($form['user_id'] != $this->user->id) {
                 $this->JSONResponse(ResponseCode::Forbidden);
                 return;
             }
