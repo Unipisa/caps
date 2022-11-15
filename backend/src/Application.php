@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.11.6';
+    public static $_CAPSVERSION = '2.11.7';
 
     /**
      * application version number

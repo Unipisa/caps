@@ -140,11 +140,11 @@ function FormRow(props) {
         <td>{ item.date_managed && Moment(item.date_managed).format("DD/MM/YYYY") }</td>
         <td>{ item.modified && Moment(item.modified).format("DD/MM/YYYY") }</td>
         <td>
-            <div className="d-none d-xl-inline-flex flex-row align-items-center">
+            <div className="d-inline-flex flex-row align-items-center">
                 <a href={`${root}forms/view/${item.id}`}>
                     <button type="button" className="btn btn-sm btn-primary mr-2">
-                    <i className="fas fa-eye mr-2"></i>
-                    Visualizza
+                    <i className="fas fa-eye"></i>
+                    <span className="ml-2 d-none d-xl-inline">Visualizza</span>
                     </button>
                 </a>
             </div>
