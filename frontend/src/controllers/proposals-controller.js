@@ -19,10 +19,14 @@ class CapsProposalsController extends CapsAppController {
     view(params) {
         const id = (params.pass.length > 0) ? params.pass[0] : undefined;
 
-        ReactDOM.render(
-            <ProposalView root={this.root} id={id} csrfToken={params._csrfToken}></ProposalView>,
-            document.querySelector('#app')
-        );
+        const target = document.querySelector('#app')
+
+        if (target) {
+            ReactDOM.render(
+                <ProposalView root={this.root} id={id} csrfToken={params._csrfToken}></ProposalView>,
+                
+            );
+        }
     }
 
     index(params) {
