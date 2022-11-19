@@ -17,6 +17,8 @@ jobs:
       - name: PHP tests
         run: |
           cd backend/
+          sudo apt-get update
+          sudo apt-get install php7.4
           php7.4 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
           php7.4 composer-setup.php
           php7.4 -r "unlink('composer-setup.php');"
