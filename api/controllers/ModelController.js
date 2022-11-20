@@ -87,13 +87,15 @@ const ModelController = {
         };
     },
 
-    view: async (req, { Model }) => {
-        const { id } = req.params;
+    view: async (req, { Model, populate }) => {
+        const { id } = req.params
         try {
-            return await Model.findById(id);
+            const obj = await Model.findById(id)
+            if (populate) return await obj.populate(populate)
+            else return obj
         } catch(err) {
-            console.log(`not found ${id}`);
-            throw new BadRequestError();
+            console.log(`not found ${id}`)
+            throw new BadRequestError()
         }
     },
 }

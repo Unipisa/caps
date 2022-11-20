@@ -1,4 +1,6 @@
+import React from 'react'
 import Moment from 'moment'
+import { Badge } from 'react-bootstrap'
 
 import Model from './Model'
 
@@ -44,4 +46,25 @@ export default class Proposal extends Model {
         }]
     static sort_default = 'date_managed'
     static sort_default_direction = -1
+
+    badge() {
+        return <Badge text="light" bg={
+            {
+                'draft': 'primary',
+                'submitted': 'warning',
+                'approved': 'success',
+                'rejected': 'error',
+            }[this.state]
+        }>{{
+                'draft': 'bozza',
+                'submitted': 'inviato',
+                'approved': 'approvato',
+                'rejected': 'respinto',
+            }[this.state]}
+        </Badge>
+    }
+
+    degree_academic_years() {
+        return `${this.degree_academic_year}/${this.degree_academic_year + 1}`
+    }
 }

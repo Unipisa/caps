@@ -5,6 +5,7 @@ var app = express();
 
 const ApiException = require('./exceptions/ApiException');
 const router = require('./router');
+const test = require('./test')
 
 const port = process.env.PORT || 3000;
 
@@ -29,6 +30,7 @@ app.use(ApiException.apiErrors); // convert ApiErrors into http responses
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/caps').then(res => {
     app.listen(port, function() {
         console.log(`CAPS API server started: http://localhost:${port}/`)
+        test()
     });
 })
 

@@ -17,7 +17,7 @@ const FormTemplateSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
-    required_approval: {
+    require_approval: {
         type: Boolean,
         required: true,
     }, 
