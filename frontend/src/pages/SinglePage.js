@@ -15,6 +15,7 @@ import DegreePage from "./DegreePage"
 import CurriculaPage from "./CurriculaPage"
 import CurriculumPage from "./CurriculumPage"
 import FormTemplatesPage from './FormTemplatesPage'
+import FormTemplatePage from './FormTemplatePage'
 import ExamsPage from "./ExamsPage"
 import ExamPage from "./ExamPage"
 import UsersPage from "./UsersPage"
@@ -49,13 +50,15 @@ function SinglePageInternal () {
                             <Route path="/index.html" element={<Splash/>}/>
                             <Route path="/proposals" element={<ProposalsPage/>}/>
                             <Route path="/proposals/:id" element={<ProposalPage/>}/>
+                            <Route path="/proposals/new" element={<ProposalPage/>}/>
                             <Route path="/forms" element={<FormsPage/>}/>
                             <Route path="/forms/:id" element={<FormPage/>}/>
                             <Route path="/degrees" element={<DegreesPage/>}/>
                             <Route path="/degrees/:id" element={<DegreePage/>}/>
                             <Route path="/curricula" element={<CurriculaPage/>}/>
                             <Route path="/curricula/:id" element={<CurriculumPage/>}/>
-                            <Route path="/form-templates" element={<FormTemplatesPage/>}/>
+                            <Route path="/form_templates/:id" element={<FormTemplatePage/>}/>
+                            <Route path="/form_templates" element={<FormTemplatesPage/>}/>
                             <Route path="/exams/:id" element={<ExamPage/>}/>
                             <Route path="/exams" element={<ExamsPage/>}/>
                             <Route path="/users" element={<UsersPage/>}/>
@@ -71,7 +74,7 @@ function SinglePageInternal () {
 
 export default function SinglePage() {
     return <QueryClientProvider client={queryClient}>
-    <SinglePageInternal/>
+        <SinglePageInternal/>
     </QueryClientProvider> 
 }
 

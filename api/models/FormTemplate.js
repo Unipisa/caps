@@ -17,6 +17,10 @@ const FormTemplateSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    required_approval: {
+        type: Boolean,
+        required: true,
+    }, 
     notify_emails: [String],
 })
 

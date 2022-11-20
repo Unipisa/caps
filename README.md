@@ -184,6 +184,7 @@ Possibili princìpi da seguire:
         text
         enabled
         notify_emails
+        require_approval
 
     Group [groups]
         id

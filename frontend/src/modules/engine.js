@@ -38,6 +38,17 @@ export function useCreateEngine() {
     return {
         state,
 
+        user: {
+            id: 17,
+            username: "ginnasta",
+            name: "Pippo Ginnasta",
+            number: "123456",
+            givenname: "Ginnasta",
+            surname: "Pippo",
+            email: "ginnasta@mailinator.com",
+            admin: true,
+        },
+
         modalConfirm: (title, message) => {
             return new Promise((resolve) => {
                 async function callback(ans) {

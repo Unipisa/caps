@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e 
 
 # you need credentials to login as the following user:
@@ -14,4 +15,7 @@ export MYSQL_PASSWORD=$( ssh root@caps.dm.unipi.it "grep CAPS_DB_PASSWORD docker
 echo "MYSQL_PASSWORD:" $(echo ${MYSQL_PASSWORD} | wc -c) "chars" 
 
 # open port forwarding and run js import script migrate-mysql.js
-ssh -L 3306:${REMOTE_IP}:3306 root@caps.dm.unipi.it cat & node migrate-mysql.js
+ssh -L 3306:${REMOTE_IP}:3306 root@caps.dm.unipi.it cat & 
+sleep 10
+echo "start js script"
+node migrate-mysql.js

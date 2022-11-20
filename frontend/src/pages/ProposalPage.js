@@ -9,11 +9,15 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
 export default function ProposalPage() {
-    const { id } = useParams()
-    const [ proposal, setProposal ] = useState(null)
-    const edit = false
     const engine = useEngine()
-    const query = engine.useGet(Proposal, id)
+    const { id } = useParams()
+    console.log(`ProposalPage id=${id || null}`)
+    const empty = {
+        user_name: engine.user,
+    }
+    const [ proposal, setProposal ] = useState(id?null:empty)
+    const edit = false
+    const query = engine.useGet(Proposal, id || null)
 
     if (proposal === null) {
         if (query.isSuccess) setProposal(query.data)
