@@ -65,6 +65,7 @@ export default class Proposal extends Model {
     }
 
     degree_academic_years() {
+        if (!this.degree_academic_year) return null
         return `${this.degree_academic_year}/${this.degree_academic_year + 1}`
     }
 }

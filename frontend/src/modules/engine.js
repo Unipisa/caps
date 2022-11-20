@@ -110,7 +110,10 @@ export function useCreateEngine() {
                 data.items = data.items.map(item => new Model(item))
                 return data
             },
-            { onError }
+            { 
+                onError,
+                enabled: query !== false,
+            }
         ),
     }
 }

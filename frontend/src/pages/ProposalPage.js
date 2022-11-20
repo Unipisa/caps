@@ -42,18 +42,20 @@ export default function ProposalPage() {
     const engine = useEngine()
     const { id } = useParams()
     console.log(`ProposalPage id=${id || null}`)
-    const empty = {
+    const empty = new Proposal({
         curriculum_id: null,
         user_name: engine.user.name,
         state: 'draft',
-    }
-    const edit = false
+    })
+    const edit = id ? false : true
     const query = engine.useGet(Proposal, id || null)
     const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
     const curriculumQuery = engine.useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
     const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
     const degreeQuery = engine.useGet(Degree, curriculum ? curriculum.degree_id : null)
     const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
+    const degreesQuery = engine.useIndex(Degree, edit ? {} : false)
+    const degrees = degreesQuery.isSuccess ? degreesQuery.data.items : null
 
     console.log(`proposal: ${JSON.stringify(proposal)}`)
     console.log(`curriculum: ${JSON.stringify(curriculum)}`)
@@ -64,7 +66,7 @@ export default function ProposalPage() {
     }
 
     function AdminButtons() {
-        if (engine.user.admin && proposal.state === 'submitted') return <>
+        if (!edit && engine.user.admin && proposal.state === 'submitted') return <>
             <Button>accetta</Button>
             <Button>rifiuta</Button>
         </>       
@@ -72,7 +74,7 @@ export default function ProposalPage() {
     }
 
     function ShareButton() {
-        if (degree 
+        if (!edit && degree 
             && degree.enable_sharing 
             && proposal.state === 'submitted' 
             && (user._id === proposal.user_id || user.admin)) {
@@ -110,6 +112,7 @@ export default function ProposalPage() {
     }
 
     function DownloadButtons() {
+        if (edit) return null
         return <>
             <a className="d-none d-md-inline" href="">
                 <Button className="button-sm mr-2">
@@ -159,10 +162,25 @@ export default function ProposalPage() {
         </Card>
     }
 
-    return <>
-        <h1>Piano di studi di {proposal.user_name}</h1>
-        <MessageCard />
-        <Card>
+    function InfoCard() {
+        if (edit) {
+            if (degrees === null) return <Card><p>caricamento...</p></Card>
+            return <Card>
+            <div className="form-group" key="degree-selection">
+                <select className="form-control" onChange={() => {}}
+                    value={degree ? degrees.map((d) => d.id).indexOf(degree._id) : -1}>
+                    <option key="degree-dummy" value="-1">
+                        Selezionare il corso di Laurea
+                    </option>
+                    {degrees.map(degree => [
+                        degree.academic_year, degree.name, 
+                        <option key={degree._id} value={degree._id}>
+                            {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
+                        </option>]).sort().map(([a,b,rendering]) => rendering)}
+                </select>
+            </div>
+        </Card>
+        } else return <Card>
             <div className="d-flex mb-2">
                 <AdminButtons />
                 <ShareButton />
@@ -188,7 +206,13 @@ export default function ProposalPage() {
                 </tr>                
             </tbody></table>        
         </Card>
-        { [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
+    }
+
+    return <>
+        <h1>Piano di studi di {proposal.user_name}</h1>
+        <MessageCard />
+        <InfoCard />
+        { degree && [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
         { JSON.stringify(proposal)}
     </>
 }
