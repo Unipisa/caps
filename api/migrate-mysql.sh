@@ -2,12 +2,12 @@
 set -e 
 
 # you need credentials to login as the following user:
-REMOTE_USERNAME="root"
-REMOTE_HOSTNAME="caps.dm.unipi.it"
+export REMOTE_USERNAME="root"
+export REMOTE_HOSTNAME="caps.dm.unipi.it"
 echo connecting to ${REMOTE_USERNAME}@${REMOTE_HOSTNAME}
 
 # obtaining IP address of docker container running caps
-REMOTE_IP=$( ssh ${REMOTE_USERNAME}@${REMOTE_HOSTNAME} docker inspect capsmatematica_caps-db_1 | grep IPAddress | tail -1 | cut -f4 -d\" )
+export REMOTE_IP=$( ssh ${REMOTE_USERNAME}@${REMOTE_HOSTNAME} docker inspect capsmatematica_caps-db_1 | grep IPAddress | tail -1 | cut -f4 -d\" )
 echo "REMOTE_IP: ${REMOTE_IP}"
 
 # obtaining mysql password

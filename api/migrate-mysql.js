@@ -20,6 +20,8 @@ let {   ProposalCompulsoryExam,
         ProposalCommentAttachment } = require('./models/ProposalSchema')
 let mongoose = require('mongoose')
 
+const LOAD_ATTACHMENTS = false
+
 function write(s) {
     console.log(s);
 }
@@ -27,10 +29,12 @@ function write(s) {
 async function importData() {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/caps')
 
+    console.log(`MYSQL_PASSORD: ${process.env.MYSQL_PASSWORD}`)
+
     var connection = mysql.createConnection({
         host     : process.env.MYSQL_HOST || 'localhost',
         user     : process.env.MYSQL_USER || 'caps',
-        password : process.env.MYSQL_PASSWORD || 'secret',
+        password : process.env.MYSQL_PASSWORD,
         database : process.env.MYSQL_DATABASE || 'caps',
         port     : process.env.MYSQL_PORT || '3306'
     });
@@ -100,11 +104,15 @@ async function importData() {
     write("| Groups ")
     const groups = await query('SELECT * FROM `groups`');
     const exams_groups = await query('SELECT * FROM exams_groups');
-    write(`caricati ${groups.length} elementi`);
+    write(`caricati ${groups.length} elementi`)
 
     function group_by_id(id) {
-        const gs = groups.filter(g => g.id === id);
-        console.assert(gs.length === 1, gs, id, groups)
+        const gs = groups.filter(g => g.id === id)
+        if (gs.length !== 1) {
+            console.log(`invalid ${id}: ${JSON.stringify(gs)}`)
+            for (var group of groups) console.log(`group: ${JSON.stringify(group)}`)
+            process.abort()
+        }
         return gs[0]
     }
 
@@ -188,6 +196,9 @@ async function importData() {
     write("| ProposalAuths")
     proposal_auths = await query("SELECT * FROM proposal_auths")
 
+    // write("| Attachments")
+    // attachments = await query(`SELECT * FROM attachments`)
+
     // import proposals
     write("> Proposals")
     await Proposal.deleteMany({}) // Drop all data
@@ -219,12 +230,10 @@ async function importData() {
 
         element.exams = []
 
-        /* not working yet!
-
         chosen_exams.filter(e => (e.proposal_id === element.old_id))
         .forEach(e => {
             exam = exams[e.exam_id]
-            console.assert(e.exam_id === exam.old_id)
+            console.assert(e.exam_id === exam.old_id)   
             data = {
                 exam_id: exam._id,
                 exam_name: exam.name,
@@ -237,9 +246,23 @@ async function importData() {
                     ...data
                 }))
             } else if (e.compulsory_group_id) {
+                let candidates = compulsory_groups.filter(g => (
+                    g.id === e.compulsory_group_id))
+                if (candidates.length !== 1) {
+                    console.log(`invalid compulsory_group_id ${e.compulsory_group_id}`)
+                    console.log(`candidates: ${JSON.stringify(candidates)}`)
+                    console.log(`element: ${JSON.stringify(element)}`)
+                    for (var g of compulsory_groups) console.log(`${JSON.stringify(g)}`)
+                    process.abort()
+                }
+                const group = candidates[0]
+                if (group.curriculum_id !== element.curriculum_id.old_id) {
+                    console.log(`${e.curriculum_id} !== ${element.curriculum_id.old_id}`)
+                    process.abort()
+                }
                 element.exams.push(new ProposalCompulsoryGroup({
                     ...data,
-                    group: group_by_id(e.compulsory_group_id).name
+                    group: group_by_id(group.group_id).name
                 }))
             } else if (e.free_choice_exam_id) {
                 element.exams.push(new ProposalFreeChoiceExam({
@@ -272,31 +295,33 @@ async function importData() {
                 }))
             })
 
-        q = await query(`SELECT * FROM attachments WHERE proposal_id=${element.old_id}`)
-        q.foreach(a => {
-                if (a.filename) {
-                    element.attachments.push(new ProposalFileAttachment({
-                        filename: a.filename,
-                        data: a.data,
-                        mimetype: a.mimetype,
-                        comment: a.comment,
-                        date_created: a.date
-                    }))
-                } else {
-                    element.attachments.push(new ProposalCommentAttachment({
-                        comment: a.comment,
-                        date_created: a.date
-                    }))
-                }
-            })
+        if (LOAD_ATTACHMENTS) {
+            q = await query(`SELECT * FROM attachments WHERE proposal_id=${element.old_id}`)
+            q.forEach(a => {
+                    console.log(`attachment size: ${a.data?.length}`)
+                    if (a.filename) {
+                        element.attachments.push(new ProposalFileAttachment({
+                            filename: a.filename,
+                            data: a.data,
+                            mimetype: a.mimetype,
+                            comment: a.comment,
+                            date_created: a.date
+                        }))
+                    } else {
+                        element.attachments.push(new ProposalCommentAttachment({
+                            comment: a.comment,
+                            date_created: a.date
+                        }))
+                    }
+                })
+        }
 
         element.attachments.sort((a,b) => {
             if (a.date_created < b.date_created) return 1
             if (a.date_created === b.date_created) return 0
             return -1
         })
-
-        */
+        
         const e = new Proposal(element)
         return e.save()
     }))
