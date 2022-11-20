@@ -9,14 +9,6 @@ import Curriculum from '../models/Curriculum'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
-const roman = n => {
-    const ordinals = [
-        "primo", "secondo", "terzo", "quarto", "quinto",
-        "sesto", "settimo", "ottavo", "nono"]
-    if (n < ordinals.length) return ordinals[n]
-    else return `${ n+1 }-mo`
-}
-
 function CompulsoryExam({ exam_id }) {
     const engine = useEngine()
     const [ exam, setExam ] = useState(null)
@@ -62,7 +54,7 @@ export default function CurriculumPage() {
     return <>
         <h1>{ curriculum.name }</h1>
         { curriculum.years.map((year_section, year_count) =>
-            <Card key={`year-${year_count}`} title={`${roman(year_count)} anno`}>
+            <Card key={`year-${year_count}`} title={`${Degree.ordinal(year_count+1)} anno`}>
                 Crediti: { year_section.credits } <br />
                 <table>
                     <tbody>

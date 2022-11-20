@@ -7,9 +7,36 @@ import { useEngine } from '../modules/engine'
 import Proposal from '../models/Proposal'
 import Curriculum from '../models/Curriculum'
 import Degree from '../models/Degree'
+import Exam from '../models/Exam'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {Button} from 'react-bootstrap' 
+
+function ExamRow({exam}) {
+    const engine = useEngine()
+    const query = engine.useGet(Exam, exam.exam_id)
+    const real_exam = query.isSuccess ? query.data : null
+    return <tr>
+        <td>{exam.exam_code}</td>
+        <td>{exam.exam_name}
+            {real_exam && real_exam.tags.map(tag => 
+                <div key={tag} className="badge ml-1 badge-secondary badge-sm">
+                    {tag}
+                </div>)}
+        </td>
+        <td>{exam.exam_sector}</td>
+        <td>{exam.exam_credits}</td>
+        <td>{{
+            'CompulsoryExam': 'Obbligatorio',
+            'CompulsoryGroup': exam.group,
+            'FreeChoiceGroup': 'A scelta libera (G)',
+            'FreeChoiceExam': 'A scelta libera',
+            'ExternalExam': 'Esame Esterno',
+        }[exam.__t]}
+        </td>
+    </tr>
+}
+
 
 export default function ProposalPage() {
     const engine = useEngine()
@@ -110,8 +137,29 @@ export default function ProposalPage() {
         </>
     }
     
+    function Year({year}) {
+        return <Card title={`${Curriculum.ordinal(year)} anno`}>
+            <table className="table">
+                <thead>
+                <tr>
+                    <th>Codice</th>
+                    <th>Nome</th>
+                    <th>Settore</th>
+                    <th>Crediti</th>
+                    <th>Gruppo</th>
+                </tr>
+                </thead>
+                <tbody>
+                { proposal.exams
+                    .filter(e => e.year === year)
+                    .map(e => <ExamRow key={e._id} exam={e}/>)
+                }
+                </tbody>
+            </table>
+        </Card>
+    }
+
     return <>
-        { JSON.stringify(proposal)}
         <h1>Piano di studi di {proposal.user_name}</h1>
         <MessageCard />
         <Card>
@@ -140,6 +188,8 @@ export default function ProposalPage() {
                 </tr>                
             </tbody></table>        
         </Card>
+        { [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
+        { JSON.stringify(proposal)}
     </>
 }
 

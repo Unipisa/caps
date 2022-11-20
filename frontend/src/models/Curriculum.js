@@ -35,4 +35,12 @@ export default class Curriculum extends Model {
             return super.render_table_field(field);
         }
     }
+
+    static ordinal(n) {
+        const ordinals = [ "zero",
+            "primo", "secondo", "terzo", "quarto", "quinto",
+            "sesto", "settimo", "ottavo", "nono"]
+        if (n < ordinals.length) return ordinals[n]
+        else return `${ n+1 }-mo`
+    }
 }
