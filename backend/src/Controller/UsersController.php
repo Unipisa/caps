@@ -313,7 +313,7 @@ class UsersController extends AppController {
 
                 $api_data = $client->getParsedResponse($request);
                 $number = $api_data['Corsi'][0]['Matricola'];
-            } catch (\Error $e) {
+            } catch (\Exception | \Error $e) {
                 $number = $uid;
             }
 
