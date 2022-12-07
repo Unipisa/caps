@@ -29,12 +29,20 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
 use Cake\Mailer\Email;
 use Cake\Validation\Validation;
+use App\Form\FormsFilterForm;
 
 
 class FormsController extends AppController
 {    
     public function index()
     {
+        $forms = $this->Forms->find();
+
+        $filterForm = new FormsFilterForm($forms);
+        $forms = $filterForm->validate_and_execute($this->request->getQuery());
+
+        $this->set('data', $forms);
+        $this->viewBuilder()->setOption('serialize', 'data');
     }  
 
     public function edit($form_id = null)

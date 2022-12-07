@@ -28,6 +28,24 @@ class Forms extends ItemsBase {
         return <>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b></>
     }
 
+    encodeQueryParams(query) {
+        const params = new URLSearchParams();
+
+        Object.entries(query).forEach( ([key, el]) => {
+            params.append(key, el)
+        })
+
+        return params.toString()
+    }
+
+    downloadCSV() {
+        window.location.href = "/forms.csv?" + this.encodeQueryParams(this.state.query)
+    }
+
+    downloadXLSX() {
+        window.location.href = "/forms.xlsx?" + this.encodeQueryParams(this.state.query)
+    }
+
     renderPage() {
         return <div>
             <h1>Moduli</h1>
@@ -67,17 +85,12 @@ class Forms extends ItemsBase {
                     <div className="flex-fill"></div>
 
                     <div className="col-auto">
-                        <button type="button" className="btn btn-sm btn-primary"
-                            onClick={async () => this.setState({csvData: await this.csvData()})}>
+                        <button type="button" className="btn btn-sm btn-primary mr-2" onClick={this.downloadCSV.bind(this)}>
                             <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
                         </button>
-                        {this.state.csvData !== undefined 
-                            ? <CSVDownload 
-                                data={this.state.csvData.data}
-                                headers={this.state.csvData.headers}
-                                filename="caps-moduli.csv"
-                                target="_blank" /> 
-                            : null }
+                        <button type="button" className="btn btn-sm btn-primary" onClick={this.downloadXLSX.bind(this)}>
+                            <i className="fas fw fa-file-excel"></i><span className="ml-2 d-none d-md-inline">Esporta in XLSX</span>
+                        </button>
                     </div>
                 </div>
                 <FilterBadges 
