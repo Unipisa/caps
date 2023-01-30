@@ -10,10 +10,6 @@ class DashboardController extends CapsAppController {
         // We fetch the data to display in the plots
         let data = await restClient.get('dashboard');
 
-        // FIX: cakephp inability to distinguish between {} and []
-        if (typeof(data.proposal_comments) === 'object' ) {
-            data.proposal_comments = [];
-        }
         ReactDOM.render(
             <Dashboard
                 root={this.root}
