@@ -85,7 +85,7 @@ class DashboardController extends RestController
                     LEFT JOIN users ON proposals.user_id = users.id
                     WHERE (att = 0 OR att_date < req_date) AND state = \'submitted\'
                     ORDER BY req_date ASC'
-        );
+	)->fetchAll("assoc");
 
 
         $data = [
@@ -99,3 +99,4 @@ class DashboardController extends RestController
         $this->JSONResponse(ResponseCode::Ok, $data);
     }
 }
+

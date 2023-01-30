@@ -26,6 +26,7 @@ use App\Controller\AppController;
 use App\Model\Entity\Attachment;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Mailer\Email;
 
 /**
  * Attachment Controller
@@ -62,7 +63,65 @@ class AttachmentsController extends AppController
             ->withType($attachment['mimetype'])
             ->withDownload($attachment['filename']);
     }
+    private function createEmail($proposal,$comment)
+    {
+        $email = new Email();
 
+        // Find the address that need to be notified in Cc, if any
+        $cc_addresses = array_map(
+            function ($address) {
+                return trim($address);
+            },
+            explode(',', $this->getSetting('notified-emails'))
+        );
+        $cc_addresses = array_filter($cc_addresses, function ($address) {
+            return trim($address) != "";
+        });
+        if (count($cc_addresses) > 0) {
+            $email->addCc($cc_addresses);
+        }
+
+        $email->setViewVars([ 'settings' => $this->getSettings(), 'proposal' => $proposal , 
+                                'comment' => $comment ])
+            ->setEmailFormat('html');
+
+        return $email;
+    }
+    private function get_proposal($id)
+    {
+        return   $this->Attachments->Proposals->get($id, [
+            'contain' => [ 'Users', 'Curricula', 'Curricula.Degrees' ] 
+        ]);
+            
+    }
+
+    private function notifyAttachment($id,$comment)
+    {
+
+        $user = $this->Attachments->Users->find()->where([ 'username' => $this->user['username'] ])->firstOrFail();
+        $proposal=$this->get_proposal($id);
+
+        if ($proposal->user['email'] == "" || $proposal->user['email'] == null) {
+            return;
+        }
+
+        if (! $proposal['curriculum']['degree']['attachment_confirmation'])
+            return;
+
+        $email = $this->createEmail($proposal,$comment)
+            ->setTo($proposal->user['email'])
+            ->setSubject('Allegato/commento aggiunto al piano di studi');
+        $email->viewBuilder()->setTemplate('comment');
+
+        try {
+            $email->send();
+
+        } catch (\Exception $e) {
+            $this->log("Could not send the comment/attachment confirmation email: " . $e->getMessage());
+
+        }
+
+    }
     /**
      * Add method
      *
@@ -123,6 +182,7 @@ class AttachmentsController extends AppController
                 } else {
                     $this->Flash->success(__('Il commento è stato salvato'));
                 }
+                $this->notifyAttachment($attachment['proposal_id'],$attachment['comment'] );
             } else {
                 $this->Flash->error(__('Impossibile salvare il commento/allegato'));
             }
