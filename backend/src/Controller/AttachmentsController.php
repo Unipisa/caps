@@ -90,8 +90,8 @@ class AttachmentsController extends AppController
     private function get_proposal($id)
     {
         return   $this->Attachments->Proposals->get($id, [
-            'contain' => [ 'Users'] 
-            ]);
+            'contain' => [ 'Users', 'Curricula', 'Curricula.Degrees' ] 
+        ]);
             
     }
 
@@ -104,6 +104,9 @@ class AttachmentsController extends AppController
         if ($proposal->user['email'] == "" || $proposal->user['email'] == null) {
             return;
         }
+
+        if (! $proposal['curriculum']['degree']['attachment_confirmation'])
+            return;
 
         $email = $this->createEmail($proposal,$comment)
             ->setTo($proposal->user['email'])
