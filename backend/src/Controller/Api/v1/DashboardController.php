@@ -98,4 +98,5 @@ class DashboardController extends RestController
         ];
         $this->JSONResponse(ResponseCode::Ok, $data);
     }
-APS
+}
+
