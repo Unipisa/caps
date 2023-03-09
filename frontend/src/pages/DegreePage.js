@@ -36,7 +36,7 @@ export default function DegreePage() {
     const engine = useEngine()
     const { id } = useParams();
     const [ degree, setDegree ] = useState(null);
-    const query = engine.useGet(Curriculum, id)
+    const query = engine.useGet(Degree, id)
 
     if (degree === null) {
         if (query.isSuccess) setDegree(query.data)

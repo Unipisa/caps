@@ -54,7 +54,7 @@ export default function CurriculumPage() {
     return <>
         <h1>{ curriculum.name }</h1>
         { curriculum.years.map((year_section, year_count) =>
-            <Card key={`year-${year_count}`} title={`${Degree.ordinal(year_count+1)} anno`}>
+            <Card key={`year-${year_count}`} title={`${Curriculum.ordinal(year_count+1)} anno`}> 
                 Crediti: { year_section.credits } <br />
                 <table>
                     <tbody>

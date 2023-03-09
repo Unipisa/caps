@@ -123,10 +123,15 @@ function TableBody({ Model, data, setData }) {
 
     function onToggle(item) {
         const items = data.items.map(it => {
-            return it._id === item._id
-            ? {...it, _selected: !it._selected}
-            : it;});
-        setData({...data, items });
+            if (it._id === item._id) {
+                it._selected = !it._selected
+            }
+            return it
+            // return it._id === item._id
+            // ? {...it, _selected: !it._selected}
+            // : it;
+        });
+        setData({...data, items});
     }
 
     function renderField(item, field, enable_link) {
