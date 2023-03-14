@@ -51,7 +51,7 @@
     "stylelint-scss": "^3.20.1",
     "uglify-js-es6": "^2.8.9",
     "watch": "^1.0.2",
-    "webpack": "^5.50.0",
+    "webpack": "^5.76.0",
     "webpack-cli": "^4.7.2"
   },
   "watch": {
