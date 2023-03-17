@@ -40,19 +40,13 @@ class FormsFilterForm extends FilterForm
     {
         $this->setData($data);
 
-        $exam_name = $this->getData('exam_name');
-        if (!empty($exam_name)) {
-            $this->query = $this->query->matching('ChosenExams.Exams', 
-                function ($q) use($exam_name) {
-                    return $q->where(['Exams.name LIKE' => '%' . $exam_name .'%']);
-                });
-        }
-
         if ($this->getData('state') !== '') {
             $this->filterFieldEqual('Forms.state', 'state');
         }
         $this->filterFieldLike('Users.surname', 'surname');
-        $this->filterFieldLike('FormTemplates.name', 'name');
+
+        // Note: Cake automatically escapes the form_template.name into form_template_name
+        $this->filterFieldLike('FormTemplates.name', 'form_template_name');
 
         return true;
     }

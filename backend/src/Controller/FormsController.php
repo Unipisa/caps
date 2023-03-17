@@ -36,7 +36,7 @@ class FormsController extends AppController
 {    
     public function index()
     {
-        $forms = $this->Forms->find();
+        $forms = $this->Forms->find()->contain([ 'FormTemplates', 'Users' ]);
 
         $filterForm = new FormsFilterForm($forms);
         $forms = $filterForm->validate_and_execute($this->request->getQuery());
