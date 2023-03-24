@@ -1,39 +1,60 @@
-'use strict';
+'use strict'
 
 import React from "react";
-import SmallCard from "./SmallCard";
 
-class Card extends React.Component {
+import { default as BootStrapCard } from 'react-bootstrap/Card';
 
-    onClick() {
-        if (this.props.onClick !== undefined) {
-            this.props.onClick(this);
+function classWithDefault(className, defaultClass) {
+    let output = defaultClass;
+    if (className !== undefined) {
+        output += ' ' + className;
+    }
+    return output;
+
+}
+
+/**
+* Custom Card component based on (react-)boostrap's Card with default styles
+* to adhere to the website style.
+*
+* Possible props:
+*   - className, additional classes added to the card component
+*   - title, optional title to add to the card header
+*   - onClick(card), function to call on the onClick event of the card
+*           Note: the function can take the card component itself as first
+*           argument
+*   - children[]
+*/
+export default function Card({
+    className,
+    title,
+    // titleClass,
+    // titleBg,
+    onClick,
+    children
+}) {
+    let cardClass = classWithDefault(className, 'shadow my-2');
+    // let headerClass = titleBg || 'bg-primary';
+    // let titleClass = classWithDefault(titleClass, 'text-white');
+    let headerClass = 'bg-primary'
+    let titleClass = 'text-white';
+
+    function onClick() {
+        if (this.onClick !== undefined) {
+            this.onClick(this);
         }
     }
 
-    constructor(props) {
-        super(props);
-
-        this.containerClass = "card-header bg-" + 
-            ((this.props.bg !== undefined) ? this.props.bg : "primary");
-        this.titleClass = this.props.titleClass ? this.props.titleClass : "text-white"
-    }
-
-    renderTitle() {
-        return <div className={this.containerClass}>
-                <h3 className={"h5 " + this.titleClass}>{this.props.title}</h3>
-        </div>;
-    }
-
-    render() {
-        return <div className="row" onClick={this.onClick.bind(this)}>
-            <div className="col">
-                <SmallCard {...this.props}>
-                    {this.props.children}
-                </SmallCard>
-            </div>
-        </div>;
-    }
+    return <BootStrapCard className={cardClass} onClick={onClick.bind(this)}>
+        {title &&
+            <BootStrapCard.Header className={headerClass}>
+                <h5 className={titleClass}>
+                    {title}
+                </h5>
+            </BootStrapCard.Header>
+        }
+        <BootStrapCard.Body>
+            {children}
+        </BootStrapCard.Body>
+    </BootStrapCard>;
 }
-
-export default Card;

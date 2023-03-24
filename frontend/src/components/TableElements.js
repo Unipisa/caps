@@ -107,7 +107,7 @@ export function CsvDownloadButton({ Model }) {
     }
 
     return <>
-        <button type="button" className="btn btn-sm btn-primary" onClick={ onClick }>
+        <button type="button" className="btn btn-sm btn-primary mr-2" onClick={ onClick }>
                 <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">CSV</span>
         </button>
         { csvData &&
@@ -121,7 +121,7 @@ export function CsvDownloadButton({ Model }) {
 }
 
 export function ExcelDownloadButton() {
-    return <button type="button" className="btn btn-sm btn-primary">
+    return <button type="button" className="btn btn-sm btn-primary mr-2">
         <i className="fas fw fa-file-excel" />
         <span className="ml-2 d-none d-md-inline">
            <span className="d-none d-xl-inline">Esporta in</span> Excel

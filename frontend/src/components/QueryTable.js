@@ -6,7 +6,7 @@ import { useEngine } from '../modules/engine'
 import api from '../modules/api'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
-
+import Card from 'react-bootstrap/Card'
 
 export const QueryTableContext = createContext(null)
 
@@ -19,15 +19,19 @@ export function useQuery() {
 export default function QueryTable({ Model, children }) {
     const [ query, setQuery ] = useState({})
 
-    return <QueryTableProvider value={{query, setQuery}}>
-        <div className="d-flex mb-2">
-            {children}
-        </div>
-        <FilterBadges/>
-        <div className="table-responsive-lg">
-            <Table Model={ Model }/>
-        </div>
-    </QueryTableProvider>
+    return <Card className="shadow my-2">
+        <Card.Body>
+            <QueryTableProvider value={{query, setQuery}}>
+                <div className="d-flex mb-2">
+                    {children}
+                </div>
+                <FilterBadges/>
+                <div className="table-responsive-lg">
+                    <Table Model={ Model }/>
+                </div>
+            </QueryTableProvider>
+        </Card.Body>
+    </Card>
 }
 
 function FilterBadges() {

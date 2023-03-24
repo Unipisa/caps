@@ -44,7 +44,7 @@ function SinglePageInternal () {
                     <TopBar/>
                     <Modal title={ modalConfirmData.title } content={ modalConfirmData.content } callback={ modalConfirmData.callback }></Modal>
                     <Flash messages={ engine.state.flashMessages } onClick={ () => engine.hideFlash() }></Flash>
-                    <div id="content">
+                    <div id="content" className="px-4">
                         <Routes>
                             <Route path="/" element={<Splash/>}/>
                             <Route path="/index.html" element={<Splash/>}/>
