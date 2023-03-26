@@ -44,6 +44,10 @@ router.get('/curricula/:id', response_envelope(Curricula.view))
 router.get('/form_templates/', response_envelope(FormTemplates.index))
 router.get('/form_templates/:id', response_envelope(FormTemplates.view))
 router.get('/exams/:id', response_envelope(Exams.view))
+// TODO: post@/exams/:id e post@/exams sono due cose diverse?
+// si potrebbe fare che uno è per updatare l'esame di id [:id],
+// mentre l'altro è per aggiungere un nuovo esame
+router.post('/exams/:id', response_envelope(Exams.update))
 router.get('/exams', response_envelope(Exams.index))
 router.post('/exams', response_envelope(Exams.post))
 router.get('/users', response_envelope(Users.index))

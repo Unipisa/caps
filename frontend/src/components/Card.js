@@ -20,9 +20,7 @@ function classWithDefault(className, defaultClass) {
 * Possible props:
 *   - className, additional classes added to the card component
 *   - title, optional title to add to the card header
-*   - onClick(card), function to call on the onClick event of the card
-*           Note: the function can take the card component itself as first
-*           argument
+*   - onClick()
 *   - children[]
 */
 export default function Card({
@@ -39,13 +37,7 @@ export default function Card({
     let headerClass = 'bg-primary'
     let titleClass = 'text-white';
 
-    function onClick() {
-        if (this.onClick !== undefined) {
-            this.onClick(this);
-        }
-    }
-
-    return <BootStrapCard className={cardClass} onClick={onClick.bind(this)}>
+    return <BootStrapCard className={cardClass} onClick={onClick}>
         {title &&
             <BootStrapCard.Header className={headerClass}>
                 <h5 className={titleClass}>

@@ -98,6 +98,15 @@ const ModelController = {
             throw new BadRequestError()
         }
     },
+
+    update: async (req, Model) => {
+        const { id } = req.params
+        try {
+            await Model.findByIdAndUpdate(id, { $set: req.body})
+        } catch(err) {
+            throw new BadRequestError()
+        }
+    }
 }
 
 module.exports = ModelController;
