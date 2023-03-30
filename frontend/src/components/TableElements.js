@@ -1,14 +1,20 @@
 'use strict';
 
 import React, { useState, Children } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Dropdown } from 'react-bootstrap'
 import { CSVDownload, CSVLink } from 'react-csv'
 
 import { useQuery } from './QueryTable'
 import { useEngine } from '../modules/engine'
 
-export function ItemAddButton({ children }) {
-    return <button type="button" className="btn btn-sm btn-primary mr-2">
+export function ItemAddButton({ to, children }) {
+    const navigate = useNavigate()
+
+    return <button type="button" 
+        className="btn btn-sm btn-primary mr-2"
+        onClick={() => navigate(to)}
+    >
         <i className="fas fa-plus"></i>
         <span className="d-none d-md-inline ml-2">
             { children }

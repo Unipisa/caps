@@ -103,6 +103,10 @@ export function useCreateEngine() {
             }
         ),
 
+        invalidateGet: async (Model, id) => {
+            await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
+        },
+
         useIndex: (Model, query) => useQuery(
             [Model.api_url, query],
             async () => {

@@ -4,7 +4,7 @@
  */
 
 const { default: mongoose } = require("mongoose");
-const { BadRequestError, NotImplementedError } = require("../exceptions/ApiException");
+const { BadRequestError, ValidationError, NotImplementedError } = require("../exceptions/ApiException");
 
 const ModelController = {
 
@@ -99,11 +99,20 @@ const ModelController = {
         }
     },
 
-    update: async (req, Model) => {
-        const { id } = req.params
+    update: async (id, Model, data) => {
         try {
-            await Model.findByIdAndUpdate(id, { $set: req.body})
+            await Model.findByIdAndUpdate(id, { $set: data})
         } catch(err) {
+            throw new BadRequestError()
+        }
+    },
+
+    insert: async (Model, data) => {
+        try {
+            const entry = new Model(data)
+            await entry.save()
+            return entry._id
+        } catch (err) {
             throw new BadRequestError()
         }
     }

@@ -20,7 +20,7 @@ export default function ExamsPage() {
                 <FilterInput name="credits" label="crediti" />
             </FilterButton>
 
-            <ItemAddButton>
+            <ItemAddButton to="/exams/edit">
                 Aggiungi esame
             </ItemAddButton>
 

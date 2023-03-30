@@ -10,52 +10,209 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+import Select from 'react-select'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-function ControlGroup(props) {
+function Group(props) {
     const { controlId, label, ...controlProps } = props;
     return (
         <Form.Group className="mb-3" controlId={props.controlId}>
             <Form.Label>{props.label}</Form.Label>
-            <Form.Control {...controlProps} />
+            {
+                props.children === undefined
+                    ? <Form.Control {...controlProps} />
+                    : props.children
+            }
         </Form.Group>
     );
 }
 
-export function EditExamPage() {
+const options = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' },
+];
 
-    const navigate = useNavigate();
+export function AddExamPage() {
+    const navigate = useNavigate()
+    const engine = useEngine()
 
-    async function submit(id, data) {
+    const [code, setCode] = useState('')
+    const [name, setName] = useState('')
+    const [sector, setSector] = useState('')
+    const [credits, setCredits] = useState(0)
+    const [tags, setTags] = useState([])
+    const [newTags, setNewTags] = useState('')
+    const [groups, setGroups] = useState([])
+    const [notes, setNotes] = useState('')
+
+    async function submit() {
         try {
-            await api.post(`${Exam.api_url}${id}`, data)
-            // TODO: probably should change engine in order to force reload the exam
-            return navigate(`/exams/${id}`)
+            const data = {
+                code,
+                name,
+                sector,
+                credits,
+                tags,
+                newTags,
+                groups,
+                notes
+            }
+
+            const newId = await api.post(`${Exam.api_url}`, data)
+            engine.flashSuccess("L'esame è stato modificato correttamente")
+
+            return navigate(`/exams/${newId}`)
         } catch (err) {
-            // TODO: show some UI info on what went wrong (data validation)
-            console.log(err)
+            window.scrollTo(0, 0)
+            if (err.code === 403) {
+                engine.flashError(`Errore di validazione: ${err.message}`)
+            } else {
+                engine.flashError(`${err.code}: ${err.message}`)
+            }
         }
     }
 
+    return <>
+        <h1>Aggiungi esame</h1>
+        <Card>
+            <Form>
+                <Group
+                    controlId="code"
+                    label="Codice"
+                    type="text"
+                    maxLength="6"
+                    value={code}
+                    onChange={e => setCode(e.target.value)}
+                />
+                <Group
+                    controlId="name"
+                    label="Nome"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                />
+                <Group
+                    controlId="sector"
+                    label="Settore"
+                    type="text"
+                    value={sector}
+                    onChange={e => setSector(e.target.value)}
+                />
+                <Group
+                    controlId="credits"
+                    label="Crediti"
+                    type="number"
+                    value={credits}
+                    onChange={e => setCredits(e.target.value)}
+                />
+
+
+                <Group label="Tags">
+                    <Select
+                        id="tags"
+                        isMulti
+                        onChange={setTags}
+                        options={options}
+                        defaultSelected={tags}
+                    />
+                </Group>
+                <Group
+                    controlId="new-tags"
+                    label="Nuovi tag (separati da virgola)"
+                    type="text"
+                    value={newTags}
+                    onChange={e => setNewTags(e.target.value)}
+                />
+
+                <Group label="Gruppi">
+                    <Select
+                        id="groups"
+                        onChange={setGroups}
+                        options={options}
+                        defaultSelected={groups}
+                    />
+                </Group>
+
+                <Group label="Note">
+                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
+                    <CKEditor
+                        id="notes"
+                        editor={ClassicEditor}
+                        config={{
+                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
+                        }}
+                        data={notes}
+                        onChange={(event, editor) => {
+                            const data = editor.getData()
+                            setNotes(data)
+                            console.log({ event, editor, data })
+                        }}
+                    />
+                </Group>
+
+                <Button onClick={submit}>Salva Esame</Button>
+            </Form>
+        </Card>
+    </>
+}
+export function EditExamPage() {
+    const navigate = useNavigate();
     const engine = useEngine()
     const { id } = useParams()
+
     const [exam, setExam] = useState(null)
     const query = engine.useGet(Exam, id)
 
-    const [values, setValues] = useState({
-        code: '',
-        name: '',
-        sector: '',
-        credits: 0
-    })
-    useEffect(() => {
-        if (exam) setValues({
-            code: exam.code,
-            name: exam.name,
-            sector: exam.sector,
-            credits: exam.credits
-        })
-    }, [exam])
+    const [code, setCode] = useState('')
+    const [name, setName] = useState('')
+    const [sector, setSector] = useState('')
+    const [credits, setCredits] = useState(0)
+    const [tags, setTags] = useState([])
+    const [newTags, setNewTags] = useState('')
+    const [groups, setGroups] = useState([])
+    const [notes, setNotes] = useState('')
 
+    async function submit() {
+        try {
+            const data = {
+                code,
+                name,
+                sector,
+                credits,
+                tags,
+                newTags,
+                groups,
+                notes
+            }
+
+            await api.post(`${Exam.api_url}${id}`, data)
+            await engine.invalidateGet(Exam, id)
+            engine.flashSuccess("L'esame è stato modificato correttamente")
+
+            return navigate(`/exams/${id}`)
+        } catch (err) {
+            window.scrollTo(0, 0)
+            if (err.code === 403) {
+                engine.flashError(`Errore di validazione: ${err.message}`)
+            } else {
+                engine.flashError(`${err.code}: ${err.message}`)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (exam) {
+            setCode(exam.code)
+            setName(exam.name)
+            setSector(exam.sector)
+            setCredits(exam.credits)
+            setTags(exam.tags)
+            setGroups(exam.groups)
+            setNotes(exam.notes || '')
+        }
+    }, [exam])
 
     if (exam === null) {
         if (query.isSuccess) setExam(query.data)
@@ -66,21 +223,81 @@ export function EditExamPage() {
         <h1>Modifica esame</h1>
         <Card>
             <Form>
-                <ControlGroup controlId="code" label="Codice" type="text" maxLength="5" value={values.code} onChange={e => setValues({ ...values, code: e.target.value })} />
-                <ControlGroup controlId="name" label="Nome" type="text" value={values.name} onChange={e => setValues({ ...values, name: e.target.value })} />
-                <ControlGroup controlId="sector" label="Settore" type="text" value={values.sector} onChange={e => setValues({ ...values, sector: e.target.value })} />
-                <ControlGroup controlId="credits" label="Crediti" type="number" value={values.credits} onChange={e => setValues({ ...values, credits: e.target.value })} />
+                <Group
+                    controlId="code"
+                    label="Codice"
+                    type="text"
+                    maxLength="6"
+                    value={code}
+                    onChange={e => setCode(e.target.value)}
+                />
+                <Group
+                    controlId="name"
+                    label="Nome"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                />
+                <Group
+                    controlId="sector"
+                    label="Settore"
+                    type="text"
+                    value={sector}
+                    onChange={e => setSector(e.target.value)}
+                />
+                <Group
+                    controlId="credits"
+                    label="Crediti"
+                    type="number"
+                    value={credits}
+                    onChange={e => setCredits(e.target.value)}
+                />
 
-                {/* TODO: sistema tags come dropdown */}
-                <ControlGroup controlId="tags" label="Tags" type="text" disabled />
-                <ControlGroup controlId="new-tags" label="Nuovi tag (separati da virgola)" type="text" />
 
-                {/* TODO: sistema groups come dropdown */}
-                <ControlGroup controlId="groups" label="Gruppi" type="text" disabled />
+                <Group label="Tags">
+                    <Select
+                        id="tags"
+                        isMulti
+                        onChange={setTags}
+                        options={options}
+                        defaultSelected={tags}
+                    />
+                </Group>
+                <Group
+                    controlId="new-tags"
+                    label="Nuovi tag (separati da virgola)"
+                    type="text"
+                    value={newTags}
+                    onChange={e => setNewTags(e.target.value)}
+                />
 
-                <ControlGroup controlId="notes" label="Note" as="textarea" rows="3" />
+                <Group label="Gruppi">
+                    <Select
+                        id="groups"
+                        onChange={setGroups}
+                        options={options}
+                        defaultSelected={groups}
+                    />
+                </Group>
 
-                <Button onClick={() => submit(id, values)}>Aggiorna Esame</Button>
+                <Group label="Note">
+                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
+                    <CKEditor
+                        id="notes"
+                        editor={ClassicEditor}
+                        config={{
+                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
+                        }}
+                        data={notes}
+                        onChange={(event, editor) => {
+                            const data = editor.getData()
+                            setNotes(data)
+                            console.log({ event, editor, data })
+                        }}
+                    />
+                </Group>
+
+                <Button onClick={submit}>Aggiorna Esame</Button>
             </Form>
         </Card>
     </>
@@ -186,4 +403,5 @@ export default function ExamPage() {
         </Card>
     </>
 }
+
 

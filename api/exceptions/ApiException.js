@@ -23,6 +23,14 @@ class NotFoundError extends ApiError {
 
 exports.NotFoundError = NotFoundError;
 
+class ValidationError extends ApiError {
+    constructor(message = "Validation Error") {
+        super(message, 403);
+    }
+}
+
+exports.ValidationError = ValidationError;
+
 class NotImplementedError extends ApiError {
     constructor(message = "Not Implemented") {
         super(message, 501);

@@ -41,17 +41,18 @@ const ExamsController = {
         })
     },
 
-    post: async req => {
-        const exam = new Exam(req.body);
-        return await exam.save();
+    // post: async req => {
+    //     const exam = new Exam(req.body);
+    //     return await exam.save();
+    // },
+
+    update: async req => {
+        const { id } = req.params;
+        return await ModelController.update(id, Exam, req.body);
     },
 
-    // TODO: update e post sono probabilmente la stessa cosa visto che mongoose
-    // permette di fare upsert, ma prima di decidere ciò e cancellare una delle
-    // due funzioni preferisco finire l'edit e fare la pagina di "crea esame",
-    // e poi si decide
-    update: async req => {
-        return await ModelController.update(req, Exam);
+    insert: async req => {
+        return await ModelController.insert(Exam, req.body);
     }
 }
 

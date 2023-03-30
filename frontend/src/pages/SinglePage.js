@@ -17,7 +17,7 @@ import CurriculumPage from "./CurriculumPage"
 import FormTemplatesPage from './FormTemplatesPage'
 import FormTemplatePage from './FormTemplatePage'
 import ExamsPage from "./ExamsPage"
-import { default as  ExamPage, EditExamPage } from "./ExamPage"
+import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
 import UserPage from "./UserPage"
 
@@ -60,6 +60,7 @@ function SinglePageInternal () {
                             <Route path="/form_templates/:id" element={<FormTemplatePage/>}/>
                             <Route path="/form_templates" element={<FormTemplatesPage/>}/>
                             <Route path="/exams/edit/:id" element={<EditExamPage/>}/>
+                            <Route path="/exams/edit" element={<AddExamPage/>} />
                             <Route path="/exams/:id" element={<ExamPage/>}/>
                             <Route path="/exams" element={<ExamsPage/>}/>
                             <Route path="/users" element={<UsersPage/>}/>
