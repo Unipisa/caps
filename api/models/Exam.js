@@ -1,28 +1,40 @@
-
 const mongoose = require('mongoose');
+const { required, isNotEmpty, minVal } = require('./Validators')
 
 const Exam = mongoose.model('Exam', {
     old_id: {
         type: Number,
         required: false
     },
-    name: { 
-        type: String, 
-        required: true
-    },
-    code: { 
+    name: {
         type: String,
-        default: null
+        required: required("Nome"),
+        validate: [isNotEmpty("Nome")]
     },
-    sector: { 
+    code: {
         type: String,
-        default: ""
+        default: "",
+        // required: required("Codice"),
+        // validate: [isNotEmpty("Codice")]
+    },
+    sector: {
+        type: String,
+        required: required("Settore"),
+        validate: [isNotEmpty("Settore")]
     },
     credits: {
         type: Number,
-        required: true
+        required: required("Crediti"),
+        validate: [minVal(1, "Crediti")]
     },
-    tags: [ String ]
+    tags: {
+        type: [String],
+        default: []
+    },
+    notes: {
+        type: String,
+        default: ""
+    },
 })
 
 module.exports = Exam;

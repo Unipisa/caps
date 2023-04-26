@@ -8,22 +8,18 @@ import api from '../modules/api'
 import Curriculum from '../models/Curriculum'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
+import Exam from '../models/Exam';
 
 function CompulsoryExam({ exam_id }) {
     const engine = useEngine()
     const [ exam, setExam ] = useState(null)
+    
+    const query = engine.useGet(Exam, exam_id);
 
-    useEffect(() => (async () => {
-        try {
-            const new_exam = await api.get(`exams/${exam_id}`)
-            console.log(`new exam: ${JSON.stringify(new_exam)}`)
-            setExam(new_exam)
-        } catch(err) {
-            engine.flashCatch(err)
-        }
-    })(),[engine, exam_id])
-
-    if (exam === null) return <tr><td>...</td><td></td></tr>
+    if (exam === null) {
+        if (query.isSuccess) setExam(query.data)
+        return <tr><td>...</td><td></td></tr>
+    }
     return <tr><th>esame obbligatorio</th><td>{ exam.name }</td><td>{ exam.credits }</td><td>{ exam.code }</td><td>{ exam.sector }</td></tr>
 }
 

@@ -10,7 +10,6 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import Select from 'react-select'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
@@ -28,12 +27,6 @@ function Group(props) {
     );
 }
 
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-];
-
 export function AddExamPage() {
     const navigate = useNavigate()
     const engine = useEngine()
@@ -43,8 +36,6 @@ export function AddExamPage() {
     const [sector, setSector] = useState('')
     const [credits, setCredits] = useState(0)
     const [tags, setTags] = useState([])
-    const [newTags, setNewTags] = useState('')
-    const [groups, setGroups] = useState([])
     const [notes, setNotes] = useState('')
 
     async function submit() {
@@ -55,8 +46,6 @@ export function AddExamPage() {
                 sector,
                 credits,
                 tags,
-                newTags,
-                groups,
                 notes
             }
 
@@ -67,7 +56,7 @@ export function AddExamPage() {
         } catch (err) {
             window.scrollTo(0, 0)
             if (err.code === 403) {
-                engine.flashError(`Errore di validazione: ${err.message}`)
+                engine.flashError(`Errore di validazione: ${err.issues}`)
             } else {
                 engine.flashError(`${err.code}: ${err.message}`)
             }
@@ -109,31 +98,13 @@ export function AddExamPage() {
                 />
 
 
-                <Group label="Tags">
-                    <Select
-                        id="tags"
-                        isMulti
-                        onChange={setTags}
-                        options={options}
-                        defaultSelected={tags}
-                    />
-                </Group>
                 <Group
-                    controlId="new-tags"
-                    label="Nuovi tag (separati da virgola)"
+                    controlId="tags"
+                    label="Tag (separati da virgola)"
                     type="text"
-                    value={newTags}
-                    onChange={e => setNewTags(e.target.value)}
+                    value={tags.join(", ")}
+                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
                 />
-
-                <Group label="Gruppi">
-                    <Select
-                        id="groups"
-                        onChange={setGroups}
-                        options={options}
-                        defaultSelected={groups}
-                    />
-                </Group>
 
                 <Group label="Note">
                     <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
@@ -170,8 +141,6 @@ export function EditExamPage() {
     const [sector, setSector] = useState('')
     const [credits, setCredits] = useState(0)
     const [tags, setTags] = useState([])
-    const [newTags, setNewTags] = useState('')
-    const [groups, setGroups] = useState([])
     const [notes, setNotes] = useState('')
 
     async function submit() {
@@ -182,8 +151,6 @@ export function EditExamPage() {
                 sector,
                 credits,
                 tags,
-                newTags,
-                groups,
                 notes
             }
 
@@ -193,9 +160,12 @@ export function EditExamPage() {
 
             return navigate(`/exams/${id}`)
         } catch (err) {
+            console.log("ciao")
             window.scrollTo(0, 0)
             if (err.code === 403) {
-                engine.flashError(`Errore di validazione: ${err.message}`)
+                for (const issue in err.res.issues) {
+                    engine.flashError(`Errore di validazione: ${err.res.issues[issue]}`)
+                }
             } else {
                 engine.flashError(`${err.code}: ${err.message}`)
             }
@@ -209,7 +179,6 @@ export function EditExamPage() {
             setSector(exam.sector)
             setCredits(exam.credits)
             setTags(exam.tags)
-            setGroups(exam.groups)
             setNotes(exam.notes || '')
         }
     }, [exam])
@@ -254,31 +223,13 @@ export function EditExamPage() {
                 />
 
 
-                <Group label="Tags">
-                    <Select
-                        id="tags"
-                        isMulti
-                        onChange={setTags}
-                        options={options}
-                        defaultSelected={tags}
-                    />
-                </Group>
                 <Group
-                    controlId="new-tags"
-                    label="Nuovi tag (separati da virgola)"
+                    controlId="tags"
+                    label="Tag (separati da virgola)"
                     type="text"
-                    value={newTags}
-                    onChange={e => setNewTags(e.target.value)}
+                    value={tags.join(", ")}
+                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
                 />
-
-                <Group label="Gruppi">
-                    <Select
-                        id="groups"
-                        onChange={setGroups}
-                        options={options}
-                        defaultSelected={groups}
-                    />
-                </Group>
 
                 <Group label="Note">
                     <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>

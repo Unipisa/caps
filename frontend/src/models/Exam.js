@@ -23,6 +23,9 @@ export default class Exam extends Model {
             field: 'credits',
             label: "Crediti",
             enable_sort: true 
+        }, {
+            field: 'notes',
+            label: "Note"
         }];
     static sort_default = 'name';
     static sort_default_direction = 1;

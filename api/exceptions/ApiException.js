@@ -1,8 +1,9 @@
 class ApiError extends Error {
-    constructor(message, code=500) {
+    constructor(message, code=500, issues=null) {
         super(message);
         this.name = "ApiException";
         this.code = code;
+        this.issues = issues;
     }
 }
 exports.ApiError = ApiError;
@@ -24,8 +25,8 @@ class NotFoundError extends ApiError {
 exports.NotFoundError = NotFoundError;
 
 class ValidationError extends ApiError {
-    constructor(message = "Validation Error") {
-        super(message, 403);
+    constructor(issues, message = "Validation Error") {
+        super(message, 403, issues);
     }
 }
 
@@ -42,7 +43,8 @@ function apiErrors(err, req, res, next) {
     if (err instanceof ApiError) {
         res.status(err.code).send({
             code: err.code,
-            message: err.message
+            message: err.message,
+            issues: err.issues
         })
     } else {
         next(err);

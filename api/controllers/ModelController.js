@@ -100,7 +100,17 @@ const ModelController = {
     },
 
     update: async (id, Model, data) => {
+        const validationTest = (new Model(data)).validateSync()
+        if (validationTest) {
+            let errors = {}
+            for (const err in validationTest.errors) {
+                errors[err] = validationTest.errors[err].message
+            }
+            throw new ValidationError(errors)
+        }
         try {
+            console.log((new Model(data)).validateSync().errors['name'].message)
+            throw new BadRequestError()
             await Model.findByIdAndUpdate(id, { $set: data})
         } catch(err) {
             throw new BadRequestError()

@@ -8,27 +8,24 @@ import api from '../modules/api'
 import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
+import Exam from '../models/Exam';
 
 function Group({ name, exam_ids }) {
     const engine = useEngine()
     const [ exams, setExams ] = useState(null)
+    const query = engine.useIndex(Exam, {'ids': exam_ids.join(",")})
 
-    useEffect(async () => {
-        try {
-            const queryset = await api.get('exams', {'ids': exam_ids.join(",")})
-            setExams(queryset.items);
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    }, [ exam_ids ])
+    if (exams === null) {
+        if (query.isSuccess) setExams(query.data)
+        return <tr>
+            <th>{ name }</th>
+            <td> ...loading... </td>
+        </tr>
+    }
 
     return <tr>
         <th>{ name }</th>
-        <td>{ exams === null 
-                ? "...loading..."
-                : exams.map(e => e.name).join(", ")
-            }
-        </td>
+        <td>{  exams.items.map(e => e.name).join(", ") }</td>
     </tr>
 }
 

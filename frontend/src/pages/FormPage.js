@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
-import api from '../modules/api'
 import Form from '../models/Form'
 import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
@@ -31,19 +30,19 @@ function Badges({ form, formTemplate }) {
 
     if (form.date_submitted) {
         badges.push(<span key="submitted-badge" className="badge badge-secondary mr-2 mb-2">
-            Inviato il {form.date_submitted}
+            Inviato il {form.date_submitted.format()}
         </span>)
     }
 
     if (form.state === "approved") {
         badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-            Approvato il {form.date_managed}
+            Approvato il {form.date_managed.format()}
         </span>)
     }
 
     if (form.state === "rejected") {
         badges.push(<span key="rejected-badge" className="badge badge-danger mr-2 mb-2">
-            Rifiutato il {form.date_managed}
+            Rifiutato il {form.date_managed.format()}
         </span>)
     }
 
@@ -53,7 +52,7 @@ function Badges({ form, formTemplate }) {
         </span>);
     }
 
-    return badges
+    return <>{badges}</>
 }
 
 /*
@@ -81,16 +80,6 @@ export default function FormPage() {
     const queryForm = engine.useGet(Form, id)
     const queryFormTemplate = engine.useGet(FormTemplate, form ? form.form_template_id : null)
 
-    useEffect(() => (async () => {
-        try {
-            const got_form = await api.get(`forms/${id}`)
-            setForm(got_form)
-            setFormTemplate(await api.get(`form_templates/${got_form.form_template_id}`))
-        } catch(err) {
-            engine.flashCatch(err);
-        }
-    })(), [ setForm, setFormTemplate, engine ])
-
     //  if (formTemplate === null) return <TemplateSelection />
 
     if (form === null || formTemplate === null) {
@@ -107,7 +96,7 @@ export default function FormPage() {
     }
 
     return <Card title={form.form_template_name}>
-            <Badges form={form} formTemplate={formTemplate}></Badges>
+        <Badges form={form} formTemplate={formTemplate}></Badges>
             {!edit && form.state==="draft" && 
                 <DraftNotice edit={edit} form={form}></DraftNotice>}
             <div id="form-div" className="form-form" >
@@ -118,7 +107,7 @@ export default function FormPage() {
             <button onClick={evt => onSave('submit', evt)} className="btn btn-success">Invia</button>
             <button onClick={evt => onSave('save', evt)} className="btn btn-primary">Salva bozza</button> 
         </div>
-        }
+        } 
     </Card>;
 }
 
