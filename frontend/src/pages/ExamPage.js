@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
-import api from '../modules/api'
 import Exam from '../models/Exam'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
@@ -13,245 +12,171 @@ import Button from 'react-bootstrap/Button'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-function Group(props) {
-    const { controlId, label, ...controlProps } = props;
+function Group({ controlId, label, validationError, children, ...controlProps }) {
     return (
-        <Form.Group className="mb-3" controlId={props.controlId}>
-            <Form.Label>{props.label}</Form.Label>
-            {
-                props.children === undefined
-                    ? <Form.Control {...controlProps} />
-                    : props.children
-            }
+        <Form.Group className="mb-3" controlId={controlId} >
+        <Form.Label>{label}</Form.Label>
+        {
+            children === undefined
+            ? <Form.Control
+            {...controlProps}
+            className={validationError ? "border border-danger" : ""}
+            />
+            : children
+        }
+        {validationError && <Form.Label className="mb-0 text-danger">{validationError}</Form.Label>}
         </Form.Group>
     );
+}
+
+function ExamForm({ submit, exam, isEdit }) {
+    const [code, setCode] = useState(exam.code)
+    const [name, setName] = useState(exam.name)
+    const [sector, setSector] = useState(exam.sector)
+    const [credits, setCredits] = useState(exam.credits)
+    const [tags, setTags] = useState(exam.tags)
+    const [notes, setNotes] = useState(exam.notes || '')
+
+    const [validation, setValidation] = useState({})
+
+    function onSubmit() {
+        submit({ code, name, sector, credits, tags, notes }, setValidation)
+    }
+
+    return <>
+        <h1>{isEdit ? "Modifica esame" : "Aggiungi esame"}</h1>
+        <Card>
+            <Form>
+                <Group
+                    validationError={validation.code}
+                    controlId="code"
+                    label="Codice"
+                    type="text"
+                    maxLength="6"
+                    value={code}
+                    onChange={e => setCode(e.target.value)}
+                />
+                <Group
+                    validationError={validation.name}
+                    controlId="name"
+                    label="Nome"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                />
+                <Group
+                    validationError={validation.sector}
+                    controlId="sector"
+                    label="Settore"
+                    type="text"
+                    value={sector}
+                    onChange={e => setSector(e.target.value)}
+                />
+                <Group
+                    validationError={validation.credits}
+                    controlId="credits"
+                    label="Crediti"
+                    type="number"
+                    value={credits}
+                    onChange={e => setCredits(e.target.value)}
+                />
+                <Group
+                    validationError={validation.tags}
+                    controlId="tags"
+                    label="Tag (separati da virgola)"
+                    type="text"
+                    value={tags.join(", ")}
+                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
+                />
+                <Group label="Note">
+                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
+                    <CKEditor
+                        id="notes"
+                        editor={ClassicEditor}
+                        config={{
+                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
+                        }}
+                        data={notes}
+                        onChange={(event, editor) => {
+                            const data = editor.getData()
+                            setNotes(data)
+                            console.log({ event, editor, data })
+                        }}
+                    />
+                </Group>
+
+                <Button onClick={onSubmit}>Salva Esame</Button>
+            </Form>
+        </Card>
+    </>
 }
 
 export function AddExamPage() {
     const navigate = useNavigate()
     const engine = useEngine()
+    const inserter = engine.useInsert(Exam)
 
-    const [code, setCode] = useState('')
-    const [name, setName] = useState('')
-    const [sector, setSector] = useState('')
-    const [credits, setCredits] = useState(0)
-    const [tags, setTags] = useState([])
-    const [notes, setNotes] = useState('')
-
-    async function submit() {
-        try {
-            const data = {
-                code,
-                name,
-                sector,
-                credits,
-                tags,
-                notes
+    const emptyExam = {
+        code: '',
+        name: '',
+        sector: '',
+        credits: 0,
+        tags: [],
+        notes: ''
+    }
+    function submit(data, setErrors) {
+        inserter.mutate(
+            data,
+            {
+                onSuccess: (newId) => {
+                    engine.flashSuccess("Esame aggiunto con successo")
+                    navigate(`/exams/${newId}`)
+                },
+                onError: (err) => {
+                    if (err.code === 403) {
+                        setErrors(err.issues)
+                    }
+                }
             }
-
-            const newId = await api.post(`${Exam.api_url}`, data)
-            engine.flashSuccess("L'esame è stato modificato correttamente")
-
-            return navigate(`/exams/${newId}`)
-        } catch (err) {
-            window.scrollTo(0, 0)
-            if (err.code === 403) {
-                engine.flashError(`Errore di validazione: ${err.issues}`)
-            } else {
-                engine.flashError(`${err.code}: ${err.message}`)
-            }
-        }
+        )
     }
 
-    return <>
-        <h1>Aggiungi esame</h1>
-        <Card>
-            <Form>
-                <Group
-                    controlId="code"
-                    label="Codice"
-                    type="text"
-                    maxLength="6"
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
-                />
-                <Group
-                    controlId="name"
-                    label="Nome"
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                />
-                <Group
-                    controlId="sector"
-                    label="Settore"
-                    type="text"
-                    value={sector}
-                    onChange={e => setSector(e.target.value)}
-                />
-                <Group
-                    controlId="credits"
-                    label="Crediti"
-                    type="number"
-                    value={credits}
-                    onChange={e => setCredits(e.target.value)}
-                />
-
-
-                <Group
-                    controlId="tags"
-                    label="Tag (separati da virgola)"
-                    type="text"
-                    value={tags.join(", ")}
-                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
-                />
-
-                <Group label="Note">
-                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
-                    <CKEditor
-                        id="notes"
-                        editor={ClassicEditor}
-                        config={{
-                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
-                        }}
-                        data={notes}
-                        onChange={(event, editor) => {
-                            const data = editor.getData()
-                            setNotes(data)
-                            console.log({ event, editor, data })
-                        }}
-                    />
-                </Group>
-
-                <Button onClick={submit}>Salva Esame</Button>
-            </Form>
-        </Card>
-    </>
+    return <ExamForm submit={submit} exam={emptyExam} />
 }
+
 export function EditExamPage() {
     const navigate = useNavigate();
     const engine = useEngine()
+
     const { id } = useParams()
-
     const [exam, setExam] = useState(null)
-    const query = engine.useGet(Exam, id)
+    const query = engine.useGet(Exam, id);
+    const updater = engine.useUpdate(Exam, id)
 
-    const [code, setCode] = useState('')
-    const [name, setName] = useState('')
-    const [sector, setSector] = useState('')
-    const [credits, setCredits] = useState(0)
-    const [tags, setTags] = useState([])
-    const [notes, setNotes] = useState('')
-
-    async function submit() {
-        try {
-            const data = {
-                code,
-                name,
-                sector,
-                credits,
-                tags,
-                notes
-            }
-
-            await api.post(`${Exam.api_url}${id}`, data)
-            await engine.invalidateGet(Exam, id)
-            engine.flashSuccess("L'esame è stato modificato correttamente")
-
-            return navigate(`/exams/${id}`)
-        } catch (err) {
-            console.log("ciao")
-            window.scrollTo(0, 0)
-            if (err.code === 403) {
-                for (const issue in err.res.issues) {
-                    engine.flashError(`Errore di validazione: ${err.res.issues[issue]}`)
+    function submit(data, setErrors) {
+        updater.mutate(
+            data,
+            {
+                onSuccess: () => {
+                    engine.flashSuccess("Esame aggiornato con successo")
+                    navigate(`/exams/${id}`)
+                },
+                onError: (err) => {
+                    if (err.code === 403) {
+                        setErrors(err.issues)
+                    }
                 }
-            } else {
-                engine.flashError(`${err.code}: ${err.message}`)
             }
-        }
+        )
     }
-
-    useEffect(() => {
-        if (exam) {
-            setCode(exam.code)
-            setName(exam.name)
-            setSector(exam.sector)
-            setCredits(exam.credits)
-            setTags(exam.tags)
-            setNotes(exam.notes || '')
-        }
-    }, [exam])
 
     if (exam === null) {
-        if (query.isSuccess) setExam(query.data)
-        return <LoadingMessage>caricamento esame...</LoadingMessage>
+        if (query.isSuccess)
+            setExam(query.data)
+        return <LoadingMessage>caricamento...</LoadingMessage>
     }
 
-    return <>
-        <h1>Modifica esame</h1>
-        <Card>
-            <Form>
-                <Group
-                    controlId="code"
-                    label="Codice"
-                    type="text"
-                    maxLength="6"
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
-                />
-                <Group
-                    controlId="name"
-                    label="Nome"
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                />
-                <Group
-                    controlId="sector"
-                    label="Settore"
-                    type="text"
-                    value={sector}
-                    onChange={e => setSector(e.target.value)}
-                />
-                <Group
-                    controlId="credits"
-                    label="Crediti"
-                    type="number"
-                    value={credits}
-                    onChange={e => setCredits(e.target.value)}
-                />
-
-
-                <Group
-                    controlId="tags"
-                    label="Tag (separati da virgola)"
-                    type="text"
-                    value={tags.join(", ")}
-                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
-                />
-
-                <Group label="Note">
-                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
-                    <CKEditor
-                        id="notes"
-                        editor={ClassicEditor}
-                        config={{
-                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
-                        }}
-                        data={notes}
-                        onChange={(event, editor) => {
-                            const data = editor.getData()
-                            setNotes(data)
-                            console.log({ event, editor, data })
-                        }}
-                    />
-                </Group>
-
-                <Button onClick={submit}>Aggiorna Esame</Button>
-            </Form>
-        </Card>
-    </>
+    return <ExamForm submit={submit} exam={exam} isEdit />
 }
 
 export default function ExamPage() {

@@ -34,6 +34,19 @@ export function useCreateEngine() {
     }
 
     const onError = (err) => flashMessage(`${err.name}: ${err.message}`, 'error')
+    const onPossibleValidationError = (err) => {
+        if (err.code === 403) { 
+            // Either show the error as a flash message or as a text near the
+            // form input, not both
+
+            // let errMessage = []
+            // for (const issue in err.issues) {
+            //     errMessage.push(err.issues[issue])
+            // }
+            // flashMessage(`Errore di validazione: ${errMessage.join(", ")}`, 'error')
+        } else
+            onError(err)
+    }
 
     return {
         state,
@@ -103,9 +116,22 @@ export function useCreateEngine() {
             }
         ),
 
-        invalidateGet: async (Model, id) => {
-            await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
-        },
+        useUpdate: (Model, id) => useMutation({
+            mutationFn: async (data) => {
+                return await api.post(`${Model.api_url}${id}`, data)
+            },
+            onSuccess: async () => {
+                await queryClient.invalidateQueries({ queryKey: [Model.api_url, id]})
+            },
+            onError: onPossibleValidationError,
+        }),
+
+        useInsert:  (Model) => useMutation({
+            mutationFn: async (data) => {
+                return await api.post(`${Model.api_url}`, data)
+            },
+            onError: onPossibleValidationError,
+        }),
 
         useIndex: (Model, query) => useQuery(
             [Model.api_url, query],

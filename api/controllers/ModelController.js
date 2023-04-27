@@ -6,6 +6,17 @@
 const { default: mongoose } = require("mongoose");
 const { BadRequestError, ValidationError, NotImplementedError } = require("../exceptions/ApiException");
 
+const validateModel = (Model, data) => {
+    const validationTest = (new Model(data)).validateSync()
+    if (validationTest) {
+        let errors = {}
+        for (const err in validationTest.errors) {
+            errors[err] = validationTest.errors[err].message
+        }
+        throw new ValidationError(errors)
+    }
+}
+
 const ModelController = {
 
     index: async (req, { 
@@ -100,17 +111,8 @@ const ModelController = {
     },
 
     update: async (id, Model, data) => {
-        const validationTest = (new Model(data)).validateSync()
-        if (validationTest) {
-            let errors = {}
-            for (const err in validationTest.errors) {
-                errors[err] = validationTest.errors[err].message
-            }
-            throw new ValidationError(errors)
-        }
+        validateModel(Model, data)
         try {
-            console.log((new Model(data)).validateSync().errors['name'].message)
-            throw new BadRequestError()
             await Model.findByIdAndUpdate(id, { $set: data})
         } catch(err) {
             throw new BadRequestError()
@@ -118,6 +120,7 @@ const ModelController = {
     },
 
     insert: async (Model, data) => {
+        validateModel(Model, data)
         try {
             const entry = new Model(data)
             await entry.save()

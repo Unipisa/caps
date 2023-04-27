@@ -75,6 +75,7 @@ class ApiError extends Error {
         super(res.message);
         this.name = "ApiError";
         this.code = res.code;
+        this.issues = res.issues;
         this.uri = uri;
         this.method = method;
         this.data = data;

@@ -12,15 +12,23 @@ import Exam from '../models/Exam';
 
 function CompulsoryExam({ exam_id }) {
     const engine = useEngine()
-    const [ exam, setExam ] = useState(null)
-    
     const query = engine.useGet(Exam, exam_id);
 
-    if (exam === null) {
-        if (query.isSuccess) setExam(query.data)
-        return <tr><td>...</td><td></td></tr>
+    if (query.isSuccess) {
+        const exam = query.data;
+        return <tr>
+            <th>esame obbligatorio</th>
+            <td>{ exam.name }</td>
+            <td>{ exam.credits }</td>
+            <td>{ exam.code }</td>
+            <td>{ exam.sector }</td>
+        </tr>
+    } else {
+        return <tr>
+            <td>...</td>
+            <td></td>
+        </tr>
     }
-    return <tr><th>esame obbligatorio</th><td>{ exam.name }</td><td>{ exam.credits }</td><td>{ exam.code }</td><td>{ exam.sector }</td></tr>
 }
 
 function CompulsoryGroup({ group }) {
