@@ -130,7 +130,24 @@ export function useCreateEngine() {
             mutationFn: async (data) => {
                 return await api.post(`${Model.api_url}`, data)
             },
+            onSuccess: async () => {
+                // Query Keys should be rethought a little in order to invalidate 
+                // index queries without knowing the specific query (suppose that by
+                // inserting an exam, now the "first 100 exams" list changed... )
+                // await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
+            },
             onError: onPossibleValidationError,
+        }),
+
+        useDelete: (Model, id) => useMutation({
+            mutationFn: async () => {
+                return await api.post(`${Model.api_url}delete/${id}`)
+            },
+            onSuccess: async () => {
+                // Same thing about Query Keys as above
+                // await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
+            },
+            onError
         }),
 
         useIndex: (Model, query) => useQuery(

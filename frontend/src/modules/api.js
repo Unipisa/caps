@@ -49,7 +49,7 @@ class BaseRestClient {
         return await this.fetch(uri + '?' + params.toString(), 'GET');
     }
 
-    async post(uri, data) {
+    async post(uri, data = null) {
         return await this.fetch(uri, 'POST', data);
     }
 

@@ -110,7 +110,7 @@ const ModelController = {
         }
     },
 
-    update: async (id, Model, data) => {
+    update: async (Model, id, data) => {
         validateModel(Model, data)
         try {
             await Model.findByIdAndUpdate(id, { $set: data})
@@ -126,6 +126,14 @@ const ModelController = {
             await entry.save()
             return entry._id
         } catch (err) {
+            throw new BadRequestError()
+        }
+    },
+
+    delete: async (Model, id) => {
+        try {
+            await Model.deleteOne({ _id: id})
+        } catch(err) {
             throw new BadRequestError()
         }
     }

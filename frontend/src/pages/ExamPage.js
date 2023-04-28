@@ -185,6 +185,20 @@ export default function ExamPage() {
     const [exam, setExam] = useState(null)
     const query = engine.useGet(Exam, id)
 
+    const navigate = useNavigate()
+    const deleter = engine.useDelete(Exam, id)
+    function deleteExam() {
+        if (!confirm("Sei sicuro di voler cancellare questo esame?"))
+            return false;
+
+        deleter.mutate(null, {
+            onSuccess: () => {
+                engine.flashSuccess("Esame cancellato con successo")
+                navigate('/exams')
+            }
+        })
+    }
+
     if (exam === null) {
         if (query.isSuccess) setExam(query.data)
         return <LoadingMessage>caricamento esame...</LoadingMessage>
@@ -200,12 +214,18 @@ export default function ExamPage() {
                         Tutti gli esami
                     </button>
                 </Link>
-                <a href={`/exams/edit/${id}`}>
+                <Link to={`/exams/edit/${id}`}>
                     <button type="button" className="btn btn-sm mr-2 btn-primary">Modifica</button>
-                </a>
-                <a href={`/exams/delete/${id}`} onClick={() => confirm('Sei sicuro di voler cancellare questo esame?')}>
-                    <button type="button" className="btn btn-sm mr-2 btn-danger">Elimina</button>
-                </a>
+                </Link>
+                <button
+                    type="button"
+                    className="btn btn-sm mr-2 btn-danger"
+                    onClick={deleteExam}
+                >
+                    Elimina
+                </button>
+        {/*<a href={`/exams/delete/${id}`} onClick={() => confirm('Sei sicuro di voler cancellare questo esame?')}>
+                </a>*/}
 
                 <div className="flex-fill"></div>
 

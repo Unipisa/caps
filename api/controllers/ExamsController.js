@@ -41,18 +41,20 @@ const ExamsController = {
         })
     },
 
-    // post: async req => {
-    //     const exam = new Exam(req.body);
-    //     return await exam.save();
-    // },
-
     update: async req => {
         const { id } = req.params;
-        return await ModelController.update(id, Exam, req.body);
+        // Some pre-processing might be needed here on req.body
+        // for tags (eg remove duplicate etc)
+        return await ModelController.update(Exam, id, req.body);
     },
 
     insert: async req => {
         return await ModelController.insert(Exam, req.body);
+    },
+
+    delete: async req => {
+        const { id } = req.params;
+        return await ModelController.delete(Exam, id);
     }
 }
 
