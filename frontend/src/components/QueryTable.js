@@ -1,9 +1,8 @@
 'use strict';
 
-import React, { useState, useEffect, createContext, useContext } from 'react'
+import React, { useState, createContext, useContext } from 'react'
 
 import { useEngine } from '../modules/engine'
-import api from '../modules/api'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
 import Card from 'react-bootstrap/Card'
@@ -17,7 +16,11 @@ export function useQuery() {
 }
 
 export default function QueryTable({ Model, children }) {
-    const [ query, setQuery ] = useState({})
+    const [ query, setQuery ] = useState({
+        _limit: 10,
+        _sort: Model.sort_default,
+        _direction: Model.sort_default_direction,
+    })
 
     return <Card className="shadow my-2">
         <Card.Body>
@@ -37,9 +40,10 @@ export default function QueryTable({ Model, children }) {
 function FilterBadges() {
     const { query, setQuery } = useQuery()
     function onRemoveField(field) {
-        let new_query = {...query};
-        delete new_query[field];
-        setQuery(new_query);
+        setQuery(q => {
+            let { [field]: _, ...rest } = q;
+            return rest;
+        })
     }
 
     let entries = Object.entries(query).filter(([field, value]) => !field.startsWith('_'));
@@ -62,32 +66,36 @@ function FilterBadges() {
 function Table({ Model }) {
     const engine = useEngine()
     const { query } = useQuery()
-    const [ limit, setLimit ] = useState(10)
-    const [ sort, setSort ] = useState(Model.sort_default)
-    const [ direction, setDirection ] = useState(Model.sort_default_direction)
-    const [ data, setData ] = useState(null)
     const indexQuery = engine.useIndex(Model, query)
+    const [ selectedIds, setSelectedIds ] = useState([])
+    const data = indexQuery.data
 
-    if (data===null && indexQuery.isSuccess) {
-        indexQuery.data.items.forEach(item => {item._selected=false})
-        setData(indexQuery.data)
-    }
+    if (indexQuery.isError) return <>ERRORE</>
+    if (indexQuery.isLoading) return <LoadingMessage/>
 
     function toggleSort(field) {
-        if ( sort === field) {
-            setDirection(-direction);
-        } else {
-            setSort(field);
-            setDirection(1);
-        }
+        setQuery(q => {
+            if (q._sort == field) {
+                return {
+                    ...q,
+                    _direction: -q._direction
+                }
+            } else {
+                return {
+                    ...q,
+                    _sort: field,
+                    _direction: 1
+                }
+            }
+        })
     }
 
     function Header({ field, label, enable_sort }) {
         if (enable_sort) {
             return <a href="#" onClick={() => toggleSort(field)}>
                 { label }&nbsp;{
-                    (sort == field) 
-                        ? (direction > 0 ? <>↓</> : <>↑</>) 
+                    (query._sort === field) 
+                        ? (query._direction > 0 ? <>↓</> : <>↑</>) 
                         : ""}
             </a>
         } else {
@@ -96,7 +104,7 @@ function Table({ Model }) {
     }
 
     return <>
-    {data && `${data.items.length}/${data.total} elementi mostrati`}
+    {data.items.length}/{data.total} elementi mostrati
     <table className="table">
         <thead>
             <tr>
@@ -108,9 +116,9 @@ function Table({ Model }) {
                 )}
             </tr>
         </thead>        
-        <TableBody Model={ Model } data={ data } setData={ setData } />
+        <TableBody Model={ Model } data={ data } selectedIds={ selectedIds } setSelectedIds={ setSelectedIds } />
     </table>
-    {data && <p>
+    <p>
         { data.items.length < data.total 
         ? <button className="btn btn-primary mx-auto d-block" onClick={ () => setLimit(limit + 10) } >
             Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
@@ -118,24 +126,20 @@ function Table({ Model }) {
         : null
         }
     </p>
-    }
     </>
 }
 
-function TableBody({ Model, data, setData }) {
+function TableBody({ Model, data, selectedIds, setSelectedIds }) {
     const [cache, setCache] = useState([{}]);
 
     function onToggle(item) {
-        const items = data.items.map(it => {
-            if (it._id === item._id) {
-                it._selected = !it._selected
+        setSelectedIds(ids => {
+            if (ids.includes(item._id)) {
+                return ids.filter(id => id !== item._id);
+            } else {
+                return [...ids, item._id];
             }
-            return it
-            // return it._id === item._id
-            // ? {...it, _selected: !it._selected}
-            // : it;
-        });
-        setData({...data, items});
+        })
     }
 
     function renderField(item, field, enable_link) {
@@ -147,22 +151,19 @@ function TableBody({ Model, data, setData }) {
         }
     }
 
-    if ( data === null ) {
-        return <tbody>
-            <tr><td colSpan="4"><LoadingMessage>Caricamento esami...</LoadingMessage></td></tr>
-        </tbody>
-    } else {
-        return <tbody>
-            { data.items.map(item => {
-                item.load_related(cache, setCache)
-                return <tr key={ item._id } style={ item._selected ? {background: "lightgray" } : {}}>
-                    <td><input type="checkbox" checked={ item._selected } readOnly onClick={ () => onToggle(item) }/></td>
-                    { Model.table_headers.map(({ field, enable_link }) => 
-                        <td key={ field }>{ renderField(item, field, enable_link) }</td>
-                        )}
-                    <td></td>
-                </tr>})
-            }
-        </tbody>            
-    }
+    return <tbody>
+        { data.items.map(item => {
+            const selected = selectedIds.includes(item._id);
+            item.load_related(cache, setCache)
+            return <tr 
+                key={ item._id } 
+                style={ selected ? {background: "lightgray" } : {}}>
+                <td><input type="checkbox" checked={ selected } readOnly onClick={ () => onToggle(item) }/></td>
+                { Model.table_headers.map(({ field, enable_link }) => 
+                    <td key={ field }>{ renderField(item, field, enable_link) }</td>
+                    )}
+                <td></td>
+            </tr>})
+        }
+    </tbody>            
 }
