@@ -127,6 +127,9 @@
 <div class="data">
     <strong>Curriculum</strong>: <?php echo h($proposal['curriculum']['name']); ?><br>
     <strong>Anno di immatricolazione</strong>: <?= $proposal['curriculum']['degree']->academic_years() ?><br>
+    <?php if ($proposal['curriculum']['notes']): ?>
+      <strong>Note</strong>: <?= $proposal['curriculum']['notes'] ?><br>
+    <?php endif; ?>
     <strong>Nome e cognome</strong>: <?php echo h($proposal['user']['name']); ?></strong><br>
     <strong>Matricola</strong>: <?php echo h($proposal['user']['number']); ?><br>
     <strong>Email</strong>: <?= h($proposal['user']['email']) ?><br>
