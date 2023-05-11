@@ -55,6 +55,16 @@
                     </div>
                     <textarea id="code" name="code" class="form-control" rows="20"><?= h($form_template['code']) ?></textarea>
                 </div>
+
+                <div class="form-group">
+                    <label for="notes">Note</label>
+                    <div>Queste note, se inserite, vengono inviate come testo nella mail di confermata inviata all'utente che 
+                        sottomette il modulo (e ad eventuali altri destinataria specificati sopra).
+                    </div>
+                    <input id="notes" name="notes" class="form-control" value="<?= h($form_template['notes']) ?>"></input>
+                </div>
+
+
                 <?= $this->Form->submit($form_template->isNew() ? 'Crea' : 'Aggiorna') ?>
                 <?= $this->Form->end() ?>
             </div>
