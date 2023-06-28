@@ -53,6 +53,8 @@ const ModelController = {
                     $match['_id'] = {
                         $in: value.split(",").map(id => new mongoose.Types.ObjectId(id))
                     };
+                } else if (field.match_id_object) {
+                    $match[key] = mongoose.Types.ObjectId(value);
                 } else {
                     $match[key] = value;
                 }

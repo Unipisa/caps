@@ -17,6 +17,11 @@ const fields = {
         can_filter: true,
         can_sort: true,
     },    
+    "user_id": {
+        can_filter: true,
+        can_sort: true,
+        match_id_object: true,
+    },
     "user_last_name": {
         can_filter: true,
         can_sort: true,

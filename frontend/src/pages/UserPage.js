@@ -8,17 +8,27 @@ import api from '../modules/api'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import User from '../models/User'
+import Proposal from '../models/Proposal'
+
+import { ItemAddButton } from '../components/TableElements';
 
 export default function UserPage() {
     const { id } = useParams()
     const [ user, setUser ] = useState(null)
+    const [ proposals, setProposals ] = useState(null)
     const engine = useEngine()
-    const query = engine.useGet(User, id)
+    const userQuery = engine.useGet(User, id)
+    const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
 
     if (user === null) {
-        if (query.isSuccess) setUser(query.data)
+        if (userQuery.isSuccess) setUser(userQuery.data)
         return <LoadingMessage>caricamento utente...</LoadingMessage>
     }
+    if (proposals === null) {
+        if (proposalsQuery.isSuccess) setProposals(proposalsQuery.data)
+        return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+    }
+
 
     return <>
         <Card>
@@ -28,6 +38,29 @@ export default function UserPage() {
                 matricola: { user.id_number }
             </span>
         </h3>
+        </Card>
+
+        <h2 className='d-flex mt-4'>
+            <span className='mr-auto'>Piano di studi</span>
+            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
+        </h2>
+        {
+            proposals.length == 0
+            ? <div>Nessun piano di studi presentato.</div>
+            : proposals.items.map(proposal => 
+                <div key={proposal._id}>{proposal.degree_name}</div>
+            )
+        }
+
+        <h2 className='mt-4'>Documenti e allegati</h2>
+        <Card>
+            <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
+            <p>Nessun documento allegato.</p>
+            
+            <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
+                        data-toggle="collapse" target="#collapse-7">
+                Inserisci un nuovo allegato
+            </button>
         </Card>
     </>
 }
