@@ -8,6 +8,8 @@ const Curricula = require('./controllers/CurriculaController')
 const FormTemplates = require('./controllers/FormTemplates')
 const Forms = require('./controllers/FormsController')
 const Proposals = require('./controllers/ProposalsController')
+const Attachments = require('./controllers/AttachmentController')
+const Comments = require('./controllers/CommentController')
 
 // JSON parsing middleware
 router.use(express.json())
@@ -51,6 +53,12 @@ router.post('/exams', response_envelope(Exams.insert))
 router.get('/users', response_envelope(Users.index))
 router.get('/users/:id', response_envelope(Users.view))
 router.post('/users', response_envelope(Users.post))
+router.get('/comments', response_envelope(Comments.index))
+router.get('/comments/:id', response_envelope(Comments.view))
+router.post('/comments', response_envelope(Comments.post))
+router.get('/attachments', response_envelope(Attachments.index))
+router.get('/attachments/:id', response_envelope(Attachments.view))
+router.post('/attachments', response_envelope(Attachments.post))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

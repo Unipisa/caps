@@ -6,6 +6,8 @@ let Curriculum = require('./models/Curriculum')
 let FormTemplate = require('./models/FormTemplate')
 let Form = require('./models/Form')
 let Proposal = require('./models/Proposal')
+let Attachment = require('./models/Attachment')
+let Comment = require('./models/Comment')
 
 let {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
@@ -325,6 +327,11 @@ async function importData() {
         const e = new Proposal(element)
         return e.save()
     }))
+    
+    // Temporaneo, solo per creare la collezione. Da sostituire con
+    // l'effettiva migrazione degli allegati
+    Attachment.createCollection();
+    Comment.createCollection();
 
     // import form_templates
     write("> Form templates")
