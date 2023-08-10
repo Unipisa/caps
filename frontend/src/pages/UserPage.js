@@ -12,7 +12,14 @@ import Proposal from '../models/Proposal'
 
 import { ItemAddButton } from '../components/TableElements';
 
+import CommentWidget from '../components/CommentWidget';
+
 export default function UserPage() {
+    // Modifica temporanea solo per poter testare il CommentWidget
+    return <>
+        <CommentWidget/>
+    </>
+
     const { id } = useParams()
     const [ user, setUser ] = useState(null)
     const [ proposals, setProposals ] = useState(null)

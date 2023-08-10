@@ -1,4 +1,5 @@
 let express = require('express')
+const multer  = require('multer')
 let router = new express.Router()
 const { BadRequestError, NotFoundError } = require('./exceptions/ApiException')
 const Exams  = require('./controllers/ExamsController')
@@ -58,7 +59,7 @@ router.get('/comments/:id', response_envelope(Comments.view))
 router.post('/comments', response_envelope(Comments.post))
 router.get('/attachments', response_envelope(Attachments.index))
 router.get('/attachments/:id', response_envelope(Attachments.view))
-router.post('/attachments', response_envelope(Attachments.post))
+router.post('/attachments', multer().any(), response_envelope(Attachments.post))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 
