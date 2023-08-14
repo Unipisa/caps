@@ -52,7 +52,7 @@ export function useCreateEngine() {
         state,
 
         user: {
-            id: 17,
+            id: '000000000000000000000017',
             username: "ginnasta",
             name: "Pippo Ginnasta",
             number: "123456",
@@ -131,10 +131,7 @@ export function useCreateEngine() {
                 return await api.post(`${Model.api_url}`, data)
             },
             onSuccess: async () => {
-                // Query Keys should be rethought a little in order to invalidate 
-                // index queries without knowing the specific query (suppose that by
-                // inserting an exam, now the "first 100 exams" list changed... )
-                // await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
+                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
             },
             onError: onPossibleValidationError,
         }),
@@ -144,7 +141,7 @@ export function useCreateEngine() {
                 return await api.post(`${Model.api_url}`, data, true)
             },
             onSuccess: async () => {
-                //
+                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
             },
             onError: onPossibleValidationError,
         }),

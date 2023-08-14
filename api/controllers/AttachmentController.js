@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const ModelController = require('./ModelController');
 const Attachment = require('../models/Attachment');
 
@@ -33,14 +34,19 @@ const AttachmentController = {
     },
 
     post: async req => {
-        console.log(req.files)
-        console.log(req.body)
-        return
-        // TODO: il contenuto dell'allegato deve essere gestito all'interno
-        // di questo metodo, probabilmente utlizzando il middleware `multer`
-        // per express, modificando poi il body all'occorrenza
-        const attachment = new Attachment(req.body);
-        return await attachment.save();
+        let reply = []
+        for (const file of req.files) {
+            const attachment_id = await ModelController.insert(Attachment, {
+                filename: file.originalname,
+                mimetype: file.mimetype,
+                encoding: file.encoding,
+                size: file.size,
+                content: file.filename,
+                uploader_id: req.body.uploader_id
+            })
+            reply.push(attachment_id)
+        }
+        return reply
     }
 }
 

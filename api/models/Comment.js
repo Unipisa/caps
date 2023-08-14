@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Comment = mongoose.model('Comment', {
+const commentSchema = new mongoose.Schema({
     creator_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'   
@@ -15,6 +15,7 @@ const Comment = mongoose.model('Comment', {
     attachments: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Attachment' }
     ]
-})
+}, { timestamps: true })
+const Comment = mongoose.model('Comment', commentSchema)
 
 module.exports = Comment;

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useEngine } from "../modules/engine";
 
 import Attachment from "../models/Attachment";
+import Comment from "../models/Comment";
 
 import { default as BootStrapCard } from 'react-bootstrap/Card';
 
@@ -16,9 +17,13 @@ import { default as BootStrapCard } from 'react-bootstrap/Card';
     *   post of the comment (via the "Send" button inside the widget), that
     *   takes the id of the newly posted comment as the only argument
 */
-export default function CommentWidget({ afterCommentPost }) {
+export default function CommentWidget({ 
+    afterCommentPost = (id) => {} 
+}) {
     const engine = useEngine()
     const attachmentInserter = engine.useMultipartInsert(Attachment)
+    const commentInserter = engine.useInsert(Comment)
+    const [text, setText] = useState("")
     const [files, setFiles] = useState([])
     const [error, setError] = useState({})
 
@@ -46,21 +51,31 @@ export default function CommentWidget({ afterCommentPost }) {
         }
         data.append('uploader_id', engine.user.id)
 
-        attachmentInserter.mutate(
-            data,
-            {
-                onSuccess: (attachmentIds) => {
-                    engine.flashSuccess("Allegati aggiunti con successo")
-
-                    // TODO: fai insert del commento oltre che degli allegati
-                },
-                onError: (err) => {
-                    if (err.code === 403) {
-                        setError(err.issues)
+        attachmentInserter.mutate(data, {
+            onSuccess: (attachmentIds) => {
+                const comment = {
+                    creator_id: engine.user.id,
+                    content: text,
+                    attachments: attachmentIds
+                }
+                commentInserter.mutate(comment, {
+                    onSuccess: (commentId) => {
+                        setText("")
+                        setFiles([])
+                        setError({})
+                        afterCommentPost(commentId)
+                    },
+                    onError: (err) => {
+                        engine.flashError(err)
                     }
+                })
+            },
+            onError: (err) => {
+                if (err.code === 403) {
+                    setError(err.issues)
                 }
             }
-        )
+        })
     }
 
     return <BootStrapCard className="shadow my-2">
@@ -73,13 +88,13 @@ export default function CommentWidget({ afterCommentPost }) {
         }
         <BootStrapCard.Body>
             <div className="d-flex flex-column">
-                <textarea className="mb-3" />
+                <textarea className="mb-3" value={text} onChange={e => setText(e.target.value)}/>
                 <div className="d-flex flex-column">
                     {
-                        files.map(e => {
-                            return <div key={e} className={`d-flex justify-content-between mb-2 ${error.location === `allegato-${e}` ? "pl-2 border-left-danger" : ""}`}>
-                                <input id={`allegato-${e}`} type="file" onChange={() => setError({})}/>
-                                <span role="button" onClick={() => deleteFile(e)}>
+                        files.map(id => {
+                            return <div key={id} className={`d-flex justify-content-between mb-2 ${error.location === `allegato-${id}` ? "pl-2 border-left-danger" : ""}`}>
+                                <input id={`allegato-${id}`} type="file" onChange={() => setError({})}/>
+                                <span role="button" onClick={() => deleteFile(id)}>
                                     <i className="fas fa-times"></i>
                                 </span>
                             </div>

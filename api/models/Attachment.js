@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 
-const Attachment = mongoose.model('Attachment', {
+const attachmentSchema = new mongoose.Schema({
     filename: {
         type: String
     },
     mimetype: {
+        type: String
+    },
+    encoding: {
         type: String
     },
     uploader_id: {
@@ -12,11 +15,12 @@ const Attachment = mongoose.model('Attachment', {
         ref: 'User'   
     },
     size: {
-        type: String
+        type: Number
     },
     content: {
-        type: String
+        type: String    // è un id ma NON è un ObjectId di mongo
     }
-})
+}, { timestamps: true })
+const Attachment = mongoose.model('Attachment', attachmentSchema)
 
 module.exports = Attachment;

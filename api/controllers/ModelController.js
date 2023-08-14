@@ -20,7 +20,7 @@ const validateModel = (Model, data) => {
 const ModelController = {
 
     index: async (req, { 
-            Model, fields }
+            Model, fields, populate }
         ) => {
         let $match = {};
         let filter = {};
@@ -80,7 +80,6 @@ const ModelController = {
                     items: "$limiting"
                 }}
             ]);
-
         if (res.length === 0) {
             total = 0;
             items = res;
@@ -88,6 +87,9 @@ const ModelController = {
             [{ total, items }] = res;
         }
             
+        if (populate !== undefined) {
+            await Model.populate(items, { path: populate })
+        }
         console.log(`${items.length} / ${total} items collected`);
 
         return {

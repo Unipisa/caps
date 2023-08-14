@@ -17,7 +17,7 @@ export default class Attachment extends Model {
             label: "tipo file",
             enable_sort: true,
         }]
-    static sort_default = 'name'
+    static sort_default = 'filename'
     static sort_default_direction = 1
 }
 

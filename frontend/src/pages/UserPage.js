@@ -9,23 +9,31 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import User from '../models/User'
 import Proposal from '../models/Proposal'
+import Comment from '../models/Comment'
 
 import { ItemAddButton } from '../components/TableElements';
 
 import CommentWidget from '../components/CommentWidget';
 
-export default function UserPage() {
-    // Modifica temporanea solo per poter testare il CommentWidget
+function CommentCard({comment}) {
     return <>
-        <CommentWidget/>
+        <div className='mb-2 rounded border border-left-info p-1'>
+            <div>{comment.content}</div>
+            {comment.attachments.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment._id}/content`}>{attachment.filename}</a></div>)}
+            <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
+        </div>
     </>
+}
 
+export default function UserPage() {
     const { id } = useParams()
     const [ user, setUser ] = useState(null)
     const [ proposals, setProposals ] = useState(null)
+    const [ comments, setComments ] = useState(null)
     const engine = useEngine()
     const userQuery = engine.useGet(User, id)
     const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
+    const commentsQuery = engine.useIndex(Comment, { creator_id: id })
 
     if (user === null) {
         if (userQuery.isSuccess) setUser(userQuery.data)
@@ -35,7 +43,13 @@ export default function UserPage() {
         if (proposalsQuery.isSuccess) setProposals(proposalsQuery.data)
         return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
     }
-
+    if (comments === null) {
+        if (commentsQuery.isSuccess) setComments(commentsQuery.data)
+        return <LoadingMessage>caricamento commenti e allegati...</LoadingMessage>
+    }
+    if (comments != commentsQuery.data) {
+        setComments(commentsQuery.data)
+    }
 
     return <>
         <Card>
@@ -62,12 +76,17 @@ export default function UserPage() {
         <h2 className='mt-4'>Documenti e allegati</h2>
         <Card>
             <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
-            <p>Nessun documento allegato.</p>
+            {
+                comments.items.length === 0 ?
+                <p>Nessun documento allegato.</p> :
+                comments.items.map(comment => <CommentCard key={comment._id} comment={comment} />)
+            }
+            <CommentWidget />
             
-            <button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
+            {/*<button type="button" className="btn btn-sm btn-primary dropdown-toggle" id="dropDownActions"
                         data-toggle="collapse" target="#collapse-7">
                 Inserisci un nuovo allegato
-            </button>
+            </button>*/}
         </Card>
     </>
 }

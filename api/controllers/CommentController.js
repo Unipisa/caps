@@ -11,15 +11,7 @@ const fields = {
         can_filter: true,
         can_sort: true,
         match_id_object: true,
-    }, 
-    "academic_year": {
-        can_filter: true,
-        can_sort: true 
-    },
-    "degree.name": {
-        can_filter: true,
-        can_sort: true
-    }
+    } 
 };
 
 const CommentController = {
@@ -27,7 +19,8 @@ const CommentController = {
     index: async req => {
         return await ModelController.index(req, {
             Model: Comment,
-            fields
+            fields,
+            populate: 'attachments creator_id'
         });
     }, 
 
@@ -39,8 +32,7 @@ const CommentController = {
     },
 
     post: async req => {
-        const comment = new Comment(req.body);
-        return await comment.save();
+        return await ModelController.insert(Comment, req.body)
     }
 }
 

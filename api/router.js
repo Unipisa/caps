@@ -1,6 +1,7 @@
 let express = require('express')
 const multer  = require('multer')
 let router = new express.Router()
+const path = require('path')
 const { BadRequestError, ValidationError, NotFoundError } = require('./exceptions/ApiException')
 const Exams  = require('./controllers/ExamsController')
 const Users  = require('./controllers/UsersController')
@@ -34,11 +35,9 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
+const attachmentsDB = path.join(__dirname, '../attachments-db')
 const attachmentHandler = multer({ 
-    // TODO: cambia la destinazione una volta stabilito dove vadano conservati
-    // gli allegati (se si decide di non salvarli su disco ma utilizzare
-    // qualche servizio tipo S3 bisogna sostituire multer)
-    dest: '../attachments-db',
+    dest: attachmentsDB,
     limits: { 
         fileSize: 20 * 1000 * 1000 // 20MB
     }
@@ -54,6 +53,27 @@ function attachmentPost(req, res, next) {
             response_envelope(Attachments.post)(req, res, next)
         }
     })
+}
+async function attachmentGetContent(req, res, next) {
+    try {
+        const attachment = await Attachments.view(req)
+        const filepath = path.join(attachmentsDB, attachment.content)
+
+        // TODO: metti verifia che l'utente abbia effettivamente accesso a questo file
+        res.sendFile(filepath, {
+            headers: {
+                'Content-Type': attachment.mimetype,
+                'Content-Disposition': `attachment; filename="${attachment.filename}"`
+            }
+        }, (err) => {
+            if (err) {
+                next(err)
+            }
+        })
+    } catch(e) {
+        next(e)
+    }
+
 }
 
 router.get('/', response_envelope(req => "Hello there!"))
@@ -81,6 +101,7 @@ router.get('/comments/:id', response_envelope(Comments.view))
 router.post('/comments', response_envelope(Comments.post))
 router.get('/attachments', response_envelope(Attachments.index))
 router.get('/attachments/:id', response_envelope(Attachments.view))
+router.get('/attachments/:id/content', attachmentGetContent)
 router.post('/attachments', attachmentPost)
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
