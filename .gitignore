@@ -9,3 +9,4 @@ api/webroot/css/style.min.css.map
 api/webroot/node_modules
 api/node_modules
 db
+attachments-db

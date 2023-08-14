@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const Attachment = mongoose.model('Attachment', {
+    filename: {
+        type: String
+    },
     mimetype: {
         type: String
     },

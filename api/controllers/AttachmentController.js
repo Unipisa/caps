@@ -34,6 +34,7 @@ const AttachmentController = {
 
     post: async req => {
         console.log(req.files)
+        console.log(req.body)
         return
         // TODO: il contenuto dell'allegato deve essere gestito all'interno
         // di questo metodo, probabilmente utlizzando il middleware `multer`

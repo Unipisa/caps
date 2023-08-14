@@ -138,6 +138,16 @@ export function useCreateEngine() {
             },
             onError: onPossibleValidationError,
         }),
+        
+        useMultipartInsert:  (Model) => useMutation({
+            mutationFn: async (data) => {
+                return await api.post(`${Model.api_url}`, data, true)
+            },
+            onSuccess: async () => {
+                //
+            },
+            onError: onPossibleValidationError,
+        }),
 
         useDelete: (Model, id) => useMutation({
             mutationFn: async () => {

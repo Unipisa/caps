@@ -12,17 +12,22 @@ class BaseRestClient {
         }
     }
 
-    async fetch(uri, method = 'GET', data = null) {
+    async fetch(uri, method = 'GET', data = null, multipart = false) {
         let response = {}
+        let headers = {'X-CSRF-Token': this.csrf}
+        let body = null
+        if (!multipart) {
+            headers['Content-Type'] = 'application/json'
+            body = data ? JSON.stringify(data) : null
+        } else {
+            body = data
+        }
 
         try {
             const res = await fetch(api_root + uri, {
                 method: method, 
-                headers: {
-                    'Content-Type': 'application/json', 
-                    'X-CSRF-Token': this.csrf
-                }, 
-                body: data ? JSON.stringify(data) : null
+                headers: headers, 
+                body: body
             });
             response = await res.json();
         } catch(err) {
@@ -49,8 +54,8 @@ class BaseRestClient {
         return await this.fetch(uri + '?' + params.toString(), 'GET');
     }
 
-    async post(uri, data = null) {
-        return await this.fetch(uri, 'POST', data);
+    async post(uri, data = null, multipart = false) {
+        return await this.fetch(uri, 'POST', data, multipart);
     }
 
     async patch(uri, data) {
@@ -96,11 +101,11 @@ class RestClient extends BaseRestClient {
         throw new Error("non usare la funzione status(), chiama get(\"status\")");
     }
 
-    async fetch(uri, method = 'GET', data = null) {
+    async fetch(uri, method = 'GET', data = null, multipart) {
         // genera errori casuali per testarne la gestione
         if (false && Math.random()>0.8) throw new ApiError({code:500, message: `fake random error! [${method} ${uri}]`});
 
-        const res = await super.fetch(uri, method, data);
+        const res = await super.fetch(uri, method, data, multipart);
         if (res.code < 200 || res.code >= 300) {
             throw new ApiError(res, uri, method, data);
         }

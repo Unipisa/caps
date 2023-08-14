@@ -1,7 +1,7 @@
 let express = require('express')
 const multer  = require('multer')
 let router = new express.Router()
-const { BadRequestError, NotFoundError } = require('./exceptions/ApiException')
+const { BadRequestError, ValidationError, NotFoundError } = require('./exceptions/ApiException')
 const Exams  = require('./controllers/ExamsController')
 const Users  = require('./controllers/UsersController')
 const Degrees = require('./controllers/DegreesController')
@@ -34,6 +34,28 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
+const attachmentHandler = multer({ 
+    // TODO: cambia la destinazione una volta stabilito dove vadano conservati
+    // gli allegati (se si decide di non salvarli su disco ma utilizzare
+    // qualche servizio tipo S3 bisogna sostituire multer)
+    dest: '../attachments-db',
+    limits: { 
+        fileSize: 20 * 1000 * 1000 // 20MB
+    }
+}).any()
+
+function attachmentPost(req, res, next) {
+    attachmentHandler(req, res, (err) => {
+        if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+            next(new ValidationError({ message: 'Gli allegati possono avere come dimensione massima 20MB', location: err.field}))
+        } else if (err) {
+            next(err)
+        } else {
+            response_envelope(Attachments.post)(req, res, next)
+        }
+    })
+}
+
 router.get('/', response_envelope(req => "Hello there!"))
 router.get('/proposals', response_envelope(Proposals.index))
 router.get('/proposals/:id', response_envelope(Proposals.view))
@@ -59,7 +81,7 @@ router.get('/comments/:id', response_envelope(Comments.view))
 router.post('/comments', response_envelope(Comments.post))
 router.get('/attachments', response_envelope(Attachments.index))
 router.get('/attachments/:id', response_envelope(Attachments.view))
-router.post('/attachments', multer().any(), response_envelope(Attachments.post))
+router.post('/attachments', attachmentPost)
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

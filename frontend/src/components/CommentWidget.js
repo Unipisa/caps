@@ -4,6 +4,8 @@ import React, { useState } from "react";
 
 import { useEngine } from "../modules/engine";
 
+import Attachment from "../models/Attachment";
+
 import { default as BootStrapCard } from 'react-bootstrap/Card';
 
 /**
@@ -16,11 +18,12 @@ import { default as BootStrapCard } from 'react-bootstrap/Card';
 */
 export default function CommentWidget({ afterCommentPost }) {
     const engine = useEngine()
-    // const inserter = engine.useInsert(Comment)
-    const [status, setStatus] = useState("input")
+    const attachmentInserter = engine.useMultipartInsert(Attachment)
     const [files, setFiles] = useState([])
+    const [error, setError] = useState({})
 
     function addFile() {
+        setError({})
         let newId = 0
         while (files.includes(newId)) {
             newId = newId + 1
@@ -28,30 +31,36 @@ export default function CommentWidget({ afterCommentPost }) {
         setFiles(files.concat([newId]))
     }
     function deleteFile(id) {
+        setError({})
         setFiles(files.filter(e => e !== id))
     }
 
     async function send() {
-        setStatus("uploading")
+        setError({})
         const data = new FormData();
-        for(const id of files) {
+        for (const id of files) {
             // TODO: vedi se c'è un modo migliore di recuperare l'input che non
             // sia tramite document.getElementById
-            const file = document.getElementById(`file-input-${id}`).files[0]
-            if (file !== undefined) data.append('allegati', file, file.name)
+            const file = document.getElementById(`allegato-${id}`).files[0]
+            if (file !== undefined) data.append(`allegato-${id}`, file, file.name)
         }
+        data.append('uploader_id', engine.user.id)
 
-        // Soluzione temporanea per testare: non verrà utilizzato "fetch"
-        // così in questo modo nella soluzione finale, probabilmente verrà
-        // messo un metodo apposito in engine (se non sarà possibile
-        // utilizzare il già esistente post, ma forse è possibile usare post)
-        fetch('/api/v0/attachments', {
-            method: 'POST',
-            body: data,
-        })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((err) => console.error(err));
+        attachmentInserter.mutate(
+            data,
+            {
+                onSuccess: (attachmentIds) => {
+                    engine.flashSuccess("Allegati aggiunti con successo")
+
+                    // TODO: fai insert del commento oltre che degli allegati
+                },
+                onError: (err) => {
+                    if (err.code === 403) {
+                        setError(err.issues)
+                    }
+                }
+            }
+        )
     }
 
     return <BootStrapCard className="shadow my-2">
@@ -68,8 +77,8 @@ export default function CommentWidget({ afterCommentPost }) {
                 <div className="d-flex flex-column">
                     {
                         files.map(e => {
-                            return <div key={e} className="d-flex justify-content-between">
-                                <input key={e} id={`file-input-${e}`} className="mb-2" type="file" disabled={status !== "input"} />
+                            return <div key={e} className={`d-flex justify-content-between mb-2 ${error.location === `allegato-${e}` ? "pl-2 border-left-danger" : ""}`}>
+                                <input id={`allegato-${e}`} type="file" onChange={() => setError({})}/>
                                 <span role="button" onClick={() => deleteFile(e)}>
                                     <i className="fas fa-times"></i>
                                 </span>
@@ -77,6 +86,9 @@ export default function CommentWidget({ afterCommentPost }) {
                         })
                     }
                 </div>
+                {error &&
+                    <div className="text-danger">{error.message}</div>
+                }        
                 <div className="d-flex justify-content-between">
                     <button className="btn btn-primary" onClick={addFile}>
                         <i className="fas fa-plus"></i>
