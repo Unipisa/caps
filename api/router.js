@@ -1,7 +1,5 @@
 let express = require('express')
-const multer  = require('multer')
 let router = new express.Router()
-const path = require('path')
 const { BadRequestError, ValidationError, NotFoundError } = require('./exceptions/ApiException')
 const Exams  = require('./controllers/ExamsController')
 const Users  = require('./controllers/UsersController')
@@ -35,47 +33,6 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
-const attachmentsDB = path.join(__dirname, '../attachments-db')
-const attachmentHandler = multer({ 
-    dest: attachmentsDB,
-    limits: { 
-        fileSize: 20 * 1000 * 1000 // 20MB
-    }
-}).any()
-
-function attachmentPost(req, res, next) {
-    attachmentHandler(req, res, (err) => {
-        if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
-            next(new ValidationError({ message: 'Gli allegati possono avere come dimensione massima 20MB', location: err.field}))
-        } else if (err) {
-            next(err)
-        } else {
-            response_envelope(Attachments.post)(req, res, next)
-        }
-    })
-}
-async function attachmentGetContent(req, res, next) {
-    try {
-        const attachment = await Attachments.view(req)
-        const filepath = path.join(attachmentsDB, attachment.content)
-
-        // TODO: metti verifia che l'utente abbia effettivamente accesso a questo file
-        res.sendFile(filepath, {
-            headers: {
-                'Content-Type': attachment.mimetype,
-                'Content-Disposition': `attachment; filename="${attachment.filename}"`
-            }
-        }, (err) => {
-            if (err) {
-                next(err)
-            }
-        })
-    } catch(e) {
-        next(e)
-    }
-
-}
-
 router.get('/', response_envelope(req => "Hello there!"))
 router.get('/proposals', response_envelope(Proposals.index))
 router.get('/proposals/:id', response_envelope(Proposals.view))
@@ -96,13 +53,18 @@ router.post('/exams', response_envelope(Exams.insert))
 router.get('/users', response_envelope(Users.index))
 router.get('/users/:id', response_envelope(Users.view))
 router.post('/users', response_envelope(Users.post))
+router.get('/attachments', response_envelope(Attachments.index))
+
+// Queste route sono leggermente diverse rispetto alle altre perché si occupano
+// di inviare e ricevere file, cosa che va gestita in modo diverso
+router.post('/attachments', Attachments.postMiddleware, response_envelope(Attachments.post))
+router.get('/attachments/:id/content', Attachments.viewContent)
+
+router.get('/attachments/:id', response_envelope(Attachments.view))
 router.get('/comments', response_envelope(Comments.index))
+router.post('/comments/delete/:id', response_envelope(Comments.delete))
 router.get('/comments/:id', response_envelope(Comments.view))
 router.post('/comments', response_envelope(Comments.post))
-router.get('/attachments', response_envelope(Attachments.index))
-router.get('/attachments/:id', response_envelope(Attachments.view))
-router.get('/attachments/:id/content', attachmentGetContent)
-router.post('/attachments', attachmentPost)
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

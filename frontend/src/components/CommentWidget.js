@@ -7,7 +7,7 @@ import { useEngine } from "../modules/engine";
 import Attachment from "../models/Attachment";
 import Comment from "../models/Comment";
 
-import { default as BootStrapCard } from 'react-bootstrap/Card';
+import Card from "./Card";
 
 /**
 * Widget to upload comments and attachments
@@ -72,46 +72,38 @@ export default function CommentWidget({
             },
             onError: (err) => {
                 if (err.code === 403) {
-                    setError(err.issues)
+                    setError(err)
                 }
             }
         })
     }
 
-    return <BootStrapCard className="shadow my-2">
-        {
-            <BootStrapCard.Header className="bg-primary">
-                <h5 className="text-white">
-                    Aggiungi allegato o commento
-                </h5>
-            </BootStrapCard.Header>
-        }
-        <BootStrapCard.Body>
+    
+    return <Card title="Aggiungi allegato o commento">
+        <div className="d-flex flex-column">
+            <textarea className="mb-3" value={text} onChange={e => setText(e.target.value)}/>
             <div className="d-flex flex-column">
-                <textarea className="mb-3" value={text} onChange={e => setText(e.target.value)}/>
-                <div className="d-flex flex-column">
-                    {
-                        files.map(id => {
-                            return <div key={id} className={`d-flex justify-content-between mb-2 ${error.location === `allegato-${id}` ? "pl-2 border-left-danger" : ""}`}>
-                                <input id={`allegato-${id}`} type="file" onChange={() => setError({})}/>
-                                <span role="button" onClick={() => deleteFile(id)}>
-                                    <i className="fas fa-times"></i>
-                                </span>
-                            </div>
-                        })
-                    }
-                </div>
-                {error &&
-                    <div className="text-danger">{error.message}</div>
-                }        
-                <div className="d-flex justify-content-between">
-                    <button className="btn btn-primary" onClick={addFile}>
-                        <i className="fas fa-plus"></i>
-                        <span className="ml-2">Aggiungi file</span>
-                    </button>
-                    <button className="btn btn-primary" onClick={send}>Invia</button>
-                </div>
+                {
+                    files.map(id => {
+                        return <div key={id} className={`d-flex justify-content-between mb-2 ${error.issues === `allegato-${id}` ? "pl-2 border-left-danger" : ""}`}>
+                            <input id={`allegato-${id}`} type="file" onChange={() => setError({})}/>
+                            <span role="button" onClick={() => deleteFile(id)}>
+                                <i className="fas fa-times"></i>
+                            </span>
+                        </div>
+                    })
+                }
             </div>
-        </BootStrapCard.Body>
-    </BootStrapCard>;
+            {error &&
+                <div className="text-danger">{error.message}</div>
+            }        
+            <div className="d-flex justify-content-between">
+                <button className="btn btn-primary" onClick={addFile}>
+                    <i className="fas fa-plus"></i>
+                    <span className="ml-2">Aggiungi file</span>
+                </button>
+                <button className="btn btn-primary" onClick={send}>Invia</button>
+            </div>
+        </div>
+    </Card>;
 }

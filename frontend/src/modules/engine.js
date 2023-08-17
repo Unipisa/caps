@@ -62,14 +62,14 @@ export function useCreateEngine() {
             admin: true,
         },
 
-        modalConfirm: (title, message) => {
+        modalConfirm: (title, content) => {
             return new Promise((resolve) => {
                 async function callback(ans) {
                     await setState(state => ({
                         ...state, 
                         modalConfirmData: {
                             title: null,
-                            message: null,
+                            content: null,
                             callback: null
                         }
                     }))
@@ -79,7 +79,7 @@ export function useCreateEngine() {
                     ...state,
                     modalConfirmData: {
                         title,
-                        message,
+                        content,
                         callback
                     }
                 }))
@@ -151,8 +151,7 @@ export function useCreateEngine() {
                 return await api.post(`${Model.api_url}delete/${id}`)
             },
             onSuccess: async () => {
-                // Same thing about Query Keys as above
-                // await queryClient.invalidateQueries({ queryKey: [Model.api_url, id] })
+                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
             },
             onError
         }),
