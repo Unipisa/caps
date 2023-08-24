@@ -24,12 +24,14 @@ class BaseRestClient {
         }
 
         try {
-            const res = await fetch(api_root + uri, {
+            response = await fetch(api_root + uri, {
                 method: method, 
                 headers: headers, 
                 body: body
             });
-            response = await res.json();
+            if (response.status >= 200 && response.status < 300) {
+                response = await response.json()
+            }
         } catch(err) {
             response = {
                 code: 500, 
@@ -55,7 +57,10 @@ class BaseRestClient {
     }
 
     async post(uri, data = null, multipart = false) {
-        return await this.fetch(uri, 'POST', data, multipart);
+        console.log("POST", uri, data)
+        const res = await this.fetch(uri, 'POST', data, multipart);
+        console.log("POST DONE", res.status)
+        return res
     }
 
     async patch(uri, data) {
@@ -77,9 +82,9 @@ class BaseRestClient {
 
 class ApiError extends Error {
     constructor(res, uri, method, data) {
-        super(res.message);
+        super(`${res.statusText} [${res.status}]`);
         this.name = "ApiError";
-        this.code = res.code;
+        this.code = res.status;
         this.issues = res.issues;
         this.uri = uri;
         this.method = method;
@@ -104,9 +109,9 @@ class RestClient extends BaseRestClient {
     async fetch(uri, method = 'GET', data = null, multipart) {
         // genera errori casuali per testarne la gestione
         if (false && Math.random()>0.8) throw new ApiError({code:500, message: `fake random error! [${method} ${uri}]`});
-
         const res = await super.fetch(uri, method, data, multipart);
-        if (res.code < 200 || res.code >= 300) {
+
+        if (res.status < 200 || res.status >= 300) {
             throw new ApiError(res, uri, method, data);
         }
         return res.data;

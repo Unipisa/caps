@@ -1,5 +1,8 @@
 let express = require('express')
-let router = new express.Router()
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+
+const UnipiAuthStrategy = require('./unipiAuth')
 const { BadRequestError, ValidationError, NotFoundError } = require('./exceptions/ApiException')
 const Exams  = require('./controllers/ExamsController')
 const Users  = require('./controllers/UsersController')
@@ -10,6 +13,10 @@ const Forms = require('./controllers/FormsController')
 const Proposals = require('./controllers/ProposalsController')
 const Attachments = require('./controllers/AttachmentController')
 const Comments = require('./controllers/CommentController')
+
+const User = require('./models/User')
+
+const router = new express.Router()
 
 // JSON parsing middleware
 router.use(express.json())
@@ -33,6 +40,61 @@ function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
 
+// local password authentication
+passport.use(User.createStrategy())
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+// unipi oauth2 authentication
+const env = process.env
+if (env.OAUTH2_CLIENT_ID) {
+  passport.use(new UnipiAuthStrategy({
+    authorizationURL: env.OAUTH2_AUTHORIZE_URL,
+    tokenURL: env.OAUTH2_TOKEN_URL,
+    clientID: env.OAUTH2_CLIENT_ID,
+    clientSecret: env.OAUTH2_CLIENT_SECRET,
+    callbackURL: `${env.SERVER_URL}/login/oauth2/callback`,
+    usernameField: env.OAUTH2_USERNAME_FIELD,
+  }))
+} else {
+  console.log("OAUTH2 authentication disabled")
+  console.log("set OAUTH2_CLIENT_ID to enable")
+}
+
+router.post('/login', function(req, res) {
+    const user = req.user || null
+    res.send({ user })
+})
+  
+router.post('/login/password',
+    passport.authenticate('local'),
+    function(req, res) {
+        console.log("login/password")
+        const user = req.user.toObject()
+        console.log(`login ${user.username} roles: ${user.roles}`)
+        res.send({ user })
+})
+
+if (process.env.OAUTH2_CLIENT_ID) {
+    router.get('/login/oauth2', passport.authenticate('oauth2'))
+}
+
+router.get('/login/oauth2/callback',
+    passport.authenticate('oauth2'),
+    function(req, res) {
+        const user = req.user.toObject()
+        console.log(`login ${JSON.stringify(user)}`)
+        res.redirect(config.BASE_URL)
+    })
+
+router.post('/logout', function(req, res) {
+    req.logout(function(err) {
+        if (err) { return next(err) }
+        // res.redict('/login')
+        res.send({ "user": null })
+    })
+})
+  
 router.get('/', response_envelope(req => "Hello there!"))
 router.get('/proposals', response_envelope(Proposals.index))
 router.get('/proposals/:id', response_envelope(Proposals.view))

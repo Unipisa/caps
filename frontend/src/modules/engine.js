@@ -193,7 +193,8 @@ export function useCreateEngine() {
              * otherwise check for existing session
              */
             try {
-                let { user } = await api.post('login/password', {username, password})
+                const res = await api.post('login/password', {username, password})
+                let { user } = res
                 // console.log(`user: ${JSON.stringify(user)}`)
                 if (user !== null) {
                     user = new_user(user)
@@ -201,7 +202,12 @@ export function useCreateEngine() {
 
                 setState(s => ({...s, user}))
             } catch(err) {
-                flashMessage(`${err.name}: ${err.message}`, 'error')
+                // err is ApiError
+                if (err.code === 401) {
+                    flashMessage("Credenziali errate", 'error')
+                } else {
+                    flashMessage(`${err.name}: ${err.message}`, 'error')
+                }
             }
         },
 
