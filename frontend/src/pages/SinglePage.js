@@ -21,6 +21,7 @@ import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
 import UserPage from "./UserPage"
 
+import Login from "../components/Login"
 import Modal from '../components/Modal'
 import Flash from "../components/Flash"
 import NavBar from '../components/NavBar'
@@ -31,10 +32,18 @@ import {QueryClient, QueryClientProvider } from 'react-query'
 
 const queryClient = new QueryClient()
 
+export default function SinglePage() {
+    return <QueryClientProvider client={queryClient}>
+        <SinglePageInternal/>
+    </QueryClientProvider> 
+}
+
 function SinglePageInternal () {
     const engine = useCreateEngine()
     // engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
+
+    if (!engine.user) return <EngineProvider value={engine}><Login /></EngineProvider>
 
     return <EngineProvider value={engine}>
         <div id="wrapper">
@@ -72,12 +81,6 @@ function SinglePageInternal () {
             </BrowserRouter>
         </div>
     </EngineProvider>
-}
-
-export default function SinglePage() {
-    return <QueryClientProvider client={queryClient}>
-        <SinglePageInternal/>
-    </QueryClientProvider> 
 }
 
 function Splash(props) {

@@ -19,7 +19,8 @@ export function useCreateEngine() {
             title: null,
             content: null,
             callback: null
-        }
+        },
+        user: null,
     })
 
     const queryClient=useQueryClient()
@@ -50,7 +51,7 @@ export function useCreateEngine() {
 
     return {
         state,
-
+/*
         user: {
             id: '000000000000000000000017',
             username: "ginnasta",
@@ -61,7 +62,7 @@ export function useCreateEngine() {
             email: "ginnasta@mailinator.com",
             admin: true,
         },
-
+*/
         modalConfirm: (title, content) => {
             return new Promise((resolve) => {
                 async function callback(ans) {
@@ -168,5 +169,58 @@ export function useCreateEngine() {
                 enabled: query !== false,
             }
         ),
+
+        connect: async () => {
+            try {
+                let { user } = await api.post('/login')
+
+                if (user != null) {
+                    user = new_user(user);
+                }
+
+                setState(s => ({...s, user }))
+
+                return config
+            } catch(err) {
+                console.error(err)
+                return null
+            }
+        },
+
+        login: async (username, password) => {
+            /**
+             * if username and password are provided use credentials
+             * otherwise check for existing session
+             */
+            try {
+                let { user } = await api.post('login/password', {username, password})
+                // console.log(`user: ${JSON.stringify(user)}`)
+                if (user !== null) {
+                    user = new_user(user)
+                }
+
+                setState(s => ({...s, user}))
+            } catch(err) {
+                flashMessage(`${err.name}: ${err.message}`, 'error')
+            }
+        },
+
+        start_oauth2: async () => {
+            let url = api.BASE_URL + 'login/oauth2'
+            console.log(`start_oauth2: redirecting to ${url}`)
+            sessionStorage.setItem('redirect_after_login', window.location.pathname)
+            window.location.href = url
+        },
+
+        logout: async () => {
+            await api.post("logout")
+            setState(s => ({...s, user: null}))
+            return true
+        },
+
+        loggedIn: state.user !== null,
+
+        user: state.user,
     }
 }
+
