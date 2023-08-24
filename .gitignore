@@ -8,5 +8,6 @@ api/webroot/js/ver
 api/webroot/css/style.min.css.map
 api/webroot/node_modules
 api/node_modules
+api/env.local
 db
 attachments-db

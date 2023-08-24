@@ -51,7 +51,6 @@ export function useCreateEngine() {
 
     return {
         state,
-/*
         user: {
             id: '000000000000000000000017',
             username: "ginnasta",
@@ -62,7 +61,7 @@ export function useCreateEngine() {
             email: "ginnasta@mailinator.com",
             admin: true,
         },
-*/
+        
         modalConfirm: (title, content) => {
             return new Promise((resolve) => {
                 async function callback(ans) {
@@ -223,10 +222,6 @@ export function useCreateEngine() {
             setState(s => ({...s, user: null}))
             return true
         },
-
-        loggedIn: state.user !== null,
-
-        user: state.user,
     }
 }
 
