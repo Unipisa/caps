@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
     }, 
     password: {
         type: String
-    }
+    },
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 })
 
 userSchema.plugin(passportLocalMongoose)

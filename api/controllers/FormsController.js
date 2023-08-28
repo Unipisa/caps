@@ -22,16 +22,13 @@ const fields = {
 
 const FormsController = {
     index: async req => {
-        return await ModelController.index(req, {
-            Model: Form, fields
-        });
+        const query = req.query
+        return await ModelController.index(Form, query, fields);
     }, 
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: Form,
-            fields
-        })
+        const { id } = req.params
+        return await ModelController.view(Form, id)
     },
 
     post: async req => {

@@ -21,17 +21,13 @@ const fields = {
 const DegreesController = {
 
     index: async req => {
-        return await ModelController.index(req, {
-            Model: Degree,
-            fields
-        });
+        const query = req.query
+        return await ModelController.index(Degree, query, fields);
     }, 
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: Degree,
-            fields
-        })
+        const { id } = req.params
+        return await ModelController.view(Degree, id)
     },
 
     post: async req => {

@@ -60,10 +60,10 @@ export default function CommentWidget({
                 }
                 commentInserter.mutate(comment, {
                     onSuccess: (commentId) => {
+                        afterCommentPost(commentId)
                         setText("")
                         setFiles([])
                         setError({})
-                        afterCommentPost(commentId)
                     },
                     onError: (err) => {
                         engine.flashError(err)

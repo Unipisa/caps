@@ -112,9 +112,10 @@ router.get('/exams/:id', response_envelope(Exams.view))
 router.post('/exams/:id', response_envelope(Exams.update))
 router.get('/exams', response_envelope(Exams.index))
 router.post('/exams', response_envelope(Exams.insert))
-router.get('/users', response_envelope(Users.index))
 router.get('/users/:id', response_envelope(Users.view))
-router.post('/users', response_envelope(Users.post))
+router.get('/users', response_envelope(Users.index))
+router.post('/users/:id', response_envelope(Users.update))
+router.post('/users', response_envelope(Users.insert))
 router.get('/attachments', response_envelope(Attachments.index))
 
 // Queste route sono leggermente diverse rispetto alle altre perché si occupano
@@ -123,9 +124,9 @@ router.post('/attachments', Attachments.postMiddleware, response_envelope(Attach
 router.get('/attachments/:id/content', Attachments.viewContent)
 
 router.get('/attachments/:id', response_envelope(Attachments.view))
+router.get('/comments/:id', response_envelope(Comments.view))
 router.get('/comments', response_envelope(Comments.index))
 router.post('/comments/delete/:id', response_envelope(Comments.delete))
-router.get('/comments/:id', response_envelope(Comments.view))
 router.post('/comments', response_envelope(Comments.post))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))

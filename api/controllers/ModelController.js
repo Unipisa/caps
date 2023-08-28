@@ -6,30 +6,17 @@
 const { default: mongoose } = require("mongoose");
 const { BadRequestError, ValidationError, NotImplementedError } = require("../exceptions/ApiException");
 
-const validateModel = (Model, data) => {
-    const validationTest = (new Model(data)).validateSync()
-    if (validationTest) {
-        let errors = {}
-        for (const err in validationTest.errors) {
-            errors[err] = validationTest.errors[err].message
-        }
-        throw new ValidationError(errors)
-    }
-}
-
 const ModelController = {
 
-    index: async (req, { 
-            Model, fields, populate }
-        ) => {
+    index: async (Model, query, fields, {  populate } = {}) => {
         let $match = {};
         let filter = {};
         let sort = "_id";
         let direction = 1;
         let limit = 100;
 
-        for (key in req.query) {
-            const value = req.query[key];
+        for (key in query) {
+            const value = query[key];
             if (key == '_direction') {
                 if (value=="1") direction = 1;
                 else if (value=="-1") direction = -1;
@@ -102,11 +89,10 @@ const ModelController = {
         };
     },
 
-    view: async (req, { Model, populate }) => {
-        const { id } = req.params
+    view: async (Model, id, { populate } = {}) => {
         try {
             const obj = await Model.findById(id)
-            if (populate) return await obj.populate(populate)
+            if (populate !== undefined) return await obj.populate(populate)
             else return obj
         } catch(err) {
             console.log(`not found ${id}`)
@@ -115,22 +101,36 @@ const ModelController = {
     },
 
     update: async (Model, id, data) => {
-        validateModel(Model, data)
         try {
-            await Model.findByIdAndUpdate(id, { $set: data})
+            await Model.findByIdAndUpdate(id, data, { runValidators: true })
         } catch(err) {
-            throw new BadRequestError()
+            if (err instanceof mongoose.Error.ValidationError) {
+                let validationErrors = {}
+                for (const field in err.errors) {
+                    validationErrors[field] = err.errors[field].message
+                }
+                throw new ValidationError(validationErrors)
+            } else {
+                throw new BadRequestError()
+            }
         }
     },
 
     insert: async (Model, data) => {
-        validateModel(Model, data)
         try {
             const entry = new Model(data)
             await entry.save()
             return entry._id
         } catch (err) {
-            throw new BadRequestError()
+            if (err instanceof mongoose.Error.ValidationError) {
+                let validationErrors = {}
+                for (const field in err.errors) {
+                    validationErrors[field] = err.errors[field].message
+                }
+                throw new ValidationError(validationErrors)
+            } else {
+                throw new BadRequestError()
+            }
         }
     },
 

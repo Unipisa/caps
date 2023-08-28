@@ -34,17 +34,13 @@ const attachmentHandler = multer({
 const AttachmentController = {
 
     index: async req => {
-        return await ModelController.index(req, {
-            Model: Attachment,
-            fields
-        });
+        const query = req.query
+        return await ModelController.index(Attachment, query, fields);
     },
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: Attachment,
-            fields
-        })
+        const { id } = req.params
+        return await ModelController.view(Attachment, id)
     },
 
     viewContent: async (req, res, next) => {
@@ -81,14 +77,15 @@ const AttachmentController = {
     post: async req => {
         let reply = []
         for (const file of req.files) {
-            const attachment_id = await ModelController.insert(Attachment, {
+            const data = {
                 filename: file.originalname,
                 mimetype: file.mimetype,
                 encoding: file.encoding,
                 size: file.size,
                 content: file.filename,
                 uploader_id: req.body.uploader_id
-            })
+            }
+            const attachment_id = await ModelController.insert(Attachment, data)
             reply.push(attachment_id)
         }
         return reply

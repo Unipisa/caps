@@ -77,7 +77,7 @@ function ProposalCard({proposal}) {
     </div>
 }
 
-function CommentCard({comment}) {
+function CommentCard({ comment, userUpdater }) {
     const engine = useEngine()
     const deleter = engine.useDelete(Comment, comment._id)
 
@@ -85,7 +85,16 @@ function CommentCard({comment}) {
         engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
             .then(confirm => {
                 if (confirm) {
-                    deleter.mutate(null, {})
+                    deleter.mutate(null, {
+                        onSuccess: () => {
+                            const data = {
+                                $pull: {
+                                    comments: comment._id
+                                }
+                            }
+                            userUpdater(data, {})
+                        }
+                    })
                 }
             })
         
@@ -104,24 +113,23 @@ function CommentCard({comment}) {
 
 export default function UserPage() {
     const { id } = useParams()
-    const [ user, setUser ] = useState(null)
-    const [ proposals, setProposals ] = useState(null)
-    const [ comments, setComments ] = useState(null)
     const engine = useEngine()
     const userQuery = engine.useGet(User, id)
+    const userUpdater = engine.useUpdate(User, id)
     const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
-    const commentsQuery = engine.useIndex(Comment, { creator_id: id })
 
-    if (user !== userQuery.data) {
-        if (userQuery.isSuccess) setUser(userQuery.data)
+    function addPostedCommentToUser(comment_id) {
+        const data = { $addToSet: { comments: comment_id } }
+        userUpdater.mutate(data, {})
+    }
+
+    if (!userQuery.isSuccess) {
         return <LoadingMessage>caricamento utente...</LoadingMessage>
     }
-    if (proposals !== proposalsQuery.data) {
-        if (proposalsQuery.isSuccess) setProposals(proposalsQuery.data)
-    }
-    if (comments !== commentsQuery.data) {
-        if (commentsQuery.isSuccess) setComments(commentsQuery.data)
-    }
+
+    const user = userQuery.data
+    const comments = user.comments
+    const proposals = proposalsQuery.data
 
     return <>
         <Card>
@@ -139,7 +147,7 @@ export default function UserPage() {
         </h2>
         <div className='row'>
         {
-            proposalsQuery.isSuccess && proposals === proposalsQuery.data
+            proposalsQuery.isSuccess
                 ? (
                     proposals.length == 0
                         ? <div>Nessun piano di studi presentato.</div>
@@ -155,15 +163,11 @@ export default function UserPage() {
                 <Card>
                     <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
                     {
-                        commentsQuery.isSuccess && comments === commentsQuery.data
-                            ? (
-                                comments.items.length === 0
-                                    ? <p>Nessun documento allegato.</p>
-                                    : comments.items.map(comment => <CommentCard key={comment._id} comment={comment} />)
-                            )
-                            : <LoadingMessage>caricamento commenti e allegati...</LoadingMessage>
+                        comments.length === 0
+                            ? <p>Nessun documento allegato.</p>
+                            : comments.map(comment => <CommentCard key={comment._id} comment={comment} />)
                     }
-                    <CommentWidget />
+                    <CommentWidget afterCommentPost={addPostedCommentToUser}/>
                 </Card>
             </>
         }

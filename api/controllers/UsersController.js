@@ -40,20 +40,24 @@ const fields = {
 const UsersController = {
 
     index: async req => {
-        return await ModelController.index(req, {
-            Model: User, fields
-        });
+        const query = req.query
+        return await ModelController.index(User, query, fields);
     }, 
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: User, fields
-        })
+        const { id } = req.params
+        return await ModelController.view(User, id, { populate: { path: 'comments', populate: { path: 'attachments creator_id' } } })
     },
 
-    post: async req => {
-        const item = new User(req.body);
-        return await item.save();
+    update: async req => {
+        const { id } = req.params
+        const data = req.body
+        return await ModelController.update(User, id, data)
+    },
+
+    insert: async req => {
+        const data = req.body
+        return await ModelController.insert(User, data)
     }
 }
 
