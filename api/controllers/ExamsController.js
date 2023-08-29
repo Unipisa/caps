@@ -28,28 +28,24 @@ const fields = {
 const ExamsController = {
 
     index: async req => {
-        return await ModelController.index(req, {
-            Model: Exam,
-            fields
-        });
+        const query = req.query
+        return await ModelController.index(Exam, query, fields);
     }, 
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: Exam,
-            fields
-        })
+        const { id } = req.params
+        return await ModelController.view(Exam, id)
     },
 
     update: async req => {
         const { id } = req.params;
-        // Some pre-processing might be needed here on req.body
-        // for tags (eg remove duplicate etc)
-        return await ModelController.update(Exam, id, req.body);
+        const data = req.body
+        return await ModelController.update(Exam, id, data);
     },
 
     insert: async req => {
-        return await ModelController.insert(Exam, req.body);
+        const data = req.body
+        return await ModelController.insert(Exam, data);
     },
 
     delete: async req => {

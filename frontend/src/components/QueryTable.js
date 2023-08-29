@@ -65,7 +65,7 @@ function FilterBadges() {
 
 function Table({ Model }) {
     const engine = useEngine()
-    const { query } = useQuery()
+    const { query, setQuery } = useQuery()
     const indexQuery = engine.useIndex(Model, query)
     const [ selectedIds, setSelectedIds ] = useState([])
     const data = indexQuery.data
@@ -86,6 +86,14 @@ function Table({ Model }) {
                     _sort: field,
                     _direction: 1
                 }
+            }
+        })
+    }
+
+    function increaseLimit(d) {
+        setQuery(q => {
+            return {...q,
+                _limit: q._limit + d
             }
         })
     }
@@ -120,7 +128,7 @@ function Table({ Model }) {
     </table>
     <p>
         { data.items.length < data.total 
-        ? <button className="btn btn-primary mx-auto d-block" onClick={ () => setLimit(limit + 10) } >
+        ? <button className="btn btn-primary mx-auto d-block" onClick={ () => increaseLimit(10) } >
             Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
         </button>
         : null

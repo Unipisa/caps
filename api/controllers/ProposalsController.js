@@ -54,17 +54,13 @@ const fields = {
 const ProposalsController = {
 
     index: async req => {
-        return await ModelController.index(req, {
-            Model: Proposal,
-            fields
-        });
+        const query = req.query
+        return await ModelController.index(Proposal, query, fields);
     }, 
 
     view: async req => {
-        return await ModelController.view(req, {
-            Model: Proposal,
-            fields
-        })
+        const { id } = req.params
+        return await ModelController.view(Proposal, id)
     },
 
     post: async req => {
