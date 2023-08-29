@@ -7,7 +7,6 @@ export default function Login({}) {
     const engine = useEngine()
 
     return <div className="container">
-        <div>user: {JSON.stringify(engine.user)}</div>
         <div className="row justify-content-center">
             <div className="col-xl-6 col-lg-6 col-md-9">
                 <div className="card o-hidden border-0 shadow-lg my-5">
@@ -49,6 +48,7 @@ function UnipiLogin({}) {
         </div>
         <div className="card-body">
             <p>Effettua il login usando le credenziali di Ateneo.</p>
+            <p>NON ANCORA IMPLEMENTATO! USA LE CREDENZIALI LOCALI</p>
             <a className="ml-auto btn btn-primary" href="/users/oauth2-login">
                 <i className="fas fa-key mr-2"></i> 
                 Login

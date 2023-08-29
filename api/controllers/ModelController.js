@@ -102,12 +102,11 @@ const ModelController = {
         };
     },
 
-    view: async (req, { Model, populate }) => {
+    view: async (req, { Model }) => {
         const { id } = req.params
         try {
             const obj = await Model.findById(id)
-            if (populate) return await obj.populate(populate)
-            else return obj
+            return obj
         } catch(err) {
             console.log(`not found ${id}`)
             throw new BadRequestError()

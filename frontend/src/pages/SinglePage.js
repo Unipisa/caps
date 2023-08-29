@@ -42,9 +42,9 @@ function SinglePageInternal () {
     const engine = useCreateEngine()
     // engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
-
+    console.log("SinglePageInternal", JSON.stringify(engine.state))
+    console.log(!!engine.user)
     if (!engine.user) return <EngineProvider value={engine}><Login /></EngineProvider>
-
     return <EngineProvider value={engine}>
         <div id="wrapper">
             <BrowserRouter>

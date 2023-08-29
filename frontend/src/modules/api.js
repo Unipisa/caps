@@ -39,7 +39,6 @@ class BaseRestClient {
             };
             console.log(err);
         }
-
         return response;
     }
 
@@ -57,9 +56,7 @@ class BaseRestClient {
     }
 
     async post(uri, data = null, multipart = false) {
-        console.log("POST", uri, data)
         const res = await this.fetch(uri, 'POST', data, multipart);
-        console.log("POST DONE", res.status)
         return res
     }
 

@@ -1,6 +1,5 @@
 let express = require('express')
 const passport = require('passport')
-const LocalStrategy = require('passport-local')
 
 const UnipiAuthStrategy = require('./unipiAuth')
 const { BadRequestError, ValidationError, NotFoundError } = require('./exceptions/ApiException')
@@ -13,8 +12,8 @@ const Forms = require('./controllers/FormsController')
 const Proposals = require('./controllers/ProposalsController')
 const Attachments = require('./controllers/AttachmentController')
 const Comments = require('./controllers/CommentController')
-
 const User = require('./models/User')
+const UserController = require('./controllers/UsersController')
 
 const router = new express.Router()
 
@@ -63,16 +62,18 @@ if (env.OAUTH2_CLIENT_ID) {
 
 router.post('/login', function(req, res) {
     const user = req.user || null
-    res.send({ user })
+    res.send({data: { user }})
 })
   
 router.post('/login/password',
     passport.authenticate('local'),
-    function(req, res) {
-        console.log("login/password")
+    async function(req, res) {
         const user = req.user.toObject()
-        console.log(`login ${user.username} roles: ${user.roles}`)
-        res.send({ user })
+        console.log(`login/password: ${user.username}`)
+
+        // return user as if it was fetched from /users/:id
+        const gotUser = await UserController.view({params: {id: `${user._id}`}})
+        res.send({data: {user: gotUser}})
 })
 
 if (process.env.OAUTH2_CLIENT_ID) {

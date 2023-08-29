@@ -51,16 +51,7 @@ export function useCreateEngine() {
 
     return {
         state,
-        user: {
-            id: '000000000000000000000017',
-            username: "ginnasta",
-            name: "Pippo Ginnasta",
-            number: "123456",
-            givenname: "Ginnasta",
-            surname: "Pippo",
-            email: "ginnasta@mailinator.com",
-            admin: true,
-        },
+        user: state.user,
         
         modalConfirm: (title, content) => {
             return new Promise((resolve) => {
@@ -173,10 +164,6 @@ export function useCreateEngine() {
             try {
                 let { user } = await api.post('/login')
 
-                if (user != null) {
-                    user = new_user(user);
-                }
-
                 setState(s => ({...s, user }))
 
                 return config
@@ -194,11 +181,7 @@ export function useCreateEngine() {
             try {
                 const res = await api.post('login/password', {username, password})
                 let { user } = res
-                // console.log(`user: ${JSON.stringify(user)}`)
-                if (user !== null) {
-                    user = new_user(user)
-                }
-
+                console.log(`user: ${JSON.stringify(user)}`)
                 setState(s => ({...s, user}))
             } catch(err) {
                 // err is ApiError
@@ -206,6 +189,7 @@ export function useCreateEngine() {
                     flashMessage("Credenziali errate", 'error')
                 } else {
                     flashMessage(`${err.name}: ${err.message}`, 'error')
+                    console.error(err)
                 }
             }
         },
