@@ -21,6 +21,7 @@ export function useCreateEngine() {
             callback: null
         },
         user: null,
+        connected: false,
     })
 
     const queryClient=useQueryClient()
@@ -163,13 +164,10 @@ export function useCreateEngine() {
         connect: async () => {
             try {
                 let { user } = await api.post('/login')
-
-                setState(s => ({...s, user }))
-
-                return config
+                setState(s => ({...s, user, connected: true }))
             } catch(err) {
+                setState(s => ({...s, user: null, connected: false }))
                 console.error(err)
-                return null
             }
         },
 
@@ -201,9 +199,8 @@ export function useCreateEngine() {
         },
 
         logout: async () => {
-            await api.post("logout")
+            await api.post("/logout")
             setState(s => ({...s, user: null}))
-            return true
         },
     }
 }

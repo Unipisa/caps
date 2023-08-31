@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
     BrowserRouter, Routes, Route, Link
 } from "react-router-dom"
@@ -27,6 +27,7 @@ import Flash from "../components/Flash"
 import NavBar from '../components/NavBar'
 import TopBar from '../components/TopBar'
 import Footer from '../components/Footer'
+import LoadingMessage from '../components/LoadingMessage'
 
 import {QueryClient, QueryClientProvider } from 'react-query'
 
@@ -42,8 +43,10 @@ function SinglePageInternal () {
     const engine = useCreateEngine()
     // engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
-    console.log("SinglePageInternal", JSON.stringify(engine.state))
-    console.log(!!engine.user)
+
+    useEffect(engine.connect, [])
+    if (!engine.state.connected) return <LoadingMessage>connecting...</LoadingMessage>
+
     if (!engine.user) return <EngineProvider value={engine}><Login /></EngineProvider>
     return <EngineProvider value={engine}>
         <div id="wrapper">

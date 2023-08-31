@@ -58,7 +58,7 @@ if (env.OAUTH2_CLIENT_ID) {
 
 router.post('/login', function(req, res) {
     const user = req.user || null
-    res.send({data: { user }})
+    res.send({ user })
 })
   
 async function loginController(req) {
@@ -75,7 +75,8 @@ router.post('/login/password',
     response_envelope(loginController))
 
 if (process.env.OAUTH2_CLIENT_ID) {
-    router.get('/login/oauth2', passport.authenticate('oauth2'))
+    router.get('/login/oauth2', 
+        passport.authenticate('oauth2'))
 }
 
 router.get('/login/oauth2/callback',
@@ -87,10 +88,11 @@ router.get('/login/oauth2/callback',
     })
 
 router.post('/logout', function(req, res) {
+    console.log("CALLING LOGOUT")
     req.logout(function(err) {
+        console.log("CALLED LOGOUT")
         if (err) { return next(err) }
-        // res.redict('/login')
-        res.send({ "user": null })
+        res.send({ user: null })
     })
 })
   
