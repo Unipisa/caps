@@ -29,8 +29,14 @@ class BaseRestClient {
                 headers: headers, 
                 body: body
             });
-            if (response.status >= 200 && response.status < 300) {
+            const contentType = response.headers.get('Content-Type')
+            if (contentType && contentType.split(';')[0] === 'application/json') {
                 response = await response.json()
+            } else {
+                response = {
+                    code: response.status,
+                    message: response.statusText,
+                }
             }
         } catch(err) {
             response = {
@@ -81,7 +87,7 @@ class ApiError extends Error {
     constructor(res, uri, method, data) {
         super(`${res.statusText} [${res.status}]`);
         this.name = "ApiError";
-        this.code = res.status;
+        this.code = res.code;
         this.issues = res.issues;
         this.uri = uri;
         this.method = method;
@@ -107,11 +113,11 @@ class RestClient extends BaseRestClient {
         // genera errori casuali per testarne la gestione
         if (false && Math.random()>0.8) throw new ApiError({code:500, message: `fake random error! [${method} ${uri}]`});
         const res = await super.fetch(uri, method, data, multipart);
-
-        if (res.status < 200 || res.status >= 300) {
+        console.log(`fetch ${method} ${uri} ${JSON.stringify(data)} => ${JSON.stringify(res)}`)
+        if (res.code < 200 || res.code >= 300) {
             throw new ApiError(res, uri, method, data);
         }
-        return res.data;
+        return res;
     }
 }
 

@@ -24,11 +24,7 @@ function response_envelope(controller) {
     return async function(req, res, next) {
         try {   
             const data = await controller(req);
-            res.json({
-                code: 200,
-                message: 'OK',
-                data: data
-            })
+            res.json(data)
         } catch(e) {
             next(e);
         }
@@ -65,16 +61,18 @@ router.post('/login', function(req, res) {
     res.send({data: { user }})
 })
   
+async function loginController(req) {
+    const user = req.user.toObject()
+    console.log(`login/password: ${user.username}`)
+
+    // return user as if it was fetched from /users/:id
+    const gotUser = await UserController.view({params: {id: `${user._id}`}})
+    return {user: gotUser}
+}
+
 router.post('/login/password',
     passport.authenticate('local'),
-    async function(req, res) {
-        const user = req.user.toObject()
-        console.log(`login/password: ${user.username}`)
-
-        // return user as if it was fetched from /users/:id
-        const gotUser = await UserController.view({params: {id: `${user._id}`}})
-        res.send({data: {user: gotUser}})
-})
+    response_envelope(loginController))
 
 if (process.env.OAUTH2_CLIENT_ID) {
     router.get('/login/oauth2', passport.authenticate('oauth2'))

@@ -181,7 +181,6 @@ export function useCreateEngine() {
             try {
                 const res = await api.post('login/password', {username, password})
                 let { user } = res
-                console.log(`user: ${JSON.stringify(user)}`)
                 setState(s => ({...s, user}))
             } catch(err) {
                 // err is ApiError

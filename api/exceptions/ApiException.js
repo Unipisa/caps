@@ -47,6 +47,11 @@ function apiErrors(err, req, res, next) {
             issues: err.issues
         })
     } else {
+        err.message = JSON.stringify({
+            code: err?.code,
+            message: err.message,
+            issues: []
+        });
         next(err);
     }
 }
