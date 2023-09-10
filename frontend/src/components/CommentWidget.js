@@ -49,12 +49,12 @@ export default function CommentWidget({
             const file = document.getElementById(`allegato-${id}`).files[0]
             if (file !== undefined) data.append(`allegato-${id}`, file, file.name)
         }
-        data.append('uploader_id', engine.user.id)
+        data.append('uploader_id', engine.user._id)
 
         attachmentInserter.mutate(data, {
             onSuccess: (attachmentIds) => {
                 const comment = {
-                    creator_id: engine.user.id,
+                    creator_id: engine.user._id,
                     content: text,
                     attachments: attachmentIds
                 }

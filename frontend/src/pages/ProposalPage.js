@@ -14,6 +14,11 @@ import {Button} from 'react-bootstrap'
 
 function ExamRow({exam}) {
     const engine = useEngine()
+
+    // TODO: i chosen_free_choice_exam non hanno un exam_id e quindi la query
+    // fallisce sempre. Non è davvero un problema perché l'unico scopo di questa
+    // query è di ottenere i tag, e i free_choice_exam non hanno tag. Comunque
+    // questa cosa crea un API error che andrebbe gestito
     const query = engine.useGet(Exam, exam.exam_id)
     const real_exam = query.isSuccess ? query.data : null
     return <tr>
@@ -37,11 +42,131 @@ function ExamRow({exam}) {
     </tr>
 }
 
+export function EditProposalPage() {
+    const engine = useEngine()
+}
+
+export function AddProposalPage() {
+    // const engine = useEngine()
+    // const empty = new Proposal({
+    //     curriculum_id: null,
+    //     user_name: engine.user.name,
+    //     state: 'draft',
+    // })
+    //
+    // const [curriculum_id, setCID] = useState("64f0b8114fb5ed574a7b6fce")
+    // const curriculumQuery = engine.useGet(Curriculum, curriculum_id)
+    // return <div>
+    //     <p>{curriculumQuery.isSuccess && curriculumQuery.data.name}</p>
+    //     <button onClick={() => setCID("64f0b8114fb5ed574a7b7217")}>ehi</button>
+    // </div>
+
+    const engine = useEngine()
+    const empty = new Proposal({
+        curriculum_id: null,
+        user_name: engine.user.name,
+        state: 'draft',
+    })
+    const [proposal, setProposal] = useState(new Proposal({
+        curriculum_id: null,
+        user_id: engine.user._id,
+        state: 'draft'
+    }))
+    const query = engine.useGet(Proposal, "64f0b8124fb5ed574a7bfb61")
+    console.log(query.data)
+    // const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
+    // const curriculumQuery = engine.useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
+    // const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
+    // const degreeQuery = engine.useGet(Degree, curriculum ? curriculum.degree_id : null)
+    // const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
+    const degreesQuery = engine.useIndex(Degree, {})
+    const degrees = degreesQuery.isSuccess ? degreesQuery.data.items : null
+
+    // if (proposal === null || (proposal.curriculum_id && (curriculum === null || degree === null))) {
+    //     return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
+    // }
+
+    if (degrees === null) {
+        return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
+    }
+
+    // function MessageCard() {
+    //     return <Card className={
+    //         {
+    //             'draft': "border-left-primary",
+    //             'submitted': "border-left-warning",
+    //             'approved': "border-left-success",
+    //             'rejected': "border-left-error",
+    //         }[proposal.state]
+    //     }>{
+    //         {
+    //             'draft': `Questo piano è in stato di bozza. Devi inviarlo per avere l'approvazione.`,
+    //             'submitted': `Il piano è stato inviato in data ${proposal.date_submitted.format("D.M.Y")}. Riceverai un email quando verrà approvato o rifiutato`,
+    //             'approved': `Il piano è stato approvato in data ${proposal.date_managed.format("D.M.Y")}.`,
+    //             'rejected': `Il piano è stato rigettato in data ${proposal.date_managed.format("D.M.Y")}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
+    //         }[proposal.state]
+    //     }</Card>
+    // }
+
+    function Year({year}) {
+        return <Card title={`${Curriculum.ordinal(year)} anno`}>
+            <table className="table">
+                <thead>
+                <tr>
+                    <th>Codice</th>
+                    <th>Nome</th>
+                    <th>Settore</th>
+                    <th>Crediti</th>
+                    <th>Gruppo</th>
+                </tr>
+                </thead>
+                <tbody>
+                { proposal.exams
+                    .filter(e => e.year === year)
+                    .map(e => <ExamRow key={e._id} exam={e}/>)
+                }
+                </tbody>
+            </table>
+        </Card>
+    }
+
+    function InfoCard() {
+        if (degrees === null) {
+            return <Card><p>caricamento...</p></Card>
+        }
+
+        return <Card>
+            <div className="form-group" key="degree-selection">
+                <select className="form-control" onChange={() => {}}
+                    value={degree ? degrees.map((d) => d.id).indexOf(degree._id) : -1}>
+                    <option key="degree-dummy" value="-1">
+                        Selezionare il corso di Laurea
+                    </option>
+                    {degrees.map(degree => [
+                        degree.academic_year, degree.name, 
+                        <option key={degree._id} value={degree._id}>
+                            {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
+                        </option>]).sort().map(([a,b,rendering]) => rendering)}
+                </select>
+            </div>
+        </Card>
+    }
+
+    return <>ciao</>
+    return <>
+        <h1>Piano di studi di {proposal.user_name}</h1>
+        {/* <MessageCard /> */}
+        <InfoCard />
+        { degree && [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
+    </>
+
+}
+
 
 export default function ProposalPage() {
     const engine = useEngine()
     const { id } = useParams()
-    console.log(`ProposalPage id=${id || null}`)
+    // console.log(`ProposalPage id=${id || null}`)
     const empty = new Proposal({
         curriculum_id: null,
         user_name: engine.user.name,
@@ -51,15 +176,16 @@ export default function ProposalPage() {
     const query = engine.useGet(Proposal, id || null)
     const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
     const curriculumQuery = engine.useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
+    console.log('ehi', proposal, curriculumQuery)
     const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
     const degreeQuery = engine.useGet(Degree, curriculum ? curriculum.degree_id : null)
     const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
     const degreesQuery = engine.useIndex(Degree, edit ? {} : false)
     const degrees = degreesQuery.isSuccess ? degreesQuery.data.items : null
 
-    console.log(`proposal: ${JSON.stringify(proposal)}`)
-    console.log(`curriculum: ${JSON.stringify(curriculum)}`)
-    console.log(`degree: ${JSON.stringify(degree)}`)
+    // console.log(`proposal: ${JSON.stringify(proposal)}`)
+    // console.log(`curriculum: ${JSON.stringify(curriculum)}`)
+    // console.log(`degree: ${JSON.stringify(degree)}`)
 
     if (proposal === null || (proposal.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
