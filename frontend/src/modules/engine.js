@@ -2,7 +2,7 @@ import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
 import Model from '../models/Model'
 
-import api from './api'
+import api, {api_root} from './api'
 
 export const EngineContext = createContext(null)
 
@@ -192,7 +192,7 @@ export function useCreateEngine() {
         },
 
         start_oauth2: async () => {
-            let url = api.BASE_URL + 'login/oauth2'
+            let url = api_root + 'login/oauth2'
             console.log(`start_oauth2: redirecting to ${url}`)
             sessionStorage.setItem('redirect_after_login', window.location.pathname)
             window.location.href = url

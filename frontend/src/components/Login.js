@@ -1,4 +1,5 @@
 import React from "react"
+import { Button } from 'react-bootstrap'
 
 import { useEngine } from '../modules/engine'
 import Flash from "../components/Flash"
@@ -42,17 +43,15 @@ export default function Login({}) {
 }
 
 function UnipiLogin({}) {
+    const engine = useEngine()
+
     return <div className="card mb-4">
         <div className="card-header">
             Credenziali di Ateneo
         </div>
         <div className="card-body">
             <p>Effettua il login usando le credenziali di Ateneo.</p>
-            <p>NON ANCORA IMPLEMENTATO! USA LE CREDENZIALI LOCALI</p>
-            <a className="ml-auto btn btn-primary" href="/users/oauth2-login">
-                <i className="fas fa-key mr-2"></i> 
-                Login
-            </a>
+            <Button onClick={() => engine.start_oauth2()}><i className="fas fa-key mr-2" /> Login</Button>
         </div>
     </div>
 }

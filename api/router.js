@@ -48,13 +48,22 @@ if (env.OAUTH2_CLIENT_ID) {
     tokenURL: env.OAUTH2_TOKEN_URL,
     clientID: env.OAUTH2_CLIENT_ID,
     clientSecret: env.OAUTH2_CLIENT_SECRET,
-    callbackURL: `${env.SERVER_URL}/login/oauth2/callback`,
+    callbackURL: `${env.SERVER_URL}/api/v0/login/oauth2/callback`,
     usernameField: env.OAUTH2_USERNAME_FIELD,
   }))
+  console.log("OAUTH2 authentication enabled")
+  console.log(`OAUTH2_AUTHORIZE_URL: ${env.OAUTH2_AUTHORIZE_URL}`)
+  console.log(`OAUTH2_CLIENT_ID: ${env.OAUTH2_CLIENT_ID}`)
+  console.log(`SERVER_URL: ${env.SERVER_URL}`)
 } else {
   console.log("OAUTH2 authentication disabled")
   console.log("set OAUTH2_CLIENT_ID to enable")
 }
+
+router.get('/hello', function(req, res) {
+    console.log(`hello ${JSON.stringify(req.body)}`)
+    res.send({ hello: "hello!" })
+})
 
 router.post('/login', function(req, res) {
     const user = req.user || null
@@ -82,9 +91,10 @@ if (process.env.OAUTH2_CLIENT_ID) {
 router.get('/login/oauth2/callback',
     passport.authenticate('oauth2'),
     function(req, res) {
+        console.log("OAUTH2 authentication callback")
         const user = req.user.toObject()
         console.log(`login ${JSON.stringify(user)}`)
-        res.redirect(config.BASE_URL)
+        res.redirect(process.env.SERVER_URL)
     })
 
 router.post('/logout', function(req, res) {

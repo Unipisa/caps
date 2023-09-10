@@ -1,9 +1,8 @@
 'use strict';
 
-const api_root = '/api/v0/';
+export const api_root = '/api/v0/';
 
 class BaseRestClient {
-
     constructor() {
         try {
             this.csrf = document.getElementsByName('csrfToken')[0].content
