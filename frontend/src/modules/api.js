@@ -42,7 +42,7 @@ class BaseRestClient {
                 code: 500, 
                 message: `fetch error: ${err.message}`
             };
-            console.log(err);
+            console.log(`catched error: ${err}`);
         }
         return response;
     }

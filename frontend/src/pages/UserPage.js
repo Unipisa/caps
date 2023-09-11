@@ -85,6 +85,11 @@ function CommentCard({ comment, userUpdater }) {
         engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
             .then(confirm => {
                 if (confirm) {
+                    // EP: qui si cancella il commento ma l'id non 
+                    // viene rimosso dall'elenco dei commenti nel modello
+                    // User.
+                    // Rafforza l'idea che tale elenco non ci dovrebbe essere 
+                    // e che è meglio mettere un object_id nel Commento.
                     deleter.mutate(null, {
                         onSuccess: () => {
                             const data = {
@@ -92,7 +97,7 @@ function CommentCard({ comment, userUpdater }) {
                                     comments: comment._id
                                 }
                             }
-                            userUpdater(data, {})
+                            if (userUpdater) userUpdater(data, {})
                         }
                     })
                 }

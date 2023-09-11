@@ -102,7 +102,16 @@ const ModelController = {
 
     update: async (Model, id, data) => {
         try {
+            console.log(`ModelController.update ${Model} ${id} ${JSON.stringify(data)}`)
+            // EP: data proviene direttamente dal client
+            // è sicuro farlo passare così a mongoose?
+            // in particolare si usa $addToSet per aggiungere commenti,
+            // ma potrei usare qualunque altra funzione di mongodb.
+            //
+            // penso che invece che avere un elenco di commenti nel modello User
+            // sarebbe meglio avere un object_id nel modello Comment
             await Model.findByIdAndUpdate(id, data, { runValidators: true })
+            return {ok: true}
         } catch(err) {
             if (err instanceof mongoose.Error.ValidationError) {
                 let validationErrors = {}
@@ -137,6 +146,7 @@ const ModelController = {
     delete: async (Model, id) => {
         try {
             await Model.deleteOne({ _id: id})
+            return {ok: true}
         } catch(err) {
             throw new BadRequestError()
         }
