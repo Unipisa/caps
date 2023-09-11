@@ -120,7 +120,7 @@ function CommentWidget({object_id}) {
                 })
             },
             onError: (err) => {
-                if (err.code === 403) {
+                if (err.code === 422) {
                     setError(err)
                 }
             }

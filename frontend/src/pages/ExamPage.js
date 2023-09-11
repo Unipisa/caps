@@ -133,7 +133,7 @@ export function AddExamPage() {
                     navigate(`/exams/${newId}`)
                 },
                 onError: (err) => {
-                    if (err.code === 403) {
+                    if (err.code === 422) {
                         setErrors(err.issues)
                     }
                 }
@@ -162,7 +162,7 @@ export function EditExamPage() {
                     navigate(`/exams/${id}`)
                 },
                 onError: (err) => {
-                    if (err.code === 403) {
+                    if (err.code === 422) {
                         setErrors(err.issues)
                     }
                 }

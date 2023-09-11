@@ -37,7 +37,7 @@ export function useCreateEngine() {
 
     const onError = (err) => flashMessage(`${err.name}: ${err.message}`, 'error')
     const onPossibleValidationError = (err) => {
-        if (err.code === 403) { 
+        if (err.code === 422) { 
             // Either show the error as a flash message or as a text near the
             // form input, not both
 
