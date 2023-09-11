@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useGet, useIndex } from '../modules/engine'
 import Proposal from '../models/Proposal'
 import Curriculum from '../models/Curriculum'
 import Degree from '../models/Degree'
@@ -12,15 +12,11 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {Button} from 'react-bootstrap' 
 
-function ExamRow({exam}) {
-    const engine = useEngine()
-
-    // TODO: i chosen_free_choice_exam non hanno un exam_id e quindi la query
-    // fallisce sempre. Non è davvero un problema perché l'unico scopo di questa
-    // query è di ottenere i tag, e i free_choice_exam non hanno tag. Comunque
-    // questa cosa crea un API error che andrebbe gestito
-    const query = engine.useGet(Exam, exam.exam_id)
-    const real_exam = query.isSuccess ? query.data : null
+function ExamRow({ exam }) {
+    const query = useGet(Exam, exam.exam_id || null)
+    if (query.isLoading) return <tr><td>loading...</td></tr>
+    if (query.isError) return <tr><td>error...</td></tr>
+    const real_exam = query.data
     return <tr>
         <td>{exam.exam_code}</td>
         <td>{exam.exam_name}
@@ -43,10 +39,8 @@ function ExamRow({exam}) {
 }
 
 export function EditProposalPage() {
-    const engine = useEngine()
-}
+    const { id } = useParams()
 
-export function AddProposalPage() {
     // const engine = useEngine()
     // const empty = new Proposal({
     //     curriculum_id: null,
@@ -55,7 +49,7 @@ export function AddProposalPage() {
     // })
     //
     // const [curriculum_id, setCID] = useState("64f0b8114fb5ed574a7b6fce")
-    // const curriculumQuery = engine.useGet(Curriculum, curriculum_id)
+    // const curriculumQuery = useGet(Curriculum, curriculum_id)
     // return <div>
     //     <p>{curriculumQuery.isSuccess && curriculumQuery.data.name}</p>
     //     <button onClick={() => setCID("64f0b8114fb5ed574a7b7217")}>ehi</button>
@@ -72,14 +66,14 @@ export function AddProposalPage() {
         user_id: engine.user._id,
         state: 'draft'
     }))
-    const query = engine.useGet(Proposal, "64f0b8124fb5ed574a7bfb61")
+    const query = useGet(Proposal, "64f0b8124fb5ed574a7bfb61")
     console.log(query.data)
     // const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
-    // const curriculumQuery = engine.useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
+    // const curriculumQuery = useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
     // const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
-    // const degreeQuery = engine.useGet(Degree, curriculum ? curriculum.degree_id : null)
+    // const degreeQuery = useGet(Degree, curriculum ? curriculum.degree_id : null)
     // const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
-    const degreesQuery = engine.useIndex(Degree, {})
+    const degreesQuery = useIndex(Degree, {})
     const degrees = degreesQuery.isSuccess ? degreesQuery.data.items : null
 
     // if (proposal === null || (proposal.curriculum_id && (curriculum === null || degree === null))) {
@@ -152,7 +146,6 @@ export function AddProposalPage() {
         </Card>
     }
 
-    return <>ciao</>
     return <>
         <h1>Piano di studi di {proposal.user_name}</h1>
         {/* <MessageCard /> */}
@@ -173,14 +166,14 @@ export default function ProposalPage() {
         state: 'draft',
     })
     const edit = id ? false : true
-    const query = engine.useGet(Proposal, id || null)
+    const query = useGet(Proposal, id || null)
     const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
-    const curriculumQuery = engine.useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
+    const curriculumQuery = useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
     console.log('ehi', proposal, curriculumQuery)
     const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
-    const degreeQuery = engine.useGet(Degree, curriculum ? curriculum.degree_id : null)
+    const degreeQuery = useGet(Degree, curriculum ? curriculum.degree_id : null)
     const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
-    const degreesQuery = engine.useIndex(Degree, edit ? {} : false)
+    const degreesQuery = useIndex(Degree, edit ? {} : false)
     const degrees = degreesQuery.isSuccess ? degreesQuery.data.items : null
 
     // console.log(`proposal: ${JSON.stringify(proposal)}`)

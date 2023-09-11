@@ -3,7 +3,7 @@
 import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useGet, useIndex, useDelete } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import User from '../models/User'
@@ -14,17 +14,12 @@ import Comments from '../components/Comments'
 export default function UserPage() {
     const { id } = useParams()
     const engine = useEngine()
-    const userQuery = engine.useGet(User, id)
-    const userUpdater = engine.useUpdate(User, id)
-    const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
+    const userQuery = useGet(User, id)
 
-    if (!userQuery.isSuccess) {
-        return <LoadingMessage>caricamento utente...</LoadingMessage>
-    }
+    if (userQuery.isLoading) return <LoadingMessage>caricamento utente...</LoadingMessage>
+    if (userQuery.isError) return <div>errore caricamento utente</div>
 
     const user = userQuery.data
-    const comments = user.comments
-    const proposals = proposalsQuery.data
 
     return <>
         <Card>
@@ -37,20 +32,10 @@ export default function UserPage() {
         </Card>
 
         <h2 className='d-flex mt-4'>
-            <span className='mr-auto'>Piano di studi</span>
+            <span className='mr-auto'>Piani di studio</span>
             <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
         </h2>
-        <div className='row'>
-        {
-            proposalsQuery.isSuccess
-                ? (
-                    proposals.length == 0
-                        ? <div>Nessun piano di studi presentato.</div>
-                        : proposals.items.map(proposal => <ProposalCard key={proposal._id} proposal={proposal} />)
-                )
-                : <LoadingMessage>caricamento piani di studio...</LoadingMessage>
-        }
-        </div>
+        <Proposals id={id} />
 
         {
             engine.user.admin && <>
@@ -64,9 +49,31 @@ export default function UserPage() {
     </>
 }
 
+function Proposals({id}) {
+    const proposalsQuery = useIndex(Proposal, { user_id: id })
+    if (proposalsQuery.isLoading) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+    if (proposalsQuery.isError) return <div>errore caricamento piani di studio</div> 
+
+    const proposals = proposalsQuery.data.items
+
+    return <div className='row'>
+        { 
+            proposals.length == 0 && 
+            <div>
+                Nessun piano di studi presentato.            
+            </div>
+        }
+        {
+            proposals.map(proposal => 
+                <ProposalCard key={proposal._id} proposal={proposal} />
+            )
+        }
+    </div>
+}
+
 function ProposalCard({proposal}) {
     const engine = useEngine()
-    const deleter = engine.useDelete(Proposal, proposal._id)
+    const deleter = useDelete(Proposal, proposal._id)
 
     async function deleteProposal() {
         engine.modalConfirm("Elimina piano di studi", "confermi di voler eliminare il piano di studi?")
@@ -75,14 +82,12 @@ function ProposalCard({proposal}) {
                     deleter.mutate(null, {
                         onSuccess: () => {
                             engine.flashSuccess("Piano di studi cancellato con successo")
-                            // TODO controlla (dopo aver aggiunto le opportune route in
-                            // backend) che questa cosa effettivamente invalidi la
-                            // query e la pagina si aggiorni con i piani di studi senza
-                            // quello rimosso
-                            //
-                            // Nel caso, si può anche rimuovere il flashSuccess perché il
+                            // si può anche rimuovere il flashSuccess perché il
                             // fatto che l'operazione sia andata a buon fine è evidente
                             // dalla scomparsa del piano di studi dalla lista
+                        },
+                        onError: (err) => {
+                            engine.flashError("Errore cancellazione piano di studi")
                         }
                     })
                 }

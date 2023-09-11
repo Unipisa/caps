@@ -1,7 +1,8 @@
 import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
-import Model from '../models/Model'
+import axios from 'axios'
 
+import Model from '../models/Model'
 import api, {api_root} from './api'
 
 export const EngineContext = createContext(null)
@@ -205,3 +206,66 @@ export function useCreateEngine() {
     }
 }
 
+export function useGet(Model, id) {
+    const path = Model.api_url
+
+    return useQuery({
+        queryKey: [path, id],
+        queryFn: async () => {
+            const res = await axios.get(`/api/v0/${path}${id}`)
+            return res.data
+        },
+        enabled: id !== null,
+    })
+}        
+
+export function useIndex(Model, query={}) {
+    const path = Model.api_url
+    return useQuery({
+        queryKey: [path, query],
+        queryFn: async () => {
+            const res = await axios.get(`/api/v0/${path}`, { params: query })
+            return res.data
+        },
+        enabled: query !== false,    
+    })
+}
+
+export function usePost(Model) {
+    const queryClient = useQueryClient()
+    const path = Model.api_url
+    return useMutation({
+        mutationFn: async (data) => {
+            return await axios.post(`/api/v0/${Model.api_url}`, data)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [path] })
+        },
+    })
+}
+
+export function useDelete(Model, id) {
+    const queryClient = useQueryClient()
+    const path = Model.api_url
+    return useMutation({
+        mutationFn: async () => {
+            return await axios.delete(`/api/v0/${Model.api_url}${id}`)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [path] })
+        },
+    })
+}
+
+export function usePatch(Model, id) {
+    const queryClient = useQueryClient()
+    const path = Model.api_url
+    return useMutation({
+        mutationFn: async (data) => {
+            return await axios.patch(`/api/v0/${Model.api_url}${id}`, data)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [path] })
+        },
+    })
+}

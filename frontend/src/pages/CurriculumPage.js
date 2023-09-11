@@ -1,34 +1,36 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from "react-router-dom"
+import React from 'react'
+import { useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
-import api from '../modules/api'
+import { useGet } from '../modules/engine'
 import Curriculum from '../models/Curriculum'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 import Exam from '../models/Exam';
 
 function CompulsoryExam({ exam_id }) {
-    const engine = useEngine()
-    const query = engine.useGet(Exam, exam_id);
+    const query = useGet(Exam, exam_id);
 
-    if (query.isSuccess) {
-        const exam = query.data;
-        return <tr>
-            <th>esame obbligatorio</th>
-            <td>{ exam.name }</td>
-            <td>{ exam.credits }</td>
-            <td>{ exam.code }</td>
-            <td>{ exam.sector }</td>
-        </tr>
-    } else {
-        return <tr>
-            <td>...</td>
-            <td></td>
-        </tr>
-    }
+    if (query.isLoading) return <tr>
+        <th>esame obbligatorio</th>
+        <td>...</td>
+    </tr>
+
+    if (query.isError) return <tr>
+        <th>esame obbligatorio</th>
+        <td>???</td>
+    </tr>
+
+    const exam = query.data;
+
+    return <tr>
+        <th>esame obbligatorio</th>
+        <td>{ exam.name }</td>
+        <td>{ exam.credits }</td>
+        <td>{ exam.code }</td>
+        <td>{ exam.sector }</td>
+    </tr>
 }
 
 function CompulsoryGroup({ group }) {
@@ -43,15 +45,13 @@ function ExamEntry({ entry }) {
 }
 
 export default function CurriculumPage() {
-    const engine = useEngine()
     const { id } = useParams()
-    const [ curriculum, setCurriculum ] = useState(null)
-    const query = engine.useGet(Curriculum, id)
+    const query = useGet(Curriculum, id)
 
-    if (curriculum === null) {
-        if (query.isSuccess) setCurriculum(query.data)
-        return <LoadingMessage>caricamento curriculum...</LoadingMessage>
-    }
+    if (query.isLoading) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
+    if (query.isError) return <div>errore caricamento curriculum</div>
+
+    const curriculum = query.data
 
     console.log(`curriculum: ${JSON.stringify(curriculum)}`)
 
@@ -62,7 +62,7 @@ export default function CurriculumPage() {
                 Crediti: { year_section.credits } <br />
                 <table>
                     <tbody>
-                    { year_section.exams.map(entry => <ExamEntry key={entry._id} entry={entry} engine={engine} />)}
+                    { year_section.exams.map(entry => <ExamEntry key={entry._id} entry={entry} />)}
                     </tbody>
                 </table>
             </Card>

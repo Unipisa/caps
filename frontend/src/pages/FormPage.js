@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useGet } from '../modules/engine'
 import Form from '../models/Form'
 import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
@@ -71,29 +71,17 @@ function DraftNotice({edit, form}) {
 }
 
 export default function FormPage() {
-    const engine = useEngine()
     const { id } = useParams()
-    const [ form, setForm ] = useState(null)
-    const [ formTemplate, setFormTemplate] = useState(null)
-    const html = "html"
     const edit = false
-    const queryForm = engine.useGet(Form, id)
-    const queryFormTemplate = engine.useGet(FormTemplate, form ? form.form_template_id : null)
+    const queryForm = useGet(Form, id)
+    const queryFormTemplate = useGet(FormTemplate, form ? form.form_template_id : null)
 
+    if (queryForm.isLoading || queryFormTemplate.isLoading) return <LoadingMessage>caricamento modulo...</LoadingMessage>
+    if (queryForm.isError || queryFormTemplate.isError) return <div>errore caricamento modulo</div> 
+
+    const form = queryForm.data
+    const formTemplate = queryFormTemplate.data
     //  if (formTemplate === null) return <TemplateSelection />
-
-    if (form === null || formTemplate === null) {
-        if (form === null && queryForm.isSuccess) setForm(queryForm.data)
-        if (formTemplate === null && queryFormTemplate.isSuccess) setFormTemplate(queryFormTemplate.data)
-        return <LoadingMessage>caricamento modulo...</LoadingMessage>
-    }
-    
-    if (form.form_template_name !== formTemplate.name) {
-        setForm(f => ({
-            ...f,
-            form_template_name: formTemplate.name
-        }))
-    }
 
     return <Card title={form.form_template_name}>
         <Badges form={form} formTemplate={formTemplate}></Badges>

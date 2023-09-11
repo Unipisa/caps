@@ -2,7 +2,7 @@
 
 import React, { useState, createContext, useContext } from 'react'
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useIndex } from '../modules/engine'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
 import Card from 'react-bootstrap/Card'
@@ -66,12 +66,14 @@ function FilterBadges() {
 function Table({ Model }) {
     const engine = useEngine()
     const { query, setQuery } = useQuery()
-    const indexQuery = engine.useIndex(Model, query)
+    const indexQuery = useIndex(Model, query)
     const [ selectedIds, setSelectedIds ] = useState([])
-    const data = indexQuery.data
-
+    
     if (indexQuery.isError) return <>ERRORE</>
     if (indexQuery.isLoading) return <LoadingMessage/>
+
+    const data = indexQuery.data
+    const items = data.items.map(item => new Model(item))
 
     function toggleSort(field) {
         setQuery(q => {
@@ -112,7 +114,7 @@ function Table({ Model }) {
     }
 
     return <>
-    {data.items.length}/{data.total} elementi mostrati
+    {items.length}/{data.total} elementi mostrati
     <table className="table">
         <thead>
             <tr>
@@ -124,12 +126,12 @@ function Table({ Model }) {
                 )}
             </tr>
         </thead>        
-        <TableBody Model={ Model } data={ data } selectedIds={ selectedIds } setSelectedIds={ setSelectedIds } />
+        <TableBody Model={ Model } items={ items } selectedIds={ selectedIds } setSelectedIds={ setSelectedIds } />
     </table>
     <p>
-        { data.items.length < data.total 
+        { items.length < data.total 
         ? <button className="btn btn-primary mx-auto d-block" onClick={ () => increaseLimit(10) } >
-            Carica più righe (altri {`${ data.total - data.items.length} / ${ data.total }`} da mostrare)
+            Carica più righe (altri {`${ data.total - items.length} / ${ data.total }`} da mostrare)
         </button>
         : null
         }
@@ -137,8 +139,8 @@ function Table({ Model }) {
     </>
 }
 
-function TableBody({ Model, data, selectedIds, setSelectedIds }) {
-    const [cache, setCache] = useState([{}]);
+function TableBody({ Model, items, selectedIds, setSelectedIds }) {
+    const [cache, setCache] = useState([{}])
 
     function onToggle(item) {
         setSelectedIds(ids => {
@@ -160,7 +162,7 @@ function TableBody({ Model, data, selectedIds, setSelectedIds }) {
     }
 
     return <tbody>
-        { data.items.map(item => {
+        { items.map(item => {
             const selected = selectedIds.includes(item._id);
             item.load_related(cache, setCache)
             return <tr 
