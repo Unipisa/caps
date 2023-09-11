@@ -85,19 +85,8 @@ function CommentCard({ comment, userUpdater }) {
         engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
             .then(confirm => {
                 if (confirm) {
-                    // EP: qui si cancella il commento ma l'id non 
-                    // viene rimosso dall'elenco dei commenti nel modello
-                    // User.
-                    // Rafforza l'idea che tale elenco non ci dovrebbe essere 
-                    // e che è meglio mettere un object_id nel Commento.
                     deleter.mutate(null, {
                         onSuccess: () => {
-                            const data = {
-                                $pull: {
-                                    comments: comment._id
-                                }
-                            }
-                            if (userUpdater) userUpdater(data, {})
                         }
                     })
                 }
@@ -122,11 +111,6 @@ export default function UserPage() {
     const userQuery = engine.useGet(User, id)
     const userUpdater = engine.useUpdate(User, id)
     const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
-
-    function addPostedCommentToUser(comment_id) {
-        const data = { $addToSet: { comments: comment_id } }
-        userUpdater.mutate(data, {})
-    }
 
     if (!userQuery.isSuccess) {
         return <LoadingMessage>caricamento utente...</LoadingMessage>
@@ -167,15 +151,30 @@ export default function UserPage() {
                 <h2 className='mt-4'>Documenti e allegati</h2>
                 <Card>
                     <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
-                    {
-                        comments.length === 0
-                            ? <p>Nessun documento allegato.</p>
-                            : comments.map(comment => <CommentCard key={comment._id} comment={comment} />)
-                    }
-                    <CommentWidget afterCommentPost={addPostedCommentToUser}/>
+                    <Comments object_id={id} />
                 </Card>
             </>
         }
     </>
 }
 
+function Comments({object_id}) {
+    const engine = useEngine()
+    const commentsQuery = engine.useIndex(Comment, { object_id })
+
+    if (!commentsQuery.isSuccess) {
+        return <LoadingMessage>caricamento commenti...</LoadingMessage>
+    }
+
+    const comments = commentsQuery.data.items
+
+    return <>
+        {
+            comments.length === 0
+                ? <p>Nessun commento.</p>
+                : comments.map(comment => 
+                    <CommentCard key={comment._id} comment={comment} />)
+        }
+        <CommentWidget object_id={object_id} />
+    </>
+}

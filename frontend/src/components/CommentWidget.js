@@ -17,9 +17,7 @@ import Card from "./Card";
     *   post of the comment (via the "Send" button inside the widget), that
     *   takes the id of the newly posted comment as the only argument
 */
-export default function CommentWidget({ 
-    afterCommentPost = (id) => {} 
-}) {
+export default function CommentWidget({object_id}) {
     const engine = useEngine()
     const attachmentInserter = engine.useMultipartInsert(Attachment)
     const commentInserter = engine.useInsert(Comment)
@@ -35,6 +33,7 @@ export default function CommentWidget({
         }
         setFiles(files.concat([newId]))
     }
+
     function deleteFile(id) {
         setError({})
         setFiles(files.filter(e => e !== id))
@@ -49,18 +48,20 @@ export default function CommentWidget({
             const file = document.getElementById(`allegato-${id}`).files[0]
             if (file !== undefined) data.append(`allegato-${id}`, file, file.name)
         }
+        // EP: l'uploader_id va messo dal server,
+        // non ci si può fidare del client
         data.append('uploader_id', engine.user._id)
 
         attachmentInserter.mutate(data, {
             onSuccess: (attachmentIds) => {
                 const comment = {
+                    object_id,
                     creator_id: engine.user._id,
                     content: text,
                     attachments: attachmentIds
                 }
                 commentInserter.mutate(comment, {
                     onSuccess: (commentId) => {
-                        afterCommentPost(commentId)
                         setText("")
                         setFiles([])
                         setError({})
@@ -77,7 +78,6 @@ export default function CommentWidget({
             }
         })
     }
-
     
     return <Card title="Aggiungi allegato o commento">
         <div className="d-flex flex-column">

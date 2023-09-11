@@ -2,6 +2,11 @@ const ModelController = require('./ModelController');
 const Comment = require('../models/Comment');
 
 const fields = {
+    "object_id": {
+        can_filter: true,
+        can_sort: true,
+        match_id_object: true,
+    },
     "creator_id": {
         can_filter: true,
         can_sort: true,
