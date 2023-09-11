@@ -64,6 +64,11 @@ const ProposalsController = {
 
     post: async req => {
         return await ModelController.post(Proposal, req.body)
+    },
+
+    delete: async req => {
+        const { id } = req.params
+        return await ModelController.delete(Proposal, id)
     }
 }
 
