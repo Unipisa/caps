@@ -37,15 +37,15 @@ const ExamsController = {
         return await ModelController.view(Exam, id)
     },
 
-    update: async req => {
+    patch: async req => {
         const { id } = req.params;
         const data = req.body
-        return await ModelController.update(Exam, id, data);
+        return await ModelController.patch(Exam, id, data);
     },
 
-    insert: async req => {
+    post: async req => {
         const data = req.body
-        return await ModelController.insert(Exam, data);
+        return await ModelController.post(Exam, data);
     },
 
     delete: async req => {

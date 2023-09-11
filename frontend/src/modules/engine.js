@@ -110,7 +110,7 @@ export function useCreateEngine() {
 
         useUpdate: (Model, id) => useMutation({
             mutationFn: async (data) => {
-                return await api.post(`${Model.api_url}${id}`, data)
+                return await api.patch(`${Model.api_url}${id}`, data)
             },
             onSuccess: async () => {
                 await queryClient.invalidateQueries({ queryKey: [Model.api_url, id]})
@@ -140,7 +140,7 @@ export function useCreateEngine() {
 
         useDelete: (Model, id) => useMutation({
             mutationFn: async () => {
-                return await api.post(`${Model.api_url}delete/${id}`)
+                return await api.delete(`${Model.api_url}${id}`)
             },
             onSuccess: async () => {
                 await queryClient.invalidateQueries({ queryKey: [Model.api_url] })

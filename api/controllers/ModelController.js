@@ -100,9 +100,9 @@ const ModelController = {
         }
     },
 
-    update: async (Model, id, data) => {
+    patch: async (Model, id, data) => {
         try {
-            console.log(`ModelController.update ${Model} ${id} ${JSON.stringify(data)}`)
+            console.log(`ModelController.patch ${Model} ${id} ${JSON.stringify(data)}`)
             await Model.findByIdAndUpdate(id, data, { runValidators: true })
             return {ok: true}
         } catch(err) {
@@ -118,7 +118,7 @@ const ModelController = {
         }
     },
 
-    insert: async (Model, data) => {
+    post: async (Model, data) => {
         try {
             const entry = new Model(data)
             await entry.save()

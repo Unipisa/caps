@@ -30,8 +30,7 @@ const CurriculaController = {
     },
 
     post: async req => {
-        const curriculum = new Curriculum(req.body);
-        return await curriculum.save();
+        return await ModelController.post(Curriculum, req.body)
     }
 }
 

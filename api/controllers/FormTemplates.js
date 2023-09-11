@@ -26,8 +26,7 @@ const FormTemplatesController = {
     },
 
     post: async req => {
-        const form_template = new FormTemplate(req.body);
-        return await form_template.save();
+        return await ModelController.post(FormTemplate, req.body)
     }
 }
 

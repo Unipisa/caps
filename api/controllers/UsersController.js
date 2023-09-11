@@ -49,15 +49,14 @@ const UsersController = {
         return await ModelController.view(User, id, { populate: { path: 'comments', populate: { path: 'attachments creator_id' } } })
     },
 
-    update: async req => {
+    patch: async req => {
         const { id } = req.params
         const data = req.body
-        return await ModelController.update(User, id, data)
-    },
+        return await ModelController.patch(User, id, data)    },
 
-    insert: async req => {
+    post: async req => {
         const data = req.body
-        return await ModelController.insert(User, data)
+        return await ModelController.post(User, data)
     }
 }
 

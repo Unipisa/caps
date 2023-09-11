@@ -52,7 +52,6 @@ const fields = {
 };
 
 const ProposalsController = {
-
     index: async req => {
         const query = req.query
         return await ModelController.index(Proposal, query, fields);
@@ -64,8 +63,7 @@ const ProposalsController = {
     },
 
     post: async req => {
-        const proposal = new Proposal(req.body);
-        return await proposal.save();
+        return await ModelController.post(Proposal, req.body)
     }
 }
 

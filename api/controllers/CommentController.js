@@ -38,7 +38,7 @@ const CommentController = {
 
     post: async req => {
         const data = req.body
-        return await ModelController.insert(Comment, data)
+        return await ModelController.post(Comment, data)
     },
 
     delete: async req => {
