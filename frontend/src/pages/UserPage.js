@@ -1,19 +1,68 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine } from '../modules/engine'
-import api from '../modules/api'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import User from '../models/User'
 import Proposal from '../models/Proposal'
-import Comment from '../models/Comment'
+import { ItemAddButton } from '../components/TableElements'
+import Comments from '../components/Comments'
 
-import { ItemAddButton } from '../components/TableElements';
+export default function UserPage() {
+    const { id } = useParams()
+    const engine = useEngine()
+    const userQuery = engine.useGet(User, id)
+    const userUpdater = engine.useUpdate(User, id)
+    const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
 
-import CommentWidget from '../components/CommentWidget';
+    if (!userQuery.isSuccess) {
+        return <LoadingMessage>caricamento utente...</LoadingMessage>
+    }
+
+    const user = userQuery.data
+    const comments = user.comments
+    const proposals = proposalsQuery.data
+
+    return <>
+        <Card>
+        <h3>
+            { user.first_name } <b>{ user.last_name }</b> 
+            <span className="d-none d-md-inline h5 text-muted ml-2">
+                matricola: { user.id_number }
+            </span>
+        </h3>
+        </Card>
+
+        <h2 className='d-flex mt-4'>
+            <span className='mr-auto'>Piano di studi</span>
+            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
+        </h2>
+        <div className='row'>
+        {
+            proposalsQuery.isSuccess
+                ? (
+                    proposals.length == 0
+                        ? <div>Nessun piano di studi presentato.</div>
+                        : proposals.items.map(proposal => <ProposalCard key={proposal._id} proposal={proposal} />)
+                )
+                : <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+        }
+        </div>
+
+        {
+            engine.user.admin && <>
+                <h2 className='mt-4'>Documenti e allegati</h2>
+                <Card>
+                    <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
+                    <Comments object_id={id} />
+                </Card>
+            </>
+        }
+    </>
+}
 
 function ProposalCard({proposal}) {
     const engine = useEngine()
@@ -77,104 +126,3 @@ function ProposalCard({proposal}) {
     </div>
 }
 
-function CommentCard({ comment, userUpdater }) {
-    const engine = useEngine()
-    const deleter = engine.useDelete(Comment, comment._id)
-
-    function deleteComment() {
-        engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
-            .then(confirm => {
-                if (confirm) {
-                    deleter.mutate(null, {
-                        onSuccess: () => {
-                        }
-                    })
-                }
-            })
-        
-    }
-    return <>
-        <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
-            <div>
-                <div>{comment.content}</div>
-                {comment.attachments.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment._id}/content`}>{attachment.filename}</a></div>)}
-                <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
-            </div>
-            <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
-        </div>
-    </>
-}
-
-export default function UserPage() {
-    const { id } = useParams()
-    const engine = useEngine()
-    const userQuery = engine.useGet(User, id)
-    const userUpdater = engine.useUpdate(User, id)
-    const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
-
-    if (!userQuery.isSuccess) {
-        return <LoadingMessage>caricamento utente...</LoadingMessage>
-    }
-
-    const user = userQuery.data
-    const comments = user.comments
-    const proposals = proposalsQuery.data
-
-    return <>
-        <Card>
-        <h3>
-            { user.first_name } <b>{ user.last_name }</b> 
-            <span className="d-none d-md-inline h5 text-muted ml-2">
-                matricola: { user.id_number }
-            </span>
-        </h3>
-        </Card>
-
-        <h2 className='d-flex mt-4'>
-            <span className='mr-auto'>Piano di studi</span>
-            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
-        </h2>
-        <div className='row'>
-        {
-            proposalsQuery.isSuccess
-                ? (
-                    proposals.length == 0
-                        ? <div>Nessun piano di studi presentato.</div>
-                        : proposals.items.map(proposal => <ProposalCard key={proposal._id} proposal={proposal} />)
-                )
-                : <LoadingMessage>caricamento piani di studio...</LoadingMessage>
-        }
-        </div>
-
-        {
-            engine.user.admin && <>
-                <h2 className='mt-4'>Documenti e allegati</h2>
-                <Card>
-                    <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
-                    <Comments object_id={id} />
-                </Card>
-            </>
-        }
-    </>
-}
-
-function Comments({object_id}) {
-    const engine = useEngine()
-    const commentsQuery = engine.useIndex(Comment, { object_id })
-
-    if (!commentsQuery.isSuccess) {
-        return <LoadingMessage>caricamento commenti...</LoadingMessage>
-    }
-
-    const comments = commentsQuery.data.items
-
-    return <>
-        {
-            comments.length === 0
-                ? <p>Nessun commento.</p>
-                : comments.map(comment => 
-                    <CommentCard key={comment._id} comment={comment} />)
-        }
-        <CommentWidget object_id={object_id} />
-    </>
-}

@@ -1,23 +1,71 @@
-'use strict'
+'use strict';
 
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
-import { useEngine } from "../modules/engine";
-
-import Attachment from "../models/Attachment";
-import Comment from "../models/Comment";
-
+import { useEngine } from "../modules/engine"
+import Attachment from "../models/Attachment"
+import Comment from "../models/Comment"
 import Card from "./Card";
+import LoadingMessage from '../components/LoadingMessage'
+
+export default function Comments({object_id}) {
+    const engine = useEngine()
+    const commentsQuery = engine.useIndex(Comment, { object_id })
+
+    if (!commentsQuery.isSuccess) {
+        return <LoadingMessage>caricamento commenti...</LoadingMessage>
+    }
+
+    const comments = commentsQuery.data.items
+
+    return <>
+        {
+            comments.length === 0
+                ? <p>Nessun commento.</p>
+                : comments.map(comment => 
+                    <CommentCard key={comment._id} comment={comment} />)
+        }
+        <CommentWidget object_id={object_id} />
+    </>
+}
+
+function CommentCard({ comment, userUpdater }) {
+    const engine = useEngine()
+    const deleter = engine.useDelete(Comment, comment._id)
+
+    function deleteComment() {
+        engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
+            .then(confirm => {
+                if (confirm) {
+                    deleter.mutate(null, {
+                        onSuccess: () => {
+                        }
+                    })
+                }
+            })
+        
+    }
+    return <>
+        <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
+            <div>
+                <div>{comment.content}</div>
+                {comment.attachments.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment._id}/content`}>{attachment.filename}</a></div>)}
+                <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
+            </div>
+            <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
+        </div>
+    </>
+}
 
 /**
-* Widget to upload comments and attachments
-    *  
-    * Possible props:
-    * - afterCommentPost(id), a function that gets called after a succesful
-    *   post of the comment (via the "Send" button inside the widget), that
-    *   takes the id of the newly posted comment as the only argument
+    * Widget to upload comments and attachments
+        *  
+        * Possible props:
+        * - afterCommentPost(id), a function that gets called after a succesful
+        *   post of the comment (via the "Send" button inside the widget), that
+        *   takes the id of the newly posted comment as the only argument
 */
-export default function CommentWidget({object_id}) {
+function CommentWidget({object_id}) {
     const engine = useEngine()
     const attachmentInserter = engine.useMultipartInsert(Attachment)
     const commentInserter = engine.useInsert(Comment)
