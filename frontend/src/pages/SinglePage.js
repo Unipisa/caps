@@ -60,7 +60,6 @@ function SinglePageInternal () {
                             <Route path="/" element={<Splash/>}/>
                             <Route path="/index.html" element={<Splash/>}/>
                             <Route path="/proposals/edit/:id" element={<EditProposalPage/>}/>
-                            <Route path="/proposals/edit" element={<EditProposalPage/>}/>
                             <Route path="/proposals/:id" element={<ProposalPage/>}/>
                             <Route path="/proposals" element={<ProposalsPage/>}/>
                             {/* <Route path="/proposals/new" element={<ProposalPage/>}/> */}

@@ -40,7 +40,6 @@ function ExamRow({ exam }) {
 
 export function EditProposalPage() {
     const { id } = useParams()
-
     // const engine = useEngine()
     // const empty = new Proposal({
     //     curriculum_id: null,
@@ -55,18 +54,25 @@ export function EditProposalPage() {
     //     <button onClick={() => setCID("64f0b8114fb5ed574a7b7217")}>ehi</button>
     // </div>
 
-    const engine = useEngine()
-    const empty = new Proposal({
-        curriculum_id: null,
-        user_name: engine.user.name,
-        state: 'draft',
-    })
+    const engine = useEngine()    
     const [proposal, setProposal] = useState(new Proposal({
         curriculum_id: null,
         user_id: engine.user._id,
         state: 'draft'
     }))
-    const query = useGet(Proposal, "64f0b8124fb5ed574a7bfb61")
+    const query = useGet(Proposal, id || '__new__')
+
+    if (query.isLoading) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
+    if (query.isError) return <LoadingMessage>errore piano di studi...</LoadingMessage>
+
+    const original_proposal = query.data
+
+    return <EditProposalInternal original_proposal={original_proposal} />
+
+    return <>
+        Proposal: {JSON.stringify(original_proposal)}
+    </>
+
     console.log(query.data)
     // const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
     // const curriculumQuery = useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
@@ -153,6 +159,29 @@ export function EditProposalPage() {
         { degree && [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
     </>
 
+}
+
+function EditProposalInternal({original_proposal}) {
+    const [proposal, setProposal] = useState(original_proposal)
+    console.log('original_proposal', original_proposal)
+    if (!proposal.curriculum_id) {
+        return <ChooseCurriculum />
+    }
+
+    return <>
+        Proposal: {JSON.stringify(original_proposal)}
+    </>
+}
+
+function ChooseCurriculum({}) {
+    const curriculum_query = useIndex(Curriculum, {})
+    if (curriculum_query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
+    if (curriculum_query.isError) return <LoadingMessage>errore...</LoadingMessage>
+    const curricula = curriculum_query.data.items
+
+    return <>
+        curricula: {JSON.stringify(curricula)}
+    </>
 }
 
 

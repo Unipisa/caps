@@ -8,7 +8,11 @@ const { BadRequestError, ValidationError, NotImplementedError } = require("../ex
 
 const ModelController = {
 
-    index: async (Model, query, fields, {  populate } = {}) => {
+    /**
+     * restrict: restricts the query to a subset of the collection
+     *    used as {$match: restrict} in the pipeline
+     */
+    index: async (Model, query, fields, {  populate, restrict } = {}) => {
         let $match = {};
         let filter = {};
         let sort = "_id";
@@ -53,20 +57,22 @@ const ModelController = {
         let total, items;
         const $sort = {};
         $sort[sort] = direction;
-        const res = await Model.aggregate(
-            [
-                {$match},
-                {$sort},
-                {$facet:{
-                    "counting" : [ { "$group": {_id:null, count:{$sum:1}}} ],
-                    "limiting" : [ { "$skip": 0}, {"$limit": limit} ]
-                }},
-                {$unwind: "$counting"},
-                {$project:{
-                    total: "$counting.count",
-                    items: "$limiting"
-                }}
-            ]);
+        const pipeline = [
+            {$match: restrict || {}},
+            {$match},
+            {$sort},
+            {$facet:{
+                "counting" : [ { "$group": {_id:null, count:{$sum:1}}} ],
+                "limiting" : [ { "$skip": 0}, {"$limit": limit} ]
+            }},
+            {$unwind: "$counting"},
+            {$project:{
+                total: "$counting.count",
+                items: "$limiting"
+            }}
+        ]
+        console.log(`Model ${Model.url} pipeline`, JSON.stringify(pipeline))
+        const res = await Model.aggregate(pipeline)
         if (res.length === 0) {
             total = 0;
             items = res;
@@ -91,7 +97,7 @@ const ModelController = {
 
     view: async (Model, id, { populate } = {}) => {
         try {
-            const obj = await Model.findById(id)
+            const obj = (id === '__new__') ? new Model() : await Model.findById(id)
             if (populate !== undefined) return await obj.populate(populate)
             else return obj
         } catch(err) {

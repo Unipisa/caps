@@ -54,7 +54,13 @@ const fields = {
 const ProposalsController = {
     index: async req => {
         const query = req.query
-        return await ModelController.index(Proposal, query, fields);
+        const user = req.user 
+        const restrict =  {}
+        if (!user) req.status(401).send("unauthorized")
+        if (!user.is_admin) {
+            restrict.user_id = user._id
+        }
+        return await ModelController.index(Proposal, query, fields, { restrict });
     }, 
 
     view: async req => {
