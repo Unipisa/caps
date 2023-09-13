@@ -70,6 +70,12 @@ const ProposalsController = {
     },
 
     post: async req => {
+        // non usiamo ModelController.post perché
+        // la validazione risulta troppo complicata
+        // da fare nel Model
+
+        // TODO: sollevare le eccezioni ValidateError
+
         const user = req?.user || null
         const body = req.body
         const now = new Date()
@@ -192,6 +198,11 @@ const ProposalsController = {
 
         const proposal = new Proposal(body)
         return await proposal.save()
+    },
+
+    delete: async req => {
+        const { id } = req.params
+        return await ModelController.delete(Proposal, id)
     }
 }
 

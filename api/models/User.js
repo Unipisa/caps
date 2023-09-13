@@ -29,10 +29,18 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required: true, 
         default: false
-    }, 
-    password: {
+    },
+    // non c'è password ma ci sono
+    // ci sono hash e salt creati da passport
+    // forse non serve neanche nominarli nel modello 
+    /*
+    hash: {
         type: String
     },
+    salt: {
+        type: String
+    },
+    */
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 })
 

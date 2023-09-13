@@ -1,23 +1,21 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useGet } from '../modules/engine'
 import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 
 export default function FormTemplatePage() {
-    const engine = useEngine()
     const { id } = useParams()
-    const [ formTemplate, setFormTemplate ] = useState(null)
-    const query = engine.useGet(FormTemplate, id)
+    const query = useGet(FormTemplate, id)
 
-    if (formTemplate === null) {
-        if (query.isSuccess) setFormTemplate(query.data)
-        return <LoadingMessage>caricamento modello...</LoadingMessage>
-    }
+    if (query.isLoading) return <LoadingMessage>caricamento modello...</LoadingMessage> 
+    if (query.isError) return <div>errore caricamento modello</div> 
+    
+    const formTemplate = query.data
 
     return <>
         <h1>{ formTemplate.name }</h1>

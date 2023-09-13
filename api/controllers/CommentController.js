@@ -2,6 +2,11 @@ const ModelController = require('./ModelController');
 const Comment = require('../models/Comment');
 
 const fields = {
+    "object_id": {
+        can_filter: true,
+        can_sort: true,
+        match_id_object: true,
+    },
     "creator_id": {
         can_filter: true,
         can_sort: true,
@@ -33,7 +38,7 @@ const CommentController = {
 
     post: async req => {
         const data = req.body
-        return await ModelController.insert(Comment, data)
+        return await ModelController.post(Comment, data)
     },
 
     delete: async req => {

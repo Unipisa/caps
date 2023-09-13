@@ -1,23 +1,79 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
-import api from '../modules/api'
+import { useEngine, useGet, useIndex, useDelete } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import User from '../models/User'
 import Proposal from '../models/Proposal'
-import Comment from '../models/Comment'
+import { ItemAddButton } from '../components/TableElements'
+import Comments from '../components/Comments'
 
-import { ItemAddButton } from '../components/TableElements';
+export default function UserPage() {
+    const { id } = useParams()
+    const engine = useEngine()
+    const userQuery = useGet(User, id)
 
-import CommentWidget from '../components/CommentWidget';
+    if (userQuery.isLoading) return <LoadingMessage>caricamento utente...</LoadingMessage>
+    if (userQuery.isError) return <div>errore caricamento utente</div>
+
+    const user = userQuery.data
+
+    return <>
+        <Card>
+        <h3>
+            { user.first_name } <b>{ user.last_name }</b> 
+            <span className="d-none d-md-inline h5 text-muted ml-2">
+                matricola: { user.id_number }
+            </span>
+        </h3>
+        </Card>
+
+        <h2 className='d-flex mt-4'>
+            <span className='mr-auto'>Piani di studio</span>
+            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
+        </h2>
+        <Proposals id={id} />
+
+        {
+            engine.user.admin && <>
+                <h2 className='mt-4'>Documenti e allegati</h2>
+                <Card>
+                    <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
+                    <Comments object_id={id} />
+                </Card>
+            </>
+        }
+    </>
+}
+
+function Proposals({id}) {
+    const proposalsQuery = useIndex(Proposal, { user_id: id })
+    if (proposalsQuery.isLoading) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+    if (proposalsQuery.isError) return <div>errore caricamento piani di studio</div> 
+
+    const proposals = proposalsQuery.data.items
+
+    return <div className='row'>
+        { 
+            proposals.length == 0 && 
+            <div>
+                Nessun piano di studi presentato.            
+            </div>
+        }
+        {
+            proposals.map(proposal => 
+                <ProposalCard key={proposal._id} proposal={proposal} />
+            )
+        }
+    </div>
+}
 
 function ProposalCard({proposal}) {
     const engine = useEngine()
-    const deleter = engine.useDelete(Proposal, proposal._id)
+    const deleter = useDelete(Proposal, proposal._id)
 
     async function deleteProposal() {
         engine.modalConfirm("Elimina piano di studi", "confermi di voler eliminare il piano di studi?")
@@ -26,14 +82,12 @@ function ProposalCard({proposal}) {
                     deleter.mutate(null, {
                         onSuccess: () => {
                             engine.flashSuccess("Piano di studi cancellato con successo")
-                            // TODO controlla (dopo aver aggiunto le opportune route in
-                            // backend) che questa cosa effettivamente invalidi la
-                            // query e la pagina si aggiorni con i piani di studi senza
-                            // quello rimosso
-                            //
-                            // Nel caso, si può anche rimuovere il flashSuccess perché il
+                            // si può anche rimuovere il flashSuccess perché il
                             // fatto che l'operazione sia andata a buon fine è evidente
                             // dalla scomparsa del piano di studi dalla lista
+                        },
+                        onError: (err) => {
+                            engine.flashError("Errore cancellazione piano di studi")
                         }
                     })
                 }
@@ -75,102 +129,5 @@ function ProposalCard({proposal}) {
             <div className='small text-muted'>Ultima modifica: {(new Date(proposal.date_modified)).toLocaleString()}</div>
         </Card>
     </div>
-}
-
-function CommentCard({ comment, userUpdater }) {
-    const engine = useEngine()
-    const deleter = engine.useDelete(Comment, comment._id)
-
-    function deleteComment() {
-        engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
-            .then(confirm => {
-                if (confirm) {
-                    deleter.mutate(null, {
-                        onSuccess: () => {
-                            const data = {
-                                $pull: {
-                                    comments: comment._id
-                                }
-                            }
-                            userUpdater(data, {})
-                        }
-                    })
-                }
-            })
-        
-    }
-    return <>
-        <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
-            <div>
-                <div>{comment.content}</div>
-                {comment.attachments.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment._id}/content`}>{attachment.filename}</a></div>)}
-                <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
-            </div>
-            <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
-        </div>
-    </>
-}
-
-export default function UserPage() {
-    const { id } = useParams()
-    const engine = useEngine()
-    const userQuery = engine.useGet(User, id)
-    const userUpdater = engine.useUpdate(User, id)
-    const proposalsQuery = engine.useIndex(Proposal, { user_id: id })
-
-    function addPostedCommentToUser(comment_id) {
-        const data = { $addToSet: { comments: comment_id } }
-        userUpdater.mutate(data, {})
-    }
-
-    if (!userQuery.isSuccess) {
-        return <LoadingMessage>caricamento utente...</LoadingMessage>
-    }
-
-    const user = userQuery.data
-    const comments = user.comments
-    const proposals = proposalsQuery.data
-
-    return <>
-        <Card>
-        <h3>
-            { user.first_name } <b>{ user.last_name }</b> 
-            <span className="d-none d-md-inline h5 text-muted ml-2">
-                matricola: { user.id_number }
-            </span>
-        </h3>
-        </Card>
-
-        <h2 className='d-flex mt-4'>
-            <span className='mr-auto'>Piano di studi</span>
-            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
-        </h2>
-        <div className='row'>
-        {
-            proposalsQuery.isSuccess
-                ? (
-                    proposals.length == 0
-                        ? <div>Nessun piano di studi presentato.</div>
-                        : proposals.items.map(proposal => <ProposalCard key={proposal._id} proposal={proposal} />)
-                )
-                : <LoadingMessage>caricamento piani di studio...</LoadingMessage>
-        }
-        </div>
-
-        {
-            engine.user.admin && <>
-                <h2 className='mt-4'>Documenti e allegati</h2>
-                <Card>
-                    <p>I documenti e le annotazioni inserite in questa sezione sono associate allo studente, ma visibili solo per gli amministratori.</p>
-                    {
-                        comments.length === 0
-                            ? <p>Nessun documento allegato.</p>
-                            : comments.map(comment => <CommentCard key={comment._id} comment={comment} />)
-                    }
-                    <CommentWidget afterCommentPost={addPostedCommentToUser}/>
-                </Card>
-            </>
-        }
-    </>
 }
 

@@ -31,8 +31,7 @@ const DegreesController = {
     },
 
     post: async req => {
-        const degree = new Degree(req.body);
-        return await degree.save();
+        return await ModelController.post(Degree, req.body)
     }
 }
 

@@ -100,9 +100,11 @@ const ModelController = {
         }
     },
 
-    update: async (Model, id, data) => {
+    patch: async (Model, id, data) => {
         try {
+            console.log(`ModelController.patch ${Model} ${id} ${JSON.stringify(data)}`)
             await Model.findByIdAndUpdate(id, data, { runValidators: true })
+            return {ok: true}
         } catch(err) {
             if (err instanceof mongoose.Error.ValidationError) {
                 let validationErrors = {}
@@ -116,7 +118,7 @@ const ModelController = {
         }
     },
 
-    insert: async (Model, data) => {
+    post: async (Model, data) => {
         try {
             const entry = new Model(data)
             await entry.save()
@@ -137,6 +139,7 @@ const ModelController = {
     delete: async (Model, id) => {
         try {
             await Model.deleteOne({ _id: id})
+            return {ok: true}
         } catch(err) {
             throw new BadRequestError()
         }

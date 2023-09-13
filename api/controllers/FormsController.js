@@ -32,8 +32,7 @@ const FormsController = {
     },
 
     post: async req => {
-        const form = new Form(req.body);
-        return await form.save();
+        return await ModelController.post(Form, req.body)
     }
 }
 

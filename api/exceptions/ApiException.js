@@ -26,7 +26,7 @@ exports.NotFoundError = NotFoundError;
 
 class ValidationError extends ApiError {
     constructor(issues, message = "Validation Error") {
-        super(message, 403, issues);
+        super(message, 422, issues);
     }
 }
 

@@ -45,7 +45,7 @@ class BaseRestClient {
                 code: 500, 
                 message: `fetch error: ${err.message}`
             };
-            console.log(err);
+            console.log(`catched error: ${err}`);
         }
         return response;
     }
@@ -113,7 +113,7 @@ class RestClient extends BaseRestClient {
 
     async fetch(uri, method = 'GET', data = null, multipart) {
         const res = await super.fetch(uri, method, data, multipart);
-        console.log(`fetch ${method} ${uri} ${JSON.stringify(data)} => [${res.code}] ${JSON.stringify(res)}`)
+        // console.log(`fetch ${method} ${uri} ${JSON.stringify(data)} => ${JSON.stringify(res)}`)
         if (res.code < 200 || res.code >= 300) {
             throw new ApiError(res, uri, method, data);
         }

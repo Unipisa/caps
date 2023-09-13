@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useGet, useIndex } from '../modules/engine'
 import api from '../modules/api'
 import Degree from '../models/Degree'
 import Card from '../components/Card'
@@ -12,16 +12,18 @@ import Exam from '../models/Exam';
 
 function Group({ name, exam_ids }) {
     const engine = useEngine()
-    const [ exams, setExams ] = useState(null)
-    const query = engine.useIndex(Exam, {'ids': exam_ids.join(",")})
+    const query = useIndex(Exam, {'ids': exam_ids.join(",")})
 
-    if (exams === null) {
-        if (query.isSuccess) setExams(query.data)
-        return <tr>
-            <th>{ name }</th>
-            <td> ...loading... </td>
-        </tr>
-    }
+    if (query.isLoading) return <tr>
+        <th>{ name }</th>
+        <td> ...loading... </td>
+    </tr>
+    if (query.isError) return <tr>
+        <th>{ name }</th>
+        <td> ...error... </td>
+    </tr>
+
+    const exams = query.data
 
     return <tr>
         <th>{ name }</th>
@@ -30,15 +32,13 @@ function Group({ name, exam_ids }) {
 }
 
 export default function DegreePage() {
-    const engine = useEngine()
     const { id } = useParams();
-    const [ degree, setDegree ] = useState(null);
-    const query = engine.useGet(Degree, id)
+    const query = useGet(Degree, id)
 
-    if (degree === null) {
-        if (query.isSuccess) setDegree(query.data)
-        return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
-    }
+    if (query.isLoading) return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
+    if (query.isError) return <div>errore caricamento corso di studi</div>
+
+    const degree = query.data
 
     return <>
         <h1>{ degree.name }</h1>

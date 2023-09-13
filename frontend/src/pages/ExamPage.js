@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 
-import { useEngine } from '../modules/engine'
+import { useEngine, useGet, usePost, useDelete, usePatch } from '../modules/engine'
 import Exam from '../models/Exam'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
@@ -114,7 +114,7 @@ function ExamForm({ submit, exam, isEdit }) {
 export function AddExamPage() {
     const navigate = useNavigate()
     const engine = useEngine()
-    const inserter = engine.useInsert(Exam)
+    const poster = usePost(Exam)
 
     const emptyExam = {
         code: '',
@@ -124,17 +124,22 @@ export function AddExamPage() {
         tags: [],
         notes: ''
     }
+
     function submit(data, setErrors) {
-        inserter.mutate(
+        poster.mutate(
             data,
             {
-                onSuccess: (newId) => {
+                onSuccess: (res) => {
+                    const newId = res.data
                     engine.flashSuccess("Esame aggiunto con successo")
                     navigate(`/exams/${newId}`)
                 },
-                onError: (err) => {
-                    if (err.code === 403) {
-                        setErrors(err.issues)
+                onError: async (err) => {
+                    console.log(`error: ${err} ${err.code}`)
+                    if (err.response && err.response.status === 422) {
+                        setErrors(err.response.data.issues)
+                    } else {
+                        engine.flashError(err)
                     }
                 }
             }
@@ -149,9 +154,8 @@ export function EditExamPage() {
     const engine = useEngine()
 
     const { id } = useParams()
-    const [exam, setExam] = useState(null)
-    const query = engine.useGet(Exam, id);
-    const updater = engine.useUpdate(Exam, id)
+    const query = useGet(Exam, id)
+    const updater = usePatch(Exam, id)
 
     function submit(data, setErrors) {
         updater.mutate(
@@ -162,19 +166,18 @@ export function EditExamPage() {
                     navigate(`/exams/${id}`)
                 },
                 onError: (err) => {
-                    if (err.code === 403) {
-                        setErrors(err.issues)
+                    if (err.response?.status === 422) {
+                        setErrors(err.response.data.issues)
                     }
                 }
             }
         )
     }
 
-    if (exam === null) {
-        if (query.isSuccess)
-            setExam(query.data)
-        return <LoadingMessage>caricamento...</LoadingMessage>
-    }
+    if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
+    if (query.isError) return <div>Errore: {query.error.message}</div>
+
+    const exam = query.data
 
     return <ExamForm submit={submit} exam={exam} isEdit />
 }
@@ -182,16 +185,19 @@ export function EditExamPage() {
 export default function ExamPage() {
     const engine = useEngine()
     const { id } = useParams()
-    const [exam, setExam] = useState(null)
-    const query = engine.useGet(Exam, id)
+    const query = useGet(Exam, id)
+
+    const exam = query.data
 
     const navigate = useNavigate()
-    const deleter = engine.useDelete(Exam, id)
+//    const deleter = engine.useDelete(Exam, id)
+    const deleter = useDelete(Exam, id)
+
     function deleteExam() {
         if (!confirm("Sei sicuro di voler cancellare questo esame?"))
             return false;
 
-        deleter.mutate(null, {
+        deleter.mutate(id, {
             onSuccess: () => {
                 engine.flashSuccess("Esame cancellato con successo")
                 navigate('/exams')
@@ -199,10 +205,15 @@ export default function ExamPage() {
         })
     }
 
-    if (exam === null) {
-        if (query.isSuccess) setExam(query.data)
+    if (query.isLoading) {
         return <LoadingMessage>caricamento esame...</LoadingMessage>
     }
+
+    if (query.isError) {
+        return <div>Errore: {query.error.message}</div>
+    }
+
+    if (exam === null) return <LoadingMessage>cancellazione esame...</LoadingMessage>
 
     return <>
         <h1>{exam.name}</h1>
@@ -224,8 +235,6 @@ export default function ExamPage() {
                 >
                     Elimina
                 </button>
-        {/*<a href={`/exams/delete/${id}`} onClick={() => confirm('Sei sicuro di voler cancellare questo esame?')}>
-                </a>*/}
 
                 <div className="flex-fill"></div>
 
