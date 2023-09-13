@@ -60,7 +60,7 @@ const ProposalsController = {
     index: async req => {
         const query = req.query
         const user = req?.user || null
-        return await ModelController.index(Proposal, query, fields, user);
+        return await ModelController.index(Proposal, query, fields)
     }, 
 
     view: async req => {
