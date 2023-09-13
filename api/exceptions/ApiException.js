@@ -39,6 +39,13 @@ class NotImplementedError extends ApiError {
 }
 exports.NotImplementedError = NotImplementedError;
 
+class ForbiddenError extends ApiError {
+    constructor(message = "Forbidden") {
+        super(message, 403);
+    }
+}
+exports.ForbiddenError = ForbiddenError;
+
 function apiErrors(err, req, res, next) {
     if (err instanceof ApiError) {
         res.status(err.code).send({

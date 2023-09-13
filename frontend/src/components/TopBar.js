@@ -14,8 +14,8 @@ export default function TopBar() {
     </button>
 
         <div className="rounded text-primary border-left-warning px-2 py-1 my-auto text-sm-left text-wrap">
-                        <p>Messaggio pinco pallino</p>    </div>
-    
+            <p>Messaggio pinco pallino</p>    
+        </div>
     
     <ul className="navbar-nav ml-auto">
 

@@ -80,7 +80,7 @@ mongoose.connect(mongo_uri).then(res => {
 })
 
 
-async function createOrUpdateUser({username, password}) {
+async function createOrUpdateUser({username, password, admin = true}) {
   if (!username) throw new Error("username is required")
 
   let user = await User.findOne({ username })
@@ -92,7 +92,7 @@ async function createOrUpdateUser({username, password}) {
         first_name: username,
         last_name: username,
         email: `${username}@nomail.com`,
-        admin: true,
+        admin,
       })
   }
 
