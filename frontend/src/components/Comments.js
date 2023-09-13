@@ -62,7 +62,7 @@ function CommentCard({ comment, userUpdater }) {
 */
 function CommentWidget({object_id}) {
     const engine = useEngine()
-    const attachmentInserter = engine.useMultipartInsert(Attachment)
+    const attachmentInserter = usePost(Attachment)
     const commentInserter = usePost(Comment)
     const [text, setText] = useState("")
     const [files, setFiles] = useState([])
@@ -91,15 +91,12 @@ function CommentWidget({object_id}) {
             const file = document.getElementById(`allegato-${id}`).files[0]
             if (file !== undefined) data.append(`allegato-${id}`, file, file.name)
         }
-        // EP: l'uploader_id va messo dal server,
-        // non ci si può fidare del client
-        data.append('uploader_id', engine.user._id)
 
         attachmentInserter.mutate(data, {
-            onSuccess: (attachmentIds) => {
+            onSuccess: (res) => {
+                const attachmentIds = res.data
                 const comment = {
                     object_id,
-                    creator_id: engine.user._id,
                     content: text,
                     attachments: attachmentIds
                 }
@@ -110,13 +107,15 @@ function CommentWidget({object_id}) {
                         setError({})
                     },
                     onError: (err) => {
-                        engine.flashError(err)
+                        engine.flashError(`${err}`)
                     }
                 })
             },
             onError: (err) => {
                 if (err.code === 422) {
                     setError(err)
+                } else {
+                    engine.flashError(`${err}`)
                 }
             }
         })

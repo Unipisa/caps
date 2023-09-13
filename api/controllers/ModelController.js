@@ -4,9 +4,9 @@
  */
 
 const { default: mongoose } = require("mongoose");
-const { BadRequestError, ValidationError, NotImplementedError } = require("../exceptions/ApiException");
+const { BadRequestError, ValidationError, NotImplementedError, NotFoundError } = require("../exceptions/ApiException");
 
-function queryFieldsToPipeline(query, fields) {
+function queryFieldsToPipeline(query={}, fields={}) {
     let $match = {};
     let filter = {};
     let sort = "_id";
@@ -115,7 +115,7 @@ const ModelController = {
             else return obj
         } catch(err) {
             console.log(`not found ${id}`)
-            throw new BadRequestError()
+            throw new NotFoundError()
         }
     },
 
@@ -160,7 +160,7 @@ const ModelController = {
             await Model.deleteOne({ _id: id})
             return {ok: true}
         } catch(err) {
-            throw new BadRequestError()
+            throw new NotFoundError()
         }
     }
 }

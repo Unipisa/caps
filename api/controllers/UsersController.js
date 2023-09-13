@@ -1,5 +1,7 @@
 const ModelController = require('./ModelController')
 const User = require('../models/User')
+const { ForbiddenError, BadRequestError } = require('../exceptions/ApiException')
+const assert = require('assert')
 
 const fields = { 
     "username": { 
@@ -38,15 +40,18 @@ const fields = {
 }
 
 const UsersController = {
-
     index: async req => {
         const query = req.query
-        return await ModelController.index(User, query, fields);
+        const pipeline = ModelController.queryFieldsToPipeline(query, fields)
+        const [res] = await User.aggregate([
+            ...pipeline,
+        ])
+        return res
     }, 
 
     view: async req => {
         const { id } = req.params
-        return await ModelController.view(User, id, { populate: { path: 'comments', populate: { path: 'attachments creator_id' } } })
+        return await ModelController.view(User, id)
     },
 
     patch: async req => {

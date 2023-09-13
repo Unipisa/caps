@@ -139,7 +139,7 @@ export function AddExamPage() {
                     if (err.response && err.response.status === 422) {
                         setErrors(err.response.data.issues)
                     } else {
-                        engine.flashError(err)
+                        engine.flashError(`${err}`)
                     }
                 }
             }
@@ -168,6 +168,8 @@ export function EditExamPage() {
                 onError: (err) => {
                     if (err.response?.status === 422) {
                         setErrors(err.response.data.issues)
+                    } else {
+                        engine.flashError(`${err}`)
                     }
                 }
             }
@@ -201,6 +203,9 @@ export default function ExamPage() {
             onSuccess: () => {
                 engine.flashSuccess("Esame cancellato con successo")
                 navigate('/exams')
+            },
+            onError: (err) => {
+                engine.flashError(`${err}`)
             }
         })
     }

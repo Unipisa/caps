@@ -87,7 +87,7 @@ function ProposalCard({proposal}) {
                             // dalla scomparsa del piano di studi dalla lista
                         },
                         onError: (err) => {
-                            engine.flashError("Errore cancellazione piano di studi")
+                            engine.flashError(`Errore cancellazione piano di studi: ${err}`)
                         }
                     })
                 }

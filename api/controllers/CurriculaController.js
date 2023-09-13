@@ -20,8 +20,35 @@ const fields = {
 const CurriculaController = {
 
     index: async req => {
+        const user = req.user
         const query = req.query
-        return await ModelController.index(Curriculum, query, fields);
+        const pipeline = ModelController.queryFieldsToPipeline(query, fields)
+
+        const restrict = user.admin ? [] : [
+            // remove disabled degrees
+            {$match: {
+                "degree.enabled": true
+            }},
+        ]
+
+        const [ res ] = await Curriculum.aggregate([
+            // add related degree to eventually check if it is disabled
+            {$lookup: {
+                from: "degrees",
+                localField: "degree_id",
+                foreignField: "_id",
+                as: "degree"
+            }},
+            // flatten degree, take care of empty arrays
+            {$unwind: {
+                path: "$degree",
+                preserveNullAndEmptyArrays: true
+            }},
+            ...restrict,
+            ...pipeline,
+        ])
+
+        return res
     }, 
 
     view: async req => {

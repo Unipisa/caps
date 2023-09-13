@@ -21,8 +21,23 @@ const fields = {
 const DegreesController = {
 
     index: async req => {
+        const user = req.user
         const query = req.query
-        return await ModelController.index(Degree, query, fields);
+        const pipeline = ModelController.queryFieldsToPipeline(query, fields)
+
+        const restrict = user.is_admin ? [] : [
+            // remove disabled degrees
+            {$match: {
+                "enabled": true
+            }},
+        ]
+
+        const [ res ] = await Degree.aggregate([
+            ...restrict,
+            ...pipeline,
+        ])
+
+        return res
     }, 
 
     view: async req => {

@@ -232,11 +232,12 @@ export function useIndex(Model, query={}) {
 }
 
 export function usePost(Model) {
+    // funziona anche per Multipart Post
     const queryClient = useQueryClient()
     const path = Model.api_url
     return useMutation({
         mutationFn: async (data) => {
-            return await axios.post(`/api/v0/${Model.api_url}`, data)
+            return await axios.post(`/api/v0/${path}`, data)
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })
@@ -269,3 +270,4 @@ export function usePatch(Model, id) {
         },
     })
 }
+

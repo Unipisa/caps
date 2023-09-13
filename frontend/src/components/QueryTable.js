@@ -64,7 +64,6 @@ function FilterBadges() {
 }
 
 function Table({ Model }) {
-    const engine = useEngine()
     const { query, setQuery } = useQuery()
     const indexQuery = useIndex(Model, query)
     const [ selectedIds, setSelectedIds ] = useState([])

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom"
 
 import { useGet } from '../modules/engine'
 import Curriculum from '../models/Curriculum'
+import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 import Exam from '../models/Exam';
@@ -47,16 +48,19 @@ function ExamEntry({ entry }) {
 export default function CurriculumPage() {
     const { id } = useParams()
     const query = useGet(Curriculum, id)
+    const curriculum = query.data
+    const degreeQuery = useGet(Degree, query.data?.degree_id || null)
+    const degree = degreeQuery.data ? new Degree(degreeQuery.data) : null
 
     if (query.isLoading) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
     if (query.isError) return <div>errore caricamento curriculum</div>
 
-    const curriculum = query.data
 
     console.log(`curriculum: ${JSON.stringify(curriculum)}`)
 
     return <>
         <h1>{ curriculum.name }</h1>
+        <h3>{ degree?.name } { degree?.academic_years() }</h3>
         { curriculum.years.map((year_section, year_count) =>
             <Card key={`year-${year_count}`} title={`${Curriculum.ordinal(year_count+1)} anno`}> 
                 Crediti: { year_section.credits } <br />

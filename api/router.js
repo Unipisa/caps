@@ -31,6 +31,23 @@ function response_envelope(controller) {
     }
 }
 
+function require_user(req, res, next) { 
+    if (!req.user) return res.status(401).send("unauthorized")
+    next()
+}
+
+function require_admin(req, res, next) {
+    if (!req.user) return res.status(401).send("unauthorized")
+    if (!req.user.admin) return res.status(403).send("forbidden")
+    next()
+}
+
+function require_admin_or_self(req, res, next) {
+    if (!req.user) return res.status(401).send("unauthorized")
+    if (!req.user.admin && req.user._id != req.params.id) return res.status(403).send("forbidden")
+    next()
+}
+
 function test_error(req, res) {
     throw new BadRequestError("fake error!");
 }
@@ -107,35 +124,43 @@ router.post('/logout', function(req, res) {
 })
   
 router.get('/', response_envelope(req => "Hello there!"))
-router.get('/proposals', response_envelope(Proposals.index))
-router.get('/proposals/:id', response_envelope(Proposals.view))
-router.delete('/proposals/:id', response_envelope(Proposals.delete))    
-router.get('/forms', response_envelope(Forms.index))
-router.get('/forms/:id', response_envelope(Forms.view))
-router.get('/degrees', response_envelope(Degrees.index))
-router.get('/degrees/:id', response_envelope(Degrees.view))
-router.post('/degrees', response_envelope(Degrees.post))
-router.get('/curricula', response_envelope(Curricula.index))
-router.get('/curricula/:id', response_envelope(Curricula.view))
-router.get('/form_templates/', response_envelope(FormTemplates.index))
-router.get('/form_templates/:id', response_envelope(FormTemplates.view))
-router.delete('/exams/:id', response_envelope(Exams.delete))
-router.get('/exams/:id', response_envelope(Exams.view))
-router.patch('/exams/:id', response_envelope(Exams.patch))
-router.get('/exams', response_envelope(Exams.index))
-router.post('/exams', response_envelope(Exams.post))
-router.get('/users/:id', response_envelope(Users.view))
-router.get('/users', response_envelope(Users.index))
-router.patch('/users/:id', response_envelope(Users.patch))
-router.post('/users', response_envelope(Users.post))
-router.get('/attachments', response_envelope(Attachments.index))
-router.post('/attachments', Attachments.postMiddleware, response_envelope(Attachments.post))
-router.get('/attachments/:id/content', Attachments.viewContent)
-router.get('/attachments/:id', response_envelope(Attachments.view))
-router.get('/comments/:id', response_envelope(Comments.view))
-router.get('/comments', response_envelope(Comments.index))
-router.delete('/comments/:id', response_envelope(Comments.delete))
-router.post('/comments', response_envelope(Comments.post))
+
+router.get('/proposals', require_user, response_envelope(Proposals.index))
+router.get('/proposals/:id', require_user, response_envelope(Proposals.view))
+router.delete('/proposals/:id', require_user, response_envelope(Proposals.delete))    
+
+router.get('/forms', require_user, response_envelope(Forms.index))
+router.get('/forms/:id', require_user, response_envelope(Forms.view))
+
+router.get('/degrees', require_user, response_envelope(Degrees.index))
+router.get('/degrees/:id', require_user, response_envelope(Degrees.view))
+router.post('/degrees', require_admin, response_envelope(Degrees.post))
+
+router.get('/curricula', require_user, response_envelope(Curricula.index))
+router.get('/curricula/:id', require_user, response_envelope(Curricula.view))
+
+router.get('/form_templates/', require_admin, response_envelope(FormTemplates.index))
+router.get('/form_templates/:id', require_admin, response_envelope(FormTemplates.view))
+
+router.get('/exams/:id', require_user, response_envelope(Exams.view))
+router.get('/exams', require_user, response_envelope(Exams.index))
+router.post('/exams', require_admin, response_envelope(Exams.post))
+router.patch('/exams/:id', require_admin, response_envelope(Exams.patch))
+router.delete('/exams/:id', require_admin, response_envelope(Exams.delete))
+
+router.get('/users/:id', require_admin_or_self, response_envelope(Users.view))
+router.get('/users', require_admin, response_envelope(Users.index))
+router.post('/users', require_admin, response_envelope(Users.post))
+router.patch('/users/:id', require_admin, response_envelope(Users.patch))
+
+
+router.get('/attachments/:id/content', require_user, Attachments.viewContent)
+router.get('/attachments/:id', require_user, response_envelope(Attachments.view))
+router.post('/attachments', require_user, Attachments.postMiddleware, response_envelope(Attachments.post))
+
+router.get('/comments', require_user, response_envelope(Comments.index))
+router.post('/comments', require_user, response_envelope(Comments.post))
+router.delete('/comments/:id', require_user, response_envelope(Comments.delete))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

@@ -60,12 +60,21 @@ const ProposalsController = {
     index: async req => {
         const query = req.query
         const user = req.user 
-        const restrict =  {}
-        if (!user) req.status(401).send("unauthorized")
-        if (!user.is_admin) {
-            restrict.user_id = user._id
-        }
-        return await ModelController.index(Proposal, query, fields, { restrict });
+        const restrict = user.admin ? [] : [
+            // restrict to owned proposals
+            {$match: {
+                "user_id": user._id
+            }}
+        ]
+
+        const pipeline = ModelController.queryFieldsToPipeline(query, fields)
+
+        const [ res ] = await Proposal.aggregate([
+            ...restrict,
+            ...pipeline,
+        ])
+
+        return res
     }, 
 
     view: async req => {
@@ -81,18 +90,20 @@ const ProposalsController = {
 
         // TODO: sollevare le eccezioni ValidateError
 
-        const user = req?.user || null
+        const user = req.user
         const body = req.body
         const now = new Date()
-
-        if (!user) throw new ForbiddenError("You must be logged in to create a proposal")
         
+        // l'autenticazione viene controllata nel router
+        // dunque l'utente ci deve essere
+        assert(user)
+
         // questo codice di validazione non è testato
         // inoltre probabilmente andrebbe spostato nella 
         // validazione del modello Proposal
 
         let state = body.state
-        if (!req?.user?.admin && !["draft", "submitted"].includes(state)) {
+        if (!user.admin && !["draft", "submitted"].includes(state)) {
             throw new ForbiddenError("You must be an admin to create a proposal with state other than 'draft' or 'submitted'")
         }
 
@@ -207,6 +218,12 @@ const ProposalsController = {
 
     delete: async req => {
         const { id } = req.params
+        const user = req.user 
+        assert(user) 
+
+        const proposal = await Proposal.findById(id)
+        if (!user.admin && proposal.user_id != user._id) throw new ForbiddenError("You must be an admin to delete a proposal that is not yours")
+
         return await ModelController.delete(Proposal, id)
     }
 }

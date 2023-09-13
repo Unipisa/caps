@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path')
 const multer = require('multer')
+const assert = require('assert')
 
-const { ValidationError } = require('../exceptions/ApiException')
+const { ValidationError, ForbiddenError, NotFoundError } = require('../exceptions/ApiException')
 
 const ModelController = require('./ModelController');
 const Attachment = require('../models/Attachment');
@@ -33,22 +34,22 @@ const attachmentHandler = multer({
 
 const AttachmentController = {
 
-    index: async req => {
-        const query = req.query
-        return await ModelController.index(Attachment, query, fields);
-    },
-
     view: async req => {
         const { id } = req.params
-        return await ModelController.view(Attachment, id)
+        const user = req.user
+        const obj = await ModelController.view(Attachment, id)
+
+        if (!user.admin && obj.uploader_id !== user._id) throw new ForbiddenError()
+        
+        return obj
     },
 
     viewContent: async (req, res, next) => {
         try {
+            // AttachmentController.view controlla che l'utente sia autorizzato
             const attachment = await AttachmentController.view(req)
             const filepath = path.join(attachmentsDB, attachment.content)
 
-            // TODO: metti verifia che l'utente abbia effettivamente accesso a questo file
             res.sendFile(filepath, {
                 headers: {
                     'Content-Type': attachment.mimetype,
@@ -75,6 +76,9 @@ const AttachmentController = {
     },
 
     post: async req => {
+        const user = req.user
+        assert(user) // l'autenticazione viene controllata dal router
+
         let reply = []
         for (const file of req.files) {
             const data = {
@@ -83,9 +87,9 @@ const AttachmentController = {
                 encoding: file.encoding,
                 size: file.size,
                 content: file.filename,
-                uploader_id: req.body.uploader_id
+                uploader_id: user._id,
             }
-            const attachment_id = await ModelController.insert(Attachment, data)
+            const attachment_id = await ModelController.post(Attachment, data)
             reply.push(attachment_id)
         }
         return reply
@@ -93,7 +97,11 @@ const AttachmentController = {
 
     delete: async req => {
         const { id } = req.params
-        const attachment = await ModelController.view(req, { Model: Attachment })
+        const user = req.user
+        assert(user) // l'autenticazione viene controllata dal router
+
+        // se AttachmentController.view non solleva eccezioni, l'utente è autorizzato
+        const attachment = await AttachmentController.view(req, { Model: Attachment })
         fs.unlinkSync(path.join(attachmentsDB, attachment.content))
         return await ModelController.delete(Attachment, id)
     }
