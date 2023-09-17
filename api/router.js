@@ -154,8 +154,8 @@ router.post('/users', require_admin, response_envelope(Users.post))
 router.patch('/users/:id', require_admin, response_envelope(Users.patch))
 
 
-router.get('/attachments/:id/content', require_user, Attachments.viewContent)
-router.get('/attachments/:id', require_user, response_envelope(Attachments.view))
+router.get('/attachments/:signedId/content', require_user, Attachments.viewContent)
+router.get('/attachments/:signedId', require_user, response_envelope(Attachments.view))
 router.post('/attachments', require_user, Attachments.postMiddleware, response_envelope(Attachments.post))
 
 router.get('/comments', require_user, response_envelope(Comments.index))

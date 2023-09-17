@@ -1,6 +1,7 @@
 const ModelController = require('./ModelController');
 const Comment = require('../models/Comment');
 const assert = require('assert')
+const mongoose = require('mongoose')
 
 const fields = {
     "object_id": {
@@ -38,7 +39,9 @@ const CommentController = {
         ]
 
         const pipeline = ModelController.queryFieldsToPipeline(query, fields)
-        const [ res ] = await Comment.aggregate([
+        const db = mongoose.connection.db
+        const comments = db.collection('comments')
+        const [res] = await comments.aggregate([
             // lookup sui proposals
             {$lookup: {
                 from: "proposals",
@@ -51,11 +54,21 @@ const CommentController = {
                 path: "$object_id",
                 preserveNullAndEmptyArrays: true
             }},
+            {$lookup: {
+                from: "attachments",
+                localField: "attachments",
+                foreignField: "_id",
+                as: "attachmentsData",
+            }},
             ...restrict,
             ...pipeline,
-        ])
-        await Comment.populate(res.items, { path: 'attachments creator_id' })
-
+        ]).toArray()
+        console.log(`res: ${JSON.stringify(res)}`)
+        res.items.forEach(comment => {
+            comment.attachmentsData.forEach(attachment => {
+                attachment.signedId = ModelController.signedId(attachment._id.toString())
+            })
+        })
         return res
     }, 
 

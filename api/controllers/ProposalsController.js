@@ -80,7 +80,7 @@ const ProposalsController = {
     view: async req => {
         const { id } = req.params
         const user = req?.user || null
-        return await ModelController.view(Proposal, id, user)
+        return await ModelController.view(Proposal, id)
     },
 
     post: async req => {

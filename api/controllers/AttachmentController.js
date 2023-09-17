@@ -3,7 +3,7 @@ const path = require('path')
 const multer = require('multer')
 const assert = require('assert')
 
-const { ValidationError, ForbiddenError, NotFoundError } = require('../exceptions/ApiException')
+const { ValidationError, ForbiddenError, NotFoundError, BadRequestError } = require('../exceptions/ApiException')
 
 const ModelController = require('./ModelController');
 const Attachment = require('../models/Attachment');
@@ -32,15 +32,17 @@ const attachmentHandler = multer({
     }
 }).any()
 
+
+
+
+
 const AttachmentController = {
 
     view: async req => {
-        const { id } = req.params
-        const user = req.user
-        const obj = await ModelController.view(Attachment, id)
-
-        if (!user.admin && obj.uploader_id !== user._id) throw new ForbiddenError()
-        
+        const { signedId } = req.params
+        const id = ModelController.idFromSignedIdIfValid(signedId)
+        if (!id) throw new ForbiddenError()
+        const obj = await ModelController.view(Attachment, id)        
         return obj
     },
 

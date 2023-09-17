@@ -5,6 +5,9 @@
 
 const { default: mongoose } = require("mongoose");
 const { BadRequestError, ValidationError, NotImplementedError, NotFoundError } = require("../exceptions/ApiException");
+const crypto = require('crypto')
+
+const PERMISSION_SECRET = process.env.PERMISSION_SECRET || crypto.randomUUID()
 
 function queryFieldsToPipeline(query={}, fields={}) {
     let $match = {};
@@ -162,7 +165,22 @@ const ModelController = {
         } catch(err) {
             throw new NotFoundError()
         }
-    }
+    },
+
+    signedId: (id) => {
+        const hash = crypto.createHash('sha256')
+        hash.update(id)
+        hash.update(PERMISSION_SECRET)
+        return `${id}-${hash.digest('hex')}`
+    },
+
+    idFromSignedIdIfValid: (signedId) => {
+        console.log(`isSignedIdValid ${signedId}`)
+        const [id, signature] = signedId.split("-")
+        console.log(`id ${id} signature ${signature}`)
+        console.log(`signedId ${ModelController.signedId(id)}`)
+        return signedId === ModelController.signedId(id) ? id : null
+    },
 }
 
 module.exports = ModelController;

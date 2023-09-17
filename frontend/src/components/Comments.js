@@ -44,7 +44,7 @@ function CommentCard({ comment, userUpdater }) {
         <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
             <div>
                 <div>{comment.content}</div>
-                {comment.attachments.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment._id}/content`}>{attachment.filename}</a></div>)}
+                {comment.attachmentsData.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment.signedId}/content`}>{attachment.filename}</a></div>)}
                 <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
             </div>
             <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
