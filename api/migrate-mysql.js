@@ -8,6 +8,7 @@ let Form = require('./models/Form')
 let Proposal = require('./models/Proposal')
 let Attachment = require('./models/Attachment')
 let Comment = require('./models/Comment')
+let Settings = require('./models/Settings')
 
 let {   CurriculumCompulsoryExam, 
         CurriculumCompulsoryGroup, 
@@ -64,6 +65,19 @@ async function importData() {
     // console.log("here2")
 
     var results = null;
+    
+    if (false) {
+        write("> Settings ")
+        await Settings.deleteMany({})
+        results = await query("SELECT * from settings")
+        write(`caricamento ${ results.length } settings...`)
+        await Promise.all(results.map(element => {
+            element.old_id = element.id
+            const s = new Settings(element)
+            return s.save()
+        }))
+        return
+    }
     
     // Import users
     write("> Users ");
