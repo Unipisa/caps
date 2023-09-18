@@ -20,13 +20,13 @@ const port = process.env.PORT || 3000;
 
 var app = express();
 
-function logErrors(err, req, res, next) {
+function logErrors(err : any, req : any, res : any, next : any) {
     console.error(`catched error: ${err.message}`);
     next(err);
 }
 
 const mongo_uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/caps'
-mongoose.connect(mongo_uri).then(res => {
+mongoose.connect(mongo_uri).then((res : any) => {
   console.log("Connected to MongoDB", mongo_uri)
 
     // (!) this function is asyncronous
@@ -34,7 +34,7 @@ mongoose.connect(mongo_uri).then(res => {
     
     const cors_origin = process.env.CORS_ORIGIN || "http://localhost:3000"
     app.use(cors({
-        origin: process.env.CORS_ORIGIN.split(","),
+        origin: cors_origin.split(","),
         optionsSuccessStatus: 200,
         credentials: true // Needed for the client to handle session
       }))
@@ -66,7 +66,7 @@ mongoose.connect(mongo_uri).then(res => {
     app.use('/img/', express.static('./webroot/img'));
     app.use('/favicon.ico', express.static('./webroot/favicon.ico'));
     
-    const spa = (req, res) => res.sendFile(path.join(__dirname, "../frontend/index.html"))
+    const spa = (req : any, res : any) => res.sendFile(path.join(__dirname, "../frontend/index.html"))
 
     app.use("/", spa)
     app.use(logErrors); // log errors on console
@@ -80,7 +80,7 @@ mongoose.connect(mongo_uri).then(res => {
 })
 
 
-async function createOrUpdateUser({username, password, admin = true}) {
+async function createOrUpdateUser({username, password, admin = true} : {username? : string, password? : string, admin? : boolean}) {
   if (!username) throw new Error("username is required")
 
   let user = await User.findOne({ username })

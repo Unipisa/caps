@@ -2,10 +2,10 @@
   "name": "caps-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --inspect ./index.js"
+    "start": "nodemon ./index.ts"
   },
   "author": "",
   "license": "AGPL-3.0-or-later",
@@ -23,9 +23,11 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
-    "passport-oauth2": "^1.7.0"
+    "passport-oauth2": "^1.7.0",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "typescript": "^5.2.2"
   }
 }
