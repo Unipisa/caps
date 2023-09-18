@@ -66,17 +66,18 @@ async function importData() {
 
     var results = null;
     
-    if (false) {
+    if (true) {
         write("> Settings ")
         await Settings.deleteMany({})
         results = await query("SELECT * from settings")
         write(`caricamento ${ results.length } settings...`)
         await Promise.all(results.map(element => {
+            console.log(`element: ${JSON.stringify(element)}`)
             element.old_id = element.id
+            element.fieldType = element.fieldtype
             const s = new Settings(element)
             return s.save()
         }))
-        return
     }
     
     // Import users

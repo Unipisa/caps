@@ -19,6 +19,7 @@ import ExamsPage from "./ExamsPage"
 import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
 import UserPage from "./UserPage"
+import SettingsPage from "./SettingsPage"
 
 import Login from "../components/Login"
 import Modal from '../components/Modal'
@@ -77,6 +78,7 @@ function SinglePageInternal () {
                             <Route path="/exams" element={<ExamsPage/>}/>
                             <Route path="/users" element={<UsersPage/>}/>
                             <Route path="/users/:id" element={<UserPage/>}/>
+                            <Route path="/settings" element={<SettingsPage/>}/>
                         </Routes>
                     </div>
                     <Footer/>

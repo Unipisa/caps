@@ -2,32 +2,16 @@
 
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
-
-import { useEngine, useGet, usePost, useDelete, usePatch } from '../modules/engine'
-import Exam from '../models/Exam'
-import LoadingMessage from '../components/LoadingMessage'
-import Card from '../components/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-function Group({ controlId, label, validationError, children, ...controlProps }) {
-    return (
-        <Form.Group className="mb-3" controlId={controlId} >
-        <Form.Label>{label}</Form.Label>
-        {
-            children === undefined
-            ? <Form.Control
-            {...controlProps}
-            className={validationError ? "border border-danger" : ""}
-            />
-            : children
-        }
-        {validationError && <Form.Label className="mb-0 text-danger">{validationError}</Form.Label>}
-        </Form.Group>
-    );
-}
+import { useEngine, useGet, usePost, useDelete, usePatch } from '../modules/engine'
+import Exam from '../models/Exam'
+import LoadingMessage from '../components/LoadingMessage'
+import Card from '../components/Card'
+import Group from '../components/Group'
 
 function ExamForm({ submit, exam, isEdit }) {
     const [code, setCode] = useState(exam.code)

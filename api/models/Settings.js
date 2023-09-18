@@ -11,7 +11,7 @@ const settingsSchema = new mongoose.Schema({
     },
     value: {
         type: String, 
-        required: true
+        default: '',
     },
     fieldType: {
         type: String,
