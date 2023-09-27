@@ -38,6 +38,135 @@ function ExamRow({ exam }) {
     </tr>
 }
 
+export function NewProposalPage() {
+    const engine = useEngine()
+    const empty = new Proposal({
+        state: 'draft',
+
+        degree_academic_year: null,
+        degree_name: null,
+
+        curriculum_id: null,
+        curriculum_name: null,
+
+        user_id: engine.user._id,
+        user_name: engine.user.name,
+        user_first_name: engine.user.first_name,
+        user_last_name: engine.user.last_name,
+        user_id_number: engine.user.id_number,
+        user_email: engine.user.email,
+        user_username: engine.user.username,
+
+        // date_modified: null,
+        // date_submitted: null,
+        // date_managed: null,
+
+        exams: [],
+        
+        attachments: []
+    })
+
+    const [proposal, setProposal] = useState(empty)
+    const [degree, setDegree] = useState(null)
+
+
+    const degreesQuery = useIndex(Degree, null)
+    const curriculaQuery = useIndex(Curriculum, degree ? { degree: { _id: degree._id } } : null)
+    console.log(curriculaQuery)
+
+    if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
+    if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
+
+    // const degrees = degreesQuery.data.items
+    // console.log(degrees[0] instanceof Degree) // FALSE!
+    const degrees = degreesQuery.data.items.map(d => new Degree(d))
+    // // Only useful in EditProposal, not useful in NewProposal
+    // degrees.forEach(d => {
+    //     if (d.name === proposal.degree_name && d.academic_year === proposal.degree_academic_year) {
+    //         setDegree(d)
+    //     }
+    // })
+
+    if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
+    if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
+
+    const curricula = curriculaQuery.data.items
+
+
+    function updateDegree(newDegId) {
+        degrees.forEach(deg => {
+            if (deg._id === newDegId) {
+                setDegree(deg)
+                setProposal({ ... proposal, degree_name: deg.name, degree_academic_year: deg.academic_year })
+            }
+        })
+    }
+
+    function updateCurriculum(newCurriculumId) {
+        curricula.forEach(cur => {
+            if (cur._id === newCurriculumId) {
+                setProposal({ ... proposal, curriculum_id: cur._id, curriculum_name: cur.name })
+            }
+        })
+    }
+
+    // console.log('degree', degree)
+    // console.log('curricula', curricula)
+
+    return <>
+        <Card>
+            <div className="form-group" key="degree-selection">
+                <select className="form-control"
+                    onChange={e => updateDegree(e.target.value)}
+                    value={degree ? degree._id : -1}
+                >
+                    <option key="degree-dummy" value="-1">
+                        Selezionare il corso di Laurea
+                    </option>
+                    {
+                        degrees.map(degree =>
+                            [
+                                degree.academic_year,
+                                degree.name, 
+                                <option key={degree._id} value={degree._id}>
+                                    {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
+                                </option>
+                            ]
+                        ).sort().map(([a,b,rendering]) => rendering)
+                    }
+                </select>
+                
+                {
+                    degree && <>
+                        <select className="form-control"
+                            onChange={e => updateCurriculum(e.target.value)}
+                            value={proposal.curriculum_id || -1}
+                        >
+                            <option key="degree-dummy" value="-1">
+                                Selezionare il Curriculum
+                            </option>
+                            {
+                                curricula.filter(
+                                    curriculum => {
+                                        return curriculum.degree._id === degree._id
+                                    }
+                                ).map(curriculum =>
+                                    [
+                                        curriculum.name, 
+                                        <option key={curriculum._id} value={curriculum._id}>
+                                            {curriculum.name}
+                                        </option>
+                                    ]
+                                ).sort().map(([a,b,rendering]) => rendering)
+                            }
+                        </select>
+                    </>
+                }
+            </div>
+        </Card>
+    </>
+}
+
 export function EditProposalPage() {
     const { id } = useParams()
     // const engine = useEngine()
@@ -54,7 +183,7 @@ export function EditProposalPage() {
     //     <button onClick={() => setCID("64f0b8114fb5ed574a7b7217")}>ehi</button>
     // </div>
 
-    const engine = useEngine()    
+    const engine = useEngine()
     const [proposal, setProposal] = useState(new Proposal({
         curriculum_id: null,
         user_id: engine.user._id,

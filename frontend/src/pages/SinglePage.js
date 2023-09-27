@@ -6,7 +6,7 @@ import {
 import {useCreateEngine, EngineProvider} from '../modules/engine'
 
 import ProposalsPage from "./ProposalsPage"
-import { default as ProposalPage, EditProposalPage } from "./ProposalPage"
+import { default as ProposalPage, EditProposalPage, NewProposalPage } from "./ProposalPage"
 import FormsPage from "./FormsPage"
 import FormPage from "./FormPage"
 import DegreesPage from "./DegreesPage"
@@ -61,6 +61,7 @@ function SinglePageInternal () {
                             <Route path="/" element={<Splash/>}/>
                             <Route path="/index.html" element={<Splash/>}/>
                             <Route path="/proposals/edit/:id" element={<EditProposalPage/>}/>
+                            <Route path="/proposals/edit" element={<NewProposalPage/>}/>
                             <Route path="/proposals/:id" element={<ProposalPage/>}/>
                             <Route path="/proposals" element={<ProposalsPage/>}/>
                             {/* <Route path="/proposals/new" element={<ProposalPage/>}/> */}
