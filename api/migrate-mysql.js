@@ -66,19 +66,23 @@ async function importData() {
 
     var results = null;
     
-    if (true) {
-        write("> Settings ")
-        await Settings.deleteMany({})
-        results = await query("SELECT * from settings")
-        write(`caricamento ${ results.length } settings...`)
-        await Promise.all(results.map(element => {
-            console.log(`element: ${JSON.stringify(element)}`)
-            element.old_id = element.id
-            element.fieldType = element.fieldtype
-            const s = new Settings(element)
-            return s.save()
-        }))
-    }
+    write("> Settings ")
+    await Settings.deleteMany({})
+    results = await query("SELECT * from settings")
+    write(`caricamento ${ results.length } settings...`)
+    const s = new Settings()
+    await Promise.all(results.map(element => {
+        s[{
+            'disclaimer': 'disclaimer',
+            'cds': 'cds',
+            'department': 'department',
+            'user-instructions': 'userInstructions',
+            'notified-emails': 'notifiedEmails',
+            'approval-signature-text': 'approvalSignatureText',
+            'pdf-name': 'pdfName'
+        }[element.field]] = element.value
+    }))
+    await s.save()
     
     // Import users
     write("> Users ");
