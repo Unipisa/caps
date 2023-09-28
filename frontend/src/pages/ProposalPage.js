@@ -38,6 +38,123 @@ function ExamRow({ exam }) {
     </tr>
 }
 
+function YearCard({ year, number }) {
+    const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
+
+    const customHeader = <div className='d-flex justify-content-between align-content-center'>
+        <h5 className='text-white'>{yearName} anno</h5>
+        <h5 className='text-white'>
+            Crediti: ???/{year.credits}
+        </h5>
+    </div>
+
+    return <Card customHeader={customHeader} >
+
+        </Card>
+}
+
+export function NewProposalPage() {
+    const engine = useEngine()
+    const empty = new Proposal({
+        state: 'draft',
+
+        degree_id: null,
+        curriculum_id: null,
+
+        user_id: engine.user._id,
+        user_name: engine.user.name,
+        user_first_name: engine.user.first_name,
+        user_last_name: engine.user.last_name,
+        user_id_number: engine.user.id_number,
+        user_email: engine.user.email,
+        user_username: engine.user.username,
+
+        exams: [],
+        
+        attachments: []
+    })
+
+    const [proposal, setProposal] = useState(empty)
+
+    const degreesQuery = useIndex(Degree, null)
+    const curriculaQuery = useIndex(Curriculum, proposal.degree_id ? { degree_id: proposal.degree_id } : null )
+
+    if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
+    if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
+
+    // const degrees = degreesQuery.data.items
+    // console.log(degrees[0] instanceof Degree) // FALSE!
+    const degrees = degreesQuery.data.items.map(d => new Degree(d))
+
+    if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
+    if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
+
+    const curricula = curriculaQuery.data.items
+
+    const curriculum = proposal.curriculum_id ? curricula.find(c => c._id === proposal.curriculum_id) : null
+
+    if (curriculum) {
+        console.log(curriculum)
+    }
+
+    return <>
+        <Card>
+            <div className="form-group" key="degree-selection">
+                <select className="form-control mb-3"
+                    onChange={e => setProposal({ ... proposal, degree_id: e.target.value })}
+                    value={proposal.degree_id || -1}
+                >
+                    <option key="degree-dummy" value="-1">
+                        Selezionare il corso di Laurea
+                    </option>
+                    {
+                        degrees.map(degree =>
+                            [
+                                degree.academic_year,
+                                degree.name, 
+                                <option key={degree._id} value={degree._id}>
+                                    {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
+                                </option>
+                            ]
+                        ).sort().map(([a,b,rendering]) => rendering)
+                    }
+                </select>
+                
+                {
+                    proposal.degree_id && <>
+                        <select className="form-control mb-3"
+                            onChange={e => setProposal({ ... proposal, curriculum_id: e.target.value })}
+                            value={proposal.curriculum_id || -1}
+                        >
+                            <option key="curriculum-dummy" value="-1">
+                                Selezionare il Curriculum
+                            </option>
+                            {
+                                curricula.map(curriculum =>
+                                    [
+                                        curriculum.name, 
+                                        <option key={curriculum._id} value={curriculum._id}>
+                                            {curriculum.name}
+                                        </option>
+                                    ]
+                                ).sort().map(([a,rendering]) => rendering)
+                            }
+                        </select>
+                    </>
+                }
+
+            </div>
+        </Card>
+        {
+            proposal.degree_id && proposal.curriculum_id && curriculum && <>
+                {
+                    curriculum.years.map((year, number) => <YearCard key={number} year={year} number={number} />)
+                }
+            </>
+        }
+    </>
+}
+
 export function EditProposalPage() {
     const { id } = useParams()
     // const engine = useEngine()
@@ -54,7 +171,7 @@ export function EditProposalPage() {
     //     <button onClick={() => setCID("64f0b8114fb5ed574a7b7217")}>ehi</button>
     // </div>
 
-    const engine = useEngine()    
+    const engine = useEngine()
     const [proposal, setProposal] = useState(new Proposal({
         curriculum_id: null,
         user_id: engine.user._id,
