@@ -38,16 +38,28 @@ function ExamRow({ exam }) {
     </tr>
 }
 
+function YearCard({ year, number }) {
+    const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
+
+    const customHeader = <div className='d-flex justify-content-between align-content-center'>
+        <h5 className='text-white'>{yearName} anno</h5>
+        <h5 className='text-white'>
+            Crediti: ???/{year.credits}
+        </h5>
+    </div>
+
+    return <Card customHeader={customHeader} >
+
+        </Card>
+}
+
 export function NewProposalPage() {
     const engine = useEngine()
     const empty = new Proposal({
         state: 'draft',
 
-        degree_academic_year: null,
-        degree_name: null,
-
+        degree_id: null,
         curriculum_id: null,
-        curriculum_name: null,
 
         user_id: engine.user._id,
         user_name: engine.user.name,
@@ -57,22 +69,15 @@ export function NewProposalPage() {
         user_email: engine.user.email,
         user_username: engine.user.username,
 
-        // date_modified: null,
-        // date_submitted: null,
-        // date_managed: null,
-
         exams: [],
         
         attachments: []
     })
 
     const [proposal, setProposal] = useState(empty)
-    const [degree, setDegree] = useState(null)
-
 
     const degreesQuery = useIndex(Degree, null)
-    const curriculaQuery = useIndex(Curriculum, degree ? { degree: { _id: degree._id } } : null)
-    console.log(curriculaQuery)
+    const curriculaQuery = useIndex(Curriculum, proposal.degree_id ? { degree_id: proposal.degree_id } : null )
 
     if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
@@ -80,45 +85,24 @@ export function NewProposalPage() {
     // const degrees = degreesQuery.data.items
     // console.log(degrees[0] instanceof Degree) // FALSE!
     const degrees = degreesQuery.data.items.map(d => new Degree(d))
-    // // Only useful in EditProposal, not useful in NewProposal
-    // degrees.forEach(d => {
-    //     if (d.name === proposal.degree_name && d.academic_year === proposal.degree_academic_year) {
-    //         setDegree(d)
-    //     }
-    // })
 
     if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
     if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
 
     const curricula = curriculaQuery.data.items
 
+    const curriculum = proposal.curriculum_id ? curricula.find(c => c._id === proposal.curriculum_id) : null
 
-    function updateDegree(newDegId) {
-        degrees.forEach(deg => {
-            if (deg._id === newDegId) {
-                setDegree(deg)
-                setProposal({ ... proposal, degree_name: deg.name, degree_academic_year: deg.academic_year })
-            }
-        })
+    if (curriculum) {
+        console.log(curriculum)
     }
-
-    function updateCurriculum(newCurriculumId) {
-        curricula.forEach(cur => {
-            if (cur._id === newCurriculumId) {
-                setProposal({ ... proposal, curriculum_id: cur._id, curriculum_name: cur.name })
-            }
-        })
-    }
-
-    // console.log('degree', degree)
-    // console.log('curricula', curricula)
 
     return <>
         <Card>
             <div className="form-group" key="degree-selection">
-                <select className="form-control"
-                    onChange={e => updateDegree(e.target.value)}
-                    value={degree ? degree._id : -1}
+                <select className="form-control mb-3"
+                    onChange={e => setProposal({ ... proposal, degree_id: e.target.value })}
+                    value={proposal.degree_id || -1}
                 >
                     <option key="degree-dummy" value="-1">
                         Selezionare il corso di Laurea
@@ -137,33 +121,37 @@ export function NewProposalPage() {
                 </select>
                 
                 {
-                    degree && <>
-                        <select className="form-control"
-                            onChange={e => updateCurriculum(e.target.value)}
+                    proposal.degree_id && <>
+                        <select className="form-control mb-3"
+                            onChange={e => setProposal({ ... proposal, curriculum_id: e.target.value })}
                             value={proposal.curriculum_id || -1}
                         >
-                            <option key="degree-dummy" value="-1">
+                            <option key="curriculum-dummy" value="-1">
                                 Selezionare il Curriculum
                             </option>
                             {
-                                curricula.filter(
-                                    curriculum => {
-                                        return curriculum.degree._id === degree._id
-                                    }
-                                ).map(curriculum =>
+                                curricula.map(curriculum =>
                                     [
                                         curriculum.name, 
                                         <option key={curriculum._id} value={curriculum._id}>
                                             {curriculum.name}
                                         </option>
                                     ]
-                                ).sort().map(([a,b,rendering]) => rendering)
+                                ).sort().map(([a,rendering]) => rendering)
                             }
                         </select>
                     </>
                 }
+
             </div>
         </Card>
+        {
+            proposal.degree_id && proposal.curriculum_id && curriculum && <>
+                {
+                    curriculum.years.map((year, number) => <YearCard key={number} year={year} number={number} />)
+                }
+            </>
+        }
     </>
 }
 

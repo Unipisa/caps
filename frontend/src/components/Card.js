@@ -26,6 +26,7 @@ function classWithDefault(className, defaultClass) {
 export default function Card({
     className,
     title,
+    customHeader,
     // titleClass,
     // titleBg,
     onClick,
@@ -38,11 +39,15 @@ export default function Card({
     let titleClass = 'text-white';
 
     return <BootStrapCard className={cardClass} onClick={onClick}>
-        {title &&
+        {
+            (customHeader || title) &&
             <BootStrapCard.Header className={headerClass}>
-                <h5 className={titleClass}>
-                    {title}
-                </h5>
+                { customHeader
+                    ? <>{customHeader}</>
+                    : <h5 className={titleClass}>
+                            {title}
+                        </h5>
+                }
             </BootStrapCard.Header>
         }
         <BootStrapCard.Body>

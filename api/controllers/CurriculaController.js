@@ -7,6 +7,11 @@ const fields = {
         can_sort: true,
         match_regex: q => new RegExp(q, "i")
     }, 
+    "degree_id": {
+        can_filter: true,
+        can_sort: true,
+        match_id_object: true,
+    },
     "academic_year": {
         can_filter: true,
         can_sort: true 
