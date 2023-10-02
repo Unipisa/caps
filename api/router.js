@@ -14,6 +14,7 @@ const Attachments = require('./controllers/AttachmentController')
 const Comments = require('./controllers/CommentController')
 const User = require('./models/User')
 const UserController = require('./controllers/UsersController')
+const settingsController = require('./controllers/SettingsController')
 
 const router = new express.Router()
 
@@ -161,6 +162,9 @@ router.post('/attachments', require_user, Attachments.postMiddleware, response_e
 router.get('/comments', require_user, response_envelope(Comments.index))
 router.post('/comments', require_user, response_envelope(Comments.post))
 router.delete('/comments/:id', require_user, response_envelope(Comments.delete))
+
+router.get('/settings', require_admin, response_envelope(settingsController))
+router.post('/settings', require_admin, response_envelope(settingsController))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

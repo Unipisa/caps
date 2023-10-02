@@ -219,8 +219,8 @@ export function useGet(Model, id) {
     })
 }        
 
-export function useIndex(Model, query={}) {
-    const path = Model.api_url
+export function useIndex(ModelOrPath, query={}) {
+    const path = ModelOrPath.api_url || ModelOrPath
     return useQuery({
         queryKey: [path, query],
         queryFn: async () => {
@@ -231,10 +231,10 @@ export function useIndex(Model, query={}) {
     })
 }
 
-export function usePost(Model) {
+export function usePost(ModelOrPath) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
-    const path = Model.api_url
+    const path = ModelOrPath?.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
             return await axios.post(`/api/v0/${path}`, data)
@@ -245,9 +245,9 @@ export function usePost(Model) {
     })
 }
 
-export function useDelete(Model, id) {
+export function useDelete(ModelOrPath, id) {
     const queryClient = useQueryClient()
-    const path = Model.api_url
+    const path = ModelOrPath?.api_url || ModelOrPath
     return useMutation({
         mutationFn: async () => {
             return await axios.delete(`/api/v0/${Model.api_url}${id}`)
@@ -258,9 +258,9 @@ export function useDelete(Model, id) {
     })
 }
 
-export function usePatch(Model, id) {
+export function usePatch(ModelOrPath, id) {
     const queryClient = useQueryClient()
-    const path = Model.api_url
+    const path = ModelOrPath.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
             return await axios.patch(`/api/v0/${Model.api_url}${id}`, data)
