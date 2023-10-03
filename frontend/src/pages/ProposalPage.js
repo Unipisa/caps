@@ -38,7 +38,33 @@ function ExamRow({ exam }) {
     </tr>
 }
 
-function YearCard({ year, number }) {
+function ExamSelect({ exam, exams, groups }) {
+    let options = []
+    let optionsPlaceholder = null
+    if (exam.__t === "CompulsoryExam") {
+        const compulsoryExam = exams.find(e => e._id === exam.exam_id)
+        if (compulsoryExam) {
+            options = [ compulsoryExam.name ]
+        }
+    } else if (exam.__t === "CompulsoryGroup") {
+        optionsPlaceholder = `Un esame a scelta nel gruppo ${exam.group}`
+        options = groups[exam.group].map(e => e.name)
+    }
+    return <li className='form-group exam-input'>
+        <div className='row'>
+            <div className='col-9'>
+                <select className='form-control' disabled={exam.__t === "CompulsoryExam"} defaultValue={-1}>
+                    {optionsPlaceholder && <option disabled value={-1}>{optionsPlaceholder}</option> }
+                    {options.map(opt => <option key={opt}>{opt}</option>)}
+                </select>
+            </div>
+            <div className='col-3'>
+                <input className='form-control' readOnly />
+            </div>
+        </div>
+    </li>
+}
+function YearCard({ year, number, exams, groups }) {
     const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
 
     const customHeader = <div className='d-flex justify-content-between align-content-center'>
@@ -49,7 +75,7 @@ function YearCard({ year, number }) {
     </div>
 
     return <Card customHeader={customHeader} >
-
+            {year.exams.map(exam => <ExamSelect key={exam._id} exam={exam} exams={exams} groups={groups}/>)}
         </Card>
 }
 
@@ -78,12 +104,12 @@ export function NewProposalPage() {
 
     const degreesQuery = useIndex(Degree, null)
     const curriculaQuery = useIndex(Curriculum, proposal.degree_id ? { degree_id: proposal.degree_id } : null )
+    const examsQuery = useIndex(Exam, { _limit: 99999 })    // Soluzione temporanea, capire se si possono ottenere tutti
+                                                            // Anzi meglio sarebbe ottenere i degree con i groups già popolati
 
     if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
 
-    // const degrees = degreesQuery.data.items
-    // console.log(degrees[0] instanceof Degree) // FALSE!
     const degrees = degreesQuery.data.items.map(d => new Degree(d))
 
     if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
@@ -91,10 +117,38 @@ export function NewProposalPage() {
 
     const curricula = curriculaQuery.data.items
 
+    if (examsQuery.isLoading) return <LoadingMessage>caricamento esami...</LoadingMessage>
+    if (examsQuery.isError) return <LoadingMessage>errore esami...</LoadingMessage>
+
+    const exams = examsQuery.data.items
+
+    const degree = proposal.degree_id ? degrees.find(d => d._id === proposal.degree_id) : null
     const curriculum = proposal.curriculum_id ? curricula.find(c => c._id === proposal.curriculum_id) : null
 
+    // Solo soluzione temporanea, potrebbe esser necessario cambiare l'API per
+    // poter popolare direttamente "groups" dei degrees
+    let groups = {}
+    if (degree) {
+        for (const key in degree.groups) {
+            groups[key] = []
+            degree.groups[key].forEach(id => {
+                const exam = exams.find(e => e._id === id)
+                if (exam) {
+                    groups[key].push(exam)
+                }
+            })
+        }
+    }
+
+    if (degree) {
+        console.log('degree', degree)
+        console.log('groups', groups)
+    }
     if (curriculum) {
-        console.log(curriculum)
+        console.log('curriculum', curriculum)
+    }
+    if (exams) {
+        console.log('exams', exams)
     }
 
     return <>
@@ -104,7 +158,7 @@ export function NewProposalPage() {
                     onChange={e => setProposal({ ... proposal, degree_id: e.target.value })}
                     value={proposal.degree_id || -1}
                 >
-                    <option key="degree-dummy" value="-1">
+                    <option key="degree-dummy" value="-1" disabled>
                         Selezionare il corso di Laurea
                     </option>
                     {
@@ -116,7 +170,7 @@ export function NewProposalPage() {
                                     {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
                                 </option>
                             ]
-                        ).sort().map(([a,b,rendering]) => rendering)
+                        ).sort().reverse().map(([a,b,rendering]) => rendering)
                     }
                 </select>
                 
@@ -126,7 +180,7 @@ export function NewProposalPage() {
                             onChange={e => setProposal({ ... proposal, curriculum_id: e.target.value })}
                             value={proposal.curriculum_id || -1}
                         >
-                            <option key="curriculum-dummy" value="-1">
+                            <option key="curriculum-dummy" value="-1" disabled>
                                 Selezionare il Curriculum
                             </option>
                             {
@@ -148,7 +202,7 @@ export function NewProposalPage() {
         {
             proposal.degree_id && proposal.curriculum_id && curriculum && <>
                 {
-                    curriculum.years.map((year, number) => <YearCard key={number} year={year} number={number} />)
+                    curriculum.years.map((year, number) => <YearCard key={number} year={year} exams={exams} number={number} groups={groups}/>)
                 }
             </>
         }
