@@ -10,6 +10,7 @@ const fields = {
     "enabled": {
         can_filter: true,
         can_sort: true,
+        match_boolean: true,
     }
 };
 

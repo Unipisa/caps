@@ -4,6 +4,7 @@ import React from 'react'
 
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
+    FilterCheckbox,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
@@ -15,7 +16,7 @@ export default function FormTemplatesPage() {
         <QueryTable Model={ FormTemplate } >
             <FilterButton>
             <FilterInput name="name" label="nome" />
-            <FilterInput name="enabled" label="attivato" />
+            <FilterCheckbox name="enabled" label="attivato" />
             </FilterButton>
 
             <ItemAddButton>
