@@ -47,6 +47,7 @@ export function FilterInput({ name, label }) {
 }
 
 export function FilterSelect({name, label, value, onChange, children}) {
+    // TODO: incomplete
     return <div className="input form-group">
                 <label htmlFor={name}>{label}</label>
                 <select className="form-control" name={name} value={value} onChange={onChange}>
@@ -55,10 +56,16 @@ export function FilterSelect({name, label, value, onChange, children}) {
             </div>
 }
 
-export function FilterCheckbox({name, label, value, onChange }) {
+export function FilterCheckbox({name, label}) {
+    const { query, setQuery } = useQuery()
+    const [ checked, setChecked ] = useState(query[name] || false);
     return <div className="input form-group">
         <label htmlFor={name}>{label}</label>
-        <input type="checkbox" className="form-control" name={name} value={value} onChange={onChange}/>
+        <input type="checkbox" className="form-control" name={name} checked={checked} 
+            onChange={() => {
+                setChecked(!checked);
+                setQuery({...query, [name]: !checked })
+            }}/>
     </div>
 }
 

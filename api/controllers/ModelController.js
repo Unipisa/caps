@@ -43,6 +43,15 @@ function queryFieldsToPipeline(query={}, fields={}) {
                 };
             } else if (field.match_id_object) {
                 $match[key] = mongoose.Types.ObjectId(value);
+            } else if (field.match_boolean) {
+                const v = {
+                    "true": true, 
+                    "false": false,
+                    "0": false,
+                    "1": true,
+                }[value]
+                if (v === undefined) throw new BadRequestError(`invalid boolean value ${value}`)
+                $match[key] = v
             } else {
                 $match[key] = value;
             }
@@ -79,6 +88,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
             match: {$literal: $match},
         }},
     ]
+    console.log(`queryFieldsToPipeline ${JSON.stringify(query)} => ${JSON.stringify(pipeline)}`)
     return pipeline
 }
 
