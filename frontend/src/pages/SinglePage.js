@@ -14,7 +14,7 @@ import DegreePage from "./DegreePage"
 import CurriculaPage from "./CurriculaPage"
 import CurriculumPage from "./CurriculumPage"
 import FormTemplatesPage from './FormTemplatesPage'
-import FormTemplatePage from './FormTemplatePage'
+import { default as FormTemplatePage, EditFormTemplatePage } from './FormTemplatePage'
 import ExamsPage from "./ExamsPage"
 import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
