@@ -14,7 +14,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
     let filter = {};
     let sort = "_id";
     let direction = 1;
-    let limit = 100;
+    let limit = Number.MAX_SAFE_INTEGER;
 
     for (key in query) {
         const value = query[key];
