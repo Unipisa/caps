@@ -1,18 +1,31 @@
 'use strict'
 
-import React from 'react'
-import { Link, useParams } from "react-router-dom"
+import React, {useState} from 'react'
+import { Link, useParams, useNavigate } from "react-router-dom"
+import { Form, Button } from 'react-bootstrap'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-import { useGet } from '../modules/engine'
+import { useGet, useEngine, usePatch, usePost } from '../modules/engine'
 import FormTemplate from '../models/FormTemplate'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import { RenderHtml } from '../components/RenderHtml'
+import Group from '../components/Group'
 
 export default function FormTemplatePage() {
     const { id } = useParams()
     const query = useGet(FormTemplate, id)
-
+    const engine = useEngine()
+    const [data, setData] = useState({}) // per l'anteprima
+    const user = engine.user
+    const vars = {
+        "user.firstname": user.firstname || "???",
+        "user.lastname": user.lastname || "???",
+        "user.email": user.email || "???",
+        "user.code": user.id_code || "???",
+    }
+    
     if (query.isLoading) return <LoadingMessage>caricamento modello...</LoadingMessage> 
     if (query.isError) return <div>errore caricamento modello</div> 
     
@@ -33,7 +46,7 @@ export default function FormTemplatePage() {
                         Modifica
                     </button>
                 </Link>
-                <a href="#" onClick={ () => confirm('Sei sicuro di voler cancellare questo esame?')}>
+                <a href="#" onClick={ () => confirm('Sei sicuro di voler cancellare questo modello?')}>
                     <button type="button" className="btn btn-sm mr-2 btn-danger">Elimina</button>
                 </a>
 
@@ -66,41 +79,40 @@ export default function FormTemplatePage() {
         </Card>    
         <Card>
             <h2>anteprima</h2>
+            <RenderHtml text={formTemplate.text} data={data} setData={setData} vars={vars} />
+            <hr />
             <pre>
             {formTemplate.text}
             </pre>
-            <hr />
-            <RenderHtml text={formTemplate.text} />
         </Card>
     </>
 }
 
 function FormTemplateForm({ submit, formTemplate, isEdit }) {
-    const [code, setCode] = useState(exam.code)
-    const [name, setName] = useState(exam.name)
-    const [sector, setSector] = useState(exam.sector)
-    const [credits, setCredits] = useState(exam.credits)
-    const [tags, setTags] = useState(exam.tags)
-    const [notes, setNotes] = useState(exam.notes || '')
+    const [enabled, setEnabled] = useState(formTemplate.enabled)
+    const [name, setName] = useState(formTemplate.name)
+    const [require_approval, setRequireApproval] = useState(formTemplate.require_approval)
+    const [notify_emails, setNotifyEmails] = useState(formTemplate.notify_emails.join(", "))
+    const [notes, setNotes] = useState(formTemplate.notes || '')
+    const [text, setText] = useState(formTemplate.text || '')
 
     const [validation, setValidation] = useState({})
 
     function onSubmit() {
-        submit({ code, name, sector, credits, tags, notes }, setValidation)
+        submit({ enabled, name, notify_emails, require_approval, notes, text }, setValidation)
     }
 
     return <>
-        <h1>{isEdit ? "Modifica esame" : "Aggiungi esame"}</h1>
+        <h1>{isEdit ? "Modifica modello" : "Aggiungi modello"}</h1>
         <Card>
             <Form>
                 <Group
-                    validationError={validation.code}
-                    controlId="code"
-                    label="Codice"
-                    type="text"
-                    maxLength="6"
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
+                    validationError={validation.enabled}
+                    controlId="enabled"
+                    label="Attivo"
+                    type="checkbox"
+                    value={enabled}
+                    onChange={e => setEnabled(e.target.value)}
                 />
                 <Group
                     validationError={validation.name}
@@ -111,64 +123,55 @@ function FormTemplateForm({ submit, formTemplate, isEdit }) {
                     onChange={e => setName(e.target.value)}
                 />
                 <Group
-                    validationError={validation.sector}
-                    controlId="sector"
-                    label="Settore"
-                    type="text"
-                    value={sector}
-                    onChange={e => setSector(e.target.value)}
+                    validationError={validation.require_approval}
+                    controlId="require_approval"
+                    label="Richiede approvazione"
+                    type="checkbox"
+                    value={require_approval}
+                    onChange={e => setRequireApproval(e.target.value)}
                 />
                 <Group
-                    validationError={validation.credits}
-                    controlId="credits"
-                    label="Crediti"
-                    type="number"
-                    value={credits}
-                    onChange={e => setCredits(e.target.value)}
-                />
-                <Group
-                    validationError={validation.tags}
-                    controlId="tags"
-                    label="Tag (separati da virgola)"
+                    validationError={validation.notify_emails}
+                    controlId="notify_emails"
+                    label="Notifiche email (separati da virgola)"
                     type="text"
-                    value={tags.join(", ")}
-                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
+                    value={notify_emails}
+                    onChange={e => setNotifyEmails(e.target.value)}
                 />
-                <Group label="Note">
-                    <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
-                    <CKEditor
-                        id="notes"
-                        editor={ClassicEditor}
-                        config={{
-                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
-                        }}
-                        data={notes}
-                        onChange={(event, editor) => {
-                            const data = editor.getData()
-                            setNotes(data)
-                            console.log({ event, editor, data })
-                        }}
-                    />
-                </Group>
-
-                <Button onClick={onSubmit}>Salva Esame</Button>
+                <Group 
+                    validationError={validation.notes}
+                    controlId="notes"
+                    label="Note"
+                    as="textarea"
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                />
+                <Group 
+                    validationError={validation.text}
+                    controlId="text"
+                    label="Testo"
+                    as="textarea"
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                />
+                <Button onClick={onSubmit}>Salva Modello</Button>
             </Form>
         </Card>
     </>
 }
 
-export function AddExamPage() {
+export function AddFormTemplatePage() {
     const navigate = useNavigate()
     const engine = useEngine()
-    const poster = usePost(Exam)
+    const poster = usePost(FormTemplate)
 
-    const emptyExam = {
-        code: '',
+    const emptyFormTemplate = {
+        enabled: false,
         name: '',
-        sector: '',
-        credits: 0,
-        tags: [],
-        notes: ''
+        notify_emails: [],
+        require_approval: false,
+        text: '',
+        notes: '',
     }
 
     function submit(data, setErrors) {
@@ -177,8 +180,8 @@ export function AddExamPage() {
             {
                 onSuccess: (res) => {
                     const newId = res.data
-                    engine.flashSuccess("Esame aggiunto con successo")
-                    navigate(`/exams/${newId}`)
+                    engine.flashSuccess("Modello aggiunto con successo")
+                    navigate(`/form_templates/${newId}`)
                 },
                 onError: async (err) => {
                     console.log(`error: ${err} ${err.code}`)
@@ -192,24 +195,24 @@ export function AddExamPage() {
         )
     }
 
-    return <ExamForm submit={submit} exam={emptyExam} />
+    return <FormTemplateForm submit={submit} formTemplate={emptyFormTemplate} />
 }
 
-export function EditExamPage() {
+export function EditFormTemplatePage() {
     const navigate = useNavigate();
     const engine = useEngine()
 
     const { id } = useParams()
-    const query = useGet(Exam, id)
-    const updater = usePatch(Exam, id)
+    const query = useGet(FormTemplate, id)
+    const updater = usePatch(FormTemplate, id)
 
     function submit(data, setErrors) {
         updater.mutate(
             data,
             {
                 onSuccess: () => {
-                    engine.flashSuccess("Esame aggiornato con successo")
-                    navigate(`/exams/${id}`)
+                    engine.flashSuccess("Modello aggiornato con successo")
+                    navigate(`/form_templates/${id}`)
                 },
                 onError: (err) => {
                     if (err.response?.status === 422) {
@@ -225,7 +228,7 @@ export function EditExamPage() {
     if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
     if (query.isError) return <div>Errore: {query.error.message}</div>
 
-    const exam = query.data
+    const formTemplate = query.data
 
-    return <ExamForm submit={submit} exam={exam} isEdit />
+    return <FormTemplateForm submit={submit} formTemplate={formTemplate} isEdit />
 }

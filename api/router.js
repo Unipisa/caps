@@ -142,6 +142,8 @@ router.get('/curricula/:id', require_user, response_envelope(Curricula.view))
 
 router.get('/form_templates/', require_admin, response_envelope(FormTemplates.index))
 router.get('/form_templates/:id', require_admin, response_envelope(FormTemplates.view))
+router.post('/form_templates', require_admin, response_envelope(FormTemplates.post))
+router.patch('/form_templates/:id', require_admin, response_envelope(FormTemplates.patch))
 
 router.get('/exams/:id', require_user, response_envelope(Exams.view))
 router.get('/exams', require_user, response_envelope(Exams.index))

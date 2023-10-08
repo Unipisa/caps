@@ -380,6 +380,8 @@ async function importData() {
         element.notify_emails = element.notify_emails
             .split(',')
             .map(x => x.trim())
+        element.text = element.text.replace(/\{(.*?)\}/g,'<var>$1</var>')
+
         const e = new FormTemplate(element)
         return e.save() 
     }))).forEach(f => { form_templates[f.old_id] = f})

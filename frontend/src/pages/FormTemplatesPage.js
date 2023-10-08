@@ -19,7 +19,7 @@ export default function FormTemplatesPage() {
             <FilterCheckbox name="enabled" label="attivato" />
             </FilterButton>
 
-            <ItemAddButton>
+            <ItemAddButton to="/form_templates/edit">
                 Aggiungi Modello
             </ItemAddButton>
 

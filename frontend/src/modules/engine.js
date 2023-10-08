@@ -263,7 +263,7 @@ export function usePatch(ModelOrPath, id) {
     const path = ModelOrPath.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
-            return await axios.patch(`/api/v0/${Model.api_url}${id}`, data)
+            return await axios.patch(`/api/v0/${path}${id}`, data)
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })

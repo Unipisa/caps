@@ -26,6 +26,12 @@ const FormTemplatesController = {
         return await ModelController.view(FormTemplate, id)
     },
 
+    patch: async req => {
+        const { id } = req.params
+        const data = req.body
+        return await ModelController.patch(FormTemplate, id, data)
+    },
+
     post: async req => {
         return await ModelController.post(FormTemplate, req.body)
     }
