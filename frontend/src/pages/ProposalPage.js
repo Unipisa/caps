@@ -39,31 +39,56 @@ function ExamRow({ exam }) {
 }
 
 function ExamSelect({ exam, exams, groups }) {
-    let options = []
-    let optionsPlaceholder = null
     if (exam.__t === "CompulsoryExam") {
-        const compulsoryExam = exams.find(e => e._id === exam.exam_id)
-        if (compulsoryExam) {
-            options = [ compulsoryExam.name ]
-        }
+        const compulsoryExam = exams[exam.exam_id]
+        return <li className='form-group exam-input'>
+            <div className='row'>
+                <div className='col-9'>
+                    <select className='form-control' disabled>
+                        <option>{compulsoryExam.name}</option>
+                    </select>
+                </div>
+                <div className="col-3">
+                    <input className='form-control col' readOnly />
+                </div>
+            </div>
+        </li>
     } else if (exam.__t === "CompulsoryGroup") {
-        optionsPlaceholder = `Un esame a scelta nel gruppo ${exam.group}`
-        options = groups[exam.group].map(e => e.name)
+        const options = groups[exam.group]
+        return <li className='form-group exam-input'>
+            <div className='row'>
+                <div className='col-9'>
+                    <select className='form-control' disabled={exam.__t === "CompulsoryExam"} defaultValue={-1}>
+                        <option disabled value={-1}>Un esame a scelta nel gruppo {exam.group}</option>
+                        {options.map(opt => <option key={opt._id}>{opt.name}</option>)}
+                    </select>
+                </div>
+                <div className="col-3">
+                    <input className='form-control col' readOnly />
+                </div>
+            </div>
+        </li>
+    } else if (exam.__t === "FreeChoiceExam") {
+        const options = Object.values(exams).sort((a, b) => a.name > b.name)
+        return <li className='form-group exam-input'>
+            <div className='row'>
+                <div className='col-9'>
+                    <select className='form-control' disabled={exam.__t === "CompulsoryExam"} defaultValue={-1}>
+                        <option disabled value={-1}>Un esame a scelta libera</option>
+                        {options.map(opt => <option key={opt._id}>{opt.name}</option>)}
+                    </select>
+                </div>
+                <div className="col-2">
+                    <input className='form-control col' readOnly />
+                </div>
+                <div className='col-1 btn my-auto'>
+                    <i className='fas fa-trash'></i>
+                </div>
+            </div>
+        </li>
     }
-    return <li className='form-group exam-input'>
-        <div className='row'>
-            <div className='col-9'>
-                <select className='form-control' disabled={exam.__t === "CompulsoryExam"} defaultValue={-1}>
-                    {optionsPlaceholder && <option disabled value={-1}>{optionsPlaceholder}</option> }
-                    {options.map(opt => <option key={opt}>{opt}</option>)}
-                </select>
-            </div>
-            <div className='col-3'>
-                <input className='form-control' readOnly />
-            </div>
-        </div>
-    </li>
 }
+
 function YearCard({ year, number, exams, groups }) {
     const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
 
@@ -75,8 +100,13 @@ function YearCard({ year, number, exams, groups }) {
     </div>
 
     return <Card customHeader={customHeader} >
-            {year.exams.map(exam => <ExamSelect key={exam._id} exam={exam} exams={exams} groups={groups}/>)}
-        </Card>
+        {year.exams.map(exam => <ExamSelect key={exam._id} exam={exam} exams={exams} groups={groups}/>)}
+        <div className='d-flex flex-row-reverse'>
+            <button className='btn btn-primary'>Aggiungi esame esterno</button>
+            <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
+
+        </div>
+    </Card>
 }
 
 export function NewProposalPage() {
@@ -104,52 +134,34 @@ export function NewProposalPage() {
 
     const degreesQuery = useIndex(Degree, null)
     const curriculaQuery = useIndex(Curriculum, proposal.degree_id ? { degree_id: proposal.degree_id } : null )
-    const examsQuery = useIndex(Exam, { _limit: 99999 })    // Soluzione temporanea, capire se si possono ottenere tutti
-                                                            // Anzi meglio sarebbe ottenere i degree con i groups già popolati
+    const examsQuery = useIndex(Exam, null)
 
     if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
 
-    const degrees = degreesQuery.data.items.map(d => new Degree(d))
+    const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, new Degree(d)]))
 
     if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
     if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
 
-    const curricula = curriculaQuery.data.items
+    const curricula = Object.fromEntries(curriculaQuery.data.items.map(c => [c._id, c]))
 
     if (examsQuery.isLoading) return <LoadingMessage>caricamento esami...</LoadingMessage>
     if (examsQuery.isError) return <LoadingMessage>errore esami...</LoadingMessage>
 
-    const exams = examsQuery.data.items
+    const exams = Object.fromEntries(examsQuery.data.items.map(e => [e._id, e]))
 
-    const degree = proposal.degree_id ? degrees.find(d => d._id === proposal.degree_id) : null
-    const curriculum = proposal.curriculum_id ? curricula.find(c => c._id === proposal.curriculum_id) : null
+    const degree = proposal.degree_id ? degrees[proposal.degree_id] : null
+    const curriculum = proposal.curriculum_id ? curricula[proposal.curriculum_id] : null
 
-    // Solo soluzione temporanea, potrebbe esser necessario cambiare l'API per
-    // poter popolare direttamente "groups" dei degrees
-    let groups = {}
-    if (degree) {
-        for (const key in degree.groups) {
-            groups[key] = []
-            degree.groups[key].forEach(id => {
-                const exam = exams.find(e => e._id === id)
-                if (exam) {
-                    groups[key].push(exam)
-                }
+    const groups = degree ?
+        Object.fromEntries(
+            Object.entries(degree.groups).map(([group_id, group_exams]) => {
+                const populated_exams = group_exams.flatMap(id => exams[id] ? [ exams[id] ] : [] ).sort((a, b) => a.name > b.name )
+                return [group_id, populated_exams]
             })
-        }
-    }
-
-    if (degree) {
-        console.log('degree', degree)
-        console.log('groups', groups)
-    }
-    if (curriculum) {
-        console.log('curriculum', curriculum)
-    }
-    if (exams) {
-        console.log('exams', exams)
-    }
+        ) :
+        {}
 
     return <>
         <Card>
@@ -162,15 +174,13 @@ export function NewProposalPage() {
                         Selezionare il corso di Laurea
                     </option>
                     {
-                        degrees.map(degree =>
-                            [
-                                degree.academic_year,
-                                degree.name, 
+                        Object.values(degrees).sort(
+                            (a,b) => a.academic_year < b.academic_year || (a.academic_year === b.academic_year && a.name > b.name)
+                        ).map((degree) => 
                                 <option key={degree._id} value={degree._id}>
                                     {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
                                 </option>
-                            ]
-                        ).sort().reverse().map(([a,b,rendering]) => rendering)
+                        )
                     }
                 </select>
                 
@@ -184,14 +194,11 @@ export function NewProposalPage() {
                                 Selezionare il Curriculum
                             </option>
                             {
-                                curricula.map(curriculum =>
-                                    [
-                                        curriculum.name, 
+                                Object.values(curricula).sort((a, b) => a.name > b.name).map(curriculum =>
                                         <option key={curriculum._id} value={curriculum._id}>
                                             {curriculum.name}
                                         </option>
-                                    ]
-                                ).sort().map(([a,rendering]) => rendering)
+                                )
                             }
                         </select>
                     </>
