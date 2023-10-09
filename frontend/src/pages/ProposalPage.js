@@ -376,7 +376,6 @@ export default function ProposalPage() {
     const query = useGet(Proposal, id || null)
     const proposal = id ? ( query.isSuccess ? new Proposal(query.data) : null ) : empty
     const curriculumQuery = useGet(Curriculum, (proposal && proposal.curriculum_id) ? proposal.curriculum_id : null)
-    console.log('ehi', proposal, curriculumQuery)
     const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
     const degreeQuery = useGet(Degree, curriculum ? curriculum.degree_id : null)
     const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
@@ -466,8 +465,10 @@ export default function ProposalPage() {
         </>
     }
     
-    function Year({year}) {
-        return <Card title={`${Curriculum.ordinal(year)} anno`}>
+    function Year({number, exams}) {
+        const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
+
+        return <Card title={`${yearName} anno`}>
             <table className="table">
                 <thead>
                 <tr>
@@ -479,10 +480,7 @@ export default function ProposalPage() {
                 </tr>
                 </thead>
                 <tbody>
-                { proposal.exams
-                    .filter(e => e.year === year)
-                    .map(e => <ExamRow key={e._id} exam={e}/>)
-                }
+                { exams .map(e => <ExamRow key={e._id} exam={e}/>) }
                 </tbody>
             </table>
         </Card>
@@ -538,8 +536,7 @@ export default function ProposalPage() {
         <h1>Piano di studi di {proposal.user_name}</h1>
         <MessageCard />
         <InfoCard />
-        { degree && [...Array(degree.years).keys()].map(year => <Year key={year} year={year+1}/>)}
-        { JSON.stringify(proposal)}
+        { proposal.exams.map((year_exams, index) => <Year key={index} number={index} exams={year_exams}/>)}
     </>
 }
 

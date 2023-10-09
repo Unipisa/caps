@@ -60,7 +60,10 @@ ProposalSchema = new mongoose.Schema({
         type: Date,
     },
     exams: [
-        ProposalExamSchema
+        // Il primo array itera sugli anni. Il secondo array itera sugli esami di quell'anno
+        [
+            ProposalExamSchema
+        ]
     ],
     attachments: [
         ProposalAttachmentSchema

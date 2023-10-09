@@ -270,6 +270,7 @@ async function importData() {
 
         chosen_exams.filter(e => (e.proposal_id === element.old_id))
         .forEach(e => {
+            const year = e.chosen_year - 1
             exam = exams[e.exam_id]
             console.assert(e.exam_id === exam.old_id)   
             data = {
@@ -277,10 +278,13 @@ async function importData() {
                 exam_name: exam.name,
                 exam_code: exam.code,
                 exam_credits: exam.credits,
-                year: e.chosen_year,
+                // year: e.chosen_year,
+            }
+            if (element.exams[year] === undefined) {
+                element.exams[year] = []
             }
             if (e.compulsory_exam_id) {
-                element.exams.push(new ProposalCompulsoryExam({
+                element.exams[year].push(new ProposalCompulsoryExam({
                     ...data
                 }))
             } else if (e.compulsory_group_id) {
@@ -298,16 +302,16 @@ async function importData() {
                     console.log(`${e.curriculum_id} !== ${element.curriculum_id.old_id}`)
                     process.abort()
                 }
-                element.exams.push(new ProposalCompulsoryGroup({
+                element.exams[year].push(new ProposalCompulsoryGroup({
                     ...data,
                     group: group_by_id(group.group_id).name
                 }))
             } else if (e.free_choice_exam_id) {
-                element.exams.push(new ProposalFreeChoiceExam({
+                element.exams[year].push(new ProposalFreeChoiceExam({
                     ...data
                 }))
             } else {
-                element.exams.push(new ProposalFreeChoiceExam({
+                element.exams[year].push(new ProposalFreeChoiceExam({
                     ...data
                 }))
             }
@@ -315,10 +319,14 @@ async function importData() {
 
         chosen_free_choice_exams.filter(e => (e.proposal_id === element.old_id))
             .forEach(e => {
-                element.exams.push(new ProposalExternalExam({
+                const year = e.chosen_year - 1
+                if (element.exams[year] === undefined) {
+                    element.exams[year] = []
+                }
+                element.exams[e.chosen_year - 1].push(new ProposalExternalExam({
                     exam_name: e.name,
                     exam_credits: e.credits,
-                    year: e.chosen_year,
+                    // year: e.chosen_year,
                 }))
             })
 

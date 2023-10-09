@@ -130,51 +130,53 @@ const ProposalsController = {
         body.attachments = []
 
         const credits = 0
-        for (const e of body.exams) {
-            switch (e.__t) {
-                case 'CompulsoryExam':
-                    if (curriculum.years[e.year-1].exams.filter(e => e.__t == 'CompulsoryExam' && e.exam_id == e.exam_id).length === 0) {
-                        throw new BadRequestError(`Exam ${e.exam_id} not found in curriculum compulsory exams of year ${e.year}`)
-                    }
-                    break
-                case 'CompulsoryGroup':
-                    if (curriculum.years[e.year-1].exams.filter(e => e.__t == 'CompulsoryGroup' && e.group == e.group).length === 0) {
-                        throw new BadRequestError(`Group ${e.group} not found in curriculum compulsory exams of year ${e.year}`)
-                    }
-                    break
-                case 'FreeChoiceGroup':
-                    if (curriculum.years[e.year-1].exams.filter(e => e.__t == 'FreeChoiceGroup' && e.group == e.group).length === 0) {
-                        throw new BadRequestError(`Group ${e.group} not found in curriculum free choice exams of year ${e.year}`)
-                    }
-                    break
-                case 'FreeChoiceExam':
-                    if (curriculum.years[e.year-1].exams.filter(e => e.__t == 'FreeChoiceExam').length === 0) {
-                        throw new BadRequestError(`No free choice exams for year ${e.year}`)
-                    }
-                    break
-                case 'ExternalExam':
-                    break
-                default: 
-                    throw new BadRequestError(`Invalid exam type ${e.__t}`)
+        for (const [year, year_exams] of body.exams.entries()) {
+            for (const e of year_exams) {
+                switch (e.__t) {
+                    case 'CompulsoryExam':
+                        if (curriculum.years[year].exams.filter(f => f.__t == 'CompulsoryExam' && e.exam_id == f.exam_id).length === 0) {
+                            throw new BadRequestError(`Exam ${e.exam_id} not found in curriculum compulsory exams of year ${year}`)
+                        }
+                        break
+                    case 'CompulsoryGroup':
+                        if (curriculum.years[year].exams.filter(f => f.__t == 'CompulsoryGroup' && e.group == f.group).length === 0) {
+                            throw new BadRequestError(`Group ${e.group} not found in curriculum compulsory exams of year ${year}`)
+                        }
+                        break
+                    case 'FreeChoiceGroup':
+                        if (curriculum.years[year].exams.filter(f => f.__t == 'FreeChoiceGroup' && e.group == f.group).length === 0) {
+                            throw new BadRequestError(`Group ${e.group} not found in curriculum free choice exams of year ${year}`)
+                        }
+                        break
+                    case 'FreeChoiceExam':
+                        if (curriculum.years[year].exams.filter(f => f.__t == 'FreeChoiceExam').length === 0) {
+                            throw new BadRequestError(`No free choice exams for year ${year}`)
+                        }
+                        break
+                    case 'ExternalExam':
+                        break
+                    default: 
+                        throw new BadRequestError(`Invalid exam type ${e.__t}`)
+                }
+                if (e.exam_id) {
+                    e.exam_id = new ObjectId(e.exam_id)
+                    const exam = await Exam.findOne({_id: e.exam_id})
+                    e.exam_name = exam.name
+                    e.exam_code = exam.code
+                    e.exam_credits = exam.credits
+                }
+                // if (e.year) {
+                //     e.year = parseInt(e.year)
+                //     if (isNaN(e.year)) throw new BadRequestError("Invalid year")
+                //     if (e.year < 1 || e.year > degree.years) throw new BadRequestError("Invalid year")
+                // }
+                if (e.group) {
+                    const lst = degree.groups[e.group]
+                    if (!lst) throw new BadRequestError(`Invalid group ${e.group}`)
+                    if (!lst.includes(e.exam_id)) throw new BadRequestError(`Invalid group ${e.group} for exam ${e.exam_id}`)
+                }
+                if (e.exam_credits) credits += e.exam_credits
             }
-            if (e.exam_id) {
-                e.exam_id = new ObjectId(e.exam_id)
-                const exam = await Exam.findOne({_id: e.exam_id})
-                e.exam_name = exam.name
-                e.exam_code = exam.code
-                e.exam_credits = exam.credits
-            }
-            if (e.year) {
-                e.year = parseInt(e.year)
-                if (isNaN(e.year)) throw new BadRequestError("Invalid year")
-                if (e.year < 1 || e.year > degree.years) throw new BadRequestError("Invalid year")
-            }
-            if (e.group) {
-                const lst = degree.groups[e.group]
-                if (!lst) throw new BadRequestError(`Invalid group ${e.group}`)
-                if (!lst.includes(e.exam_id)) throw new BadRequestError(`Invalid group ${e.group} for exam ${e.exam_id}`)
-            }
-            if (e.exam_credits) credits += e.exam_credits
         }
 
         if (state === 'submitted') {
@@ -188,14 +190,16 @@ const ProposalsController = {
             let exam_names = []
 
             // gli esami inseriti sono tutti diversi?
-            for (const e of body.exams) {
-                if (e.exam_id) {
-                    if (exam_ids.includes(e.exam_id)) throw new BadRequestError(`Exam ${e.exam_id} is present more than once`)
-                    exam_ids.push(e.exam_id)
-                }
-                if (e.exam_name) {
-                    if (exam_names.includes(e.exam_name)) throw new BadRequestError(`Exam ${e.exam_name} is present more than once`)
-                    exam_names.push(e.exam_name)
+            for (const year_exams of body.exams) {
+                for (const e of year_exams) {
+                    if (e.exam_id) {
+                        if (exam_ids.includes(e.exam_id)) throw new BadRequestError(`Exam ${e.exam_id} is present more than once`)
+                        exam_ids.push(e.exam_id)
+                    }
+                    if (e.exam_name) {
+                        if (exam_names.includes(e.exam_name)) throw new BadRequestError(`Exam ${e.exam_name} is present more than once`)
+                        exam_names.push(e.exam_name)
+                    }
                 }
             }
 
