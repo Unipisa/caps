@@ -71,10 +71,6 @@ export default function FormTemplatePage() {
                     <th>Richiede approvazione</th>
                     <td>{formTemplate.requires_approval?"si":"no"}</td>
                 </tr>
-                <tr>
-                    <th>Note</th>
-                    <td>{formTemplate.notes}</td>
-                </tr>
             </tbody></table>
         </Card>    
         <Card>
@@ -93,13 +89,12 @@ function FormTemplateForm({ submit, formTemplate, isEdit }) {
     const [name, setName] = useState(formTemplate.name)
     const [require_approval, setRequireApproval] = useState(formTemplate.require_approval)
     const [notify_emails, setNotifyEmails] = useState(formTemplate.notify_emails.join(", "))
-    const [notes, setNotes] = useState(formTemplate.notes || '')
     const [text, setText] = useState(formTemplate.text || '')
 
     const [validation, setValidation] = useState({})
 
     function onSubmit() {
-        submit({ enabled, name, notify_emails, require_approval, notes, text }, setValidation)
+        submit({ enabled, name, notify_emails, require_approval, text }, setValidation)
     }
 
     return <>
@@ -139,14 +134,6 @@ function FormTemplateForm({ submit, formTemplate, isEdit }) {
                     onChange={e => setNotifyEmails(e.target.value)}
                 />
                 <Group 
-                    validationError={validation.notes}
-                    controlId="notes"
-                    label="Note"
-                    as="textarea"
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                />
-                <Group 
                     validationError={validation.text}
                     controlId="text"
                     label="Testo"
@@ -171,7 +158,6 @@ export function AddFormTemplatePage() {
         notify_emails: [],
         require_approval: false,
         text: '',
-        notes: '',
     }
 
     function submit(data, setErrors) {
