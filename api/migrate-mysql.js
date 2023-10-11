@@ -263,6 +263,7 @@ async function importData() {
         element.user_email = user.email 
         element.user_username = user.username
 
+        element.degree_id = curriculum.degree_id
         element.degree_name = curriculum.degree_id.name
         element.degree_academic_year = curriculum.degree_id.academic_year
 

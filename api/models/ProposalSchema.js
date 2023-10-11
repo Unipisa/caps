@@ -11,17 +11,21 @@ ProposalSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    curriculum_id: {
+    degree_id : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Curriculum'
-    },
-    curriculum_name: {
-        type: String,
+        ref: 'Degree'
     },
     degree_academic_year: {
         type: Number,
     },
     degree_name: {
+        type: String,
+    },
+    curriculum_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Curriculum'
+    },
+    curriculum_name: {
         type: String,
     },
     user_id: {
@@ -83,7 +87,7 @@ exports.ProposalCompulsoryExam = ProposalExam.discriminator("CompulsoryExam", ne
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
 
 exports.ProposalCompulsoryGroup = ProposalExam.discriminator("CompulsoryGroup", new mongoose.Schema(
@@ -96,7 +100,7 @@ exports.ProposalCompulsoryGroup = ProposalExam.discriminator("CompulsoryGroup", 
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
 
 exports.ProposalFreeChoiceGroup = ProposalExam.discriminator("FreeChoiceGroup", new mongoose.Schema(
@@ -109,7 +113,7 @@ exports.ProposalFreeChoiceGroup = ProposalExam.discriminator("FreeChoiceGroup", 
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
     
 exports.ProposalFreeChoiceExam = ProposalExam.discriminator("FreeChoiceExam", new mongoose.Schema(
@@ -121,7 +125,7 @@ exports.ProposalFreeChoiceExam = ProposalExam.discriminator("FreeChoiceExam", ne
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
      }
 ))
 
@@ -129,7 +133,7 @@ exports.ProposalExternalExam = ProposalExam.discriminator("ExternalExam", new mo
     {
        exam_name: String,
        exam_credits: Number,
-       year: Number
+       // year: Number
     }
 ))
 
