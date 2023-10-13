@@ -76,7 +76,6 @@ function SinglePageInternal () {
                             <Route path="/form_templates/edit/:id" element={<EditFormTemplatePage/>}/>
                             <Route path="/form_templates/edit" element={<AddFormTemplatePage/>} />
                             <Route path="/exams/edit/:id" element={<EditExamPage/>}/>
-                            <Route path="/exams/edit" element={<AddExamPage/>} />
                             <Route path="/exams/:id" element={<ExamPage/>}/>
                             <Route path="/exams" element={<ExamsPage/>}/>
                             <Route path="/users" element={<UsersPage/>}/>

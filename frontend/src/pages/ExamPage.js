@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -13,19 +13,12 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Group from '../components/Group'
 
-function ExamForm({ submit, exam, isEdit }) {
-    const [code, setCode] = useState(exam.code)
-    const [name, setName] = useState(exam.name)
-    const [sector, setSector] = useState(exam.sector)
-    const [credits, setCredits] = useState(exam.credits)
-    const [tags, setTags] = useState(exam.tags)
-    const [notes, setNotes] = useState(exam.notes || '')
-
+function ExamForm({ mutate, exam }) {
+    const [data, setData] = useState(exam)
     const [validation, setValidation] = useState({})
-
-    function onSubmit() {
-        submit({ code, name, sector, credits, tags, notes }, setValidation)
-    }
+    const isEdit = exam._id !== undefined
+    const engine = useEngine()
+    const navigate = useNavigate()
 
     return <>
         <h1>{isEdit ? "Modifica esame" : "Aggiungi esame"}</h1>
@@ -37,40 +30,40 @@ function ExamForm({ submit, exam, isEdit }) {
                     label="Codice"
                     type="text"
                     maxLength="6"
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
+                    value={data.code || ''}
+                    onChange={setter("code")}
                 />
                 <Group
                     validationError={validation.name}
                     controlId="name"
                     label="Nome"
                     type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
+                    value={data.name || ''}
+                    onChange={setter("name")}
                 />
                 <Group
                     validationError={validation.sector}
                     controlId="sector"
                     label="Settore"
                     type="text"
-                    value={sector}
-                    onChange={e => setSector(e.target.value)}
+                    value={data.sector || ''}
+                    onChange={setter("sector")}
                 />
                 <Group
                     validationError={validation.credits}
                     controlId="credits"
                     label="Crediti"
                     type="number"
-                    value={credits}
-                    onChange={e => setCredits(e.target.value)}
+                    value={data.credits || ''}
+                    onChange={setter("credits")}
                 />
                 <Group
                     validationError={validation.tags}
                     controlId="tags"
                     label="Tag (separati da virgola)"
                     type="text"
-                    value={tags.join(", ")}
-                    onChange={e => setTags(e.target.value.split(", ").map(tag => tag.trim()))}
+                    value={(data.tags || []).join(", ")}
+                    onChange={e => setData(data => ({...data, tags: e.target.value.split(", ").map(tag => tag.trim())}))}
                 />
                 <Group label="Note">
                     <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
@@ -80,78 +73,31 @@ function ExamForm({ submit, exam, isEdit }) {
                         config={{
                             toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
                         }}
-                        data={notes}
+                        data={data.notes || ''}
                         onChange={(event, editor) => {
-                            const data = editor.getData()
-                            setNotes(data)
-                            console.log({ event, editor, data })
+                            const notes = editor.getData()
+                            setData(data => ({...data, notes}))
                         }}
                     />
                 </Group>
-
-                <Button onClick={onSubmit}>Salva Esame</Button>
+                <Button onClick={submit}>Salva Esame</Button>
             </Form>
         </Card>
     </>
-}
 
-export function AddExamPage() {
-    const navigate = useNavigate()
-    const engine = useEngine()
-    const poster = usePost(Exam)
-
-    const emptyExam = {
-        code: '',
-        name: '',
-        sector: '',
-        credits: 0,
-        tags: [],
-        notes: ''
-    }
-
-    function submit(data, setErrors) {
-        poster.mutate(
-            data,
+    function submit() {
+        mutate(data,
             {
                 onSuccess: (res) => {
-                    const newId = res.data
-                    engine.flashSuccess("Esame aggiunto con successo")
-                    navigate(`/exams/${newId}`)
-                },
-                onError: async (err) => {
-                    console.log(`error: ${err} ${err.code}`)
-                    if (err.response && err.response.status === 422) {
-                        setErrors(err.response.data.issues)
-                    } else {
-                        engine.flashError(`${err}`)
-                    }
-                }
-            }
-        )
-    }
-
-    return <ExamForm submit={submit} exam={emptyExam} />
-}
-
-export function EditExamPage() {
-    const navigate = useNavigate();
-    const engine = useEngine()
-
-    const { id } = useParams()
-    const query = useGet(Exam, id)
-    const updater = usePatch(Exam, id)
-
-    function submit(data, setErrors) {
-        updater.mutate(
-            data,
-            {
-                onSuccess: () => {
-                    engine.flashSuccess("Esame aggiornato con successo")
+                    engine.flashSuccess(isEdit 
+                        ? "Esame aggiornato con successo"
+                        : "Esame aggiunto con successo")
+                    const id = isEdit ? exam._id : res.data
                     navigate(`/exams/${id}`)
                 },
                 onError: (err) => {
                     if (err.response?.status === 422) {
-                        setErrors(err.response.data.issues)
+                        setValidation(err.response.data.issues)
                     } else {
                         engine.flashError(`${err}`)
                     }
@@ -160,12 +106,23 @@ export function EditExamPage() {
         )
     }
 
+    function setter(field) {
+        return e => setData(data => ({...data, [field]: e.target.value}))
+    }
+}
+
+export function EditExamPage() {
+    const { id } = useParams()
+    const isNew = id === '__new__'
+    const query = useGet(Exam, id)
+    const updater = usePatch(Exam, id)
+    const poster = usePost(Exam)
+    const mutate = isNew ? poster.mutate : updater.mutate
+
     if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
     if (query.isError) return <div>Errore: {query.error.message}</div>
 
-    const exam = query.data
-
-    return <ExamForm submit={submit} exam={exam} isEdit />
+    return <ExamForm mutate={mutate} exam={query.data} />
 }
 
 export default function ExamPage() {

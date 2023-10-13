@@ -123,9 +123,12 @@ const ModelController = {
 
     view: async (Model, id, { populate } = {}) => {
         try {
-            const obj = (id === '__new__') ? new Model() : await Model.findById(id)
-            if (populate !== undefined) return await obj.populate(populate)
-            else return obj
+            const empty = id === '__new__'
+            let obj = empty ? new Model() : await Model.findById(id)
+            if (populate !== undefined) obj = await obj.populate(populate)
+            obj = obj.toObject()
+            if (empty) obj._id = undefined
+            return obj
         } catch(err) {
             console.log(`not found ${id}`)
             throw new NotFoundError()
