@@ -1,7 +1,6 @@
 import Moment from 'moment'
 
 import settings from '../modules/settings'
-import api from '../modules/api'
 
 export default class Model {
     constructor(item) {

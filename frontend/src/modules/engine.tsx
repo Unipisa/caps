@@ -2,10 +2,9 @@ import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
 import axios from 'axios'
 
-import Model from '../models/Model'
-import api, {api_root} from './api'
+const api_root = '/api/v0/'
 
-export const EngineContext = createContext(null)
+export const EngineContext = createContext<Engine|null>(null)
 
 export const EngineProvider = EngineContext.Provider
   
@@ -13,8 +12,34 @@ export function useEngine() {
     return useContext(EngineContext)
 }
 
-export function useCreateEngine() {
-    const [state, setState] = useState({
+interface EngineState {
+    flashMessages: Array<{ message: string, type: string }>,
+    modalConfirmData: {
+        title: string | null,
+        content: string | null,
+        callback: ((ans: boolean) => void) | null
+    },
+    user: any,
+    connected: boolean,
+}
+
+interface Engine {
+    state: EngineState,
+    user: any,
+    modalConfirm: (title: string, content: string) => Promise<boolean>,
+    flashMessage: (message: string, type?: string) => void,
+    flashSuccess: (message: string) => void,
+    flashError: (message: string) => void,
+    flashCatch: (error: Error) => void,
+    hideFlash: () => void,
+    connect: () => void,
+    login: (username: string, password: string) => void,
+    start_oauth2: () => void,
+    logout: () => void,
+}
+
+export function useCreateEngine(): Engine {
+    const [state, setState] = useState<EngineState>({
         flashMessages: [],
         modalConfirmData: {
             title: null,
@@ -97,74 +122,10 @@ export function useCreateEngine() {
             }))
         },
 
-        useGet: (Model, id) => useQuery(
-            [Model.api_url, id], 
-            async () => {
-                const obj = await api.get(`${Model.api_url}${id}`)
-                return new Model(obj)
-            },
-            { 
-                onError, 
-                enabled: id !== null 
-            }
-        ),
-
-        useUpdate: (Model, id) => useMutation({
-            mutationFn: async (data) => {
-                return await api.patch(`${Model.api_url}${id}`, data)
-            },
-            onSuccess: async () => {
-                await queryClient.invalidateQueries({ queryKey: [Model.api_url, id]})
-            },
-            onError: onPossibleValidationError,
-        }),
-
-        useInsert:  (Model) => useMutation({
-            mutationFn: async (data) => {
-                return await api.post(`${Model.api_url}`, data)
-            },
-            onSuccess: async () => {
-                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
-            },
-            onError: onPossibleValidationError,
-        }),
-        
-        useMultipartInsert:  (Model) => useMutation({
-            mutationFn: async (data) => {
-                return await api.post(`${Model.api_url}`, data, true)
-            },
-            onSuccess: async () => {
-                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
-            },
-            onError: onPossibleValidationError,
-        }),
-
-        useDelete: (Model, id) => useMutation({
-            mutationFn: async () => {
-                return await api.delete(`${Model.api_url}${id}`)
-            },
-            onSuccess: async () => {
-                await queryClient.invalidateQueries({ queryKey: [Model.api_url] })
-            },
-            onError
-        }),
-
-        useIndex: (Model, query) => useQuery(
-            [Model.api_url, query],
-            async () => {
-                let data = await api.get(`${ Model.api_url }`, query)
-                data.items = data.items.map(item => new Model(item))
-                return data
-            },
-            { 
-                onError,
-                enabled: query !== false,
-            }
-        ),
-
         connect: async () => {
             try {
-                let { user } = await api.post('/login')
+                const { data } = await axios.post<any>(`${api_root}login`)
+                const { user } = data
                 setState(s => ({...s, user, connected: true }))
             } catch(err) {
                 setState(s => ({...s, user: null, connected: false }))
@@ -172,14 +133,14 @@ export function useCreateEngine() {
             }
         },
 
-        login: async (username, password) => {
+        login: async (username: string, password: string) => {
             /**
              * if username and password are provided use credentials
              * otherwise check for existing session
              */
             try {
-                const res = await api.post('login/password', {username, password})
-                let { user } = res
+                const { data } = await axios.post<any>(`${api_root}login/password`, {username, password})
+                let { user } = data
                 setState(s => ({...s, user}))
             } catch(err) {
                 // err is ApiError
@@ -200,7 +161,7 @@ export function useCreateEngine() {
         },
 
         logout: async () => {
-            await api.post("/logout")
+            await axios.post(`${api_root}logout`)
             setState(s => ({...s, user: null}))
         },
     }
@@ -212,7 +173,7 @@ export function useGet(Model, id) {
     return useQuery({
         queryKey: [path, id],
         queryFn: async () => {
-            const res = await axios.get(`/api/v0/${path}${id}`)
+            const res = await axios.get(`${api_root}${path}${id}`)
             return res.data
         },
         enabled: id !== null,
@@ -224,7 +185,7 @@ export function useIndex(ModelOrPath, query={}) {
     return useQuery({
         queryKey: [path, query],
         queryFn: async () => {
-            const res = await axios.get(`/api/v0/${path}`, { params: query })
+            const res = await axios.get(`${api_root}${path}`, { params: query })
             return res.data
         },
         enabled: query !== false,    
@@ -237,7 +198,7 @@ export function usePost(ModelOrPath) {
     const path = ModelOrPath?.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
-            return await axios.post(`/api/v0/${path}`, data)
+            return await axios.post(`${api_root}${path}`, data)
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })
@@ -250,7 +211,7 @@ export function useDelete(ModelOrPath, id) {
     const path = ModelOrPath?.api_url || ModelOrPath
     return useMutation({
         mutationFn: async () => {
-            return await axios.delete(`/api/v0/${Model.api_url}${id}`)
+            return await axios.delete(`${api_root}${path}${id}`)
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })
@@ -263,7 +224,7 @@ export function usePatch(ModelOrPath, id) {
     const path = ModelOrPath.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
-            return await axios.patch(`/api/v0/${path}${id}`, data)
+            return await axios.patch(`${api_root}${path}${id}`, data)
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })

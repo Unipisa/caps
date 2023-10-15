@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine, useGet, useIndex } from '../modules/engine'
-import api from '../modules/api'
 import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'

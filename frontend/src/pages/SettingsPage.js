@@ -5,7 +5,6 @@ import { Card, Button } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 
 import { useIndex } from '../modules/engine'
-import api from '../modules/api'
 import LoadingMessage from '../components/LoadingMessage'
 
 export default function SettingsPage({}) {
@@ -15,7 +14,7 @@ export default function SettingsPage({}) {
     return <SettingsInternal settings={settings} mutate={query.mutate} submit={submit}/>
 
     async function submit(data) {
-        await api.post('settings', data)
+        await axios.post('/api/v0/settings', data)
         // query.mutate() // ERROR: query.mutate is not a function
     }
 }
