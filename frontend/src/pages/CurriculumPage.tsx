@@ -1,16 +1,16 @@
-'use strict';
-
 import React from 'react'
 import { useParams } from "react-router-dom"
 
 import { useGet } from '../modules/engine'
-import Curriculum from '../models/Curriculum'
-import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
+const path = "/curricula/"
+const exam_path = "/exams/"
+const degree_path = "/degrees/"
+
 function CompulsoryExam({ exam_id }) {
-    const query = useGet(Exam, exam_id);
+    const query = useGet(exam_path, exam_id);
 
     if (query.isLoading) return <tr>
         <th>esame obbligatorio</th>
@@ -46,22 +46,20 @@ function ExamEntry({ entry }) {
 
 export default function CurriculumPage() {
     const { id } = useParams()
-    const query = useGet(Curriculum, id)
+    const query = useGet(path, id || '')
     const curriculum = query.data
-    const degreeQuery = useGet(Degree, query.data?.degree_id || null)
-    const degree = degreeQuery.data ? new Degree(degreeQuery.data) : null
+    const degree = curriculum?.degree
 
     if (query.isLoading) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
     if (query.isError) return <div>errore caricamento curriculum</div>
-
 
     console.log(`curriculum: ${JSON.stringify(curriculum)}`)
 
     return <>
         <h1>{ curriculum.name }</h1>
-        <h3>{ degree?.name } { degree?.academic_years() }</h3>
+        <h3>{ degree?.name } { degree.academic_year ? displayAcademicYears(degree.academic_year) : '????-????'}</h3>
         { curriculum.years.map((year_section, year_count) =>
-            <Card key={`year-${year_count}`} title={`${Curriculum.ordinal(year_count+1)} anno`}> 
+            <Card key={`year-${year_count}`} title={`${ordinal(year_count+1)} anno`}> 
                 Crediti: { year_section.credits } <br />
                 <table>
                     <tbody>
@@ -73,3 +71,14 @@ export default function CurriculumPage() {
     </>
 }
 
+function ordinal(n) {
+    const ordinals = [ "zero",
+        "primo", "secondo", "terzo", "quarto", "quinto",
+        "sesto", "settimo", "ottavo", "nono"]
+    if (n < ordinals.length) return ordinals[n]
+    else return `${ n+1 }-mo`
+}
+
+function displayAcademicYears(n) {
+    return `${n}/${n+1}`
+}

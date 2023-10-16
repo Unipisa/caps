@@ -42,7 +42,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
                     $in: value.split(",").map(id => new mongoose.Types.ObjectId(id))
                 };
             } else if (field.match_id_object) {
-                $match[key] = mongoose.Types.ObjectId(value);
+                $match[key] = new mongoose.Types.ObjectId(value);
             } else if (field.match_boolean) {
                 const v = {
                     "true": true, 

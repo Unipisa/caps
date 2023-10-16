@@ -24,7 +24,6 @@ let {   ProposalCompulsoryExam,
 let mongoose = require('mongoose')
 
 const LOAD_ATTACHMENTS = false
-const DEV = true
 
 function write(s) {
     console.log(s);
@@ -96,24 +95,11 @@ async function importData() {
         element.last_name = element.surname
         element.id_number = element.number
         const u = new User(element);
+        console.log(`ID: ${u._id}`)
         return u.save();
     }))).forEach(u => {users[u.old_id] = u})
 
-    if (DEV) {
-        // Aggiungi utente fittizio
-        const u = new User({
-            _id: mongoose.Types.ObjectId('000000000000000000000017'),
-            old_id : 17,
-            username: 'ginnasta',
-            name: 'Pippo Ginnasta',
-            first_name : 'Pippo',
-            last_name : 'Ginnasta',
-            id_number : '123456',
-            email: "ginnasta@mailinator.com",
-            admin: true,
-        })
-        u.save()
-    }
+    assert(false)
 
     write("(" + (await count(User)) + " documents imported)");
 

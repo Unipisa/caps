@@ -1,32 +1,31 @@
-'use strict'
-
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
 
 import { useEngine, useGet, useIndex } from '../modules/engine'
-import Proposal from '../models/Proposal'
-import Curriculum from '../models/Curriculum'
-import Degree from '../models/Degree'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {Button} from 'react-bootstrap' 
 
+const exam_path = '/exams/'
+const degree_path = '/degrees/'
+const curriculum_path = '/curricula/'
+const proposal_path = '/proposals/'
 
 function ProposalForm({ proposal }) {
     const engine = useEngine()
 
     const [degreeId, setDegreeId] = useState(proposal.degree_id)
     const [curriculumId, setCurriculumId] = useState(proposal.curriculum_id)
-    const [chosenExams, setChosenExams] = useState(proposal.exams)
+    const [chosenExams, setChosenExams] = useState<any>(proposal.exams)
 
-    const degreesQuery = useIndex(Degree, null)
-    const curriculaQuery = useIndex(Curriculum, degreeId ? { degree_id: degreeId } : null )
-    const examsQuery = useIndex(Exam, null)
+    const degreesQuery = useIndex(degree_path)
+    const curriculaQuery = useIndex(curriculum_path, degreeId ? { degree_id: degreeId } : undefined )
+    const examsQuery = useIndex(exam_path)
 
     if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
 
-    const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, new Degree(d)]))
+    const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, d]))
 
     if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
     if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
@@ -43,8 +42,8 @@ function ProposalForm({ proposal }) {
 
     const groups = degree ?
         Object.fromEntries(
-            Object.entries(degree.groups).map(([group_id, group_exams]) => {
-                const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a, b) => a.name > b.name )
+            Object.entries(degree.groups as {[key: string]: string[]}).map(([group_id, group_exams]:[string,string[]]) => {
+                const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
                 return [group_id, populated_exams]
             })
         ) :
@@ -168,13 +167,13 @@ function ProposalForm({ proposal }) {
                 </div>
             </li>
         } else if (exam.__t === "FreeChoiceExam") {
-            const options = Object.values(allExams).sort((a, b) => a.name > b.name)
+            const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
             return <li className='form-group exam-input'>
                 <div className='row'>
                     <div className='col-9'>
                         <select className='form-control' >
                             <option disabled value={-1}>Un esame a scelta libera</option>
-                            {options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+                            {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
                         </select>
                     </div>
                     <div className="col-2">
@@ -226,7 +225,7 @@ function ProposalForm({ proposal }) {
                     </option>
                     {
                         Object.values(degrees).sort(
-                            (a,b) => a.academic_year < b.academic_year || (a.academic_year === b.academic_year && a.name > b.name)
+                            (a,b) => (b.academic_year - a.academic_year) || (a.name.localeCompare(b.name))
                         ).map((degree) => 
                                 <option key={degree._id} value={degree._id}>
                                     {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
@@ -245,7 +244,7 @@ function ProposalForm({ proposal }) {
                                 Selezionare il Curriculum
                             </option>
                             {
-                                Object.values(curricula).sort((a, b) => a.name > b.name).map(curriculum =>
+                                Object.values(curricula).sort((a, b) => (a.name.localeCompare(b.name))).map(curriculum =>
                                         <option key={curriculum._id} value={curriculum._id}>
                                             {curriculum.name}
                                         </option>
@@ -270,7 +269,7 @@ function ProposalForm({ proposal }) {
 export function NewProposalPage() {
     const engine = useEngine()
 
-    const empty = new Proposal({
+    const empty = {
         state: 'draft',
 
         degree_id: null,
@@ -287,7 +286,7 @@ export function NewProposalPage() {
         exams: null,
         
         attachments: []
-    })
+    }
 
     return <ProposalForm proposal={empty}/>
 }
@@ -295,7 +294,7 @@ export function NewProposalPage() {
 export function EditProposalPage() {
     const { id } = useParams()
 
-    const proposalQuery = useGet(Proposal, id)
+    const proposalQuery = useGet(proposal_path, id || '')
 
     if (proposalQuery.isLoading) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     if (proposalQuery.isError) return <LoadingMessage>errore piano di studi...</LoadingMessage>
@@ -305,15 +304,16 @@ export function EditProposalPage() {
 
 export default function ProposalPage() {
     const engine = useEngine()
+    const user = engine.user
     const { id } = useParams()
 
-    const query = useGet(Proposal, id)
-    const proposal = query.isSuccess ? new Proposal(query.data) : null
-    const degreeQuery = useGet(Degree, proposal ? proposal.degree_id : null)
-    const curriculumQuery = useGet(Curriculum, proposal ? proposal.curriculum_id : null)
+    const query = useGet(proposal_path, id || '')
+    const proposal = query.data
+    const degreeQuery = useGet(degree_path, proposal?.degree_id)
+    const curriculumQuery = useGet(curriculum_path, proposal?.curriculum_id)
 
-    const degree = degreeQuery.isSuccess ? new Degree(degreeQuery.data) : null
-    const curriculum = curriculumQuery.isSuccess ? new Curriculum(curriculumQuery.data) : null
+    const degree = degreeQuery.data
+    const curriculum = curriculumQuery.data
 
     if (proposal === null || (proposal.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
@@ -336,7 +336,7 @@ export default function ProposalPage() {
                     <Button className="dropdown-toggle" data-toggle="dropdown">
                         Richiedi parere
                     </Button>
-                    <div className="dropdown-menu p-3" style="min-width: 450px;">
+                    <div className="dropdown-menu p-3" style={{minWidth: "450px"}}>
                         <form>
                             <input name="email" placeholder="email"></input>
                             <input type="submit" value="richiedi parere"/>
@@ -394,7 +394,7 @@ export default function ProposalPage() {
     }
     
     function ExamRow({ exam }) {
-        const query = useGet(Exam, exam.exam_id || null)
+        const query = useGet(exam_path, exam.exam_id || null)
         if (query.isLoading) return <tr><td>loading...</td></tr>
         if (query.isError) return <tr><td>error...</td></tr>
         const real_exam = query.data

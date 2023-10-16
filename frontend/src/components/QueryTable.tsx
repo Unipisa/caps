@@ -1,11 +1,10 @@
-'use strict';
-
 import React, { useState, createContext, useContext } from 'react'
 
 import { useIndex } from '../modules/engine'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
-import Card from 'react-bootstrap/Card'
+//import Card from './Card'
+import { Card } from 'react-bootstrap'
 
 interface IQuery {
     _limit: number,
@@ -47,7 +46,6 @@ export default function QueryTable({ path, sort, direction, children, headers, g
         _sort: sort,
         _direction: direction || 1,
     })
-
     return <Card className="shadow my-2">
         <Card.Body>
             <QueryTableProvider value={{query, setQuery}}>
@@ -213,11 +211,17 @@ function TableBody({ path, headers, getField, items, selectedIds, setSelectedIds
     }
 
     function render(item, field, enable_link) {
-        const content = getField ? getField(item, field) : item[field]
+        const content = getField ? getField(item, field) : defaultGetField(item, field)
         if (enable_link) {
             return <Link to={ `${item._id}` }>{ content }</Link>
         } else {
             return content;
         }
     }
+}
+
+export function defaultGetField(item, field) {
+    let value = item
+    field.split('.').forEach(f => {value = value[f]})
+    return value
 }

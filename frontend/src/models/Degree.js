@@ -1,30 +1,7 @@
 import Model from './Model';
 
 export default class Degree extends Model {
-    static api_url = 'degrees/';
-    static table_headers = [
-        {   
-            field: 'enabled',
-            label: "Attivo",
-        }, {   
-            field: 'enable_sharing',
-            label: "Richiesta parere"
-        }, {   
-            field: 'academic_year',
-            label: "Anno accademico",
-            enable_sort: true
-        }, {   
-            field: 'name',
-            label: "nome",
-            enable_sort: true,
-            enable_link: true
-        }, {   
-            field: 'years',
-            label: "Anni",
-            enable_sort: true 
-        }];
-    static sort_default = 'name';
-    static sort_default_direction = 1;
+
 
     render_table_field(field) {
         if (field == "enabled") {
