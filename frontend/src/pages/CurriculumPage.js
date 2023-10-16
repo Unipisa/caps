@@ -8,7 +8,6 @@ import Curriculum from '../models/Curriculum'
 import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
-import Exam from '../models/Exam';
 
 function CompulsoryExam({ exam_id }) {
     const query = useGet(Exam, exam_id);

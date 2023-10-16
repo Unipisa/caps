@@ -1,8 +1,6 @@
 import Moment from 'moment'
 
 import Model from './Model'
-import User from './User'
-import FormTemplate from './FormTemplate'
 
 export default class Form extends Model {
     constructor(json) {

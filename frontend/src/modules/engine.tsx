@@ -8,8 +8,10 @@ export const EngineContext = createContext<Engine|null>(null)
 
 export const EngineProvider = EngineContext.Provider
   
-export function useEngine() {
-    return useContext(EngineContext)
+export function useEngine(): Engine {
+    const engine = useContext(EngineContext)
+    if (!engine) throw new Error("useEngine must be used inside EngineProvider")
+    return engine
 }
 
 interface EngineState {
@@ -167,10 +169,8 @@ export function useCreateEngine(): Engine {
     }
 }
 
-export function useGet(Model, id) {
-    const path = Model.api_url
-
-    return useQuery({
+export function useGet(path:string, id:string) {
+    return useQuery<any,any>({
         queryKey: [path, id],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}${id}`)
@@ -180,8 +180,7 @@ export function useGet(Model, id) {
     })
 }        
 
-export function useIndex(ModelOrPath, query={}) {
-    const path = ModelOrPath.api_url || ModelOrPath
+export function useIndex(path:string, query={}) {
     return useQuery({
         queryKey: [path, query],
         queryFn: async () => {
@@ -192,10 +191,9 @@ export function useIndex(ModelOrPath, query={}) {
     })
 }
 
-export function usePost(ModelOrPath) {
+export function usePost(path: string) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
-    const path = ModelOrPath?.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
             return await axios.post(`${api_root}${path}`, data)
@@ -206,10 +204,9 @@ export function usePost(ModelOrPath) {
     })
 }
 
-export function useDelete(ModelOrPath, id) {
+export function useDelete(path:string, id:string) {
     const queryClient = useQueryClient()
-    const path = ModelOrPath?.api_url || ModelOrPath
-    return useMutation({
+    return useMutation<any, any, any>({
         mutationFn: async () => {
             return await axios.delete(`${api_root}${path}${id}`)
         },
@@ -219,9 +216,8 @@ export function useDelete(ModelOrPath, id) {
     })
 }
 
-export function usePatch(ModelOrPath, id) {
+export function usePatch(path:string, id:string) {
     const queryClient = useQueryClient()
-    const path = ModelOrPath.api_url || ModelOrPath
     return useMutation({
         mutationFn: async (data) => {
             return await axios.patch(`${api_root}${path}${id}`, data)

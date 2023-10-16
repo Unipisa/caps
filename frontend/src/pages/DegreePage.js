@@ -7,7 +7,6 @@ import { useEngine, useGet, useIndex } from '../modules/engine'
 import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
-import Exam from '../models/Exam';
 
 function Group({ name, exam_ids }) {
     const engine = useEngine()
