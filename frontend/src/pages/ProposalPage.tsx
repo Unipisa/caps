@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
+import {Button} from 'react-bootstrap' 
 
 import { useEngine, useGet, useIndex } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
-import {Button} from 'react-bootstrap' 
+import {formatDate,displayAcademicYears} from '../modules/utils'
+import StateBadge from '../components/StateBadge'
 
-const exam_path = '/exams/'
-const degree_path = '/degrees/'
-const curriculum_path = '/curricula/'
-const proposal_path = '/proposals/'
+const exam_path = 'exams/'
+const degree_path = 'degrees/'
+const curriculum_path = 'curricula/'
+const proposal_path = 'proposals/'
 
 function ProposalForm({ proposal }) {
     const engine = useEngine()
@@ -228,7 +230,7 @@ function ProposalForm({ proposal }) {
                             (a,b) => (b.academic_year - a.academic_year) || (a.name.localeCompare(b.name))
                         ).map((degree) => 
                                 <option key={degree._id} value={degree._id}>
-                                    {degree.name} &mdash; anno di immatricolazione {degree.academic_years()}
+                                    {degree.name} &mdash; anno di immatricolazione {displayAcademicYears(degree.academic_year)}
                                 </option>
                         )
                     }
@@ -307,7 +309,7 @@ export default function ProposalPage() {
     const user = engine.user
     const { id } = useParams()
 
-    const query = useGet(proposal_path, id || '')
+    const query = useGet(proposal_path, id)
     const proposal = query.data
     const degreeQuery = useGet(degree_path, proposal?.degree_id)
     const curriculumQuery = useGet(curriculum_path, proposal?.curriculum_id)
@@ -315,9 +317,16 @@ export default function ProposalPage() {
     const degree = degreeQuery.data
     const curriculum = curriculumQuery.data
 
-    if (proposal === null || (proposal.curriculum_id && (curriculum === null || degree === null))) {
+    if (proposal === null || (proposal?.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     }
+
+    return <>
+        <h1>Piano di studi di {proposal?.user_name}</h1>
+        {proposal && <MessageCard />}
+        {proposal && <InfoCard />}
+        { proposal?.exams?.map((year_exams, index) => <Year key={index} number={index} exams={year_exams}/>)}
+    </>
 
     function AdminButtons() {
         if (engine.user.admin && proposal.state === 'submitted') return <>
@@ -354,13 +363,13 @@ export default function ProposalPage() {
                 'submitted': "border-left-warning",
                 'approved': "border-left-success",
                 'rejected': "border-left-error",
-            }[proposal.state]
+            }[proposal?.state]
         }>{
             {
                 'draft': `Questo piano è in stato di bozza. Devi inviarlo per avere l'approvazione.`,
-                'submitted': `Il piano è stato inviato in data ${proposal.date_submitted.format("D.M.Y")}. Riceverai un email quando verrà approvato o rifiutato`,
-                'approved': `Il piano è stato approvato in data ${proposal.date_managed.format("D.M.Y")}.`,
-                'rejected': `Il piano è stato rigettato in data ${proposal.date_managed.format("D.M.Y")}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
+                'submitted': `Il piano è stato inviato in data ${formatDate(proposal.date_submitted)}. Riceverai un email quando verrà approvato o rifiutato`,
+                'approved': `Il piano è stato approvato in data ${formatDate(proposal.date_managed)}.`,
+                'rejected': `Il piano è stato rigettato in data ${formatDate(proposal.date_managed)}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
             }[proposal.state]
         }</Card>
     }
@@ -451,7 +460,7 @@ export default function ProposalPage() {
             <table className="table"><tbody>
                 <tr>
                     <th>Stato</th>
-                    <td>{proposal.badge()}</td>
+                    <td><StateBadge state={proposal.state} /></td>
                 </tr>
                 <tr>
                     <th>Corso di Laurea</th>
@@ -463,17 +472,10 @@ export default function ProposalPage() {
                 </tr>
                 <tr>
                     <th>Anno di immatricolazione</th>
-                    <td>{proposal.degree_academic_years()}</td>
+                    <td>{displayAcademicYears(proposal.degree_academic_year)}</td>
                 </tr>                
             </tbody></table>        
         </Card>
     }
-
-    return <>
-        <h1>Piano di studi di {proposal.user_name}</h1>
-        <MessageCard />
-        <InfoCard />
-        { proposal.exams.map((year_exams, index) => <Year key={index} number={index} exams={year_exams}/>)}
-    </>
 }
 

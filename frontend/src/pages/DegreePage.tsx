@@ -2,7 +2,6 @@ import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine, useGet, useIndex } from '../modules/engine'
-import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 

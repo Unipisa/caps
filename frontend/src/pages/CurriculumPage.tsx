@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { useGet } from '../modules/engine'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
+import { displayAcademicYears } from '../modules/utils'
 
 const path = "/curricula/"
 const exam_path = "/exams/"
@@ -77,8 +78,4 @@ function ordinal(n) {
         "sesto", "settimo", "ottavo", "nono"]
     if (n < ordinals.length) return ordinals[n]
     else return `${ n+1 }-mo`
-}
-
-function displayAcademicYears(n) {
-    return `${n}/${n+1}`
 }

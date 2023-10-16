@@ -169,14 +169,14 @@ export function useCreateEngine(): Engine {
     }
 }
 
-export function useGet(path:string, id:string) {
+export function useGet(path:string, id:string|undefined) {
     return useQuery<any,any>({
         queryKey: [path, id],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}${id}`)
             return res.data
         },
-        enabled: id !== null,
+        enabled: !!id,
     })
 }        
 
