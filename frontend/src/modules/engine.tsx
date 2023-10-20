@@ -341,33 +341,47 @@ export type ProposalGet = {
     attachments: ProposalAttachmentGet[],
 }
 
-export type ProposalExamGet = {
+export type ProposalExamGet = 
+    ProposalCompulsoryExamGet |
+    ProposalCompulsoryGroupGet | 
+    ProposalFreeChoiceGet
+
+
+export type ProposalCompulsoryExamGet = {
     __t: "CompulsoryExam",
     exam_id: string,
     exam_name: string,
     exam_code: string,
     exam_credits: number,
-}|{
+}
+
+export type PoposalCompulsoryGroupGet = {
     __t: "CompulsoryGroup", 
     group: string,
     exam_id: string,
     exam_name: string,
     exam_code: string,
     exam_credits: number,
-}|{
+}
+
+export type ProposalFreeChoiceGroupGet = {
     __t: "FreeChoiceGroup",
     group: string,     
     exam_id: string,
     exam_name: string,
     exam_code: string,
     exam_credits: number,
-}|{
+}
+
+export type ProposalFreeChoiceGet = {
     __t: "FreeChoiceExam",
     exam_id: string,
     exam_name: string,
     exam_code: string,
     exam_credits: number,
-}|{
+}
+
+export type ProposalExternalExamGet = {
     __t: "ExternalExam", 
    exam_name: string,
    exam_credits: number,

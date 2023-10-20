@@ -161,13 +161,18 @@ async function importData() {
         e.years = element.years;
         e.enabled = element.enabled;
         e.enable_sharing = element.enable_sharing;
-        e.groups = {}
+        const my_groups = {}
         groups
             .filter(g => g.degree_id===element.id)
-            .map(g => {
-                e.groups[g.name] = exams_groups
+            .forEach(g => {
+                const exam_ids = exams_groups
                     .filter(eg => eg.group_id===g.id)
-                    .map(eg => exams[eg.exam_id]._id)});
+                    .map(eg => new ObjectId(exams[eg.exam_id]._id))
+                my_groups[g.name] = exam_ids
+            })
+
+        e.groups = my_groups
+
         if (element.default_group_id) {
             e.default_group = group_by_id(element.default_group_id).name;
         } else {

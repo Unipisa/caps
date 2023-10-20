@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { useParams } from "react-router-dom"
 import {Button} from 'react-bootstrap' 
 import assert from 'assert'
@@ -7,7 +7,7 @@ import { useEngine, useGet,
     useIndexExam, useGetProposal, 
     useIndexDegree, useIndexCurriculum, 
     useGetDegree, useGetCurriculum, useGetExam,
-    ExamGet, ProposalGet, ProposalExamGet } from '../modules/engine'
+    ExamGet, ProposalGet, ProposalExamGet, CurriculumExamGet } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {formatDate,displayAcademicYears} from '../modules/utils'
@@ -138,8 +138,15 @@ function ProposalForm({ proposal }:{
 
     console.log(chosenExams)
 
-
-    function ExamSelect({ exam, allExams, groups, yearNumber, examNumber, chosenExams, setChosenExams }) {
+    function ExamSelect({ exam, allExams, groups, yearNumber, examNumber, chosenExams, setChosenExams }:{
+        exam: CurriculumExamGet,
+        allExams: {[key: string]: ExamGet},
+        groups: {[key: string]: ExamGet[]},
+        yearNumber: number,
+        examNumber: number,
+        chosenExams: (ProposalExamGet|null)[][],
+        setChosenExams: Dispatch<SetStateAction<(ProposalExamGet|null)[][]>>,
+    }) {
         if (exam.__t === "CompulsoryExam") {
             const compulsoryExam = allExams[exam.exam_id]
             return <li className='form-group exam-input'>
@@ -156,23 +163,40 @@ function ProposalForm({ proposal }:{
             </li>
         } else if (exam.__t === "CompulsoryGroup") {
             const options = groups[exam.group]
+
+            function isCompulsoryGroupExam(exm: ProposalExamGet|null): asserts exm is ProposalExamGet {
+                assert(exm !== null && exm.__t === "CompulsoryGroup")
+            }
+
+            const exm = chosenExams[yearNumber][examNumber]
+
+            assert (!exm || exm.__t === "CompulsoryGroup")
+            console.log(exm?.exam_id)
             return <li className='form-group exam-input'>
                 <div className='row'>
                     <div className='col-9'>
                         <select className='form-control'
-                            value={chosenExams[yearNumber][examNumber] || -1}
+                            value={exm ? exm.exam_name : -1}
                             onChange={e => {
-                                let newChosenExams = chosenExams
-                                newChosenExams[yearNumber][examNumber] = e.target.value
+                                const newChosenExams = chosenExams
+                                const newExam = allExams[e.target.value]
+                                newChosenExams[yearNumber][examNumber] = {
+                                    __t: "CompulsoryGroup",
+                                    exam_id: newExam._id,
+                                    exam_name: newExam.name,
+                                    exam_code: newExam.code,
+                                    exam_credits: newExam.credits,
+                                    group: exam.group,
+                                }
                                 setChosenExams(newChosenExams)
                             }}
                         >
                             <option disabled value={-1}>Un esame a scelta nel gruppo {exam.group}</option>
-                            {options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+                            {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
                         </select>
                     </div>
                     <div className="col-3">
-                        <input className='form-control col' readOnly value={chosenExams[yearNumber][examNumber] ? allExams[chosenExams[yearNumber][examNumber]].credits : ""}/>
+                        <input className='form-control col' readOnly value={exm ? allExams[exm.exam_id].credits : ""}/>
                     </div>
                 </div>
             </li>
