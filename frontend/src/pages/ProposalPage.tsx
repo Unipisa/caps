@@ -1,41 +1,43 @@
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom"
 import {Button} from 'react-bootstrap' 
+import assert from 'assert'
 
-import { useEngine, useGet, useIndex } from '../modules/engine'
+import { useEngine, useGet, 
+    useIndexExam, useGetProposal, 
+    useIndexDegree, useIndexCurriculum, 
+    useGetDegree, useGetCurriculum, useGetExam,
+    ExamGet, ProposalGet, ProposalExamGet } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {formatDate,displayAcademicYears} from '../modules/utils'
 import StateBadge from '../components/StateBadge'
 
-const exam_path = 'exams/'
-const degree_path = 'degrees/'
-const curriculum_path = 'curricula/'
-const proposal_path = 'proposals/'
-
-function ProposalForm({ proposal }) {
+function ProposalForm({ proposal }:{
+    proposal: ProposalGet
+}) {
     const engine = useEngine()
 
     const [degreeId, setDegreeId] = useState(proposal.degree_id)
-    const [curriculumId, setCurriculumId] = useState(proposal.curriculum_id)
-    const [chosenExams, setChosenExams] = useState<any>(proposal.exams)
+    const [curriculumId, setCurriculumId] = useState<string|null>(proposal.curriculum_id)
+    const [chosenExams, setChosenExams] = useState<(ProposalExamGet|null)[][]>(proposal.exams)
 
-    const degreesQuery = useIndex(degree_path)
-    const curriculaQuery = useIndex(curriculum_path, degreeId ? { degree_id: degreeId } : undefined )
-    const examsQuery = useIndex(exam_path)
+    const degreesQuery = useIndexDegree()
+    const curriculaQuery = useIndexCurriculum(degreeId ? { degree_id: degreeId } : undefined )
+    const examsQuery = useIndexExam()
 
-    if (degreesQuery.isLoading) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
+    if (degreesQuery.data === undefined) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
 
     const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, d]))
 
-    if (curriculaQuery.isLoading) return <LoadingMessage>caricamento curricula...</LoadingMessage>
     if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
+    if (curriculaQuery.data === undefined) return <LoadingMessage>caricamento curricula...</LoadingMessage>
 
     const curricula = Object.fromEntries(curriculaQuery.data.items.map(c => [c._id, c]))
 
-    if (examsQuery.isLoading) return <LoadingMessage>caricamento esami...</LoadingMessage>
     if (examsQuery.isError) return <LoadingMessage>errore esami...</LoadingMessage>
+    if (examsQuery.data === undefined) return <LoadingMessage>caricamento esami...</LoadingMessage>
 
     const allExams = Object.fromEntries(examsQuery.data.items.map(e => [e._id, e]))
 
@@ -44,7 +46,7 @@ function ProposalForm({ proposal }) {
 
     const groups = degree ?
         Object.fromEntries(
-            Object.entries(degree.groups as {[key: string]: string[]}).map(([group_id, group_exams]:[string,string[]]) => {
+            Object.entries(degree.groups).map(([group_id, group_exams]) => {
                 const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
                 return [group_id, populated_exams]
             })
@@ -52,16 +54,22 @@ function ProposalForm({ proposal }) {
         {}
 
 
-    function initExams(curriculum_id) {
+    function initExams(curriculum_id: string): (ProposalExamGet|null)[][] {
         const curriculum = curricula[curriculum_id]
         return curriculum.years.map(year => year.exams.map(e => {
             if (e.__t === "CompulsoryExam")
-                return e.exam_id
+                return {
+                    exam_name: "<esam_name>",
+                    exam_code: "<exam_code>",
+                    exam_credits: 0,
+                    ...e,
+                }
             else
                 return null
         }))
     }
-    function doExamsFit(exams, curriculum_id) {
+
+    function doExamsFit(exams: (ProposalExamGet|null)[][], curriculum_id: string) {
         const curriculum = curricula[curriculum_id]
         if (exams.length !== curriculum.years.length) {
             console.log("lengths do not match")
@@ -77,12 +85,12 @@ function ProposalForm({ proposal }) {
 
             for(const [j, exam] of exams[i].entries()) {
                 const c_exam = c_year.exams[j]
-                if (c_exam.__t === "CompulsoryExam" && (!exam || exam !== c_exam.exam_id)) {
+                if (c_exam.__t === "CompulsoryExam" && (!exam || exam.__t ==='ExternalExam' || exam.exam_id !== c_exam.exam_id)) {
                     console.log("year", i, "exam", j, "compulsory exam does not match")
                     return false
                 }
 
-                if (exam && (c_exam.__t === "CompulsoryGroup" || c_exam.__t === "FreeChoiceGroup") && !groups[c_exam.group].some(e => e.exam_id === exam._id)) {
+                if (exam && (c_exam.__t === "CompulsoryGroup" || c_exam.__t === "FreeChoiceGroup") && !groups[c_exam.group].some(e => exam.__t!=='ExternalExam' && e._id === exam.exam_id)) {
                     console.log("year", i, "exam", j, "compulsory group does not match")
                     return false
                 }
@@ -268,6 +276,7 @@ function ProposalForm({ proposal }) {
     </>
 }
 
+/*
 export function NewProposalPage() {
     const engine = useEngine()
 
@@ -292,14 +301,16 @@ export function NewProposalPage() {
 
     return <ProposalForm proposal={empty}/>
 }
+*/
 
 export function EditProposalPage() {
     const { id } = useParams()
 
-    const proposalQuery = useGet(proposal_path, id || '')
+    const proposalQuery = useGetProposal(id || '')
 
-    if (proposalQuery.isLoading) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     if (proposalQuery.isError) return <LoadingMessage>errore piano di studi...</LoadingMessage>
+    if (!proposalQuery.data) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
+
 
     return <ProposalForm proposal={proposalQuery.data}/>
 }
@@ -309,15 +320,15 @@ export default function ProposalPage() {
     const user = engine.user
     const { id } = useParams()
 
-    const query = useGet(proposal_path, id)
+    const query = useGetProposal(id)
     const proposal = query.data
-    const degreeQuery = useGet(degree_path, proposal?.degree_id)
-    const curriculumQuery = useGet(curriculum_path, proposal?.curriculum_id)
+    const degreeQuery = useGetDegree(proposal?.degree_id)
+    const curriculumQuery = useGetCurriculum(proposal?.curriculum_id)
 
-    const degree = degreeQuery.data
+    const degree:any = degreeQuery.data
     const curriculum = curriculumQuery.data
 
-    if (proposal === null || (proposal?.curriculum_id && (curriculum === null || degree === null))) {
+    if (!proposal || (proposal?.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     }
 
@@ -329,6 +340,7 @@ export default function ProposalPage() {
     </>
 
     function AdminButtons() {
+        if (!proposal) return null
         if (engine.user.admin && proposal.state === 'submitted') return <>
             <Button>accetta</Button>
             <Button>rifiuta</Button>
@@ -337,6 +349,7 @@ export default function ProposalPage() {
     }
 
     function ShareButton() {
+        if (!proposal) return null
         if (degree 
             && degree.enable_sharing 
             && proposal.state === 'submitted' 
@@ -357,19 +370,20 @@ export default function ProposalPage() {
     }
 
     function MessageCard() {
+        if (!proposal) return null
         return <Card className={
             {
                 'draft': "border-left-primary",
                 'submitted': "border-left-warning",
                 'approved': "border-left-success",
                 'rejected': "border-left-error",
-            }[proposal?.state]
+            }[proposal.state]
         }>{
             {
-                'draft': `Questo piano è in stato di bozza. Devi inviarlo per avere l'approvazione.`,
-                'submitted': `Il piano è stato inviato in data ${formatDate(proposal.date_submitted)}. Riceverai un email quando verrà approvato o rifiutato`,
-                'approved': `Il piano è stato approvato in data ${formatDate(proposal.date_managed)}.`,
-                'rejected': `Il piano è stato rigettato in data ${formatDate(proposal.date_managed)}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
+                draft: `Questo piano è in stato di bozza. Devi inviarlo per avere l'approvazione.`,
+                submitted: `Il piano è stato inviato in data ${formatDate(proposal.date_submitted)}. Riceverai un email quando verrà approvato o rifiutato`,
+                approved: `Il piano è stato approvato in data ${formatDate(proposal.date_managed)}.`,
+                rejected: `Il piano è stato rigettato in data ${formatDate(proposal.date_managed)}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
             }[proposal.state]
         }</Card>
     }
@@ -403,10 +417,10 @@ export default function ProposalPage() {
     }
     
     function ExamRow({ exam }) {
-        const query = useGet(exam_path, exam.exam_id || null)
+        const query = useGetExam(exam.exam_id || null)
         if (query.isLoading) return <tr><td>loading...</td></tr>
         if (query.isError) return <tr><td>error...</td></tr>
-        const real_exam = query.data
+        const real_exam: any = query.data
         return <tr>
             <td>{exam.exam_code}</td>
             <td>{exam.exam_name}
@@ -450,6 +464,7 @@ export default function ProposalPage() {
     }
 
     function InfoCard() {
+        if (!proposal) return null
         return <Card>
             <div className="d-flex mb-2">
                 <AdminButtons />

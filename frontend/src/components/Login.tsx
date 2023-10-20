@@ -69,7 +69,8 @@ function LocalLogin({}) {
                 <div>Credenziali locali</div>
             </div>
         </div>
-        <div id="local-login" className="collapse">
+        <div id="local-login" className="collapse_"> 
+            {/* collapse not working anymore !?!*/}
             <div className="card-body">
                     <div className="input form-group">
                         <label htmlFor="username">Username</label>

@@ -32,7 +32,7 @@ export default function Card({
     title?: string,
     customHeader?: JSX.Element,
     onClick?: () => void,
-    children?: JSX.Element | JSX.Element[]
+    children?: React.ReactNode,
 }) {
     let cardClass = classWithDefault(className, 'shadow my-2');
     // let headerClass = titleBg || 'bg-primary';

@@ -1,29 +1,29 @@
 import React from 'react'
 import { useParams } from "react-router-dom"
 
-import { useGet } from '../modules/engine'
+import { useGetExam, useGetCurriculum } from '../modules/engine'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 import { displayAcademicYears } from '../modules/utils'
 
-const path = "/curricula/"
-const exam_path = "/exams/"
 const degree_path = "/degrees/"
 
 function CompulsoryExam({ exam_id }) {
-    const query = useGet(exam_path, exam_id);
-
-    if (query.isLoading) return <tr>
-        <th>esame obbligatorio</th>
-        <td>...</td>
-    </tr>
+    const query = useGetExam(exam_id);
 
     if (query.isError) return <tr>
         <th>esame obbligatorio</th>
         <td>???</td>
     </tr>
-
+    
     const exam = query.data;
+
+    if (!exam) return <tr>
+        <th>esame obbligatorio</th>
+        <td>...</td>
+    </tr>
+
+
 
     return <tr>
         <th>esame obbligatorio</th>
@@ -47,12 +47,13 @@ function ExamEntry({ entry }) {
 
 export default function CurriculumPage() {
     const { id } = useParams()
-    const query = useGet(path, id || '')
+    const query = useGetCurriculum(id || '')
     const curriculum = query.data
-    const degree = curriculum?.degree
-
-    if (query.isLoading) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
+    
     if (query.isError) return <div>errore caricamento curriculum</div>
+    if (!curriculum) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
+    
+    const degree = curriculum.degree
 
     console.log(`curriculum: ${JSON.stringify(curriculum)}`)
 
@@ -61,7 +62,7 @@ export default function CurriculumPage() {
         <h3>{ degree?.name } { degree.academic_year ? displayAcademicYears(degree.academic_year) : '????-????'}</h3>
         { curriculum.years.map((year_section, year_count) =>
             <Card key={`year-${year_count}`} title={`${ordinal(year_count+1)} anno`}> 
-                Crediti: { year_section.credits } <br />
+                Crediti: { `${year_section.credits}` } <br />
                 <table>
                     <tbody>
                     { year_section.exams.map(entry => <ExamEntry key={entry._id} entry={entry} />)}

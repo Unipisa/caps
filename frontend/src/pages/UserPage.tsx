@@ -1,10 +1,9 @@
 import React from 'react'
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { useEngine, useGet, useIndex, useDelete } from '../modules/engine'
+import { useEngine, useGet, useIndexProposal, useDeleteProposal } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
-import Proposal from '../models/Proposal'
 import { ItemAddButton } from '../components/TableElements'
 import Comments from '../components/Comments'
 
@@ -18,7 +17,7 @@ export default function UserPage() {
     if (userQuery.isLoading) return <LoadingMessage>caricamento utente...</LoadingMessage>
     if (userQuery.isError) return <div>errore caricamento utente</div>
 
-    const user = userQuery.data
+    const user: any = userQuery.data
 
     return <>
         <Card>
@@ -32,7 +31,7 @@ export default function UserPage() {
 
         <h2 className='d-flex mt-4'>
             <span className='mr-auto'>Piani di studio</span>
-            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
+            <ItemAddButton to="/proposals/edit/__new__">Nuovo piano di studi</ItemAddButton>
         </h2>
         <Proposals id={id} />
 
@@ -48,12 +47,10 @@ export default function UserPage() {
     </>
 }
 
-const proposals_path = "/proposals/"
-
 function Proposals({id}) {
-    const proposalsQuery = useIndex(proposals_path, { user_id: id })
-    if (proposalsQuery.isLoading) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+    const proposalsQuery = useIndexProposal({ user_id: id })
     if (proposalsQuery.isError) return <div>errore caricamento piani di studio</div> 
+    if (!proposalsQuery.data) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
 
     const proposals = proposalsQuery.data.items
 
@@ -75,7 +72,7 @@ function Proposals({id}) {
 function ProposalCard({proposal}) {
     const navigate = useNavigate()
     const engine = useEngine()
-    const deleter = useDelete(proposals_path, proposal._id)
+    const deleter = useDeleteProposal(proposal._id)
 
     async function deleteProposal() {
         engine.modalConfirm("Elimina piano di studi", "confermi di voler eliminare il piano di studi?")

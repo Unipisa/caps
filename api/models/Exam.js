@@ -37,4 +37,6 @@ const Exam = mongoose.model('Exam', {
     },
 })
 
+
+
 module.exports = Exam;

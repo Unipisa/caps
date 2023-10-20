@@ -169,8 +169,8 @@ export function useCreateEngine(): Engine {
     }
 }
 
-export function useGet(path:string, id:string|undefined) {
-    return useQuery<any,any>({
+export function useGet<T>(path:string, id:string|undefined) {
+    return useQuery<T,any>({
         queryKey: [path, id],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}${id}`)
@@ -180,8 +180,8 @@ export function useGet(path:string, id:string|undefined) {
     })
 }        
 
-export function useIndex(path:string, query={}) {
-    return useQuery({
+export function useIndex<T>(path:string, query={}) {
+    return useQuery<{items: T[]}>({
         queryKey: [path, query],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}`, { params: query })
@@ -226,5 +226,165 @@ export function usePatch(path:string, id:string) {
             await queryClient.invalidateQueries({ queryKey: [path] })
         },
     })
+}
+
+export type ExamGet = {
+    _id: string,
+    name: string,
+    code: string,
+    sector: string,
+    credits: number,
+    tags: string[],
+    notes: string,
+}
+
+export function useGetExam(id:string|undefined) {
+    return useGet<ExamGet>('exams/', id) 
+}
+
+export function useIndexExam(query={}) {
+    return useIndex<ExamGet>('exams/', query)
+}
+
+export type DegreeGet = {
+    _id: string
+    name: string,
+    academic_year: number,
+    years: number,
+    groups: {
+        [key: string]: string[],
+    },
+    enabled: boolean,
+    enable_sharing: boolean,
+    default_group: string, 
+    approval_confirmation: boolean,
+    rejection_confirmation: boolean,
+    submission_confirmation: boolean,
+    approval_message: string,
+    rejection_message: string,
+    submission_message: string,
+    free_choice_message: string,
+}
+
+export function useGetDegree(id:string|undefined) {
+    return useGet<DegreeGet>('degrees/', id) 
+}
+
+export function useIndexDegree(query={}) {
+    return useIndex<DegreeGet>('degrees/', query)
+}   
+
+export function useDeleteDegree(id:string) {
+    return useDelete('degrees/', id)
+}
+
+export type CurriculumGet = {
+    _id: string,
+    name: string,
+    notes: string,
+    degree_id: string,
+    degree: {
+        enabled: boolean,
+        name: string,
+        academic_year: number,
+    }
+    years: {
+        credits: number,
+        exams: CurriculumExamGet[]
+    }[]
+}
+
+export type CurriculumExamGet = {
+    _id: string,
+    __t: 'CompulsoryExam',
+    exam_id: string,
+}|{
+    _id: string,
+    __t: 'CompulsoryGroup',
+    group: string,
+}|{
+    _id: string,
+    __t: 'FreeChoiceExam',
+}|{
+    _id: string,
+    __t: 'FreeChoiceGroup',
+    group: string,
+}
+
+export function useGetCurriculum(id:string|undefined) {
+    return useGet<CurriculumGet>('curricula/', id) 
+}
+
+export function useIndexCurriculum(query={}) {
+    return useIndex<CurriculumGet>('curricula/', query)
+}
+
+export type ProposalGet = {
+    _id: string,
+    degree_id: string,
+    degree_academic_year: number,
+    degree_name: string,
+    curriculum_id: string,
+    curriculum_name: string,
+    user_id: string,   
+    user_last_name: string,
+    user_first_name: string,
+    user_name: string,
+    user_id_number: string,
+    user_email: string,
+    user_username: string,
+    state: 'draft'|'submitted'|'approved'|'rejected',
+    date_modified: string,
+    date_submitted: string,
+    date_managed: string,
+    exams: ProposalExamGet[][],
+    attachments: ProposalAttachmentGet[],
+}
+
+export type ProposalExamGet = {
+    __t: "CompulsoryExam",
+    exam_id: string,
+    exam_name: string,
+    exam_code: string,
+    exam_credits: number,
+}|{
+    __t: "CompulsoryGroup", 
+    group: string,
+    exam_id: string,
+    exam_name: string,
+    exam_code: string,
+    exam_credits: number,
+}|{
+    __t: "FreeChoiceGroup",
+    group: string,     
+    exam_id: string,
+    exam_name: string,
+    exam_code: string,
+    exam_credits: number,
+}|{
+    __t: "FreeChoiceExam",
+    exam_id: string,
+    exam_name: string,
+    exam_code: string,
+    exam_credits: number,
+}|{
+    __t: "ExternalExam", 
+   exam_name: string,
+   exam_credits: number,
+}
+
+export interface ProposalAttachmentGet {
+}
+
+export function useGetProposal(id:string|undefined) {
+    return useGet<ProposalGet>('proposals/', id) 
+}
+
+export function useIndexProposal(query={}) {
+    return useIndex<ProposalGet>('proposals/', query)
+}
+
+export function useDeleteProposal(id:string) {
+    return useDelete('proposals/', id)
 }
 
