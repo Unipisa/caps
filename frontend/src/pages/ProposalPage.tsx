@@ -15,182 +15,7 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {formatDate,displayAcademicYears} from '../modules/utils'
 import StateBadge from '../components/StateBadge'
-
-function ProposalForm({ proposal }:{
-    proposal: ProposalGet
-}) {
-    const engine = useEngine()
-
-    const [degreeId, setDegreeId] = useState(proposal.degree_id)
-    const [curriculumId, setCurriculumId] = useState<string|null>(proposal.curriculum_id)
-
-    const degreesQuery = useIndexDegree()
-    const curriculaQuery = useIndexCurriculum(degreeId ? { degree_id: degreeId } : undefined )
-    const examsQuery = useIndexExam()
-
-    if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
-    if (degreesQuery.data === undefined) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
-
-    const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, d]))
-
-    if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
-    if (curriculaQuery.data === undefined) return <LoadingMessage>caricamento curricula...</LoadingMessage>
-
-    const curricula = Object.fromEntries(curriculaQuery.data.items.map(c => [c._id, c]))
-
-    if (examsQuery.isError) return <LoadingMessage>errore esami...</LoadingMessage>
-    if (examsQuery.data === undefined) return <LoadingMessage>caricamento esami...</LoadingMessage>
-
-    const allExams = Object.fromEntries(examsQuery.data.items.map(e => [e._id, e]))
-
-    return <>
-        <Card>
-            <div className="form-group" key="degree-selection">
-                <select className="form-control mb-3"
-                    onChange={e => updateDegree(e.target.value)}
-                    value={degreeId || -1}
-                >
-                    <option key="degree-dummy" value="-1" disabled>
-                        Selezionare il corso di Laurea
-                    </option>
-                    {
-                        Object.values(degrees).sort(
-                            (a,b) => (b.academic_year - a.academic_year) || (a.name.localeCompare(b.name))
-                        ).map((degree) => 
-                                <option key={degree._id} value={degree._id}>
-                                    {degree.name} &mdash; anno di immatricolazione {displayAcademicYears(degree.academic_year)}
-                                </option>
-                        )
-                    }
-                </select>
-                
-                {
-                    degreeId && <>
-                        <select className="form-control mb-3"
-                            onChange={e => updateCurriculum(e.target.value)}
-                            value={curriculumId || -1}
-                        >
-                            <option key="curriculum-dummy" value="-1" disabled>
-                                Selezionare il Curriculum
-                            </option>
-                            {
-                                Object.values(curricula).sort((a, b) => (a.name.localeCompare(b.name))).map(curriculum =>
-                                        <option key={curriculum._id} value={curriculum._id}>
-                                            {curriculum.name}
-                                        </option>
-                                )
-                            }
-                        </select>
-                    </>
-                }
-
-            </div>
-        </Card>
-        { degreeId && curriculumId &&
-            <ProposalFormYears proposal={proposal} curriculum={curricula[curriculumId]} degree={degrees[degreeId]} allExams={allExams}/>
-        }   
-    </>
-
-    async function updateCurriculum(curriculum_id) {
-        if (curriculumId) {
-            if (!await engine.modalConfirm("Vuoi davvero cambiare curriculum?", "Cambiare curriculum comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?"))
-                return
-        }
-        setCurriculumId(curriculum_id)
-    }
-
-    async function updateDegree(degree_id) {
-        if (degreeId) {
-            if (!await engine.modalConfirm("Vuoi davvero cambiare corso di Laurea?", "Cambiare corso di Laurea comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?"))
-                return
-        }
-        setDegreeId(degree_id)
-        setCurriculumId(null)
-    }
-}
-
-function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
-    proposal: ProposalGet,
-    curriculum: CurriculumGet,
-    degree: DegreeGet,
-    allExams: {[key: string]: ExamGet},
-}) {
-    const [chosenExams, setChosenExams] = useState<(ProposalExamGet|null)[][]>(proposal.exams)
-
-    const groups = Object.fromEntries(
-        Object.entries(degree.groups).map(([group_id, group_exams]) => {
-            const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
-            return [group_id, populated_exams]
-        }))
-
-    if (!chosenExams) {
-        const exams = initExams(curriculum)
-        setChosenExams(exams)
-        return <LoadingMessage>caricamento esami nel piano di studio...</LoadingMessage>
-    } else if (!doExamsFit(chosenExams, curriculum)) {
-        const exams = tryFitExams(chosenExams, curriculum)
-        setChosenExams(exams)
-        return <LoadingMessage>caricamento esami nel piano di studio...</LoadingMessage>
-    }
-    
-    console.log(chosenExams)
-
-    return <>
-        {curriculum.years.map((year, number) => <YearCard key={number} year={year} number={number} allExams={allExams} chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}/>)}
-    </>
-
-    function initExams(curriculum: CurriculumGet): (ProposalExamGet|null)[][] {
-        return curriculum.years.map(year => year.exams.map(e => {
-            if (e.__t === "CompulsoryExam")
-                return {
-                    exam_name: "<esam_name>",
-                    exam_code: "<exam_code>",
-                    exam_credits: 0,
-                    ...e,
-                }
-            else
-                return null
-        }))
-    }
-
-    function doExamsFit(exams: (ProposalExamGet|null)[][], curriculum: CurriculumGet) {
-        if (exams.length !== curriculum.years.length) {
-            console.log("lengths do not match")
-            return false
-        }
-
-        for (const [i, year] of exams.entries()) {
-            const c_year = curriculum.years[i]
-            if (year.length !== c_year.exams.length) {
-                console.log("year", i, "lengths do not matchhhh")
-                return false
-            }
-
-            for(const [j, exam] of exams[i].entries()) {
-                const c_exam = c_year.exams[j]
-                if (c_exam.__t === "CompulsoryExam" && (!exam || exam.exam_id === undefined  || exam.exam_id !== c_exam.exam_id)) {
-                    console.log("year", i, "exam", j, "compulsory exam does not match")
-                    return false
-                }
-
-                if (exam && (c_exam.__t === "CompulsoryGroup" || c_exam.__t === "FreeChoiceGroup") && !groups[c_exam.group].some(e => exam.exam_id !== undefined && e._id === exam.exam_id)) {
-                    console.log("year", i, "exam", j, "compulsory group does not match")
-                    return false
-                }
-            }
-        }
-
-        return true
-    }
-
-    function tryFitExams(exams, curriculum_id) {
-        // TODO: completa con un'euristica per fittare i vecchi esami nel nuovo curriculum
-        console.log("Trying to fit the exams in the curriculum!")
-        console.log(exams)
-        return initExams(curriculum_id)
-    }
-
-}
+import { fn } from 'moment'
 
 export function EditProposalPage() {
     const { id } = useParams()
@@ -383,15 +208,222 @@ export default function ProposalPage() {
     }
 }
 
-function ExamSelect({ exam, allExams, groups, yearNumber, examNumber, chosenExams, setChosenExams }:{
+function ProposalForm({ proposal }:{
+    proposal: ProposalGet
+}) {
+    const engine = useEngine()
+
+    const [degreeId, setDegreeId] = useState(proposal.degree_id)
+    const [curriculumId, setCurriculumId] = useState<string|null>(proposal.curriculum_id)
+
+    const degreesQuery = useIndexDegree()
+    const curriculaQuery = useIndexCurriculum(degreeId ? { degree_id: degreeId } : undefined )
+    const examsQuery = useIndexExam()
+
+    if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
+    if (degreesQuery.data === undefined) return <LoadingMessage>caricamento corsi di laurea...</LoadingMessage>
+
+    const degrees = Object.fromEntries(degreesQuery.data.items.map(d => [d._id, d]))
+
+    if (curriculaQuery.isError) return <LoadingMessage>errore curricula...</LoadingMessage>
+    if (curriculaQuery.data === undefined) return <LoadingMessage>caricamento curricula...</LoadingMessage>
+
+    const curricula = Object.fromEntries(curriculaQuery.data.items.map(c => [c._id, c]))
+
+    if (examsQuery.isError) return <LoadingMessage>errore esami...</LoadingMessage>
+    if (examsQuery.data === undefined) return <LoadingMessage>caricamento esami...</LoadingMessage>
+
+    const allExams = Object.fromEntries(examsQuery.data.items.map(e => [e._id, e]))
+
+    return <>
+        <Card>
+            <div className="form-group" key="degree-selection">
+                <select className="form-control mb-3"
+                    onChange={e => updateDegree(e.target.value)}
+                    value={degreeId || -1}
+                >
+                    <option key="degree-dummy" value="-1" disabled>
+                        Selezionare il corso di Laurea
+                    </option>
+                    {
+                        Object.values(degrees).sort(
+                            (a,b) => (b.academic_year - a.academic_year) || (a.name.localeCompare(b.name))
+                        ).map((degree) => 
+                                <option key={degree._id} value={degree._id}>
+                                    {degree.name} &mdash; anno di immatricolazione {displayAcademicYears(degree.academic_year)}
+                                </option>
+                        )
+                    }
+                </select>
+                
+                {
+                    degreeId && <>
+                        <select className="form-control mb-3"
+                            onChange={e => updateCurriculum(e.target.value)}
+                            value={curriculumId || -1}
+                        >
+                            <option key="curriculum-dummy" value="-1" disabled>
+                                Selezionare il Curriculum
+                            </option>
+                            {
+                                Object.values(curricula).sort((a, b) => (a.name.localeCompare(b.name))).map(curriculum =>
+                                        <option key={curriculum._id} value={curriculum._id}>
+                                            {curriculum.name}
+                                        </option>
+                                )
+                            }
+                        </select>
+                    </>
+                }
+
+            </div>
+        </Card>
+        { degreeId && curriculumId &&
+            <ProposalFormYears proposal={proposal} curriculum={curricula[curriculumId]} degree={degrees[degreeId]} allExams={allExams}/>
+        }   
+    </>
+
+    async function updateCurriculum(curriculum_id) {
+        if (curriculumId) {
+            if (!await engine.modalConfirm("Vuoi davvero cambiare curriculum?", "Cambiare curriculum comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?"))
+                return
+        }
+        setCurriculumId(curriculum_id)
+    }
+
+    async function updateDegree(degree_id) {
+        if (degreeId) {
+            if (!await engine.modalConfirm("Vuoi davvero cambiare corso di Laurea?", "Cambiare corso di Laurea comporta la perdita di tutte le modifiche non salvate. Procedere ugualmente?"))
+                return
+        }
+        setDegreeId(degree_id)
+        setCurriculumId(null)
+    }
+}
+
+function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
+    proposal: ProposalGet,
+    curriculum: CurriculumGet,
+    degree: DegreeGet,
+    allExams: {[key: string]: ExamGet},
+}) {
+    const [chosenExams, setChosenExams] = useState<(ProposalExamGet|null)[][]>(fitExams(proposal.exams, curriculum))
+
+    const groups = Object.fromEntries(
+        Object.entries(degree.groups).map(([group_id, group_exams]) => {
+            const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
+            return [group_id, populated_exams]
+        }))
+
+    console.log(JSON.stringify({chosenExams}))
+
+    return <>
+        {curriculum.years.map((yearExams, number) => <YearCard key={number} year={yearExams} number={number} allExams={allExams} chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}/>)}
+    </>
+
+    function initExams(curriculum: CurriculumGet, allExams: {[key:string]: ExamGet}): (ProposalExamGet|null)[][] {
+        return curriculum.years.map(year => year.exams.map(e => {
+            if (e.__t === "CompulsoryExam") {
+                const exam = allExams[e.exam_id]
+                return {
+                    exam_name: exam.name,
+                    exam_code: exam.code,
+                    exam_credits: exam.credits,
+                    ...e,
+                }
+            } else return null
+        }))
+    }
+
+    function doExamsFit(exams: (ProposalExamGet|null)[][], curriculum: CurriculumGet) {
+        if (exams.length !== curriculum.years.length) {
+            console.log("lengths do not match")
+            return false
+        }
+
+        for (const [i, year] of exams.entries()) {
+            const c_year = curriculum.years[i]
+            if (year.length !== c_year.exams.length) {
+                console.log("year", i, "lengths do not matchhhh")
+                return false
+            }
+
+            for(const [j, exam] of exams[i].entries()) {
+                const c_exam = c_year.exams[j]
+                if (c_exam.__t === "CompulsoryExam" && (!exam || exam.exam_id === undefined  || exam.exam_id !== c_exam.exam_id)) {
+                    console.log("year", i, "exam", j, "compulsory exam does not match")
+                    return false
+                }
+
+                if (exam && (c_exam.__t === "CompulsoryGroup" || c_exam.__t === "FreeChoiceGroup") && !groups[c_exam.group].some(e => exam.exam_id !== undefined && e._id === exam.exam_id)) {
+                    console.log("year", i, "exam", j, "compulsory group does not match")
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    function fitExams(proposalExams: (ProposalExamGet|null)[][], curriculum: CurriculumGet) {
+        console.log('fitting exams...')
+        if (doExamsFit(proposalExams, curriculum)) return proposalExams
+        // TODO: completa con un'euristica per fittare i vecchi esami nel nuovo curriculum
+        console.log('exams do not fit: reset')
+        proposalExams = initExams(curriculum, allExams)
+        assert(doExamsFit(proposalExams, curriculum))
+        return proposalExams
+    }
+}
+
+function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups }:{
+    year: CurriculumGet['years'][0],
+    number: number,
+    allExams: {[key: string]: ExamGet},
+    chosenExams: (ProposalExamGet|null)[][],
+    setChosenExams: Dispatch<SetStateAction<(ProposalExamGet|null)[][]>>,
+    groups: {[key: string]: ExamGet[]},
+}) {
+    const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
+
+    let credits = 0
+    for (const e of chosenExams[number]) {
+        if (e && allExams[e.exam_id])
+            credits += allExams[e.exam_id].credits
+    }
+
+    const customHeader = <div className='d-flex justify-content-between align-content-center'>
+        <h5 className='text-white'>{yearName} anno</h5>
+        <h5 className='text-white'>
+            Crediti: <span className={credits < year.credits ? 'text-danger' : ''}>{credits}</span>/{year.credits}
+        </h5>
+    </div>
+
+    return <Card customHeader={customHeader} >
+        {year.exams.map((exam, examNumber) => <ExamSelect key={exam._id} exam={exam} allExams={allExams} groups={groups} chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}/>)}
+        <div className='d-flex flex-row-reverse'>
+            <button className='btn btn-primary'>Aggiungi esame esterno</button>
+            <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
+        </div>
+    </Card>
+
+    function examSetter(i, j) {
+        return function(exam) {
+            console.log(`setting exam year ${i} number ${j} to ${JSON.stringify(exam)}`)
+            setChosenExams(old => old.map((lst, ii) => i!==ii ? lst : 
+                lst.map((exm, jj) => j!==jj ? exm : exam)))
+        }
+    }
+}
+
+function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
     exam: CurriculumExamGet,
     allExams: {[key: string]: ExamGet},
     groups: {[key: string]: ExamGet[]},
-    yearNumber: number,
-    examNumber: number,
-    chosenExams: (ProposalExamGet|null)[][],
-    setChosenExams: Dispatch<SetStateAction<(ProposalExamGet|null)[][]>>,
+    chosenExam: ProposalExamGet|null,
+    setExam: (e:(ProposalExamGet|null)) => void,
 }) {
+    // console.log(`ExamSelect(${JSON.stringify({exam, chosenExam})})`)
     if (exam.__t === "CompulsoryExam") {
         const compulsoryExam = allExams[exam.exam_id]
         return <li className='form-group exam-input'>
@@ -409,35 +441,32 @@ function ExamSelect({ exam, allExams, groups, yearNumber, examNumber, chosenExam
     } else if (exam.__t === "CompulsoryGroup") {
         const options = groups[exam.group]
 
-        const exm = chosenExams[yearNumber][examNumber]
+        assert (!chosenExam || chosenExam.__t === "CompulsoryGroup")
+        // console.log(`CompulsoryGroup chosenExam: ${chosenExam?.exam_id}`)
 
-        assert (!exm || exm.__t === "CompulsoryGroup")
-        console.log(exm?.exam_id)
         return <li className='form-group exam-input'>
             <div className='row'>
                 <div className='col-9'>
                     <select className='form-control'
-                        value={exm ? exm.exam_name : -1}
+                        value={chosenExam ? chosenExam.exam_id : ''}
                         onChange={e => {
-                            const newChosenExams = chosenExams
                             const newExam = allExams[e.target.value]
-                            newChosenExams[yearNumber][examNumber] = {
+                            setExam({
                                 __t: "CompulsoryGroup",
                                 exam_id: newExam._id,
                                 exam_name: newExam.name,
                                 exam_code: newExam.code,
                                 exam_credits: newExam.credits,
                                 group: exam.group,
-                            }
-                            setChosenExams(newChosenExams)
+                            })
                         }}
                     >
-                        <option disabled value={-1}>Un esame a scelta nel gruppo {exam.group}</option>
+                        <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
                         {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
                     </select>
                 </div>
                 <div className="col-3">
-                    <input className='form-control col' readOnly value={exm ? allExams[exm.exam_id].credits : ""}/>
+                    <input className='form-control col' readOnly value={chosenExam ? allExams[chosenExam.exam_id].credits : ""}/>
                 </div>
             </div>
         </li>
@@ -466,28 +495,3 @@ function isCompulsoryGroupExam(exm: ProposalExamGet|null): asserts exm is Propos
     assert(exm !== null && exm.__t === "CompulsoryGroup")
 }
 
-function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups }) {
-    const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
-
-    let credits = 0
-    for (const e of chosenExams[number]) {
-        if (e && allExams[e])
-            credits += allExams[e].credits
-    }
-
-    const customHeader = <div className='d-flex justify-content-between align-content-center'>
-        <h5 className='text-white'>{yearName} anno</h5>
-        <h5 className='text-white'>
-            Crediti: <span className={credits < year.credits ? 'text-danger' : ''}>{credits}</span>/{year.credits}
-        </h5>
-    </div>
-
-    return <Card customHeader={customHeader} >
-        {year.exams.map((exam, examNumber) => <ExamSelect key={exam._id} exam={exam} allExams={allExams} yearNumber={number} examNumber={examNumber} groups={groups} chosenExams={chosenExams} setChosenExams={setChosenExams}/>)}
-        <div className='d-flex flex-row-reverse'>
-            <button className='btn btn-primary'>Aggiungi esame esterno</button>
-            <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
-
-        </div>
-    </Card>
-}
