@@ -5,12 +5,11 @@ import Button from 'react-bootstrap/Button'
 import CKEditor from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-import { useEngine, useGet, usePost, useDelete, usePatch } from '../modules/engine'
+import { useEngine, useDeleteExam, 
+    useGetExam, usePatchExam, usePostExam } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Group from '../components/Group'
-
-const path="/exams/"
 
 function ExamForm({ mutate, exam }) {
     const [data, setData] = useState(exam)
@@ -113,9 +112,9 @@ function ExamForm({ mutate, exam }) {
 export function EditExamPage() {
     const { id } = useParams()
     const isNew = id === '__new__'
-    const query = useGet(path, id || '')
-    const updater = usePatch(path, id || '')
-    const poster = usePost(path)
+    const query = useGetExam(id || '')
+    const updater = usePatchExam(id || '')
+    const poster = usePostExam()
     const mutate = isNew ? poster.mutate : updater.mutate
 
     if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
@@ -127,13 +126,10 @@ export function EditExamPage() {
 export default function ExamPage() {
     const engine = useEngine()
     const { id } = useParams()
-    const query = useGet(path, id || '')
-
-    const exam = query.data
+    const query = useGetExam(id || '')
 
     const navigate = useNavigate()
-//    const deleter = engine.useDelete(Exam, id)
-    const deleter = useDelete(path, id || '')
+    const deleter = useDeleteExam(id || '')
 
     function deleteExam() {
         if (!confirm("Sei sicuro di voler cancellare questo esame?"))
@@ -150,13 +146,10 @@ export default function ExamPage() {
         })
     }
 
-    if (query.isLoading) {
-        return <LoadingMessage>caricamento esame...</LoadingMessage>
-    }
+    if (query.isError) return <div>Errore: {query.error.message}</div>
+    if (query.data === undefined) return <LoadingMessage>caricamento esame...</LoadingMessage>
 
-    if (query.isError) {
-        return <div>Errore: {query.error.message}</div>
-    }
+    const exam = query.data
 
     if (exam === null) return <LoadingMessage>cancellazione esame...</LoadingMessage>
 

@@ -246,6 +246,18 @@ export function useIndexExam(query={}) {
     return useIndex<ExamGet>('exams/', query)
 }
 
+export function usePatchExam(id:string) {
+    return usePatch('exams/', id)
+}
+
+export function usePostExam() {
+    return usePost('exams/')
+}
+
+export function useDeleteExam(id:string) {
+    return useDelete('exams/', id)
+}
+
 export type DegreeGet = {
     _id: string
     name: string,
@@ -337,7 +349,7 @@ export type ProposalGet = {
     date_modified: string,
     date_submitted: string,
     date_managed: string,
-    exams: ProposalExamGet[][],
+    exams: (ProposalExamGet|null)[][],
     attachments: ProposalAttachmentGet[],
 }
 
@@ -355,7 +367,7 @@ export type ProposalCompulsoryExamGet = {
     exam_credits: number,
 }
 
-export type PoposalCompulsoryGroupGet = {
+export type ProposalCompulsoryGroupGet = {
     __t: "CompulsoryGroup", 
     group: string,
     exam_id: string,

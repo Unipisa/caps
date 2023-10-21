@@ -95,7 +95,8 @@ exports.ProposalCompulsoryGroup = ProposalExam.discriminator("CompulsoryGroup", 
         group: String,
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true,
         },
         exam_name: String,
         exam_code: String,
@@ -108,7 +109,8 @@ exports.ProposalFreeChoiceGroup = ProposalExam.discriminator("FreeChoiceGroup", 
         group: String,     
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true
         },
         exam_name: String,
         exam_code: String,
@@ -120,7 +122,8 @@ exports.ProposalFreeChoiceExam = ProposalExam.discriminator("FreeChoiceExam", ne
      {
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true,
         },
         exam_name: String,
         exam_code: String,
