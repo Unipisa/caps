@@ -307,20 +307,18 @@ export type CurriculumGet = {
 }
 
 export type CurriculumExamGet = {
-    _id: string,
     __t: 'CompulsoryExam',
     exam_id: string,
 }|{
-    _id: string,
     __t: 'CompulsoryGroup',
     group: string,
 }|{
-    _id: string,
     __t: 'FreeChoiceExam',
 }|{
-    _id: string,
     __t: 'FreeChoiceGroup',
     group: string,
+}|{
+    __t: 'ExternalExam',
 }
 
 export function useGetCurriculum(id:string|undefined) {
@@ -356,8 +354,9 @@ export type ProposalGet = {
 export type ProposalExamGet = 
     ProposalCompulsoryExamGet |
     ProposalCompulsoryGroupGet | 
-    ProposalFreeChoiceGet
-
+    ProposalFreeChoiceGroupGet |
+    ProposalFreeChoiceGet |
+    ProposalExternalExamGet
 
 export type ProposalCompulsoryExamGet = {
     __t: "CompulsoryExam",

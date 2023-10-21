@@ -15,7 +15,6 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {formatDate,displayAcademicYears} from '../modules/utils'
 import StateBadge from '../components/StateBadge'
-import { fn } from 'moment'
 
 export function EditProposalPage() {
     const { id } = useParams()
@@ -307,70 +306,77 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
     degree: DegreeGet,
     allExams: {[key: string]: ExamGet},
 }) {
-    const [chosenExams, setChosenExams] = useState<(ProposalExamGet|null)[][]>(fitExams(proposal.exams, curriculum))
-
     const groups = Object.fromEntries(
         Object.entries(degree.groups).map(([group_id, group_exams]) => {
             const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
             return [group_id, populated_exams]
         }))
 
-    console.log(JSON.stringify({chosenExams}))
+    const [chosenExams, setChosenExams] = useState<string[][]>(fitExams(proposal, curriculum))
+
+
+    // console.log(JSON.stringify({chosenExams,groups}))
 
     return <>
         {curriculum.years.map((yearExams, number) => <YearCard key={number} year={yearExams} number={number} allExams={allExams} chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}/>)}
     </>
 
-    function initExams(curriculum: CurriculumGet, allExams: {[key:string]: ExamGet}): (ProposalExamGet|null)[][] {
+    function initExams(curriculum: CurriculumGet, allExams: {[key:string]: ExamGet}): string[][] {
         return curriculum.years.map(year => year.exams.map(e => {
             if (e.__t === "CompulsoryExam") {
-                const exam = allExams[e.exam_id]
-                return {
-                    exam_name: exam.name,
-                    exam_code: exam.code,
-                    exam_credits: exam.credits,
-                    ...e,
-                }
-            } else return null
+                return e.exam_id
+            } else return ""
         }))
     }
 
-    function doExamsFit(exams: (ProposalExamGet|null)[][], curriculum: CurriculumGet) {
+    function doExamsFit(exams: string[][], curriculum: CurriculumGet) {
         if (exams.length !== curriculum.years.length) {
-            console.log("lengths do not match")
+            console.log("doExamsFit: year count does not match")
             return false
         }
 
         for (const [i, year] of exams.entries()) {
             const c_year = curriculum.years[i]
             if (year.length !== c_year.exams.length) {
-                console.log("year", i, "lengths do not matchhhh")
+                console.log("year", i, "doExamsFit: exam count in year ${i} does not match")
                 return false
             }
 
-            for(const [j, exam] of exams[i].entries()) {
+            for(const [j, exam_id] of exams[i].entries()) {
                 const c_exam = c_year.exams[j]
-                if (c_exam.__t === "CompulsoryExam" && (!exam || exam.exam_id === undefined  || exam.exam_id !== c_exam.exam_id)) {
-                    console.log("year", i, "exam", j, "compulsory exam does not match")
-                    return false
-                }
-
-                if (exam && (c_exam.__t === "CompulsoryGroup" || c_exam.__t === "FreeChoiceGroup") && !groups[c_exam.group].some(e => exam.exam_id !== undefined && e._id === exam.exam_id)) {
-                    console.log("year", i, "exam", j, "compulsory group does not match")
-                    return false
-                }
+                if (!doExamFit(exam_id, c_exam)) return false
             }
         }
 
         return true
     }
 
-    function fitExams(proposalExams: (ProposalExamGet|null)[][], curriculum: CurriculumGet) {
+    function doExamFit(exam_id: string, c_exam: CurriculumExamGet): boolean {
+        // console.log(JSON.stringify({exam_id, c_exam}))
+        switch(c_exam.__t) {
+            case "CompulsoryExam":
+                return exam_id === c_exam.exam_id
+            case "CompulsoryGroup":
+            case "FreeChoiceGroup":
+                return exam_id === '' || groups[c_exam.group].some(e => e._id === exam_id) 
+            case "FreeChoiceExam":
+                return exam_id === '' || allExams[exam_id] !== undefined
+            case "ExternalExam":
+                return true
+        }}
+
+    function fitExams(proposal: ProposalGet, curriculum: CurriculumGet) {
         console.log('fitting exams...')
+        let proposalExams = proposal.exams.map(year => year.map(exam => {
+            if (exam === null) return ""
+            if (exam.__t === "ExternalExam") return exam.exam_name
+            else return exam.exam_id
+        }))
         if (doExamsFit(proposalExams, curriculum)) return proposalExams
         // TODO: completa con un'euristica per fittare i vecchi esami nel nuovo curriculum
         console.log('exams do not fit: reset')
         proposalExams = initExams(curriculum, allExams)
+        console.log(`${JSON.stringify({proposalExams, curriculum})}`)
         assert(doExamsFit(proposalExams, curriculum))
         return proposalExams
     }
@@ -380,16 +386,16 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups 
     year: CurriculumGet['years'][0],
     number: number,
     allExams: {[key: string]: ExamGet},
-    chosenExams: (ProposalExamGet|null)[][],
-    setChosenExams: Dispatch<SetStateAction<(ProposalExamGet|null)[][]>>,
+    chosenExams: string[][],
+    setChosenExams: Dispatch<SetStateAction<string[][]>>,
     groups: {[key: string]: ExamGet[]},
 }) {
     const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
 
     let credits = 0
     for (const e of chosenExams[number]) {
-        if (e && allExams[e.exam_id])
-            credits += allExams[e.exam_id].credits
+        if (e && allExams[e])
+            credits += allExams[e].credits
     }
 
     const customHeader = <div className='d-flex justify-content-between align-content-center'>
@@ -400,7 +406,7 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups 
     </div>
 
     return <Card customHeader={customHeader} >
-        {year.exams.map((exam, examNumber) => <ExamSelect key={exam._id} exam={exam} allExams={allExams} groups={groups} chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}/>)}
+        {year.exams.map((exam, examNumber) => <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}/>)}
         <div className='d-flex flex-row-reverse'>
             <button className='btn btn-primary'>Aggiungi esame esterno</button>
             <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
@@ -420,10 +426,9 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
     exam: CurriculumExamGet,
     allExams: {[key: string]: ExamGet},
     groups: {[key: string]: ExamGet[]},
-    chosenExam: ProposalExamGet|null,
-    setExam: (e:(ProposalExamGet|null)) => void,
+    chosenExam: string,
+    setExam: (e:string) => void,
 }) {
-    // console.log(`ExamSelect(${JSON.stringify({exam, chosenExam})})`)
     if (exam.__t === "CompulsoryExam") {
         const compulsoryExam = allExams[exam.exam_id]
         return <li className='form-group exam-input'>
@@ -438,27 +443,16 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
                 </div>
             </div>
         </li>
-    } else if (exam.__t === "CompulsoryGroup") {
+    } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
         const options = groups[exam.group]
-
-        assert (!chosenExam || chosenExam.__t === "CompulsoryGroup")
-        // console.log(`CompulsoryGroup chosenExam: ${chosenExam?.exam_id}`)
 
         return <li className='form-group exam-input'>
             <div className='row'>
                 <div className='col-9'>
                     <select className='form-control'
-                        value={chosenExam ? chosenExam.exam_id : ''}
+                        value={chosenExam}
                         onChange={e => {
-                            const newExam = allExams[e.target.value]
-                            setExam({
-                                __t: "CompulsoryGroup",
-                                exam_id: newExam._id,
-                                exam_name: newExam.name,
-                                exam_code: newExam.code,
-                                exam_credits: newExam.credits,
-                                group: exam.group,
-                            })
+                            setExam(e.target.value)
                         }}
                     >
                         <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
@@ -466,7 +460,7 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
                     </select>
                 </div>
                 <div className="col-3">
-                    <input className='form-control col' readOnly value={chosenExam ? allExams[chosenExam.exam_id].credits : ""}/>
+                    <input className='form-control col' readOnly value={chosenExam ? allExams[chosenExam].credits : ""}/>
                 </div>
             </div>
         </li>
@@ -475,13 +469,15 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
         return <li className='form-group exam-input'>
             <div className='row'>
                 <div className='col-9'>
-                    <select className='form-control' >
-                        <option disabled value={-1}>Un esame a scelta libera</option>
+                    <select className='form-control' 
+                        value={chosenExam} 
+                        onChange={e => setExam(e.target.value)}>
+                        <option disabled value="">Un esame a scelta libera</option>
                         {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
                     </select>
                 </div>
                 <div className="col-2">
-                    <input className='form-control col' readOnly />
+                    <input className='form-control col' readOnly value={chosenExam?allExams[chosenExam].credits:""} />
                 </div>
                 <div className='col-1 btn my-auto'>
                     <i className='fas fa-trash'></i>
@@ -489,9 +485,5 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
             </div>
         </li>
     }
-}
-
-function isCompulsoryGroupExam(exm: ProposalExamGet|null): asserts exm is ProposalExamGet {
-    assert(exm !== null && exm.__t === "CompulsoryGroup")
 }
 
