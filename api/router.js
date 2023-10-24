@@ -128,6 +128,7 @@ router.get('/', response_envelope(req => "Hello there!"))
 
 router.get('/proposals', require_user, response_envelope(Proposals.index))
 router.get('/proposals/:id', require_user, response_envelope(Proposals.view))
+router.post('/proposals', require_user, response_envelope(Proposals.post))
 router.delete('/proposals/:id', require_user, response_envelope(Proposals.delete))    
 
 router.get('/forms', require_user, response_envelope(Forms.index))

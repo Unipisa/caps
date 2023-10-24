@@ -2,12 +2,12 @@ import React from "react";
 import Card from "./Card";
 import FA from "react-fontawesome";
 
-function FlashCard({className, message, onClick}:{
+export function FlashCard({className, message, onClick}:{
     className: string,
     message: string,
-    onClick: () => void
+    onClick?: () => void
 }) {
-    return <Card className={`border-left-${className} mb-2`} onClick={onClick}>
+    return <Card className={`border-left-${className} mb-2`} onClick={onClick?onClick:()=>{}}>
         <div className="d-flex align-middle">
             <div className="mr-auto">{message}</div>
             <div className="align-middle" style={{ cursor: 'pointer' }}>
@@ -17,7 +17,7 @@ function FlashCard({className, message, onClick}:{
     </Card>;
 }
 
-function Flash({ messages, onClick }) {
+export default function Flash({ messages, onClick }) {
     function classForType(type) {
         switch(type) {
             case 'error': return "danger";
@@ -34,5 +34,3 @@ function Flash({ messages, onClick }) {
             onClick={ onClick }
             />)
 }
-
-export default Flash;

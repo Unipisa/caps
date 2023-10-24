@@ -1,13 +1,14 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { useParams } from "react-router-dom"
-import {Button} from 'react-bootstrap' 
+import {Button, ButtonGroup} from 'react-bootstrap' 
 import assert from 'assert'
 
 import { useEngine,
-    useIndexExam, useGetProposal, 
+    useIndexExam, useGetProposal, usePostProposal,
     useIndexDegree, useIndexCurriculum, 
     useGetDegree, useGetCurriculum, useGetExam,
-    ExamGet, ProposalGet, ProposalExamGet, 
+    ExamGet, ProposalGet, ProposalExamGet, ProposalPost,
+    ProposalExamPost,
     CurriculumGet, CurriculumExamGet,
     DegreeGet,
 } from '../modules/engine'
@@ -15,6 +16,7 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import {formatDate,displayAcademicYears} from '../modules/utils'
 import StateBadge from '../components/StateBadge'
+import {FlashCard} from '../components/Flash'
 
 export function EditProposalPage() {
     const { id } = useParams()
@@ -312,24 +314,24 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
             return [group_id, populated_exams]
         }))
 
-    const [chosenExams, setChosenExams] = useState<string[][]>(fitExams(proposal, curriculum))
-
+    const [chosenExams, setChosenExams] = useState<ProposalExamPost[][]>(fitExams(proposal, curriculum))
 
     // console.log(JSON.stringify({chosenExams,groups}))
 
     return <>
         {curriculum.years.map((yearExams, number) => <YearCard key={number} year={yearExams} number={number} allExams={allExams} chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}/>)}
+        <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams}/>
     </>
 
-    function initExams(curriculum: CurriculumGet, allExams: {[key:string]: ExamGet}): string[][] {
+    function initExams(curriculum: CurriculumGet): ProposalExamPost[][] {
         return curriculum.years.map(year => year.exams.map(e => {
             if (e.__t === "CompulsoryExam") {
                 return e.exam_id
-            } else return ""
+            } else return null
         }))
     }
 
-    function doExamsFit(exams: string[][], curriculum: CurriculumGet) {
+    function doExamsFit(exams: ProposalExamPost[][], curriculum: CurriculumGet) {
         if (exams.length !== curriculum.years.length) {
             console.log("doExamsFit: year count does not match")
             return false
@@ -351,31 +353,32 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
         return true
     }
 
-    function doExamFit(exam_id: string, c_exam: CurriculumExamGet): boolean {
+    function doExamFit(exam: ProposalExamPost, c_exam: CurriculumExamGet): boolean {
         // console.log(JSON.stringify({exam_id, c_exam}))
+        const exam_id: string = typeof(exam) === 'string' ? exam : ''
+        const empty = exam === null
         switch(c_exam.__t) {
             case "CompulsoryExam":
-                return exam_id === c_exam.exam_id
+                return !empty && exam_id === c_exam.exam_id
             case "CompulsoryGroup":
             case "FreeChoiceGroup":
-                return exam_id === '' || groups[c_exam.group].some(e => e._id === exam_id) 
-            case "FreeChoiceExam":
-                return exam_id === '' || allExams[exam_id] !== undefined
-            case "ExternalExam":
-                return true
+                return empty || groups[c_exam.group].some(e => e._id === exam_id) 
         }}
 
     function fitExams(proposal: ProposalGet, curriculum: CurriculumGet) {
         console.log('fitting exams...')
-        let proposalExams = proposal.exams.map(year => year.map(exam => {
-            if (exam === null) return ""
-            if (exam.__t === "ExternalExam") return exam.exam_name
+        let proposalExams: ProposalExamPost[][] = proposal.exams.map(year => year.map(exam => {
+            if (exam === null) return null
+            if (exam.__t === "ExternalExam") return {
+                exam_name: exam.exam_name,
+                exam_credits: exam.exam_credits,
+            }
             else return exam.exam_id
         }))
         if (doExamsFit(proposalExams, curriculum)) return proposalExams
         // TODO: completa con un'euristica per fittare i vecchi esami nel nuovo curriculum
         console.log('exams do not fit: reset')
-        proposalExams = initExams(curriculum, allExams)
+        proposalExams = initExams(curriculum)
         console.log(`${JSON.stringify({proposalExams, curriculum})}`)
         assert(doExamsFit(proposalExams, curriculum))
         return proposalExams
@@ -386,16 +389,21 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups 
     year: CurriculumGet['years'][0],
     number: number,
     allExams: {[key: string]: ExamGet},
-    chosenExams: string[][],
-    setChosenExams: Dispatch<SetStateAction<string[][]>>,
+    chosenExams: ProposalExamPost[][],
+    setChosenExams: Dispatch<SetStateAction<ProposalExamPost[][]>>,
     groups: {[key: string]: ExamGet[]},
 }) {
     const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
 
     let credits = 0
     for (const e of chosenExams[number]) {
-        if (e && allExams[e])
-            credits += allExams[e].credits
+        if (e) {
+            if (typeof(e)==='string') {
+                credits += allExams[e].credits
+            } else {
+                credits += e.exam_credits
+            }
+        }
     }
 
     const customHeader = <div className='d-flex justify-content-between align-content-center'>
@@ -426,7 +434,7 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
     exam: CurriculumExamGet,
     allExams: {[key: string]: ExamGet},
     groups: {[key: string]: ExamGet[]},
-    chosenExam: string,
+    chosenExam: ProposalExamPost,
     setExam: (e:string) => void,
 }) {
     if (exam.__t === "CompulsoryExam") {
@@ -445,12 +453,13 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
         </li>
     } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
         const options = groups[exam.group]
+        const exam_id = typeof(chosenExam) === 'string' ? chosenExam : ''
 
         return <li className='form-group exam-input'>
             <div className='row'>
                 <div className='col-9'>
                     <select className='form-control'
-                        value={chosenExam}
+                        value={exam_id}
                         onChange={e => {
                             setExam(e.target.value)
                         }}
@@ -460,30 +469,71 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
                     </select>
                 </div>
                 <div className="col-3">
-                    <input className='form-control col' readOnly value={chosenExam ? allExams[chosenExam].credits : ""}/>
-                </div>
-            </div>
-        </li>
-    } else if (exam.__t === "FreeChoiceExam") {
-        const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
-        return <li className='form-group exam-input'>
-            <div className='row'>
-                <div className='col-9'>
-                    <select className='form-control' 
-                        value={chosenExam} 
-                        onChange={e => setExam(e.target.value)}>
-                        <option disabled value="">Un esame a scelta libera</option>
-                        {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
-                    </select>
-                </div>
-                <div className="col-2">
-                    <input className='form-control col' readOnly value={chosenExam?allExams[chosenExam].credits:""} />
-                </div>
-                <div className='col-1 btn my-auto'>
-                    <i className='fas fa-trash'></i>
+                    <input className='form-control col' readOnly value={chosenExam ? allExams[exam_id].credits : ""}/>
                 </div>
             </div>
         </li>
     }
 }
 
+function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
+    allExams: {[key:string]: ExamGet},
+    chosenExam: string,
+    setExam: (string) => void,
+}) {
+    const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
+    return <li className='form-group exam-input'>
+        <div className='row'>
+            <div className='col-9'>
+                <select className='form-control' 
+                    value={chosenExam} 
+                    onChange={e => setExam(e.target.value)}>
+                    <option disabled value="">Un esame a scelta libera</option>
+                    {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+                </select>
+            </div>
+            <div className="col-2">
+                <input className='form-control col' readOnly value={chosenExam?allExams[chosenExam].credits:""} />
+            </div>
+            <div className='col-1 btn my-auto'>
+                <i className='fas fa-trash'></i>
+            </div>
+        </div>
+    </li>
+}
+
+function Submit({proposal, curriculum, chosenExams}:{
+    proposal: ProposalGet,
+    curriculum: CurriculumGet,
+    chosenExams: ProposalExamPost[][],
+}) {
+    const poster = usePostProposal()
+
+    if (poster.isLoading) return <LoadingMessage />
+
+    return <>
+        {poster.isError && <FlashCard 
+            className="danger" 
+            message={`${poster.error} [${JSON.stringify(poster.data)}]`}
+            onClick={poster.reset}
+        />}
+        <ButtonGroup>
+            <Button variant="success" onClick={()=>submit('submitted')}>
+                sottometti il piano di studi
+            </Button>
+            <Button variant="primary" onClick={()=>submit('draft')}>
+                salva in bozza
+            </Button>
+        </ButtonGroup>
+    </>
+
+    function submit(state: "draft" | "submitted") {
+        poster.mutate({
+            _id: proposal._id || '',
+            curriculum_id: curriculum._id,
+            state,
+            exams: chosenExams,
+        })
+    }
+
+}

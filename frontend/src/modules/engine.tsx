@@ -191,11 +191,11 @@ export function useIndex<T>(path:string, query={}) {
     })
 }
 
-export function usePost(path: string) {
+export function usePost<T>(path: string) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data: T) => {
             return await axios.post(`${api_root}${path}`, data)
         },
         onSuccess: async () => {
@@ -313,12 +313,8 @@ export type CurriculumExamGet = {
     __t: 'CompulsoryGroup',
     group: string,
 }|{
-    __t: 'FreeChoiceExam',
-}|{
     __t: 'FreeChoiceGroup',
     group: string,
-}|{
-    __t: 'ExternalExam',
 }
 
 export function useGetCurriculum(id:string|undefined) {
@@ -401,8 +397,33 @@ export type ProposalExternalExamGet = {
 export interface ProposalAttachmentGet {
 }
 
+export type ProposalPost = {
+    _id: string,
+    curriculum_id: string,
+    state: 'draft'|'submitted',
+    exams: ProposalExamPost[][], // year-> n -> exam_id|name
+}
+
+/**
+ * null: un esame non scelto (perché opzionale)
+ * ExamId: id dell'esame scelto
+ * ExternalExamPost: nome e crediti di un esame esterno
+ */
+export type ProposalExamPost = null | ExamId | ExternalExamPost
+
+export type ExamId = string
+
+export type ExternalExamPost = {
+    exam_name: string,
+    exam_credits: number,
+}
+
 export function useGetProposal(id:string|undefined) {
     return useGet<ProposalGet>('proposals/', id) 
+}
+
+export function usePostProposal() {
+    return usePost<ProposalPost>('proposals/')
 }
 
 export function useIndexProposal(query={}) {
