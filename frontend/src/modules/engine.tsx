@@ -315,6 +315,8 @@ export type CurriculumExamGet = {
 }|{
     __t: 'FreeChoiceGroup',
     group: string,
+}|{
+    __t: 'FreeChoiceExam',
 }
 
 export function useGetCurriculum(id:string|undefined) {

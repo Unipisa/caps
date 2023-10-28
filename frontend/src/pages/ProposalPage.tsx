@@ -346,7 +346,10 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
 
             for(const [j, exam_id] of exams[i].entries()) {
                 const c_exam = c_year.exams[j]
-                if (!doExamFit(exam_id, c_exam)) return false
+                if (!doExamFit(exam_id, c_exam)) {
+                    console.log("year", i, "exam", j, "doExamsFit: exam does not fit")
+                    return false
+                }
             }
         }
 
@@ -362,7 +365,9 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
                 return !empty && exam_id === c_exam.exam_id
             case "CompulsoryGroup":
             case "FreeChoiceGroup":
-                return empty || groups[c_exam.group].some(e => e._id === exam_id) 
+                return empty || groups[c_exam.group].some(e => e._id === exam_id)
+            case "FreeChoiceExam":
+                return true
         }}
 
     function fitExams(proposal: ProposalGet, curriculum: CurriculumGet) {
@@ -473,20 +478,23 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
                 </div>
             </div>
         </li>
+    } else if (exam.__t === "FreeChoiceExam") {
+        return <FreeChoiceExamSelect allExams={allExams} chosenExam={chosenExam} setExam={setExam}/>
     }
 }
 
 function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
     allExams: {[key:string]: ExamGet},
-    chosenExam: string,
+    chosenExam: ProposalExamPost,
     setExam: (string) => void,
 }) {
     const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
+    assert (chosenExam === null || typeof(chosenExam) === 'string')
     return <li className='form-group exam-input'>
         <div className='row'>
             <div className='col-9'>
                 <select className='form-control' 
-                    value={chosenExam} 
+                    value={chosenExam || ''} 
                     onChange={e => setExam(e.target.value)}>
                     <option disabled value="">Un esame a scelta libera</option>
                     {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
