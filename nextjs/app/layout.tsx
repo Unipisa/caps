@@ -25,9 +25,11 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body>
-        <NavBar />
-        <div className="d-flex flex-column">
-          {children}
+        <div className="d-flex">
+            <NavBar />
+          <div className="d-flex flex-column">
+            {children}
+          </div>
         </div>
       </body>
     </html>

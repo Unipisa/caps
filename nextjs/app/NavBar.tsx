@@ -18,7 +18,7 @@ export default function NavBar() {
         <div className="sidebar-brand-text mx-3">CAPS<sup>2.12.2</sup></div>
     </a>
     <div className="d-flex justify-content-center">
-        <div className="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style={{fontSize: "0.7rem;"}}>
+        <div className="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style={{fontSize: "0.7rem"}}>
             Matematica        </div>
     </div>
     
