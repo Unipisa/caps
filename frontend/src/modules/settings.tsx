@@ -3,4 +3,4 @@ const settings = {
     root_url: "/"
 }
 
-export default settings;
+export default settings

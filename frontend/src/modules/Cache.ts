@@ -1,4 +1,5 @@
-class Cache {
+export default class Cache {
+    storage: any
     constructor() {
         this.storage = {}
     }
@@ -11,5 +12,3 @@ class Cache {
         return r
     }
 }
-
-export default Cache;

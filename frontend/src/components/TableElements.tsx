@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { useState, Children } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dropdown } from 'react-bootstrap'
@@ -8,12 +6,15 @@ import { CSVDownload, CSVLink } from 'react-csv'
 import { useQuery } from './QueryTable'
 import { useEngine } from '../modules/engine'
 
-export function ItemAddButton({ to, children }) {
+export function ItemAddButton({ to, children }:{
+    to?: string,
+    children?: any,
+}) {
     const navigate = useNavigate()
 
     return <button type="button" 
         className="btn btn-sm btn-primary mr-2"
-        onClick={() => navigate(to)}
+        onClick={() => to ? navigate(to) : navigate('edit/__new__')}
     >
         <i className="fas fa-plus"></i>
         <span className="d-none d-md-inline ml-2">
@@ -23,8 +24,10 @@ export function ItemAddButton({ to, children }) {
 }
 
 export function FilterInput({ name, label }) {
-    const { query, setQuery } = useQuery()
-    const [ my_value, setValue ] = useState(query[name] || "");
+    const ctx = useQuery()
+    if (!ctx) return null
+    const { query, setQuery } = ctx 
+    const [ my_value, setValue ] = useState(query[name] || "")
 
     function onChange(e) {
         setQuery({...query, [name]: my_value })
@@ -47,6 +50,7 @@ export function FilterInput({ name, label }) {
 }
 
 export function FilterSelect({name, label, value, onChange, children}) {
+    // TODO: incomplete
     return <div className="input form-group">
                 <label htmlFor={name}>{label}</label>
                 <select className="form-control" name={name} value={value} onChange={onChange}>
@@ -55,16 +59,26 @@ export function FilterSelect({name, label, value, onChange, children}) {
             </div>
 }
 
-export function FilterCheckbox({name, label, value, onChange }) {
+export function FilterCheckbox({name, label}) {
+    const ctx = useQuery()
+    if (!ctx) return null
+    const { query, setQuery } = ctx
+    const [ checked, setChecked ] = useState(query[name] || false);
     return <div className="input form-group">
         <label htmlFor={name}>{label}</label>
-        <input type="checkbox" className="form-control" name={name} value={value} onChange={onChange}/>
+        <input type="checkbox" className="form-control" name={name} checked={checked} 
+            onChange={() => {
+                setChecked(!checked);
+                setQuery({...query, [name]: !checked })
+            }}/>
     </div>
 }
 
 export function FilterButton({ children }) {
     const engine = useEngine()
-    const { query, setQuery } = useQuery()
+    const ctx = useQuery()
+    if (!ctx) return null
+    const { query, setQuery } = ctx
     const [open, setOpen ] = useState(false);
     return <Dropdown className="mr-2" show={ open }>
         <Dropdown.Toggle className="btn-sm" variant="primary" onClick={ () => setOpen(!open) }>
@@ -104,12 +118,16 @@ export function TableTopRightButtons({ children }) {
     </>
 }
 
-export function CsvDownloadButton({ Model }) {
-    const { query } = useQuery()
-    const [ csvData, setCsvData ] = useState(null);
+export function CsvDownloadButton({ cb }: {
+    cb: (IQuery) => Promise<any>
+}) {
+    const ctx = useQuery()
+    if (!ctx) return null
+    const { query } = ctx 
+    const [ csvData, setCsvData ] = useState<any>(null)
 
     async function onClick() {
-        setCsvData(await Model.csvData(query));
+        setCsvData(await cb(query))
     }
 
     return <>

@@ -1,5 +1,3 @@
-'use strict'
-
 import React from "react";
 
 import { default as BootStrapCard } from 'react-bootstrap/Card';
@@ -26,10 +24,15 @@ function classWithDefault(className, defaultClass) {
 export default function Card({
     className,
     title,
-    // titleClass,
-    // titleBg,
+    customHeader,
     onClick,
     children
+}:{
+    className?: string,
+    title?: string,
+    customHeader?: JSX.Element,
+    onClick?: () => void,
+    children?: React.ReactNode,
 }) {
     let cardClass = classWithDefault(className, 'shadow my-2');
     // let headerClass = titleBg || 'bg-primary';
@@ -38,11 +41,15 @@ export default function Card({
     let titleClass = 'text-white';
 
     return <BootStrapCard className={cardClass} onClick={onClick}>
-        {title &&
+        {
+            (customHeader || title) &&
             <BootStrapCard.Header className={headerClass}>
-                <h5 className={titleClass}>
-                    {title}
-                </h5>
+                { customHeader
+                    ? <>{customHeader}</>
+                    : <h5 className={titleClass}>
+                            {title}
+                        </h5>
+                }
             </BootStrapCard.Header>
         }
         <BootStrapCard.Body>

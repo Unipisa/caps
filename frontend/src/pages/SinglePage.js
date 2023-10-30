@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import {
-    BrowserRouter, Routes, Route, Link
+    BrowserRouter, Routes, Route
 } from "react-router-dom"
 
 import {useCreateEngine, EngineProvider} from '../modules/engine'
 
 import ProposalsPage from "./ProposalsPage"
-import { default as ProposalPage, EditProposalPage } from "./ProposalPage"
+import { default as ProposalPage, EditProposalPage, NewProposalPage } from "./ProposalPage"
 import FormsPage from "./FormsPage"
 import FormPage from "./FormPage"
 import DegreesPage from "./DegreesPage"
@@ -14,7 +14,7 @@ import DegreePage from "./DegreePage"
 import CurriculaPage from "./CurriculaPage"
 import CurriculumPage from "./CurriculumPage"
 import FormTemplatesPage from './FormTemplatesPage'
-import FormTemplatePage from './FormTemplatePage'
+import { default as FormTemplatePage, EditFormTemplatePage, AddFormTemplatePage } from './FormTemplatePage'
 import ExamsPage from "./ExamsPage"
 import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
@@ -72,8 +72,9 @@ function SinglePageInternal () {
                             <Route path="/curricula/:id" element={<CurriculumPage/>}/>
                             <Route path="/form_templates/:id" element={<FormTemplatePage/>}/>
                             <Route path="/form_templates" element={<FormTemplatesPage/>}/>
+                            <Route path="/form_templates/edit/:id" element={<EditFormTemplatePage/>}/>
+                            <Route path="/form_templates/edit" element={<AddFormTemplatePage/>} />
                             <Route path="/exams/edit/:id" element={<EditExamPage/>}/>
-                            <Route path="/exams/edit" element={<AddExamPage/>} />
                             <Route path="/exams/:id" element={<ExamPage/>}/>
                             <Route path="/exams" element={<ExamsPage/>}/>
                             <Route path="/users" element={<UsersPage/>}/>

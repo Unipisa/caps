@@ -1,25 +1,23 @@
-'use strict';
-
 import React from 'react'
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { useEngine, useGet, useIndex, useDelete } from '../modules/engine'
+import { useEngine, useGet, useIndexProposal, useDeleteProposal } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
-import User from '../models/User'
-import Proposal from '../models/Proposal'
 import { ItemAddButton } from '../components/TableElements'
 import Comments from '../components/Comments'
+
+const path = "/users/"
 
 export default function UserPage() {
     const { id } = useParams()
     const engine = useEngine()
-    const userQuery = useGet(User, id)
+    const userQuery = useGet(path, id || '')
 
     if (userQuery.isLoading) return <LoadingMessage>caricamento utente...</LoadingMessage>
     if (userQuery.isError) return <div>errore caricamento utente</div>
 
-    const user = userQuery.data
+    const user: any = userQuery.data
 
     return <>
         <Card>
@@ -33,7 +31,7 @@ export default function UserPage() {
 
         <h2 className='d-flex mt-4'>
             <span className='mr-auto'>Piani di studio</span>
-            <ItemAddButton to="/proposals/new">Nuovo piano di studi</ItemAddButton>
+            <ItemAddButton to="/proposals/edit/__new__">Nuovo piano di studi</ItemAddButton>
         </h2>
         <Proposals id={id} />
 
@@ -50,9 +48,9 @@ export default function UserPage() {
 }
 
 function Proposals({id}) {
-    const proposalsQuery = useIndex(Proposal, { user_id: id })
-    if (proposalsQuery.isLoading) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
+    const proposalsQuery = useIndexProposal({ user_id: id })
     if (proposalsQuery.isError) return <div>errore caricamento piani di studio</div> 
+    if (!proposalsQuery.data) return <LoadingMessage>caricamento piani di studio...</LoadingMessage>
 
     const proposals = proposalsQuery.data.items
 
@@ -72,8 +70,9 @@ function Proposals({id}) {
 }
 
 function ProposalCard({proposal}) {
+    const navigate = useNavigate()
     const engine = useEngine()
-    const deleter = useDelete(Proposal, proposal._id)
+    const deleter = useDeleteProposal(proposal._id)
 
     async function deleteProposal() {
         engine.modalConfirm("Elimina piano di studi", "confermi di voler eliminare il piano di studi?")
@@ -102,7 +101,7 @@ function ProposalCard({proposal}) {
     }[proposal.state]
 
     return <div className='my-2 col-xxl-3 col-xl-4 col-lg-6 col-12'>
-        <Card title={proposal.degree_name} className="clickable-card">
+        <Card title={proposal.degree_name} className="clickable-card" onClick={() => navigate(`/proposals/${proposal._id}`)}>
             <div className='d-flex justify-content-between'>
                 <div>
                     <span className={`badge badge-${stateClass}`}>{state}</span>
@@ -110,17 +109,13 @@ function ProposalCard({proposal}) {
                 <div className='btn-group'>
                     {
                         proposal.state === "draft"
-                        ? (
-                            <>
+                        ? <>
                                 <Link className='btn btn-primary' to={`/proposal/edit/${proposal._id}`}><i className='fas fa-edit' /></Link>
                                 <div className='btn btn-danger' onClick={deleteProposal}>
                                     <i className='fas fa-times-circle'/>
                                 </div>
-                            </>
-                        )
-                        : (
-                            <Link className='btn btn-primary' to={`/proposal/duplicate/${proposal._id}`}><i className='fas fa-copy' /></Link>
-                        )
+                          </>
+                        : <Link className='btn btn-primary' to={`/proposal/duplicate/${proposal._id}`}><i className='fas fa-copy' /></Link>
                     }
                 </div>
             </div>

@@ -7,6 +7,8 @@ import Flash from "../components/Flash"
 export default function Login({}) {
     const engine = useEngine()
 
+    if (!engine) return null
+
     return <div className="container">
         <div className="row justify-content-center">
             <div className="col-xl-6 col-lg-6 col-md-9">
@@ -51,7 +53,7 @@ function UnipiLogin({}) {
         </div>
         <div className="card-body">
             <p>Effettua il login usando le credenziali di Ateneo.</p>
-            <Button onClick={() => engine.start_oauth2()}><i className="fas fa-key mr-2" /> Login</Button>
+            <Button onClick={() => engine?.start_oauth2()}><i className="fas fa-key mr-2" /> Login</Button>
         </div>
     </div>
 }
@@ -61,13 +63,14 @@ function LocalLogin({}) {
     const [username, setUsername] = React.useState("")
     const [password, setPassword] = React.useState("")
     return <>
-        <div className="card-header"  data-toggle="collapse" href="#local-login" role="button" aria-expanded="false" aria-controls="local-login">
+        <div className="card-header"  data-toggle="collapse" role="button" aria-expanded="false" aria-controls="local-login">
             <div className="d-flex flex-row">
                 <i className="mr-3 mt-auto mb-auto fa fa-chevron-down"></i>
                 <div>Credenziali locali</div>
             </div>
         </div>
-        <div id="local-login" className="collapse">
+        <div id="local-login" className="collapse_"> 
+            {/* collapse not working anymore !?!*/}
             <div className="card-body">
                     <div className="input form-group">
                         <label htmlFor="username">Username</label>
@@ -90,7 +93,7 @@ function LocalLogin({}) {
 
     async function login() {
         try {
-            await engine.login(username, password)
+            await engine?.login(username, password)
         } catch(err) {
             console.error(err)
         }

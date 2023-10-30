@@ -10,6 +10,7 @@ const fields = {
     "enabled": {
         can_filter: true,
         can_sort: true,
+        match_boolean: true,
     }
 };
 
@@ -23,6 +24,12 @@ const FormTemplatesController = {
     view: async req => {
         const { id } = req.params
         return await ModelController.view(FormTemplate, id)
+    },
+
+    patch: async req => {
+        const { id } = req.params
+        const data = req.body
+        return await ModelController.patch(FormTemplate, id, data)
     },
 
     post: async req => {

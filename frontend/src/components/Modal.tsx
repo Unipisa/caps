@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react"
 
 function Modal({ title, content, callback }) {
-    const show = !!content; 
-    title ||= "conferma";
-    callback ||= () => {};
+    const show = !!content
+    title ||= "conferma"
+    callback ||= () => {}
     return <>
         <div style={{ 
                 position: "fixed", 
@@ -18,7 +18,7 @@ function Modal({ title, content, callback }) {
             }}>
             &nbsp;
         </div>
-        <div className={"modal" + (show ? " d-block" : "") } tabIndex="-1" role="dialog">
+        <div className={"modal" + (show ? " d-block" : "") } role="dialog">
             <div className="modal-dialog" role="document">
             <div className="modal-content">
                 <div className="modal-header">

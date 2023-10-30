@@ -35,7 +35,8 @@ const fields = {
     }, 
     "admin": {
         can_filter: true,
-        can_sort: true
+        can_sort: true,
+        match_boolean: true,
     }
 }
 

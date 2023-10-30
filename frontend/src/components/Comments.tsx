@@ -1,15 +1,12 @@
-'use strict';
-
 import React, { useState } from 'react'
+import assert from 'assert'
 
 import { useEngine, useIndex, useDelete, usePost } from "../modules/engine"
-import Attachment from "../models/Attachment"
-import Comment from "../models/Comment"
 import Card from "./Card";
 import LoadingMessage from '../components/LoadingMessage'
 
 export default function Comments({object_id}) {
-    const commentsQuery = useIndex(Comment, { object_id })
+    const commentsQuery = useIndex('comments/', { object_id })
 
     if (commentsQuery.isLoading) return <LoadingMessage>caricamento commenti...</LoadingMessage>
     if (commentsQuery.isError) return <div>errore caricamento commenti</div>    
@@ -27,19 +24,16 @@ export default function Comments({object_id}) {
     </>
 }
 
-function CommentCard({ comment, userUpdater }) {
+function CommentCard({ comment, userUpdater }: 
+    { 
+        comment: any, 
+        userUpdater?: (user: Comment) => void 
+    }) {
     const engine = useEngine()
-    const deleter = useDelete(Comment, comment._id)
+    const deleter = useDelete('comments/', comment._id)
 
-    function deleteComment() {
-        engine.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
-            .then(confirm => {
-                if (confirm) {
-                    deleter.mutate(null)
-                }
-            })
-        
-    }
+    if (!engine) return null
+
     return <>
         <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
             <div>
@@ -50,6 +44,16 @@ function CommentCard({ comment, userUpdater }) {
             <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
         </div>
     </>
+
+    function deleteComment() {
+        engine?.modalConfirm("Elimina commento", "confermi di voler eliminare il commento?")
+            .then(confirm => {
+                if (confirm) {
+                    deleter.mutate()
+                }
+            })
+        
+    }    
 }
 
 /**
@@ -62,11 +66,11 @@ function CommentCard({ comment, userUpdater }) {
 */
 function CommentWidget({object_id}) {
     const engine = useEngine()
-    const attachmentInserter = usePost(Attachment)
-    const commentInserter = usePost(Comment)
+    const attachmentInserter = usePost('attachments/')
+    const commentInserter = usePost('comments/')
     const [text, setText] = useState("")
-    const [files, setFiles] = useState([])
-    const [error, setError] = useState({})
+    const [files, setFiles] = useState<number[]>([])
+    const [error, setError] = useState<any>({})
 
     function addFile() {
         setError({})
@@ -88,11 +92,14 @@ function CommentWidget({object_id}) {
         for (const id of files) {
             // TODO: vedi se c'è un modo migliore di recuperare l'input che non
             // sia tramite document.getElementById
-            const file = document.getElementById(`allegato-${id}`).files[0]
+            const el = document.getElementById(`allegato-${id}`) as HTMLInputElement
+            if (!el) continue
+            if (!el.files) continue   
+            const file = el.files[0]
             if (file !== undefined) data.append(`allegato-${id}`, file, file.name)
         }
 
-        attachmentInserter.mutate(data, {
+        attachmentInserter.mutate(data as any, {
             onSuccess: (res) => {
                 const attachmentIds = res.data
                 const comment = {
@@ -100,22 +107,22 @@ function CommentWidget({object_id}) {
                     content: text,
                     attachments: attachmentIds
                 }
-                commentInserter.mutate(comment, {
+                commentInserter.mutate(comment as any, {
                     onSuccess: (commentId) => {
                         setText("")
                         setFiles([])
                         setError({})
                     },
                     onError: (err) => {
-                        engine.flashError(`${err}`)
+                        engine?.flashError(`${err}`)
                     }
                 })
             },
-            onError: (err) => {
-                if (err.code === 422) {
+            onError: (err:any) => {
+                if (err?.code === 422) {
                     setError(err)
                 } else {
-                    engine.flashError(`${err}`)
+                    engine?.flashError(`${err}`)
                 }
             }
         })
@@ -137,7 +144,7 @@ function CommentWidget({object_id}) {
                 }
             </div>
             {error &&
-                <div className="text-danger">{error.message}</div>
+                <div className="text-danger">{error?.message}</div>
             }        
             <div className="d-flex justify-content-between">
                 <button className="btn btn-primary" onClick={addFile}>

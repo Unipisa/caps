@@ -67,8 +67,10 @@ const CurriculumFreeChoiceGroup = CurriculumExam.discriminator("FreeChoiceGroup"
     
 exports.CurriculumFreeChoiceGroup = CurriculumFreeChoiceGroup
 
+/*
 const CurriculumFreeChoiceExam = CurriculumExam.discriminator("FreeChoiceExam", new mongoose.Schema(
      {}
 ))
 
 exports.CurriculumFreeChoiceExam = CurriculumFreeChoiceExam;
+*/

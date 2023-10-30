@@ -1,11 +1,28 @@
-'use strict';
-
-import React from 'react'
+import React, {useState} from 'react'
 import { Card, Button } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
+import axios from 'axios'
 
-export default function SettingsPage({engine}) {
-    const settings = {}
+import { useIndex } from '../modules/engine'
+import LoadingMessage from '../components/LoadingMessage'
+
+export default function SettingsPage({}) {
+    const query = useIndex('settings', {})
+    if (query.isLoading) return <LoadingMessage>caricamento settings</LoadingMessage>
+    const settings = query.data
+    return <SettingsInternal settings={settings} submit={submit}/>
+
+    async function submit(data) {
+        await axios.post('/api/v0/settings', data)
+        // query.mutate() // ERROR: query.mutate is not a function
+    }
+}
+
+function SettingsInternal({settings, submit}:{
+    settings: any,
+    submit: (data: any) => void,
+}) {
+    const [data, setData] = useState(settings)
     return <div>
         <h1>Impostazioni</h1>
         <Form>
@@ -13,71 +30,79 @@ export default function SettingsPage({engine}) {
             <Card.Header>
                 <Card.Title>Generali</Card.Title>
             </Card.Header>
-            <Group controlId="caps-setting-disclaimer" label="Disclaimer">
+            <Group label="Disclaimer">
                 <Description>Questa scritta, se non vuota, viene mostrata in cima ad ogni pagina</Description>
-                <textarea id="caps-setting-disclaimer" name="disclaimer">
-                    {settings['disclaimer']}
-                </textarea>
+                <textarea value={data.disclaimer} onChange={setter("disclaimer")}/>
             </Group>
 
-            <Group controlId="caps-setting-cds" label="Corso di studi">
-                <input id="caps-setting-cds" type="text" name="cds" value={settings['cds']} />
+            <Group label="Corso di studi">
+                <input value={data.cds} onChange={setter("cds")}/>
             </Group>
 
-            <Group controlId="caps-setting-department" label="Dipartimento">
-                <input id="caps-setting-department" type="text" name="department" value={settings['department']} />
+            <Group label="Dipartimento">
+                <input value={data.department} onChange={setter("department")}/>
             </Group>
             
-            <Group controlId="caps-setting-user-instructions" label="Istruzioni per l'utente">
+            <Group label="Istruzioni per l'utente">
                 <Description>Queste istruzioni vengono mostrate all'utente appena dopo il login, nella pagina
                     dove sono visibili tutti i piani di studio presentati.
                 </Description>
-                <textarea id="caps-setting-user-instructions"
-                name="user-instructions" class="form-control caps-settings-html">
-                    { settings['user-instructions'] }
-                </textarea>
+                <textarea value={data.userInstructions} onChange={setter("userInstructions")} />
             </Group>
-    </Card>
-    
-    
-    <Card>
+        </Card>
+
+        <Card>
         <Card.Header>
             <Card.Title>Piani di studio</Card.Title>
         </Card.Header>
-        <Group controlId="caps-setting-notified-emails" label="Notifiche e-mail">
+        <Group label="Notifiche e-mail">
             <Description>
                 Questo campo contiene una lista di indirizzi e-mail, separati da virgole, che vengono
                 notificati ad ogni nuova sottomissione e approvazione di un piano di studio.
             </Description>
-            <input id="caps-setting-notified-emails" type="text" class="form-control" name="notified-emails" value={settings['notified-emails']} />
+            <input value={data.notifiedEmails} onChange={setter("notifiedEmails")}/>
         </Group> 
 
-        <Group controlId="caps-setting-signature-text" label="Firma per i piani">
+        <Group label="Firma per i piani">
             <Description>Questa firma viene apposta su ogni piano approvato, quando si
             seleziona il pulsante "Stampa piano".
             </Description>
-            <input id="caps-setting-signature-text" type="text" class="form-control" name="approval-signature-text" value={settings['approval-signature-text']} />
+            <input value={data.approvalSignatureText} onChange={setter("approvalSignatureText")}/>
         </Group>
 
-        <Group controlId="caps-setting-pdf-name" label="Nome dei file .pdf">
+        <Group label="Nome dei file .pdf">
             <Description>È possibile configurare il nome per i file .pdf che vengono
                 scaricati cliccando su "Scarica in PDF" nella pagina di un piano di studio. Le stringhe '%d', '%s',
                 '%n' e '%c' vengono sostituite con la data di ultima modifica, il cognome, il nome, e il curriculum,
                 rispettivamente. Non è necessario includere l'estensione .pdf.
             </Description>
-            <input id="caps-setting-pdf-name" type="text" class="form-control" name="pdf-name" value={settings['pdf-name']} />
+            <input value={data.pdfName} onChange={setter("pdfName")}/>
         </Group>
-    </Card>
-    <Button>Salva impostazioni</Button>
-    </Form>
+        </Card>
+        <Button onClick={() => submit(data)}>Salva impostazioni</Button>
+        </Form>
     </div>
+
+    function setter(field) {
+        return function(el) {
+            setData({...data, [field]: el.target.value})
+        }
+    }
 }
 
-function Description({children}) {
+function Description({children}:{
+    children: any
+}) {
     return <div>{children}</div>
 }
 
-function Group({ controlId, label, validationError, children, ...controlProps }) {
+function Group({ controlId, label, validationError, children, ...controlProps }:{
+    controlId?: string,
+    label: string,
+    validationError?: string,
+    children?: any,
+    controlProps?: any
+}) {
     return (
         <Form.Group className="mb-3" controlId={controlId} >
         <Form.Label><h4>{label}</h4></Form.Label><br />

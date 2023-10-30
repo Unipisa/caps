@@ -1,18 +1,16 @@
-'use strict';
-
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
 import { useEngine, useGet, useIndex } from '../modules/engine'
-import api from '../modules/api'
-import Degree from '../models/Degree'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
-import Exam from '../models/Exam';
+
+const exam_path = '/exams/'
+const degree_path = '/degrees/'
 
 function Group({ name, exam_ids }) {
     const engine = useEngine()
-    const query = useIndex(Exam, {'ids': exam_ids.join(",")})
+    const query = useIndex(exam_path, {'ids': exam_ids.join(",")})
 
     if (query.isLoading) return <tr>
         <th>{ name }</th>
@@ -33,7 +31,7 @@ function Group({ name, exam_ids }) {
 
 export default function DegreePage() {
     const { id } = useParams();
-    const query = useGet(Degree, id)
+    const query = useGet(degree_path, id || '')
 
     if (query.isLoading) return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
     if (query.isError) return <div>errore caricamento corso di studi</div>
@@ -59,7 +57,7 @@ export default function DegreePage() {
 
                 <div className="flex-fill"></div>
 
-                <div className="btn btn-sm btn-primary mr-2" type="button" >
+                <div className="btn btn-sm btn-primary mr-2" >
                     <i className="fas fa-download mr-2"></i> Esporta in CSV
                 </div>
             </div>

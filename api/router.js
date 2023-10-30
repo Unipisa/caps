@@ -14,6 +14,7 @@ const Attachments = require('./controllers/AttachmentController')
 const Comments = require('./controllers/CommentController')
 const User = require('./models/User')
 const UserController = require('./controllers/UsersController')
+const settingsController = require('./controllers/SettingsController')
 
 const router = new express.Router()
 
@@ -127,6 +128,7 @@ router.get('/', response_envelope(req => "Hello there!"))
 
 router.get('/proposals', require_user, response_envelope(Proposals.index))
 router.get('/proposals/:id', require_user, response_envelope(Proposals.view))
+router.post('/proposals', require_user, response_envelope(Proposals.post))
 router.delete('/proposals/:id', require_user, response_envelope(Proposals.delete))    
 
 router.get('/forms', require_user, response_envelope(Forms.index))
@@ -141,6 +143,8 @@ router.get('/curricula/:id', require_user, response_envelope(Curricula.view))
 
 router.get('/form_templates/', require_admin, response_envelope(FormTemplates.index))
 router.get('/form_templates/:id', require_admin, response_envelope(FormTemplates.view))
+router.post('/form_templates', require_admin, response_envelope(FormTemplates.post))
+router.patch('/form_templates/:id', require_admin, response_envelope(FormTemplates.patch))
 
 router.get('/exams/:id', require_user, response_envelope(Exams.view))
 router.get('/exams', require_user, response_envelope(Exams.index))
@@ -161,6 +165,9 @@ router.post('/attachments', require_user, Attachments.postMiddleware, response_e
 router.get('/comments', require_user, response_envelope(Comments.index))
 router.post('/comments', require_user, response_envelope(Comments.post))
 router.delete('/comments/:id', require_user, response_envelope(Comments.delete))
+
+router.get('/settings', require_admin, response_envelope(settingsController))
+router.post('/settings', require_admin, response_envelope(settingsController))
 
 router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
 

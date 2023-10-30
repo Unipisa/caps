@@ -14,7 +14,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
     let filter = {};
     let sort = "_id";
     let direction = 1;
-    let limit = 100;
+    let limit = Number.MAX_SAFE_INTEGER;
 
     for (key in query) {
         const value = query[key];
@@ -42,7 +42,16 @@ function queryFieldsToPipeline(query={}, fields={}) {
                     $in: value.split(",").map(id => new mongoose.Types.ObjectId(id))
                 };
             } else if (field.match_id_object) {
-                $match[key] = mongoose.Types.ObjectId(value);
+                $match[key] = new mongoose.Types.ObjectId(value);
+            } else if (field.match_boolean) {
+                const v = {
+                    "true": true, 
+                    "false": false,
+                    "0": false,
+                    "1": true,
+                }[value]
+                if (v === undefined) throw new BadRequestError(`invalid boolean value ${value}`)
+                $match[key] = v
             } else {
                 $match[key] = value;
             }
@@ -79,6 +88,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
             match: {$literal: $match},
         }},
     ]
+    console.log(`queryFieldsToPipeline ${JSON.stringify(query)} => ${JSON.stringify(pipeline)}`)
     return pipeline
 }
 
@@ -113,9 +123,12 @@ const ModelController = {
 
     view: async (Model, id, { populate } = {}) => {
         try {
-            const obj = (id === '__new__') ? new Model() : await Model.findById(id)
-            if (populate !== undefined) return await obj.populate(populate)
-            else return obj
+            const empty = id === '__new__'
+            let obj = empty ? new Model() : await Model.findById(id)
+            if (populate !== undefined) obj = await obj.populate(populate)
+            obj = obj.toObject()
+            if (empty) obj._id = undefined
+            return obj
         } catch(err) {
             console.log(`not found ${id}`)
             throw new NotFoundError()

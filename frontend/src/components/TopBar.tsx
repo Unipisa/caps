@@ -3,12 +3,11 @@ import { Link } from "react-router-dom"
 import { Button } from 'react-bootstrap'
 import { useEngine } from '../modules/engine'
 
-
 export default function TopBar() {
     const engine = useEngine()
+    if (!engine) return null
     return <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-    
+   
     <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3">
         <svg className="svg-inline--fa fa-bars fa-w-14" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="bars" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path></svg>
     </button>

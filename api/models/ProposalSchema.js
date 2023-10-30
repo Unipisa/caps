@@ -11,17 +11,21 @@ ProposalSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    curriculum_id: {
+    degree_id : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Curriculum'
-    },
-    curriculum_name: {
-        type: String,
+        ref: 'Degree'
     },
     degree_academic_year: {
         type: Number,
     },
     degree_name: {
+        type: String,
+    },
+    curriculum_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Curriculum'
+    },
+    curriculum_name: {
         type: String,
     },
     user_id: {
@@ -60,7 +64,10 @@ ProposalSchema = new mongoose.Schema({
         type: Date,
     },
     exams: [
-        ProposalExamSchema
+        // Il primo array itera sugli anni. Il secondo array itera sugli esami di quell'anno
+        [
+            ProposalExamSchema
+        ]
     ],
     attachments: [
         ProposalAttachmentSchema
@@ -80,7 +87,7 @@ exports.ProposalCompulsoryExam = ProposalExam.discriminator("CompulsoryExam", ne
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
 
 exports.ProposalCompulsoryGroup = ProposalExam.discriminator("CompulsoryGroup", new mongoose.Schema(
@@ -88,12 +95,13 @@ exports.ProposalCompulsoryGroup = ProposalExam.discriminator("CompulsoryGroup", 
         group: String,
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true,
         },
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
 
 exports.ProposalFreeChoiceGroup = ProposalExam.discriminator("FreeChoiceGroup", new mongoose.Schema(
@@ -101,24 +109,26 @@ exports.ProposalFreeChoiceGroup = ProposalExam.discriminator("FreeChoiceGroup", 
         group: String,     
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true
         },
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
     }))
     
 exports.ProposalFreeChoiceExam = ProposalExam.discriminator("FreeChoiceExam", new mongoose.Schema(
      {
         exam_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: Exam
+            ref: Exam,
+            null: true,
         },
         exam_name: String,
         exam_code: String,
         exam_credits: Number,
-        year: Number
+        // year: Number
      }
 ))
 
@@ -126,7 +136,7 @@ exports.ProposalExternalExam = ProposalExam.discriminator("ExternalExam", new mo
     {
        exam_name: String,
        exam_credits: Number,
-       year: Number
+       // year: Number
     }
 ))
 
