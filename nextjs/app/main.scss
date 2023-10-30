@@ -1,0 +1,12 @@
+$primary_old: #0F406C;
+$primary: #003D4C;
+$secondary: #484818;
+$body_color: $secondary;
+$danger: #a24139;
+$warning: #d8b940;
+$success: #5BA150;
+
+@import "startbootstrap-sb-admin-2/scss/sb-admin-2.scss";
+@import "bootstrap-select/sass/bootstrap-select.scss";
+@import "caps.scss";
+@import "forms.scss";
