@@ -34,3 +34,13 @@ const settingsSchema = new mongoose.Schema({
 const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema)
 
 export default Settings
+
+export type SettingsGet = {
+    userInstructions: string,
+    cds: string,
+    disclaimer: string,
+    department: string,
+    notifiedEmails: String,
+    approvalSignatureText: string,
+    pdfName: string,
+}

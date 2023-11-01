@@ -1,176 +1,38 @@
-'use client'
-
-import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
 import axios from 'axios'
 
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000'
 const api_root = `${SERVER_URL}/api/v0/`
 
-
-export const EngineContext = createContext<Engine|null>(null)
-
-export const EngineProvider = EngineContext.Provider
-  
-export function useEngine(): Engine {
-    const engine = useContext(EngineContext)
-    if (!engine) throw new Error("useEngine must be used inside EngineProvider")
-    return engine
+export async function connect () {
+    try {
+        const { data } = await axios.post<any>(`${api_root}login`)
+        const { user } = data
+        return user
+    } catch(err) {
+        return
+    }
 }
 
-interface EngineState {
-    flashMessages: Array<{ message: string, type: string }>,
-    modalConfirmData: {
-        title: string | null,
-        content: string | null,
-        callback: ((ans: boolean) => void) | null
-    },
-    user: any,
-    connected: boolean,
+export async function login(username: string, password: string) {
+    /**
+     * if username and password are provided use credentials
+     * otherwise check for existing session
+     */
+    const { data } = await axios.post<any>(`${api_root}login/password`, {username, password})
+    let { user } = data
+    return user
 }
 
-interface Engine {
-    state: EngineState,
-    user: any,
-    modalConfirm: (title: string, content: string) => Promise<boolean>,
-    flashMessage: (message: string, type?: string) => void,
-    flashSuccess: (message: string) => void,
-    flashError: (message: string) => void,
-    flashCatch: (error: Error) => void,
-    hideFlash: () => void,
-    connect: () => void,
-    login: (username: string, password: string) => void,
-    start_oauth2: () => void,
-    logout: () => void,
+export async function start_oauth2 () {
+    let url = api_root + 'login/oauth2'
+    console.log(`start_oauth2: redirecting to ${url}`)
+    sessionStorage.setItem('redirect_after_login', window.location.pathname)
+    window.location.href = url
 }
 
-export function useCreateEngine(): Engine {
-    const [state, setState] = useState<EngineState>({
-        flashMessages: [],
-        modalConfirmData: {
-            title: null,
-            content: null,
-            callback: null
-        },
-        user: null,
-        connected: false,
-    })
-
-    const queryClient=useQueryClient()
-
-    const flashMessage = (message: String, type="primary") => {
-        setState(state => ({
-            ...state,
-            flashMessages: [
-                ...state.flashMessages, 
-                { message, type }]
-        }))
-    }
-
-    const onError = (err) => flashMessage(`${err.name}: ${err.message}`, 'error')
-    const onPossibleValidationError = (err) => {
-        if (err.code === 422) { 
-            // Either show the error as a flash message or as a text near the
-            // form input, not both
-
-            // let errMessage = []
-            // for (const issue in err.issues) {
-            //     errMessage.push(err.issues[issue])
-            // }
-            // flashMessage(`Errore di validazione: ${errMessage.join(", ")}`, 'error')
-        } else
-            onError(err)
-    }
-
-    return {
-        state,
-        user: state.user,
-        
-        modalConfirm: (title, content) => {
-            return new Promise((resolve) => {
-                async function callback(ans) {
-                    await setState(state => ({
-                        ...state, 
-                        modalConfirmData: {
-                            title: null,
-                            content: null,
-                            callback: null
-                        }
-                    }))
-                    resolve(ans);
-                }
-                setState(state => ({
-                    ...state,
-                    modalConfirmData: {
-                        title,
-                        content,
-                        callback
-                    }
-                }))
-            })
-        },
-
-        flashMessage,
-
-        flashSuccess: (message) => flashMessage(message, 'success'),        
-    
-        flashError: (message) => flashMessage(message, 'error'),
-    
-        flashCatch: (error) => {
-            console.error(error)
-            return flashMessage(`${error.name}: ${error.message}`, 'error')
-        },
-    
-        hideFlash: () => {
-            setState(state => ({
-                ...state,
-                flashMessages: []
-            }))
-        },
-
-        connect: async () => {
-            try {
-                const { data } = await axios.post<any>(`${api_root}login`)
-                const { user } = data
-                setState(s => ({...s, user, connected: true }))
-            } catch(err) {
-                setState(s => ({...s, user: null, connected: false }))
-                console.error(err)
-            }
-        },
-
-        login: async (username: string, password: string) => {
-            /**
-             * if username and password are provided use credentials
-             * otherwise check for existing session
-             */
-            try {
-                const { data } = await axios.post<any>(`${api_root}login/password`, {username, password})
-                let { user } = data
-                setState(s => ({...s, user}))
-            } catch(err) {
-                // err is ApiError
-                if (err.code === 401) {
-                    flashMessage("Credenziali errate", 'error')
-                } else {
-                    flashMessage(`${err.name}: ${err.message}`, 'error')
-                    console.error(err)
-                }
-            }
-        },
-
-        start_oauth2: async () => {
-            let url = api_root + 'login/oauth2'
-            console.log(`start_oauth2: redirecting to ${url}`)
-            sessionStorage.setItem('redirect_after_login', window.location.pathname)
-            window.location.href = url
-        },
-
-        logout: async () => {
-            await axios.post(`${api_root}logout`)
-            setState(s => ({...s, user: null}))
-        },
-    }
+export async function logout() {
+    await axios.post(`${api_root}logout`)
 }
 
 export function useGet<T>(path:string, id:string|undefined) {

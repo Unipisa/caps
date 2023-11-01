@@ -4,11 +4,12 @@ import React, {ChangeEvent, useState, Suspense} from 'react'
 import { Card, Button } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import axios from 'axios'
-import { useIndex } from '../engine'
+import { useIndex } from '../util/engine'
 
+import Settings, {SettingsGet} from '../models/Settings'
 
 export default function SettingsPage({}) {
-    const query = useIndex('settings', {})
+    const query = useIndex<SettingsGet>('settings', {})
     const settings = query.data
 
     return <Suspense fallback={<>LOADING...</>}>

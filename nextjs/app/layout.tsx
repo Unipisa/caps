@@ -3,11 +3,11 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import 'bootstrap/dist/css/bootstrap.css';
 
-import './main.scss'
-import './caps.scss'
-import './forms.scss'
-import NavBar from './NavBar'
-import Provider from './Provider'
+import './scss/main.scss'
+import './scss/caps.scss'
+import './scss/forms.scss'
+import NavBar from './components/NavBar'
+import Provider from './components/Provider'
 
 config.autoAddCss = false;
 

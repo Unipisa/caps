@@ -1,4 +1,4 @@
-import dbConnect from '../../../dbConnect'
+import dbConnect from '../../../util/dbConnect'
 import Settings from '../../../models/Settings'
 
 export async function GET() {
