@@ -1,5 +1,3 @@
-// add bootstrap css 
-// import 'bootstrap/dist/css/bootstrap.css'
 import type { Metadata } from 'next'
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -9,6 +7,7 @@ import './main.scss'
 import './caps.scss'
 import './forms.scss'
 import NavBar from './NavBar'
+import Provider from './Provider'
 
 config.autoAddCss = false;
 
@@ -28,7 +27,9 @@ export default function RootLayout({
         <div className="d-flex">
             <NavBar />
           <div className="d-flex flex-column">
-            {children}
+            <Provider>
+              {children}
+            </Provider>
           </div>
         </div>
       </body>
