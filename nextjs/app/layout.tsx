@@ -7,7 +7,9 @@ import './scss/main.scss'
 import './scss/caps.scss'
 import './scss/forms.scss'
 import NavBar from './components/NavBar'
+import TopBar from './components/TopBar'
 import Provider from './components/Provider'
+import { Container } from 'react-bootstrap';
 
 config.autoAddCss = false;
 
@@ -25,11 +27,12 @@ export default function RootLayout({
     <html lang="it">
       <body>
         <div className="d-flex">
-            <NavBar />
+          <NavBar />
           <div className="d-flex flex-column">
-            <Provider>
-              {children}
-            </Provider>
+              <TopBar />
+              <Provider>
+                {children}
+              </Provider>
           </div>
         </div>
       </body>
