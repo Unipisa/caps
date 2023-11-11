@@ -6,9 +6,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './scss/main.scss'
 import './scss/caps.scss'
 import './scss/forms.scss'
+import Provider, { useUserProfile, f } from './components/Provider'
 import NavBar from './components/NavBar'
 import TopBar from './components/TopBar'
-import Provider from './components/Provider'
 import { Container } from 'react-bootstrap';
 
 config.autoAddCss = false;
@@ -29,13 +29,27 @@ export default function RootLayout({
         <div className="d-flex">
           <NavBar />
           <div className="d-flex flex-column">
-              <TopBar />
               <Provider>
-                {children}
+                <Internal>
+                  {children}
+                </Internal>
               </Provider>
           </div>
         </div>
       </body>
     </html>
   )
+}
+
+function Internal({children}:{
+  children: React.ReactNode
+}) {
+  const user = true 
+  if (user === null) return <p>
+    not logged in.
+  </p>
+  return <>
+    <TopBar />
+    {children}
+  </>
 }
