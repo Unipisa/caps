@@ -111,7 +111,35 @@ const ProposalsController = {
         if (!user.admin && proposal.user_id != user._id) throw new ForbiddenError("You must be an admin to delete a proposal that is not yours")
 
         return await ModelController.delete(Proposal, id)
-    }
+    },
+
+    patch: async req => {
+        const { id } = req.params
+        const user = req.user
+        const { state } = req.body
+
+        assert(user && user.admin)
+        const proposal = await Proposal.findById(id)
+
+        if (!proposal) throw new BadRequestError("Proposal not found")
+
+        if (proposal.state === state) return {nop: `Proposal ${id} already in state ${state}`}
+
+        proposal.state = state
+
+        if (state === 'approved' || state === 'rejected') {
+            proposal.date_managed = new Date()
+        } else {
+            proposal.date_managed = null
+        }
+        try {
+            await proposal.save()
+        } catch(err) {
+            throw new BadRequestError(err.message)
+        }
+
+        return {ok: `Proposal ${id} state changed to ${state}`}
+    },
 }
 
 async function validateProposal(req) {
@@ -170,6 +198,7 @@ async function validateProposal(req) {
     if (body.exams.length !== curriculum.years.length) throw new BadRequestError(`Years count mismatch`)
 
     issues.exams = []
+    const exams_used = []
     for (let year=0; year < curriculum.years.length; ++year) {
         const year_exams = curriculum.years[year].exams
         if (body.exams[year].length<year_exams.length) throw new BadRequestError(`Exam count in year ${year+1} mismatch`)
@@ -178,6 +207,7 @@ async function validateProposal(req) {
             const e = year_exams[j]
             let exam_id = body.exams[year][j]
             let exam = null
+            console.log(`year ${year+1} position ${j+1} exam_id ${exam_id}`)
             if (exam_id && typeof(exam_id)==='string') {
                 try {
                     exam_id = new ObjectId(exam_id)
@@ -185,6 +215,13 @@ async function validateProposal(req) {
                 } catch(err) {
                     throw new BadRequestError(`invalid object id ${exam_id}`)                    
                 }
+                if (exams_used.includes(exam_id.toString())) {
+                    issues.exams[year][j] = `Esame ripetuto`
+                    has_issues = true
+                    console.log(`Esame ripetuto ${exam_id}`)
+                }
+                exams_used.push(exam_id.toString())
+                console.log(`exams_used: ${exams_used.join(',')} ${exams_used.map(_ => typeof(_)).join(',')}`)
             }
             if (e.__t === 'CompulsoryExam') {
                 if (!e.exam_id.equals(exam_id)) {
@@ -201,7 +238,7 @@ async function validateProposal(req) {
             } else if (e.__t === 'CompulsoryGroup' || e.__t === 'FreeChoiceGroup') {
                 if (exam_id === null) {
                     if (e.__t === 'CompulsoryGroup' && state !== 'draft' ) {
-                        issues.exams[year][j] = `L'esame di un gruppo obbligatorio deve essere scelto`
+                        issues.exams[year][j] = `Scelta non effettuata`
                         has_issues = true
                     }
                     obj.exams[year].push(null)
@@ -283,23 +320,6 @@ async function validateProposal(req) {
         const curriculum_credits = curriculum.years.reduce((acc, y) => acc + y.credits, 0)
         if (credits < curriculum_credits) {
             throw new BadRequestError("Not enough credits")
-        }
-
-        let exam_ids = []
-        let exam_names = []
-
-        // gli esami inseriti sono tutti diversi?
-        for (const year_exams of body.exams) {
-            for (const e of year_exams) {
-                if (e.exam_id) {
-                    if (exam_ids.includes(e.exam_id)) throw new BadRequestError(`Exam ${e.exam_id} is present more than once`)
-                    exam_ids.push(e.exam_id)
-                }
-                if (e.exam_name) {
-                    if (exam_names.includes(e.exam_name)) throw new BadRequestError(`Exam ${e.exam_name} is present more than once`)
-                    exam_names.push(e.exam_name)
-                }
-            }
         }
     }
     // console.log(`validated proposal with body ${JSON.stringify(obj)}`)

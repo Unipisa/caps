@@ -3,12 +3,14 @@ import { useNavigate, useParams } from "react-router-dom"
 import {Button, ButtonGroup} from 'react-bootstrap' 
 import assert from 'assert'
 
-import { useEngine,
-    useIndexExam, useGetProposal, usePostProposal, usePutProposal,
+import { 
+    ProposalGet, ProposalExamGet, ProposalPost,
+    useGetProposal, usePostProposal, usePutProposal, usePatchProposal,
     useIndexDegree, useIndexCurriculum, 
     useGetDegree, useGetCurriculum, useGetExam,
-    ExamGet, ProposalGet, ProposalExamGet, ProposalPost,
+    ExamGet, 
     ProposalExamPost,
+    useEngine, useIndexExam, 
     CurriculumGet, CurriculumExamGet,
     DegreeGet,
 } from '../modules/engine'
@@ -21,13 +23,13 @@ import {FlashCard} from '../components/Flash'
 export function EditProposalPage() {
     const { id } = useParams()
     const proposalQuery = useGetProposal(id || '')
-    const curriculumQuery = useGetCurriculum(proposalQuery.data?.curriculum_id || '')
+    const curriculumQuery = useGetCurriculum(proposalQuery.data?.curriculum_id)
 
     if (proposalQuery.isError) return <LoadingMessage>errore piano di studi...</LoadingMessage>
     if (!proposalQuery.data) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     
     if (curriculumQuery.isError) return <LoadingMessage>errore curriculum...</LoadingMessage>
-    if (!curriculumQuery.data) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
+    if (curriculumQuery.isLoading) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
 
     return <ProposalForm proposal={proposalQuery.data} curriculum={curriculumQuery.data}/>
 }
@@ -41,9 +43,11 @@ export default function ProposalPage() {
     const proposal = query.data
     const degreeQuery = useGetDegree(proposal?.degree_id)
     const curriculumQuery = useGetCurriculum(proposal?.curriculum_id)
+    const patcher = usePatchProposal(id || '')
 
     const degree:any = degreeQuery.data
     const curriculum = curriculumQuery.data
+    const owner = (user && user?._id === proposal?.user_id)
 
     if (!proposal || (proposal?.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
@@ -58,10 +62,19 @@ export default function ProposalPage() {
 
     function AdminButtons() {
         if (!proposal) return null
-        if (engine.user.admin && proposal.state === 'submitted') return <>
-            <Button>accetta</Button>
-            <Button>rifiuta</Button>
-        </>       
+        if (!engine.user.admin) return null
+        switch (proposal.state) {
+            case 'submitted': return <>
+                <Button className="m-2" variant="primary" onClick={() => patcher.mutate({state:'draft'})}>riporta in bozza</Button>
+                <Button className="m-2" variant="success" onClick={() => patcher.mutate({state:'approved'})}>accetta</Button>
+                <Button className="m-2" variant="danger" onClick={() => patcher.mutate({state:'rejected'})}>rifiuta</Button>
+            </>
+            case 'approved':
+            case 'rejected': return <>
+                <Button className="m-2" variant="warning" onClick={() => patcher.mutate({state:'draft'})}>riporta in bozza</Button>
+                <Button className="m-2" variant="warning" onClick={() => patcher.mutate({state:'submitted'})}>riporta in valutazione</Button>
+            </>
+        }
         return null
     }
 
@@ -98,7 +111,7 @@ export default function ProposalPage() {
         }>{
             {
                 draft: `Questo piano è in stato di bozza. Devi inviarlo per avere l'approvazione.`,
-                submitted: `Il piano è stato inviato in data ${formatDate(proposal.date_submitted)}. Riceverai un email quando verrà approvato o rifiutato`,
+                submitted: `Il piano è stato inviato in data ${formatDate(proposal.date_submitted)}. ${owner?'Riceverai un email quando verrà approvato o rifiutato.':''}`,
                 approved: `Il piano è stato approvato in data ${formatDate(proposal.date_managed)}.`,
                 rejected: `Il piano è stato rigettato in data ${formatDate(proposal.date_managed)}. Puoi farne una copia, modificarlo e inviarlo nuovamente.`,
             }[proposal.state]
@@ -213,7 +226,7 @@ export default function ProposalPage() {
 
 function ProposalForm({ proposal, curriculum }:{
     proposal: ProposalGet,
-    curriculum: CurriculumGet,
+    curriculum: CurriculumGet|undefined,
 }) {
     // curriculum serve solo per conoscere il degreeId
 
@@ -464,73 +477,65 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam, issues }:{
     setExam: (e:string) => void,
     issues: any,
 }) {
+
     if (exam.__t === "CompulsoryExam") {
         const compulsoryExam = allExams[exam.exam_id]
-        return <li className='form-group exam-input'>
-            <div className='row'>
-                <div className='col-9'>
-                    <select className='form-control' disabled>
-                        <option>{compulsoryExam.name}</option>
-                    </select>
-                </div>
-                <div className="col-3">
-                    <input className='form-control col' readOnly value={compulsoryExam.credits}/>
-                </div>
-            </div>
-        </li>
+        return <ExamFormRow issues={issues} credits={compulsoryExam.credits} trashcan={false}>
+            <select className='form-control' disabled>
+                <option>{compulsoryExam.name}</option>
+            </select>
+        </ExamFormRow>
     } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
         const options = groups[exam.group]
         const exam_id = typeof(chosenExam) === 'string' ? chosenExam : ''
-        const style=issues?{background:"yellow",padding:"1ex"}:{}
 
-        return <li className='form-group exam-input' style={style}>
-            <div className='row'>
-                <div className='col-9'>
-                    <select className='form-control'
-                        value={exam_id}
-                        onChange={e => {
-                            setExam(e.target.value)
-                        }}
-                    >
-                        <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
-                        {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
-                    </select>
-                    {issues && <div>{issues}</div>}
-                </div>
-                <div className="col-3">
-                    <input className='form-control col' readOnly value={chosenExam ? allExams[exam_id].credits : ""}/>
-                </div>
-            </div>
-        </li>
+        return <ExamFormRow issues={issues} credits={chosenExam ? allExams[exam_id].credits : ""} trashcan={false}>
+            <select className='form-control'
+                value={exam_id}
+                onChange={e => {
+                    setExam(e.target.value)
+            }}>
+                <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
+                {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+            </select>
+        </ExamFormRow>
     } else if (exam.__t === "FreeChoiceExam") {
-        return <FreeChoiceExamSelect allExams={allExams} chosenExam={typeof(chosenExam)==='string'?chosenExam:null} setExam={setExam}/>
+        const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
+        const cExam = typeof(chosenExam) === 'string' ? chosenExam : ''
+        return <ExamFormRow issues={issues} credits={chosenExam?allExams[cExam].credits:""} trashcan={true}>
+            <select className='form-control' 
+                value={cExam} 
+                onChange={e => setExam(e.target.value)}>
+                <option disabled value="">Un esame a scelta libera</option>
+                {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+            </select>
+        </ExamFormRow>
     }
 }
 
-function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
-    allExams: {[key:string]: ExamGet},
-    chosenExam: null|string,
-    setExam: (string) => void,
-}) {
-    const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
-    return <li className='form-group exam-input'>
-        <div className='row'>
-            <div className='col-9'>
-                <select className='form-control' 
-                    value={chosenExam || ''} 
-                    onChange={e => setExam(e.target.value)}>
-                    <option disabled value="">Un esame a scelta libera</option>
-                    {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
-                </select>
-            </div>
-            <div className="col-2">
-                <input className='form-control col' readOnly value={chosenExam?allExams[chosenExam].credits:""} />
-            </div>
-            <div className='col-1 btn my-auto'>
-                <i className='fas fa-trash'></i>
-            </div>
+function ExamFormRow({issues, credits, trashcan, children}:{
+        issues?:any, 
+        credits?:number|string, 
+        trashcan?:boolean, 
+        children:any
+    }) {
+    const style=issues?{background:"yellow",padding:"1ex"}:{}
+    return <li className='form-group exam-input' style={style}>
+    <div className='row'>
+        <div className='col-9'>
+            {children}
+            {issues && <div>{issues}</div>}
         </div>
-    </li>
+        <div className={trashcan?"col-2":"col-3"}>
+            <input className='form-control col' readOnly value={credits}/>
+        </div>
+        {trashcan && <div className='col-1 btn my-auto'>
+            <i className='fas fa-trash'></i>
+        </div>
+        }
+    </div>
+</li>
+
 }
 
 function Submit({proposal, curriculum, chosenExams, issues, setIssues}:{

@@ -443,6 +443,10 @@ export function usePutProposal<ProposalPost>(id: string) {
     return usePut('proposals/', id)
 }
 
+export function usePatchProposal<ProposalPost>(id: string) {
+    return usePatch('proposals/', id)
+}
+
 export function useIndexProposal(query={}) {
     return useIndex<ProposalGet>('proposals/', query)
 }
