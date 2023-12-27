@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState, useEffect } from 'react'
 import { useParams } from "react-router-dom"
 import {Button, ButtonGroup} from 'react-bootstrap' 
 import assert from 'assert'
@@ -20,14 +20,16 @@ import {FlashCard} from '../components/Flash'
 
 export function EditProposalPage() {
     const { id } = useParams()
-
     const proposalQuery = useGetProposal(id || '')
+    const curriculumQuery = useGetCurriculum(proposalQuery.data?.curriculum_id || '')
 
     if (proposalQuery.isError) return <LoadingMessage>errore piano di studi...</LoadingMessage>
     if (!proposalQuery.data) return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
+    
+    if (curriculumQuery.isError) return <LoadingMessage>errore curriculum...</LoadingMessage>
+    if (!curriculumQuery.data) return <LoadingMessage>caricamento curriculum...</LoadingMessage>
 
-
-    return <ProposalForm proposal={proposalQuery.data}/>
+    return <ProposalForm proposal={proposalQuery.data} curriculum={curriculumQuery.data}/>
 }
 
 export default function ProposalPage() {
@@ -132,27 +134,27 @@ export default function ProposalPage() {
     }
     
     function ExamRow({ exam }) {
-        const query = useGetExam(exam.exam_id || null)
+        const query = useGetExam(exam ? exam.exam_id : null)
         if (query.isLoading) return <tr><td>loading...</td></tr>
         if (query.isError) return <tr><td>error...</td></tr>
         const real_exam: any = query.data
         return <tr>
-            <td>{exam.exam_code}</td>
-            <td>{exam.exam_name}
+            <td>{exam?.exam_code || '---'}</td>
+            <td>{exam?.exam_name || '---'}
                 {real_exam && real_exam.tags.map(tag => 
                     <div key={tag} className="badge ml-1 badge-secondary badge-sm">
                         {tag}
                     </div>)}
             </td>
-            <td>{exam.exam_sector}</td>
-            <td>{exam.exam_credits}</td>
-            <td>{{
+            <td>{exam?.exam_sector || '---'}</td>
+            <td>{exam?.exam_credits || '---'}</td>
+            <td>{exam ? {
                 'CompulsoryExam': 'Obbligatorio',
                 'CompulsoryGroup': exam.group,
                 'FreeChoiceGroup': 'A scelta libera (G)',
                 'FreeChoiceExam': 'A scelta libera',
                 'ExternalExam': 'Esame Esterno',
-            }[exam.__t]}
+            }[exam.__t] : '---'}
             </td>
         </tr>
     }
@@ -172,7 +174,7 @@ export default function ProposalPage() {
                 </tr>
                 </thead>
                 <tbody>
-                { exams .map(e => <ExamRow key={e._id} exam={e}/>) }
+                { exams.map((e,i) => <ExamRow key={`exam-${number}-${i}`} exam={e}/>) }
                 </tbody>
             </table>
         </Card>
@@ -209,16 +211,20 @@ export default function ProposalPage() {
     }
 }
 
-function ProposalForm({ proposal }:{
-    proposal: ProposalGet
+function ProposalForm({ proposal, curriculum }:{
+    proposal: ProposalGet,
+    curriculum: CurriculumGet,
 }) {
+    // curriculum serve solo per conoscere il degreeId
+
     const engine = useEngine()
 
-    const [degreeId, setDegreeId] = useState(proposal.degree_id)
+    const [issues, setIssues] = useState<any>({})
+    const [degreeId, setDegreeId] = useState<string|null>(curriculum?.degree_id || null)
     const [curriculumId, setCurriculumId] = useState<string|null>(proposal.curriculum_id)
 
     const degreesQuery = useIndexDegree()
-    const curriculaQuery = useIndexCurriculum(degreeId ? { degree_id: degreeId } : undefined )
+    const curriculaQuery = useIndexCurriculum(degreeId ? { degree_id: degreeId } : undefined)
     const examsQuery = useIndexExam()
 
     if (degreesQuery.isError) return <LoadingMessage>errore corsi di laurea...</LoadingMessage>
@@ -280,7 +286,10 @@ function ProposalForm({ proposal }:{
             </div>
         </Card>
         { degreeId && curriculumId &&
-            <ProposalFormYears proposal={proposal} curriculum={curricula[curriculumId]} degree={degrees[degreeId]} allExams={allExams}/>
+            <ProposalFormYears proposal={proposal} curriculum={curricula[curriculumId]} 
+                degree={degrees[degreeId]} allExams={allExams}
+                issues={issues} setIssues={setIssues}
+                />
         }   
     </>
 
@@ -302,11 +311,13 @@ function ProposalForm({ proposal }:{
     }
 }
 
-function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
+function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, setIssues }:{
     proposal: ProposalGet,
     curriculum: CurriculumGet,
     degree: DegreeGet,
     allExams: {[key: string]: ExamGet},
+    issues: any,
+    setIssues: Dispatch<SetStateAction<any>>,
 }) {
     const groups = Object.fromEntries(
         Object.entries(degree.groups).map(([group_id, group_exams]) => {
@@ -319,8 +330,12 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
     // console.log(JSON.stringify({chosenExams,groups}))
 
     return <>
-        {curriculum.years.map((yearExams, number) => <YearCard key={number} year={yearExams} number={number} allExams={allExams} chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}/>)}
-        <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams}/>
+        {curriculum.years.map((yearExams, number) => 
+            <YearCard key={number} year={yearExams} number={number} allExams={allExams} 
+                chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}
+                issues={issues?.exams ? issues.exams[number] : null}
+                />)}
+        <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams} setIssues={setIssues}/>
     </>
 
     function initExams(curriculum: CurriculumGet): ProposalExamPost[][] {
@@ -390,13 +405,14 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree }:{
     }
 }
 
-function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups }:{
+function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups, issues }:{
     year: CurriculumGet['years'][0],
     number: number,
     allExams: {[key: string]: ExamGet},
     chosenExams: ProposalExamPost[][],
     setChosenExams: Dispatch<SetStateAction<ProposalExamPost[][]>>,
     groups: {[key: string]: ExamGet[]},
+    issues: any,
 }) {
     const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
 
@@ -419,7 +435,11 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups 
     </div>
 
     return <Card customHeader={customHeader} >
-        {year.exams.map((exam, examNumber) => <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}/>)}
+        {year.exams.map((exam, examNumber) => 
+            <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} 
+                chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}
+                issues={issues?.[examNumber]}
+                />)}
         <div className='d-flex flex-row-reverse'>
             <button className='btn btn-primary'>Aggiungi esame esterno</button>
             <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
@@ -435,12 +455,13 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups 
     }
 }
 
-function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
+function ExamSelect({ exam, allExams, groups, chosenExam, setExam, issues }:{
     exam: CurriculumExamGet,
     allExams: {[key: string]: ExamGet},
     groups: {[key: string]: ExamGet[]},
     chosenExam: ProposalExamPost,
     setExam: (e:string) => void,
+    issues: any,
 }) {
     if (exam.__t === "CompulsoryExam") {
         const compulsoryExam = allExams[exam.exam_id]
@@ -459,8 +480,9 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
     } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
         const options = groups[exam.group]
         const exam_id = typeof(chosenExam) === 'string' ? chosenExam : ''
+        const style=issues?{background:"yellow",padding:"1ex"}:{}
 
-        return <li className='form-group exam-input'>
+        return <li className='form-group exam-input' style={style}>
             <div className='row'>
                 <div className='col-9'>
                     <select className='form-control'
@@ -472,6 +494,7 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam }:{
                         <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
                         {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
                     </select>
+                    {issues && <div>{issues}</div>}
                 </div>
                 <div className="col-3">
                     <input className='form-control col' readOnly value={chosenExam ? allExams[exam_id].credits : ""}/>
@@ -510,19 +533,22 @@ function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
     </li>
 }
 
-function Submit({proposal, curriculum, chosenExams}:{
+function Submit({proposal, curriculum, chosenExams, setIssues}:{
     proposal: ProposalGet,
     curriculum: CurriculumGet,
     chosenExams: ProposalExamPost[][],
+    setIssues: Dispatch<SetStateAction<any>>,
 }) {
-    const poster = usePostProposal()
+    const poster = usePostProposal((err:any) => {
+        setIssues(err.response.data.issues)
+    })
 
     if (poster.isLoading) return <LoadingMessage />
 
     return <>
         {poster.isError && <FlashCard 
             className="danger" 
-            message={`${poster.error} [${JSON.stringify(poster.data)}]`}
+            message={`${poster.error}`}
             onClick={poster.reset}
         />}
         <ButtonGroup>

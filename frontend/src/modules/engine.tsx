@@ -191,7 +191,7 @@ export function useIndex<T>(path:string, query={}) {
     })
 }
 
-export function usePost<T>(path: string) {
+export function usePost<T>(path: string, onError?: (err: any) => void) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
     return useMutation({
@@ -201,6 +201,7 @@ export function usePost<T>(path: string) {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })
         },
+        onError,
     })
 }
 
@@ -424,8 +425,8 @@ export function useGetProposal(id:string|undefined) {
     return useGet<ProposalGet>('proposals/', id) 
 }
 
-export function usePostProposal() {
-    return usePost<ProposalPost>('proposals/')
+export function usePostProposal(onError?: (err: any) => void) {
+    return usePost<ProposalPost>('proposals/', onError)
 }
 
 export function useIndexProposal(query={}) {

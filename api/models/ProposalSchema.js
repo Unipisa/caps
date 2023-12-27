@@ -53,6 +53,7 @@ ProposalSchema = new mongoose.Schema({
     state: {
         type: String,
         enum: ['draft', 'submitted', 'approved', 'rejected'],
+        required: true,
     }, 
     date_modified: {
         type: Date,

@@ -11,3 +11,6 @@ api/node_modules
 api/env.local
 db
 attachments-db
+nextjs/.next
+nextjs/node_modules
+

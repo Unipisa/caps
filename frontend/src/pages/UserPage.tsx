@@ -93,6 +93,8 @@ function ProposalCard({proposal}) {
             })
     }
 
+    console.log(`proposal ${JSON.stringify(proposal)}`)
+
     const [state, stateClass] = {
         draft: ["Bozza", "secondary"],
         submitted: ["Inviato", "warning"],
@@ -101,16 +103,17 @@ function ProposalCard({proposal}) {
     }[proposal.state]
 
     return <div className='my-2 col-xxl-3 col-xl-4 col-lg-6 col-12'>
-        <Card title={proposal.degree_name} className="clickable-card" onClick={() => navigate(`/proposals/${proposal._id}`)}>
+        <Card title={proposal.degree_name}>
             <div className='d-flex justify-content-between'>
                 <div>
                     <span className={`badge badge-${stateClass}`}>{state}</span>
                 </div>
                 <div className='btn-group'>
+                    <Link className='btn btn-primary' to={`/proposals/${proposal._id}`}><i className='fas fa-file' /></Link>
                     {
                         proposal.state === "draft"
                         ? <>
-                                <Link className='btn btn-primary' to={`/proposal/edit/${proposal._id}`}><i className='fas fa-edit' /></Link>
+                                <Link className='btn btn-primary' to={`/proposals/edit/${proposal._id}`}><i className='fas fa-edit' /></Link>
                                 <div className='btn btn-danger' onClick={deleteProposal}>
                                     <i className='fas fa-times-circle'/>
                                 </div>

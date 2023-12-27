@@ -5,7 +5,8 @@ const ModelController = require('./ModelController');
 const Proposal = require('../models/Proposal');
 const Curriculum = require('../models/Curriculum');
 const Degree = require('../models/Degree');
-const { ForbiddenError, BadRequestError } = require('../exceptions/ApiException')
+const Exam = require('../models/Exam');
+const { ForbiddenError, BadRequestError, ValidationError } = require('../exceptions/ApiException')
 
 const fields = {
     "state": {
@@ -94,6 +95,8 @@ const ProposalsController = {
         const user = req.user
         const body = req.body
         const now = new Date()
+        const issues = {}
+        let has_issues = false
         
         // l'autenticazione viene controllata nel router
         // dunque l'utente ci deve essere
@@ -114,6 +117,7 @@ const ProposalsController = {
         const degree = await Degree.findOne({_id: new ObjectId(curriculum.degree_id)})
         if (!degree) throw new BadRequestError("Degree not found")
         const obj = {
+            state,
             curriculum_id: new ObjectId(body.curriculum_id),
             curriculum_name: curriculum.name,
             degree_academic_year: degree.academic_year,
@@ -136,13 +140,14 @@ const ProposalsController = {
 
         if (body.exams.length !== curriculum.years.length) throw new BadRequestError(`Years count mismatch`)
 
+        issues.exams = []
         for (let year=0; year < curriculum.years.length; ++year) {
             const year_exams = curriculum.years[year].exams
             if (body.exams[year].length<year_exams.length) throw new BadRequestError(`Exam count in year ${year+1} mismatch`)
+            issues.exams[year] = []
             for (let j=0; j<year_exams.length; ++j) {
                 const e = year_exams[j]
-                const exam_id = body.exams[year][j]
-                if (typeof(exam_id) === 'object') throw new BadRequestError(`invalid object id ${exam_id} at year ${year+1} position ${j+1}`)
+                let exam_id = body.exams[year][j]
                 let exam = null
                 if (exam_id && typeof(exam_id)==='string') {
                     try {
@@ -153,10 +158,10 @@ const ProposalsController = {
                     }
                 }
                 if (e.__t === 'CompulsoryExam') {
-                    if (e.exam_id !== exam_id) {
+                    if (!e.exam_id.equals(exam_id)) {
                         throw new BadRequestError(`Exam ${e.exam_id} expected in curriculum year ${year+1} position ${j+1}`)
                     }
-                    obj.exams[year].append({
+                    obj.exams[year].push({
                         __t: e.__t,
                         exam_id,
                         exam_name: exam.name,
@@ -167,15 +172,34 @@ const ProposalsController = {
                 } else if (e.__t === 'CompulsoryGroup' || e.__t === 'FreeChoiceGroup') {
                     if (exam_id === null) {
                         if (e.__t === 'CompulsoryGroup' && state !== 'draft' ) {
-                            throw new BadRequestError(`Exam not choosen in compulsory group`)
+                            issues.exams[year][j] = `L'esame di un gruppo obbligatorio deve essere scelto`
+                            has_issues = true
                         }
-                    } if (exam_id !== null) {
-                        if (!degree.groups[e.group]?.contains(exam_id)) {
+                        obj.exams[year].push(null)
+                    } else {
+                        if (!degree.groups.get(e.group)?.includes(exam_id)) {
                             throw new BadRequestError(`Exam not in group ${e.group} year ${year+1} position ${j+1}`)
                         }
-                        obj.exams[year].append({
+                        obj.exams[year].push({
                             __t: e.__t,
                             group: e.group,
+                            exam_id,
+                            exam_name: exam.name,
+                            exam_code: exam.code,
+                            exam_credits: exam.credits,
+                        })
+                        credits += exam.credits
+                    }
+                } else if (e.__t === 'FreeChoiceExam') {
+                    if (exam_id === null) {
+                        if (state !== 'draft') {
+                            issues.exams[year][j] = `L'esame a scelta libera deve essere scelto`
+                            has_issues = true
+                        }
+                        obj.exams[year].push(null)
+                    } else {
+                        obj.exams[year].push({
+                            __t: e.__t,
                             exam_id,
                             exam_name: exam.name,
                             exam_code: exam.code,
@@ -221,6 +245,10 @@ const ProposalsController = {
             }
         }
 
+        if (has_issues) {
+            throw new ValidationError(issues,'Errore di validazione')
+        }
+
         if (state === 'submitted') {
             // ci sono abbastanza crediti?
             const curriculum_credits = curriculum.years.reduce((acc, y) => acc + y.credits, 0)
@@ -257,8 +285,8 @@ const ProposalsController = {
                 }
             }
         }
-
-        const proposal = new Proposal(body)
+        console.log(`creating proposal with body ${JSON.stringify(obj)}`)
+        const proposal = new Proposal(obj)
         return await proposal.save()
     },
 
