@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from 'react'
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {Button, ButtonGroup} from 'react-bootstrap' 
 import assert from 'assert'
 
 import { useEngine,
-    useIndexExam, useGetProposal, usePostProposal,
+    useIndexExam, useGetProposal, usePostProposal, usePutProposal,
     useIndexDegree, useIndexCurriculum, 
     useGetDegree, useGetCurriculum, useGetExam,
     ExamGet, ProposalGet, ProposalExamGet, ProposalPost,
@@ -335,7 +335,7 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, set
                 chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}
                 issues={issues?.exams ? issues.exams[number] : null}
                 />)}
-        <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams} setIssues={setIssues}/>
+        <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams} issues={issues} setIssues={setIssues}/>
     </>
 
     function initExams(curriculum: CurriculumGet): ProposalExamPost[][] {
@@ -435,11 +435,12 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups,
     </div>
 
     return <Card customHeader={customHeader} >
-        {year.exams.map((exam, examNumber) => 
-            <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} 
+        {chosenExams[number].map((chosenExam, examNumber) => {
+            const exam = year.exams[examNumber] 
+            return <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} 
                 chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}
                 issues={issues?.[examNumber]}
-                />)}
+                />})}
         <div className='d-flex flex-row-reverse'>
             <button className='btn btn-primary'>Aggiungi esame esterno</button>
             <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
@@ -502,17 +503,16 @@ function ExamSelect({ exam, allExams, groups, chosenExam, setExam, issues }:{
             </div>
         </li>
     } else if (exam.__t === "FreeChoiceExam") {
-        return <FreeChoiceExamSelect allExams={allExams} chosenExam={chosenExam} setExam={setExam}/>
+        return <FreeChoiceExamSelect allExams={allExams} chosenExam={typeof(chosenExam)==='string'?chosenExam:null} setExam={setExam}/>
     }
 }
 
 function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
     allExams: {[key:string]: ExamGet},
-    chosenExam: ProposalExamPost,
+    chosenExam: null|string,
     setExam: (string) => void,
 }) {
     const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
-    assert (chosenExam === null || typeof(chosenExam) === 'string')
     return <li className='form-group exam-input'>
         <div className='row'>
             <div className='col-9'>
@@ -533,24 +533,33 @@ function FreeChoiceExamSelect({allExams, chosenExam, setExam}:{
     </li>
 }
 
-function Submit({proposal, curriculum, chosenExams, setIssues}:{
+function Submit({proposal, curriculum, chosenExams, issues, setIssues}:{
     proposal: ProposalGet,
     curriculum: CurriculumGet,
     chosenExams: ProposalExamPost[][],
+    issues: any,
     setIssues: Dispatch<SetStateAction<any>>,
 }) {
-    const poster = usePostProposal((err:any) => {
-        setIssues(err.response.data.issues)
-    })
+    const poster = usePostProposal()
+    const putter = usePutProposal(proposal._id || '')
+    const navigate = useNavigate()
+    const user = useEngine().user
 
     if (poster.isLoading) return <LoadingMessage />
+    if (putter.isLoading) return <LoadingMessage />
 
     return <>
         {poster.isError && <FlashCard 
             className="danger" 
             message={`${poster.error}`}
             onClick={poster.reset}
-        />}
+            />}
+        {putter.isError && <FlashCard
+            className="danger"
+            message={`${putter.error}`}
+            onClick={putter.reset}
+            />}
+        {issues && <pre>{JSON.stringify(issues,null,2)}</pre>}
         <ButtonGroup>
             <Button variant="success" onClick={()=>submit('submitted')}>
                 sottometti il piano di studi
@@ -562,12 +571,26 @@ function Submit({proposal, curriculum, chosenExams, setIssues}:{
     </>
 
     function submit(state: "draft" | "submitted") {
-        poster.mutate({
-            _id: proposal._id || '',
+        function onSuccess() {
+            console.log(`submit: success`)
+            if (user) navigate(`/users/${user._id}`)
+            else navigate('/')
+        }
+
+        function onError(err: any) {
+            setIssues(err?.response?.data?.issues)
+        }
+
+        const payload = {
             curriculum_id: curriculum._id,
             state,
             exams: chosenExams,
-        })
-    }
+        }
 
+        if (proposal._id) {
+            putter.mutate(payload, { onSuccess, onError })
+        } else {
+            poster.mutate(payload, { onSuccess, onError })
+        }
+    }
 }

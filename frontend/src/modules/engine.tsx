@@ -191,7 +191,7 @@ export function useIndex<T>(path:string, query={}) {
     })
 }
 
-export function usePost<T>(path: string, onError?: (err: any) => void) {
+export function usePost<T>(path: string) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
     return useMutation({
@@ -201,7 +201,6 @@ export function usePost<T>(path: string, onError?: (err: any) => void) {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: [path] })
         },
-        onError,
     })
 }
 
@@ -217,10 +216,22 @@ export function useDelete(path:string, id:string) {
     })
 }
 
-export function usePatch(path:string, id:string) {
+export function usePut<T>(path: string, id:string) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data: T) => {
+            return await axios.put(`${api_root}${path}${id}`, data)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [path] })
+        },
+    })
+}
+
+export function usePatch<T>(path:string, id:string) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (data: T) => {
             return await axios.patch(`${api_root}${path}${id}`, data)
         },
         onSuccess: async () => {
@@ -248,7 +259,7 @@ export function useIndexExam(query={}) {
 }
 
 export function usePatchExam(id:string) {
-    return usePatch('exams/', id)
+    return usePatch<ExamGet>('exams/', id)
 }
 
 export function usePostExam() {
@@ -401,7 +412,6 @@ export interface ProposalAttachmentGet {
 }
 
 export type ProposalPost = {
-    _id: string,
     curriculum_id: string,
     state: 'draft'|'submitted',
     exams: ProposalExamPost[][], // year-> n -> exam_id|name
@@ -425,8 +435,12 @@ export function useGetProposal(id:string|undefined) {
     return useGet<ProposalGet>('proposals/', id) 
 }
 
-export function usePostProposal(onError?: (err: any) => void) {
-    return usePost<ProposalPost>('proposals/', onError)
+export function usePostProposal() {
+    return usePost<ProposalPost>('proposals/')
+}
+
+export function usePutProposal<ProposalPost>(id: string) {
+    return usePut('proposals/', id)
 }
 
 export function useIndexProposal(query={}) {

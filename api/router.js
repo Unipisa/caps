@@ -129,6 +129,7 @@ router.get('/', response_envelope(req => "Hello there!"))
 router.get('/proposals', require_user, response_envelope(Proposals.index))
 router.get('/proposals/:id', require_user, response_envelope(Proposals.view))
 router.post('/proposals', require_user, response_envelope(Proposals.post))
+router.put('/proposals/:id', require_user, response_envelope(Proposals.put))
 router.delete('/proposals/:id', require_user, response_envelope(Proposals.delete))    
 
 router.get('/forms', require_user, response_envelope(Forms.index))
@@ -169,6 +170,6 @@ router.delete('/comments/:id', require_user, response_envelope(Comments.delete))
 router.get('/settings', require_admin, response_envelope(settingsController))
 router.post('/settings', require_admin, response_envelope(settingsController))
 
-router.all(/.*/, response_envelope((req) => {throw new NotFoundError()}))
+router.all(/.*/, response_envelope((req) => {throw new NotFoundError('no route for this path')}))
 
 module.exports = router;
