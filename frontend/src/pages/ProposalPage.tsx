@@ -343,10 +343,10 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, set
     // console.log(JSON.stringify({chosenExams,groups}))
 
     return <>
-        {curriculum.years.map((yearExams, number) => 
-            <YearCard key={number} year={yearExams} number={number} allExams={allExams} 
-                chosenExams={chosenExams} setChosenExams={setChosenExams} groups={groups}
-                issues={issues?.exams ? issues.exams[number] : null}
+        {curriculum.years.map((yearExams, yearNumber) => 
+            <YearCard key={`year-${yearNumber}`} year={yearExams} yearNumber={yearNumber} allExams={allExams} 
+                chosenExams={chosenExams[yearNumber]} setChosenExams={f => setChosenExams(old => old.map((y,i)=>(i==yearNumber?f(y):y)))} groups={groups}
+                issues={issues?.exams ? issues.exams[yearNumber] : null}
                 />)}
         <Submit proposal={proposal} curriculum={curriculum} chosenExams={chosenExams} issues={issues} setIssues={setIssues}/>
     </>
@@ -367,12 +367,13 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, set
 
         for (const [i, year] of exams.entries()) {
             const c_year = curriculum.years[i]
-            if (year.length !== c_year.exams.length) {
-                console.log("year", i, "doExamsFit: exam count in year ${i} does not match")
+            if (year.length < c_year.exams.length) {
+                console.log("year", i, `doExamsFit: exam count in year ${i} does not match ${year.length} < ${c_year.exams.length}`)
                 return false
             }
 
             for(const [j, exam_id] of exams[i].entries()) {
+                if (j>= c_year.exams.length) break
                 const c_exam = c_year.exams[j]
                 if (!doExamFit(exam_id, c_exam)) {
                     console.log("year", i, "exam", j, "doExamsFit: exam does not fit")
@@ -418,19 +419,19 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, set
     }
 }
 
-function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups, issues }:{
+function YearCard({ year, yearNumber, allExams, chosenExams, setChosenExams, groups, issues }:{
     year: CurriculumGet['years'][0],
-    number: number,
+    yearNumber: number,
     allExams: {[key: string]: ExamGet},
-    chosenExams: ProposalExamPost[][],
-    setChosenExams: Dispatch<SetStateAction<ProposalExamPost[][]>>,
+    chosenExams: ProposalExamPost[],
+    setChosenExams: Dispatch<(old: ProposalExamPost[])=>(ProposalExamPost[])>,
     groups: {[key: string]: ExamGet[]},
     issues: any,
 }) {
-    const yearName = ["Primo", "Secondo", "Terzo"][number] || `#${number}`
+    const yearName = ["Primo", "Secondo", "Terzo"][yearNumber] || `#${yearNumber}`
 
     let credits = 0
-    for (const e of chosenExams[number]) {
+    for (const e of chosenExams) {
         if (e) {
             if (typeof(e)==='string') {
                 credits += allExams[e].credits
@@ -448,75 +449,100 @@ function YearCard({ year, number, allExams, chosenExams, setChosenExams, groups,
     </div>
 
     return <Card customHeader={customHeader} >
-        {chosenExams[number].map((chosenExam, examNumber) => {
-            const exam = year.exams[examNumber] 
+        {chosenExams.map((chosenExam, examNumber) => {
+            const exam = examNumber < year.exams.length ? year.exams[examNumber] : null
             return <ExamSelect key={examNumber} exam={exam} allExams={allExams} groups={groups} 
-                chosenExam={chosenExams[number][examNumber]} setExam={examSetter(number, examNumber)}
+                chosenExam={chosenExams[examNumber]} 
+                setChosenExam={exam => setChosenExams(old => old.map((exm, jj) => (examNumber!==jj ? exm : exam)))}
                 issues={issues?.[examNumber]}
                 />})}
         <div className='d-flex flex-row-reverse'>
-            <button className='btn btn-primary'>Aggiungi esame esterno</button>
-            <button className='btn btn-primary mr-2'>Aggiungi esame a scelta libera</button>
+            <button className='btn btn-primary m-2'
+                onClick={() => setChosenExams(old => [...old, ''])}>
+                Aggiungi esame a scelta libera
+            </button>
+            <button className='btn btn-primary m-2' 
+                onClick={() => setChosenExams(old => [...old, {exam_name:'', exam_credits:0}])}>
+                Aggiungi esame esterno
+            </button>
         </div>
+        {JSON.stringify(chosenExams)}
     </Card>
-
-    function examSetter(i, j) {
-        return function(exam) {
-            console.log(`setting exam year ${i} number ${j} to ${JSON.stringify(exam)}`)
-            setChosenExams(old => old.map((lst, ii) => i!==ii ? lst : 
-                lst.map((exm, jj) => j!==jj ? exm : exam)))
-        }
-    }
 }
 
-function ExamSelect({ exam, allExams, groups, chosenExam, setExam, issues }:{
-    exam: CurriculumExamGet,
+function ExamSelect({ exam, allExams, groups, chosenExam, setChosenExam, issues }:{
+    exam: CurriculumExamGet|null,
     allExams: {[key: string]: ExamGet},
     groups: {[key: string]: ExamGet[]},
     chosenExam: ProposalExamPost,
-    setExam: (e:string) => void,
+    setChosenExam: Dispatch<string|ProposalExamPost>,
     issues: any,
 }) {
+    if (exam!== null) {
+        // l'esame era nel curriculum
+        if (exam.__t === "CompulsoryExam") {
+            assert(exam!==null)
+            const compulsoryExam = allExams[exam.exam_id]
+            return <ExamFormRow issues={issues} credits={compulsoryExam.credits} trashcan={false}>
+                <select className='form-control' disabled>
+                    <option>{compulsoryExam.name}</option>
+                </select>
+            </ExamFormRow>
+        } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
+            const options = groups[exam.group]
+            const exam_id = typeof(chosenExam) === 'string' ? chosenExam : ''
 
-    if (exam.__t === "CompulsoryExam") {
-        const compulsoryExam = allExams[exam.exam_id]
-        return <ExamFormRow issues={issues} credits={compulsoryExam.credits} trashcan={false}>
-            <select className='form-control' disabled>
-                <option>{compulsoryExam.name}</option>
-            </select>
-        </ExamFormRow>
-    } else if (exam.__t === "CompulsoryGroup" || exam.__t === "FreeChoiceGroup") {
-        const options = groups[exam.group]
-        const exam_id = typeof(chosenExam) === 'string' ? chosenExam : ''
-
-        return <ExamFormRow issues={issues} credits={chosenExam ? allExams[exam_id].credits : ""} trashcan={false}>
-            <select className='form-control'
-                value={exam_id}
-                onChange={e => {
-                    setExam(e.target.value)
-            }}>
-                <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
-                {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
-            </select>
-        </ExamFormRow>
-    } else if (exam.__t === "FreeChoiceExam") {
+            return <ExamFormRow issues={issues} credits={chosenExam ? allExams[exam_id].credits : ""} trashcan={false}>
+                <select className='form-control'
+                    value={exam_id}
+                    onChange={e => {
+                        setChosenExam(e.target.value)
+                }}>
+                    <option disabled value="">Un esame a scelta nel gruppo {exam.group}</option>
+                    {options && options.map(opt => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+                </select>
+            </ExamFormRow>
+        } else if (exam.__t === "FreeChoiceExam") {
+            const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
+            const cExam = typeof(chosenExam) === 'string' ? chosenExam : ''
+            return <ExamFormRow issues={issues} credits={chosenExam?allExams[cExam].credits:""} trashcan={false}>
+                <select className='form-control' 
+                    value={cExam} 
+                    onChange={e => setChosenExam(e.target.value)}>
+                    <option disabled value="">Un esame a scelta libera</option>
+                    {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
+                </select>
+            </ExamFormRow>
+        }
+    } else if (typeof(chosenExam) === 'string') {
+    // e' un esame a scelta libera
         const options = Object.values(allExams).sort((a: any, b: any) => a.name.localeCompare(b.name))
-        const cExam = typeof(chosenExam) === 'string' ? chosenExam : ''
+        const cExam = chosenExam
         return <ExamFormRow issues={issues} credits={chosenExam?allExams[cExam].credits:""} trashcan={true}>
             <select className='form-control' 
                 value={cExam} 
-                onChange={e => setExam(e.target.value)}>
+                onChange={e => setChosenExam(e.target.value)}>
                 <option disabled value="">Un esame a scelta libera</option>
                 {options.map((opt:any) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
             </select>
         </ExamFormRow>
+    } else if (chosenExam !== null) {
+        // è un esame esterno
+        return <ExamFormRow issues={issues} credits={chosenExam?.exam_credits || ''} setCredits={exam_credits => setChosenExam({...chosenExam, exam_credits})} trashcan={true}>
+            <input className='form-control' 
+                value={chosenExam?.exam_name || ''} 
+                onChange={e => setChosenExam({exam_name: e.target.value, exam_credits: chosenExam?.exam_credits||0})}/>
+        </ExamFormRow>
+    } else {
+        assert(false)
     }
 }
 
-function ExamFormRow({issues, credits, trashcan, children}:{
-        issues?:any, 
-        credits?:number|string, 
-        trashcan?:boolean, 
+function ExamFormRow({issues, credits, setCredits, trashcan, children}:{
+        issues:any, 
+        credits:number|string,
+        setCredits?:(credits:number)=>void,
+        trashcan:boolean, 
         children:any
     }) {
     const style=issues?{background:"yellow",padding:"1ex"}:{}
@@ -527,7 +553,8 @@ function ExamFormRow({issues, credits, trashcan, children}:{
             {issues && <div>{issues}</div>}
         </div>
         <div className={trashcan?"col-2":"col-3"}>
-            <input className='form-control col' readOnly value={credits}/>
+            <input className='form-control col' type="number" readOnly={!setCredits} value={credits}
+                onChange={setCredits?(e => setCredits(parseFloat(e.target.value))):undefined} />
         </div>
         {trashcan && <div className='col-1 btn my-auto'>
             <i className='fas fa-trash'></i>

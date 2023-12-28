@@ -279,16 +279,16 @@ async function validateProposal(req) {
         }
         // additional exams
         for (j=year_exams.length;j<body.exams[year].length;j++) {
-            const exam_id = body.exams[year][j]
+            let exam_id = body.exams[year][j]
             if (typeof(exam_id) === 'string') {
                 try {
                     exam_id = new ObjectId(exam_id)       
                 } catch(err) {
                     throw new BadRequestError(`invalid object_id ${exam_id} year ${year+1} position ${j+1}`)
                 }
-                const exam = await Exam.findOne({_id: exam_id})
+                const exam = await Exam.findById(exam_id)
                 if (!exam) throw new BadRequestError(`Exam not found with id ${exam_id} year ${year+1} position ${j+1}`)
-                obj.exams[year].append({
+                obj.exams[year].push({
                     __t: 'FreeChoiceExam',
                     exam_id,
                     exam_name: exam.name,
@@ -298,10 +298,13 @@ async function validateProposal(req) {
                 credits += exam.credits
             } else {
                 const exam_name = exam_id.exam_name
-                const exam_credits = ParseInt(exam_id.exam_credits)
+                const exam_credits = parseInt(exam_id.exam_credits)
+                if (isNaN(exam_credits)) {
+                    issues.exams[year][j] = `Numero di crediti non valido`
+                    has_issues = true
+                }
                 if (!exam_name) throw new BadRequestError(`External exam name invalid`)
-                if (isNaN(exam_credits)) throw new BadRequestError(`Invalid credits number`)
-                obj.exams[year].append({
+                obj.exams[year].push({
                     __t: 'ExternalExam',
                     exam_name,
                     exam_credits,
