@@ -6,6 +6,9 @@ import LoadingMessage from './LoadingMessage'
 //import Card from './Card'
 import { Card } from 'react-bootstrap'
 
+import {formatDate} from '../modules/dates'
+import StateBadge from './StateBadge'
+
 interface IQuery {
     _limit: number,
     _sort: string,
@@ -33,7 +36,7 @@ export function useQuery() {
     return useContext(QueryTableContext)
 }
 
-export default function QueryTable({ path, sort, direction, children, headers, getField}:{
+export default function QueryTable<T>({ path, sort, direction, children, headers, getField}:{
     path: string,
     sort: string,
     direction?: number,
@@ -54,7 +57,7 @@ export default function QueryTable({ path, sort, direction, children, headers, g
                 </div>
                 <FilterBadges/>
                 <div className="table-responsive-lg">
-                    <Table path={path} headers={headers} getField={getField}/>
+                    <Table<T> path={path} headers={headers} getField={getField}/>
                 </div>
             </QueryTableProvider>
         </Card.Body>
@@ -89,7 +92,7 @@ function FilterBadges() {
     </div>
 }
 
-function Table({ path, headers, getField }: {
+function Table<T>({ path, headers, getField }: {
     path:string,
     headers: IQueryTableHeader[],
     getField?: (item: any, field: string) => JSX.Element | string,
@@ -97,11 +100,11 @@ function Table({ path, headers, getField }: {
     const ctx = useQuery()
     if (!ctx) return null
     const { query, setQuery } = ctx 
-    const indexQuery = useIndex(path, query)
+    const indexQuery = useIndex<T>(path, query)
     const [ selectedIds, setSelectedIds ] = useState<string[]>([])
     
     if (indexQuery.isError) return <>ERRORE</>
-    if (indexQuery.isLoading) return <LoadingMessage/>
+    if (indexQuery.data === undefined) return <LoadingMessage/>
 
     const data = indexQuery.data
     const items = data.items
@@ -220,8 +223,13 @@ function TableBody({ path, headers, getField, items, selectedIds, setSelectedIds
     }
 }
 
-export function defaultGetField(item, field) {
+export function defaultGetField(item, field:string) {
     let value = item
-    field.split('.').forEach(f => {value = value[f]})
+    const segments:string[] = field.split('.')
+    segments.forEach(f => {value = value[f]})
+    const last = segments[segments.length - 1]
+    if (["date_submitted", "date_modified", "date_managed"]
+        .includes(last)) return formatDate(value)
+    if (last === 'state') return <StateBadge state={value}/>
     return value
 }

@@ -337,8 +337,14 @@ function ProposalFormYears({ proposal, curriculum, allExams, degree, issues, set
             const populated_exams = group_exams.flatMap(id => allExams[id] ? [ allExams[id] ] : [] ).sort((a: any, b: any) => a.name.localeCompare(b.name))
             return [group_id, populated_exams]
         }))
-
     const [chosenExams, setChosenExams] = useState<ProposalExamPost[][]>(fitExams(proposal, curriculum))
+
+    setTimeout(() => {
+        if (curriculum && !doExamsFit(chosenExams, curriculum)) {
+            console.log('exams do not fit: recompute')
+            setChosenExams(fitExams(proposal, curriculum))
+        }
+    },0)
 
     // console.log(JSON.stringify({chosenExams,groups}))
 

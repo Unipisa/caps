@@ -27,17 +27,17 @@ export function FilterInput({ name, label }) {
     const ctx = useQuery()
     if (!ctx) return null
     const { query, setQuery } = ctx 
-    const [ my_value, setValue ] = useState(query[name] || "")
+    const [ myValue, setValue ] = useState(query[name] || "")
 
     function onChange(e) {
-        setQuery({...query, [name]: my_value })
+        setQuery({...query, [name]: myValue })
     }
 
     return <div className="input form-group">
             <label htmlFor={name}>{ label }</label>
             <input className="form-control"
                 name={name}
-                value={my_value}
+                value={myValue}
                 placeholder={label}
                 onChange={e => { setValue(e.target.value) }}
                 onBlur={onChange} 
@@ -49,11 +49,24 @@ export function FilterInput({ name, label }) {
         </div> 
 }
 
-export function FilterSelect({name, label, value, onChange, children}) {
-    // TODO: incomplete
+export function FilterSelect({name, label, value, children}:{
+    name: string,
+    label: string,
+    value?: string,
+    children?: any,
+}) {
+    const ctx = useQuery()
+    if (!ctx) return null
+    const { query, setQuery } = ctx 
+    const myValue = query[name] || ""
+
+    function onChange(e) {
+        setQuery(query => ({...query, [name]: myValue }))
+    }
+
     return <div className="input form-group">
                 <label htmlFor={name}>{label}</label>
-                <select className="form-control" name={name} value={value} onChange={onChange}>
+                <select className="form-control" name={name} value={myValue} onChange={onChange}>
                     { children }
                 </select>
             </div>

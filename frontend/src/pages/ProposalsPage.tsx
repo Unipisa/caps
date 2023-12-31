@@ -2,7 +2,7 @@ import React from 'react'
 
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
-    ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
+    ItemAddButton, CsvDownloadButton, ExcelDownloadButton, FilterSelect,
     } from '../components/TableElements'
 import QueryTable from '../components/QueryTable'
 
@@ -47,8 +47,18 @@ export default function ProposalsPage() {
             direction={-1}
         >
             <FilterButton>
-            <FilterInput name="name" label="nome" />
-            <FilterInput name="enabled" label="attivato" />
+            <FilterSelect name="state" label="stato">
+                <option value="">qualunque</option>
+                <option value="draft">bozza</option>
+                <option value="submitted">inviato</option>
+                <option value="approved">approvato</option>
+                <option value="rejected">respinto</option>
+            </FilterSelect>
+            <FilterInput name="user_last_name" label="cognome" />
+            <FilterInput name="degree_academic_year" label="anno" />
+            <FilterInput name="degree_name" label="laurea" />
+            <FilterInput name="curriculum_name" label="curriculum" />
+            <FilterInput name="" label="nome esame" />
             </FilterButton>
 
             <TableTopRightButtons>

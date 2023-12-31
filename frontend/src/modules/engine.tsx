@@ -181,7 +181,7 @@ export function useGet<T>(path:string, id:string|undefined) {
 }        
 
 export function useIndex<T>(path:string, query={}) {
-    return useQuery<{items: T[]}>({
+    return useQuery<{items: T[],total:number}>({
         queryKey: [path, query],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}`, { params: query })

@@ -55,7 +55,11 @@ const fields = {
     "degree_name": {
         can_filter: true,
         can_sort: true
-    }
+    },
+    "degree_academic_year": {
+        can_filter: true,
+        can_sort: true
+    },
 };
 
 const ProposalsController = {

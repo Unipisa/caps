@@ -1,7 +1,7 @@
 import React from 'react'
 import { Badge } from 'react-bootstrap'
 
-export default function StatusBadge({state}:{state: string}) {
+export default function StateBadge({state}:{state: string}) {
     return <Badge text="light" bg={
         {
             'draft': 'primary',
