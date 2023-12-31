@@ -4,41 +4,12 @@ import {
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton, FilterSelect,
     } from '../components/TableElements'
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 import { ProposalGet } from '../modules/engine'
+import { formatDate } from '../modules/dates'
+import StateBadge from '../components/StateBadge'
 
 const path = "/proposals/"
-
-const headers = [
-    {   
-        field: 'state',
-        label: 'stato',
-    }, {
-        field: 'user_name',
-        label: 'studente',
-        enable_sort: true,
-        enable_link: true,
-    }, {
-        field: 'degree_academic_year',
-        label: 'anno',
-        enable_sort: true,
-    }, {
-        field: 'degree_name',
-        label: 'laurea',
-        enable_sort: true,
-    }, {   
-        field: 'curriculum_name',
-        label: "piano di studio",
-        enable_sort: true,
-    }, {
-        field: 'date_submitted',
-        label: 'data invio',
-        enable_sort: true,
-    }, {
-        field: 'date_managed',
-        label: 'data gestione',
-        enable_sort: true,
-    }]
 
 export default function ProposalsPage() {
     return <>
@@ -65,8 +36,32 @@ export default function ProposalsPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges/>
-            <QueryTable<ProposalGet> path={path} headers={headers} />
+            <QueryTable<ProposalGet> path={path} headers={Headers()} renderCells={renderCells}>
+            </QueryTable>
         </QueryTableCard>
     </>
+
+    function renderCells(item: ProposalGet) {
+        return <>
+            <td><StateBadge state={item.state}/></td>
+            <td><a href={item.user_id}>{item.user_name}</a></td>
+            <td>{item.degree_academic_year}</td>
+            <td>{item.degree_name}</td>
+            <td>{item.curriculum_name}</td>
+            <td>{formatDate(item.date_submitted)}</td>
+            <td>{formatDate(item.date_managed)}</td>
+        </>
+    }
 }
 
+function Headers() {
+    return <>
+        <th>stato</th>
+        <th><SortHeader field='user_name'>studente</SortHeader></th>
+        <th><SortHeader field='degree_academic_year'>anno</SortHeader></th>
+        <th><SortHeader field='degree_name'>laurea</SortHeader></th>
+        <th><SortHeader field='curriculum_name'>piano di studio</SortHeader></th>
+        <th><SortHeader field='date_submitted'>data invio</SortHeader></th>
+        <th><SortHeader field='date_managed'>data gestione</SortHeader></th>
+    </>
+}

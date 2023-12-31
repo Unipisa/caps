@@ -5,7 +5,7 @@ import {
     FilterCheckbox,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 
 const path="form_templates/"
 const headers=[
@@ -40,18 +40,21 @@ export default function FormTemplatesPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={headers} getField={getField}/>
+            <QueryTable path={path} headers={Headers()} renderCells={renderCells}/>
         </QueryTableCard>
     </>
-
-    function getField(item, field) {
-        const value = item[field]
-        switch(field) {
-            case 'enabled':
-                return value ? "•" : ""
-            default:
-                return value
-        }
-    }
 }
 
+function Headers() {
+    return <>
+        <th><SortHeader field='name'>nome</SortHeader></th>
+        <th><SortHeader field='enabled'>attivato</SortHeader></th>
+    </>
+}
+
+function renderCells(item) {
+    return <>
+        <td><a href={item._id}>{item.name}</a></td>
+        <td>{item.enabled? "•" : ""}</td>
+    </>
+}

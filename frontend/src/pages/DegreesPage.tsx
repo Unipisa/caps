@@ -1,34 +1,12 @@
 import React from 'react'
 
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 
 const path = "/degrees/"
-
-const headers=[
-    {   
-        field: 'enabled',
-        label: "Attivo",
-    }, {   
-        field: 'enable_sharing',
-        label: "Richiesta parere"
-    }, {   
-        field: 'academic_year',
-        label: "Anno accademico",
-        enable_sort: true
-    }, {   
-        field: 'name',
-        label: "nome",
-        enable_sort: true,
-        enable_link: true
-    }, {   
-        field: 'years',
-        label: "Anni",
-        enable_sort: true 
-    }]
 
 export default function DegreesPage() {
     return <>
@@ -53,19 +31,27 @@ export default function DegreesPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={headers} getField={getField} />
+            <QueryTable path={path} headers={Headers()} renderCells={renderCells} />
         </QueryTableCard>
     </>
-
-    function getField(item, field) {
-        const value = item[field]
-        if (field == "enabled") {
-            return value ? "attivo" : "non attivo"
-        } else if (field == "enable_sharing") {
-            return value ? "abilitata" : "non abilitata"
-        } else {
-            return value
-        }
-    }
 }
 
+function Headers() {
+    return <>
+        <th>attivo</th>
+        <th>richiesta parere</th>
+        <th><SortHeader field='academic_year'>anno</SortHeader></th>
+        <th><SortHeader field='name'>nome</SortHeader></th>
+        <th><SortHeader field='years'>anni</SortHeader></th>
+    </>
+}
+
+function renderCells(item) {
+    return <>
+        <td>{item.enabled ? "•" : ""}</td>
+        <td>{item.enable_sharing ? "•" : ""}</td>
+        <td>{item.academic_year}</td>
+        <td><a href={item._id}>{item.name}</a></td>
+        <td>{item.years}</td>
+    </>
+}

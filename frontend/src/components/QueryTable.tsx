@@ -61,47 +61,22 @@ export function QueryTableBar({ children }) {
 
 }
 
-export function QueryTable<T>({ path, headers, getField}:{
+export function QueryTable<T extends {_id:string}>({ path, headers, renderCells}:{
     path: string,
-    headers: IQueryTableHeader[],
-    getField?: (item: any, field: string) => JSX.Element | string,
-    children?: any,
+    headers: JSX.Element|JSX.Element[],
+    renderCells: (item: T) => JSX.Element|JSX.Element[],
 }) {
     return <div className="table-responsive-lg">
-        <TableItems<T> path={path} headers={headers} getField={getField}>
+        <TableItems<T> path={path}>
             <thead>
                 <tr>
                     <th></th>
-                    { headers.map( ({ field, label, enable_sort }) => 
-                        <th key={ field }> 
-                            {enable_sort 
-                                ? <SortHeader field={ field } label={ label } />
-                                : label}
-                        </th> 
-                    )}
+                    { headers }
                 </tr>
             </thead>        
-            <TableBody renderCells={renderCells} />
+            <TableBody<T> renderCells={renderCells} />
         </TableItems>
     </div>
-
-    function renderCells(item) {
-        return <>
-            {headers.map(({ field, enable_link }) => 
-            <td key={ field }>{ render(item, field, enable_link) }</td>
-            )}
-        </>
-    }
-
-    function render(item, field, enable_link) {
-        const content = getField ? getField(item, field) : defaultGetField(item, field)
-        if (enable_link) {
-            return <Link to={ `${item._id}` }>{ content }</Link>
-        } else {
-            return content;
-        }
-    }
-
 }
 
 export function defaultGetField(item, field:string) {
@@ -167,8 +142,6 @@ export function useSetSelectedIds() {
 
 function TableItems<T>({ path, children }: {
     path:string,
-    headers: IQueryTableHeader[],
-    getField?: (item: any, field: string) => JSX.Element | string,
     children?: any,
 }) {
     const ctx = useQuery()
@@ -207,18 +180,18 @@ function TableItems<T>({ path, children }: {
     }
 }
 
-function SortHeader({ field, label }) {
+export function SortHeader({ field, children }) {
     const { query, setQuery } = useQuery() || {}
 
     if (query && setQuery) {
         return <a href="#" onClick={() => toggleSort(field, setQuery)}>
-            { label }&nbsp;{
+            { children }&nbsp;{
                 (query._sort === field) 
                     ? (query._direction > 0 ? <>↓</> : <>↑</>) 
                     : ""}
         </a>
     } else {
-        return label;
+        return children
     }
 
     function toggleSort(field, setQuery) {

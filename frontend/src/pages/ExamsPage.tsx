@@ -3,7 +3,7 @@ import {
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton
     } from '../components/TableElements'
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader } from '../components/QueryTable'
 
 const path="/exams/" 
 const headers=[
@@ -54,14 +54,29 @@ export default function ExamsPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={headers} getField={getField} />
+            <QueryTable path={path} headers={Headers()} renderCells={renderCells} />
         </QueryTableCard>
     </>
-
-    function getField(item, field) {
-        const value = item[field]
-        if (field === "tags") return value.join(", ")
-        return value
-    }
 }
 
+function Headers() {
+    return <>
+        <th><SortHeader field='name'>nome</SortHeader></th>
+        <th>etichette</th>
+        <th><SortHeader field='code'>codice</SortHeader></th>
+        <th><SortHeader field='sector'>settore</SortHeader></th>
+        <th><SortHeader field='credits'>crediti</SortHeader></th>
+        <th>note</th>
+    </>
+}
+
+function renderCells(item) {
+    return <>
+        <td><a href={item._id}>{item.name}</a></td>
+        <td>{item.tags.join(", ")}</td>
+        <td>{item.code}</td>
+        <td>{item.sector}</td>
+        <td>{item.credits}</td>
+        <td>{item.notes}</td>
+    </>
+}
