@@ -38,17 +38,4 @@ export default class Model {
     view_url() {
         return `${settings.root_url}${this.constructor.api_url}${this._id}`
     }
-
-    render_table_field(field) {
-        let value = this[field]
-        if (value instanceof Model) {
-            const dot = field.indexOf('.')
-            if (dot>=0) return value.render_table_field(field.slice(dot+1))
-            else return `${value}`
-        }
-        if (value instanceof Moment) {
-            value = value.format("D.M.Y")
-        }
-        return value
-    }
 }

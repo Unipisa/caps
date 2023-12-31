@@ -36,12 +36,9 @@ export function useQuery() {
     return useContext(QueryTableContext)
 }
 
-export default function QueryTable<T>({ path, sort, direction, children, headers, getField}:{
-    path: string,
+export default function QueryTable<T>({ sort, direction, children }:{
     sort: string,
     direction?: number,
-    headers: IQueryTableHeader[],
-    getField?: (item: any, field: string) => JSX.Element | string,
     children?: any,
 }) {
     const [ query, setQuery ] = useState<IQuery>({
@@ -52,19 +49,31 @@ export default function QueryTable<T>({ path, sort, direction, children, headers
     return <Card className="shadow my-2">
         <Card.Body>
             <QueryTableProvider value={{query, setQuery}}>
-                <div className="d-flex mb-2">
-                    {children}
-                </div>
-                <FilterBadges/>
-                <div className="table-responsive-lg">
-                    <Table<T> path={path} headers={headers} getField={getField}/>
-                </div>
+                {children}
             </QueryTableProvider>
         </Card.Body>
     </Card>
 }
 
-function FilterBadges() {
+export function QueryTableHeaders({ children }) {
+    return <div className="d-flex mb-2">
+        {children}
+    </div>
+
+}
+
+export function QueryTableBody<T>({ path, headers, getField}:{
+    path: string,
+    headers: IQueryTableHeader[],
+    getField?: (item: any, field: string) => JSX.Element | string,
+    children?: any,
+}) {
+    return <div className="table-responsive-lg">
+        <Table<T> path={path} headers={headers} getField={getField}/>
+    </div>
+}
+
+export function FilterBadges() {
     const ctx = useQuery()
     if (!ctx) return null
     const { query, setQuery } = ctx

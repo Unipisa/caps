@@ -58,7 +58,8 @@ const fields = {
     },
     "degree_academic_year": {
         can_filter: true,
-        can_sort: true
+        can_sort: true,
+        match_integer: true,
     },
 };
 
