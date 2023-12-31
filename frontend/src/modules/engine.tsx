@@ -455,3 +455,11 @@ export function useDeleteProposal(id:string) {
     return useDelete('proposals/', id)
 }
 
+export type FormTemplateGet = {
+    _id: string,
+    name: string,
+    text: string,
+    enabled: boolean,
+    require_approval: boolean,
+    notify_emails: string[],
+}

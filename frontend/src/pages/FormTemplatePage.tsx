@@ -9,12 +9,13 @@ import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import { RenderHtml } from '../components/RenderHtml'
 import Group from '../components/Group'
+import { FormTemplateGet } from '../modules/engine'
 
 const path="form_templates/"
 
 export default function FormTemplatePage() {
     const { id } = useParams()
-    const query = useGet(path, id as string)
+    const query = useGet<FormTemplateGet>(path, id as string)
     const engine = useEngine()
     const [data, setData] = useState({}) // per l'anteprima
     const user = engine?.user
@@ -26,9 +27,9 @@ export default function FormTemplatePage() {
     }
     
     if (query.isLoading) return <LoadingMessage>caricamento modello...</LoadingMessage> 
-    if (query.isError) return <div>errore caricamento modello</div> 
+    if (query.data === undefined) return <div>errore caricamento modello</div> 
     
-    const formTemplate = query.data
+    const formTemplate: FormTemplateGet = query.data
 
     return <>
         <h1>{ formTemplate.name }</h1>
@@ -68,7 +69,7 @@ export default function FormTemplatePage() {
                 </tr>
                 <tr>
                     <th>Richiede approvazione</th>
-                    <td>{formTemplate.requires_approval?"si":"no"}</td>
+                    <td>{formTemplate.require_approval?"si":"no"}</td>
                 </tr>
             </tbody></table>
         </Card>    
