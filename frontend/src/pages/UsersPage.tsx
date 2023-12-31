@@ -6,7 +6,7 @@ import {
     ItemAddButton, 
     CsvDownloadButton, ExcelDownloadButton
     } from '../components/TableElements'
-import QueryTable, {QueryTableHeaders, QueryTableBody, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 
 const path="/users" 
 const headers=[
@@ -42,8 +42,8 @@ const headers=[
 export default function UsersPage({engine}) {
     return <>
         <h1>Utenti</h1>
-        <QueryTable sort="last_name">
-            <QueryTableHeaders>
+        <QueryTableCard sort="last_name">
+            <QueryTableBar>
                 <FilterButton>
                 <FilterInput name="name" label="nome" />
                 <FilterInput name="username" label="username" />
@@ -60,10 +60,10 @@ export default function UsersPage({engine}) {
                     <CsvDownloadButton cb={async (query)=>[]}/>
                     <ExcelDownloadButton />
                 </TableTopRightButtons>
-            </QueryTableHeaders>
+            </QueryTableBar>
             <FilterBadges />
-            <QueryTableBody path={path} headers={headers} getField={getField} />
-        </QueryTable>
+            <QueryTable path={path} headers={headers} getField={getField} />
+        </QueryTableCard>
     </>
 
     function getField(item, field) {

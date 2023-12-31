@@ -3,7 +3,7 @@ import {
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
-import QueryTable, {QueryTableHeaders, QueryTableBody, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 
 const path = "/curricula/"
 const headers=[
@@ -26,8 +26,8 @@ const headers=[
 export default function CurriculaPage() {
     return <>
         <h1>Curricula</h1>
-        <QueryTable sort="name">
-            <QueryTableHeaders>
+        <QueryTableCard sort="name">
+            <QueryTableBar>
                 <FilterButton>
                     <FilterInput name="name" label="nome" />
                     <FilterInput name="academic_year" label="anno" />
@@ -42,10 +42,10 @@ export default function CurriculaPage() {
                     <CsvDownloadButton cb={async (query) => []}/>
                     <ExcelDownloadButton />
                 </TableTopRightButtons>
-            </QueryTableHeaders>
+            </QueryTableBar>
             <FilterBadges />
-            <QueryTableBody path={path} headers={headers}/>
-        </QueryTable>
+            <QueryTable path={path} headers={headers}/>
+        </QueryTableCard>
     </>
 }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import QueryTable, {QueryTableHeaders, QueryTableBody, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
@@ -33,8 +33,8 @@ const headers=[
 export default function DegreesPage() {
     return <>
         <h1>Corsi di Laurea</h1>
-        <QueryTable sort="name">
-            <QueryTableHeaders>
+        <QueryTableCard sort="name">
+            <QueryTableBar>
                 <FilterButton>
                 <FilterInput name="enabled" label="attivo" />
                 <FilterInput name="enable_sharing" label="richiesta parere" />
@@ -51,10 +51,10 @@ export default function DegreesPage() {
                     <CsvDownloadButton cb={async (query)=>[]}/>
                     <ExcelDownloadButton />
                 </TableTopRightButtons>
-            </QueryTableHeaders>
+            </QueryTableBar>
             <FilterBadges />
-            <QueryTableBody path={path} headers={headers} getField={getField} />
-        </QueryTable>
+            <QueryTable path={path} headers={headers} getField={getField} />
+        </QueryTableCard>
     </>
 
     function getField(item, field) {

@@ -5,7 +5,7 @@ import {
     FilterCheckbox,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
-import QueryTable, {QueryTableHeaders, QueryTableBody, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 
 const path="form_templates/"
 const headers=[
@@ -23,8 +23,8 @@ const headers=[
 export default function FormTemplatesPage() {
     return <>
         <h1>Modelli</h1>
-        <QueryTable sort="name">
-            <QueryTableHeaders>
+        <QueryTableCard sort="name">
+            <QueryTableBar>
                 <FilterButton>
                     <FilterInput name="name" label="nome" />
                     <FilterCheckbox name="enabled" label="attivato" />
@@ -38,10 +38,10 @@ export default function FormTemplatesPage() {
                     <CsvDownloadButton cb={async query => []}/>
                     <ExcelDownloadButton />
                 </TableTopRightButtons>
-            </QueryTableHeaders>
+            </QueryTableBar>
             <FilterBadges />
-            <QueryTableBody path={path} headers={headers} getField={getField}/>
-        </QueryTable>
+            <QueryTable path={path} headers={headers} getField={getField}/>
+        </QueryTableCard>
     </>
 
     function getField(item, field) {

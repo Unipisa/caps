@@ -4,7 +4,7 @@ import {
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton, FilterSelect,
     } from '../components/TableElements'
-import QueryTable, {QueryTableHeaders, QueryTableBody, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 import { ProposalGet } from '../modules/engine'
 
 const path = "/proposals/"
@@ -43,8 +43,8 @@ const headers = [
 export default function ProposalsPage() {
     return <>
         <h1>Piani di studio</h1>
-        <QueryTable sort="date_managed" direction={-1}>
-            <QueryTableHeaders>
+        <QueryTableCard sort="date_managed" direction={-1}>
+            <QueryTableBar>
                 <FilterButton>
                 <FilterSelect name="state" label="stato">
                     <option value="">qualunque</option>
@@ -63,10 +63,10 @@ export default function ProposalsPage() {
                     <CsvDownloadButton cb={async query=>[]}/>
                     <ExcelDownloadButton />
                 </TableTopRightButtons>
-            </QueryTableHeaders>
+            </QueryTableBar>
             <FilterBadges/>
-            <QueryTableBody<ProposalGet> path={path} headers={headers} />
-        </QueryTable>
+            <QueryTable<ProposalGet> path={path} headers={headers} />
+        </QueryTableCard>
     </>
 }
 

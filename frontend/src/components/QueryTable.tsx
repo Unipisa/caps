@@ -3,7 +3,6 @@ import React, { useState, createContext, useContext } from 'react'
 import { useIndex } from '../modules/engine'
 import { Link } from "react-router-dom"
 import LoadingMessage from './LoadingMessage'
-//import Card from './Card'
 import { Card } from 'react-bootstrap'
 
 import {formatDate} from '../modules/dates'
@@ -36,7 +35,7 @@ export function useQuery() {
     return useContext(QueryTableContext)
 }
 
-export default function QueryTable<T>({ sort, direction, children }:{
+export function QueryTableCard<T>({ sort, direction, children }:{
     sort: string,
     direction?: number,
     children?: any,
@@ -55,22 +54,65 @@ export default function QueryTable<T>({ sort, direction, children }:{
     </Card>
 }
 
-export function QueryTableHeaders({ children }) {
+export function QueryTableBar({ children }) {
     return <div className="d-flex mb-2">
         {children}
     </div>
 
 }
 
-export function QueryTableBody<T>({ path, headers, getField}:{
+export function QueryTable<T>({ path, headers, getField}:{
     path: string,
     headers: IQueryTableHeader[],
     getField?: (item: any, field: string) => JSX.Element | string,
     children?: any,
 }) {
     return <div className="table-responsive-lg">
-        <Table<T> path={path} headers={headers} getField={getField}/>
+        <TableItems<T> path={path} headers={headers} getField={getField}>
+            <thead>
+                <tr>
+                    <th></th>
+                    { headers.map( ({ field, label, enable_sort }) => 
+                        <th key={ field }> 
+                            {enable_sort 
+                                ? <SortHeader field={ field } label={ label } />
+                                : label}
+                        </th> 
+                    )}
+                </tr>
+            </thead>        
+            <TableBody renderCells={renderCells} />
+        </TableItems>
     </div>
+
+    function renderCells(item) {
+        return <>
+            {headers.map(({ field, enable_link }) => 
+            <td key={ field }>{ render(item, field, enable_link) }</td>
+            )}
+        </>
+    }
+
+    function render(item, field, enable_link) {
+        const content = getField ? getField(item, field) : defaultGetField(item, field)
+        if (enable_link) {
+            return <Link to={ `${item._id}` }>{ content }</Link>
+        } else {
+            return content;
+        }
+    }
+
+}
+
+export function defaultGetField(item, field:string) {
+    let value = item
+    const segments:string[] = field.split('.')
+    segments.forEach(f => {value = value[f]})
+    const last = segments[segments.length - 1]
+    if (["date_submitted", "date_modified", "date_managed"]
+        .includes(last)) return formatDate(value)
+    if (last === 'state') return <StateBadge state={value}/>
+    return value
 }
 
 export function FilterBadges() {
@@ -101,10 +143,33 @@ export function FilterBadges() {
     </div>
 }
 
-function Table<T>({ path, headers, getField }: {
+const ItemsContext = createContext<{
+    items: any[],
+    selectedIds: string[],
+    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>,
+}>({
+    items: [], 
+    selectedIds: [], 
+    setSelectedIds: () => {}
+})
+
+export function useItems<T extends {_id: string}>() {
+    return useContext(ItemsContext).items as T[]
+}
+
+export function useSelectedIds() {
+    return useContext(ItemsContext).selectedIds
+}
+
+export function useSetSelectedIds() {
+    return useContext(ItemsContext).setSelectedIds
+}
+
+function TableItems<T>({ path, children }: {
     path:string,
     headers: IQueryTableHeader[],
     getField?: (item: any, field: string) => JSX.Element | string,
+    children?: any,
 }) {
     const ctx = useQuery()
     if (!ctx) return null
@@ -118,27 +183,10 @@ function Table<T>({ path, headers, getField }: {
     const data = indexQuery.data
     const items = data.items
     
-    return <>
+    return <ItemsContext.Provider value={{items, selectedIds, setSelectedIds}}>
         {items.length}/{data.total} elementi mostrati
         <table className="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    { headers.map( ({ field, label, enable_sort }) => 
-                        <th key={ field }> 
-                            <Header field={ field } label={ label } enable_sort={ enable_sort } />
-                        </th> 
-                    )}
-                </tr>
-            </thead>        
-            <TableBody 
-                path={path} 
-                headers={headers} 
-                items={ items } 
-                selectedIds={ selectedIds } 
-                setSelectedIds={ setSelectedIds } 
-                getField={ getField }    
-            />
+            { children }
         </table>
         <p>
             { items.length < data.total 
@@ -148,9 +196,32 @@ function Table<T>({ path, headers, getField }: {
             : null
             }
         </p>
-    </>
+    </ItemsContext.Provider>
 
-    function toggleSort(field) {
+    function increaseLimit(d) {
+        setQuery(q => {
+            return {...q,
+                _limit: q._limit + d
+            }
+        })
+    }
+}
+
+function SortHeader({ field, label }) {
+    const { query, setQuery } = useQuery() || {}
+
+    if (query && setQuery) {
+        return <a href="#" onClick={() => toggleSort(field, setQuery)}>
+            { label }&nbsp;{
+                (query._sort === field) 
+                    ? (query._direction > 0 ? <>↓</> : <>↑</>) 
+                    : ""}
+        </a>
+    } else {
+        return label;
+    }
+
+    function toggleSort(field, setQuery) {
         setQuery(q => {
             if (q._sort == field) {
                 return {
@@ -166,37 +237,14 @@ function Table<T>({ path, headers, getField }: {
             }
         })
     }
+}    
 
-    function increaseLimit(d) {
-        setQuery(q => {
-            return {...q,
-                _limit: q._limit + d
-            }
-        })
-    }
-
-    function Header({ field, label, enable_sort }) {
-        if (enable_sort) {
-            return <a href="#" onClick={() => toggleSort(field)}>
-                { label }&nbsp;{
-                    (query._sort === field) 
-                        ? (query._direction > 0 ? <>↓</> : <>↑</>) 
-                        : ""}
-            </a>
-        } else {
-            return label;
-        }
-    }    
-}
-
-function TableBody({ path, headers, getField, items, selectedIds, setSelectedIds }:{
-    path: string,
-    headers: IQueryTableHeader[],
-    getField?: (item: any, field: string) => JSX.Element | string,
-    items: any[],
-    selectedIds: string[],
-    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>,
+function TableBody<T extends {_id:string}>({ renderCells }:{
+    renderCells: (item: T) => JSX.Element|JSX.Element[],
 }) {
+    const items = useItems<T>()
+    const selectedIds = useSelectedIds()
+    const setSelectedIds = useSetSelectedIds()
     return <tbody>
         { items.map(item => {
             const selected = selectedIds.includes(item._id)
@@ -204,10 +252,8 @@ function TableBody({ path, headers, getField, items, selectedIds, setSelectedIds
                 key={ item._id } 
                 style={ selected ? {background: "lightgray" } : {}}>
                 <td><input type="checkbox" checked={ selected } readOnly onClick={ () => onToggle(item) }/></td>
-                { headers.map(({ field, enable_link }) => 
-                    <td key={ field }>{ render(item, field, enable_link) }</td>
-                    )}
-                <td></td>
+                { renderCells(item) }
+                <td />
             </tr>})
         }
     </tbody>            
@@ -221,24 +267,4 @@ function TableBody({ path, headers, getField, items, selectedIds, setSelectedIds
             }
         })
     }
-
-    function render(item, field, enable_link) {
-        const content = getField ? getField(item, field) : defaultGetField(item, field)
-        if (enable_link) {
-            return <Link to={ `${item._id}` }>{ content }</Link>
-        } else {
-            return content;
-        }
-    }
-}
-
-export function defaultGetField(item, field:string) {
-    let value = item
-    const segments:string[] = field.split('.')
-    segments.forEach(f => {value = value[f]})
-    const last = segments[segments.length - 1]
-    if (["date_submitted", "date_modified", "date_managed"]
-        .includes(last)) return formatDate(value)
-    if (last === 'state') return <StateBadge state={value}/>
-    return value
 }
