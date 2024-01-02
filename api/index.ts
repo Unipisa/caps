@@ -1,3 +1,4 @@
+#!/usr/bin/env ts-node-script
 const express = require('express')
 const morgan = require('morgan')
 const session = require('express-session')

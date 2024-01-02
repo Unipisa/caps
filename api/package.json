@@ -1,18 +1,22 @@
 {
-  "name": "caps-api",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@unipi/caps-backend",
+  "version": "3.0.0",
+  "description": "Compilazione Assistita Piani di Studio, a tool developed for the mathematics department of the University of Pisa to help students in the compilation of their study plans",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./index.ts"
   },
+  "bin": {
+    "caps-backend": "index.ts"
+  },
   "nodemonConfig": {
     "ext": "ts,js"
   },
-  "author": "",
+  "author": "Francesco Baldino, Emanuele Paolini, Leonardo Robol",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "assert": "^2.1.0",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

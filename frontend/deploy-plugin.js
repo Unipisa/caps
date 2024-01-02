@@ -15,19 +15,20 @@
 const fs = require('fs');
 const crypto = require('crypto');
 const { exec } = require("child_process");
-const JS_DIR = '../api/webroot/js/'
+const INSTALL_DIR = '../api/webroot/';
+const JS_DIR = `${INSTALL_DIR}js/`;
 
 class CAPSDeployPlugin {
     apply(compiler) {
         compiler.hooks.done.tap(
             'CAPS Deploy Plugin',
             (stats) => {
-                this.deployJSFiles(stats);
+                this.deploy(stats);
             }
         );
     }
 
-    async deployJSFiles(stats) {
+    async deploy(stats) {
         const output_file =  stats.compilation.outputOptions.path + 
             "/" + stats.compilation.outputOptions.filename;
         const hash = stats.hash;
@@ -53,7 +54,7 @@ class CAPSDeployPlugin {
             if (fe == extension) {
                 console.log(`Removing the old file ${f}`);
                 try {
-                    fs.unlinkSync(js.dir + f);
+                    fs.unlinkSync(JS_DIR + f);
                 }
                 catch {
                     console.log("Error during removal, ignoring");
@@ -67,6 +68,22 @@ class CAPSDeployPlugin {
 
         console.log(`Creating the file ${JS_DIR}${version_file}`);
         fs.writeFileSync(`${JS_DIR}${version_file}`, name + extension);
+
+        const index_filename = INSTALL_DIR + 'index.html';
+        console.log(`Creating ${index_filename}`);
+        fs.writeFileSync(index_filename,`<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/js/${name}${extension}.js"></script>    
+</head>
+<body>
+    <div id="app">...loading...</div>
+    <script>
+        // globally defined in /js/caps.js
+        capsStart();
+    </script>
+</body>
+</html>`);
     }
 }
   

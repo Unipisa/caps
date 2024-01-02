@@ -1,5 +1,6 @@
 const path = require('path');
 const CAPSDeployPlugin = require('./deploy-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   entry: [ 'babel-polyfill', './src/caps.js' ],
@@ -29,9 +30,15 @@ module.exports = {
   },
   resolve: {
     extensions: ['*', '.js', '.jsx', '.scss', '.css', '.ts', '.tsx'],
+    fallback: { 
+      "assert": require.resolve("assert") 
+    }
   },
   plugins: [
-    new CAPSDeployPlugin()
+    new CAPSDeployPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
+    })
   ],
   output: {
     filename: 'caps.js',
