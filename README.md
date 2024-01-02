@@ -27,6 +27,8 @@ npm ci # una tantum
 npm start
 ```
 Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
+La versione 21 di node dà un deprecation warning con la libreria mongoose:
+conviene usare node v20.9.0.
 
 Per testare le API si può usare una applicazione 
 come `postman`. 
