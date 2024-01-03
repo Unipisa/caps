@@ -2,7 +2,7 @@ version: '3'
 
 services:
   caps:
-    image: paolini/caps
+    image: harbor.cs.dm.unipi.it/caps/caps:api
     restart: unless-stopped
     environment:
       - SERVER_URL=http://localhost:3000

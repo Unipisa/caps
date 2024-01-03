@@ -1,8 +1,8 @@
 # To build the image:
 #
 # $ VERSION=$( node -e "console.log(require('./api/package.json').version)" )
-# $ docker build . -t paolini/caps:$VERSION
-# $ docker tag paolini/caps:$VERSION paolini/caps:latest
+# $ docker build . -t caps:$VERSION
+# $ docker tag caps:$VERSION harbor.cs.dm.unipi.it/caps/caps:api
 #
 # To run the image:
 # $ docker-compose -f docker-compose-production.yml up

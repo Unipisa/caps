@@ -98,6 +98,7 @@ async function createOrUpdateUser({username, password, admin = true} : {username
   }
 
   if (password) {
+      console.log(`set password for user "${user.username}" to password of length ${password.length}`)
       await user.setPassword(password)
       await user.save()
   }
