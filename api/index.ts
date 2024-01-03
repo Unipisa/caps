@@ -63,13 +63,13 @@ mongoose.connect(mongo_uri).then((res : any) => {
 
     app.use('/api/v0/', router);
     
-    app.use('/js/', express.static('../frontend/js'));
+    app.use('/js/', express.static('./webroot/js'));
     app.use('/img/', express.static('./webroot/img'));
     app.use('/favicon.ico', express.static('./webroot/favicon.ico'));
     
-    const spa = (req : any, res : any) => res.sendFile(path.join(__dirname, "../frontend/index.html"))
+    const spa = (req : any, res : any) => res.sendFile(path.join(__dirname, "./webroot/index.html"));
 
-    app.use("/", spa)
+    app.use("/", spa);
     app.use(logErrors); // log errors on console
     
     app.use(ApiException.apiErrors); // convert ApiErrors into http responses

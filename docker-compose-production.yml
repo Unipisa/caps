@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  caps:
+    image: paolini/caps
+    restart: unless-stopped
+    environment:
+      - SERVER_URL=http://localhost:3000
+# comma separated URLS 
+      - CORS_ORIGIN=http://localhost:3000 
+# set a string or leave empty for a random string
+      - SESSION_SECRET=
+      - PERMISSION_SECRET=
+      - MONGODB_URI=mongodb://mongodb:27017/caps
+# if set the user is created
+      - ADMIN_USER=admin
+# if empty the password is not changed
+      - ADMIN_PASSWORD=  
+# Client ID for OAuth2, leave empty to disable OAuth2
+      - OAUTH2_CLIENT_ID= 
+      - OAUTH2_CLIENT_SECRET=
+      - OAUTH2_AUTHORIZE_URL=https://iam.unipi.it/oauth2/authorize
+      - OAUTH2_TOKEN_URL=https://iam.unipi.it/oauth2/token
+      - OAUTH2_USERINFO_URL=https://iam.unipi.it/oauth2/userinfo
+      - OAUTH2_LOGOUT_URL=https://iam.unipi.it/oidc/logout
+      - OAUTH2_USERNAME_FIELD=email
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./db:/data/db
+    networks:
+      - backend
+
+networks:
+  backend:
+

@@ -1,9 +1,10 @@
-backend/*.sqlite
-backend/*.sh
-backend/webroot/js
-backend/webroot/node_modules
-backend/vendor
-frontend/js
-frontend/css
+db
+api/db
+api/webroot/js
+api/webroot/node_modules
+api/vendor
+api/node_modules
+frontend/js/*
+frontend/css/*
 frontend/node_modules
 

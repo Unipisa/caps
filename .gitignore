@@ -5,7 +5,7 @@ api/webroot/js/caps-*.js
 api/webroot/js/caps.min.js
 api/webroot/js/caps-*.min.js
 api/webroot/js/ver
-api/webroot/css/style.min.css.map
+api/webroot/css/
 api/webroot/node_modules
 api/webroot/index.html
 api/node_modules

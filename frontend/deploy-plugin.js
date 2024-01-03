@@ -74,7 +74,7 @@ class CAPSDeployPlugin {
         fs.writeFileSync(index_filename,`<!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="/js/${name}${extension}.js"></script>    
+    <script type="text/javascript" src="/js/${name}${extension}"></script>    
 </head>
 <body>
     <div id="app">...loading...</div>
