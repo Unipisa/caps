@@ -6,8 +6,6 @@ import {
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
 
-const path = "/degrees/"
-
 export default function DegreesPage() {
     return <>
         <h1>Corsi di Laurea</h1>
@@ -31,12 +29,24 @@ export default function DegreesPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={Headers()} renderCells={renderCells} />
+            xxx
+            <QueryTable path="/degrees" headers={Headers()} renderCells={renderCells} />
         </QueryTableCard>
     </>
 }
 
 function Headers() {
+    return <>
+        <th><SortHeader field='name'>nome</SortHeader></th>
+        <th>etichette</th>
+        <th><SortHeader field='code'>codice</SortHeader></th>
+        <th><SortHeader field='sector'>settore</SortHeader></th>
+        <th><SortHeader field='credits'>crediti</SortHeader></th>
+        <th>note</th>
+    </>
+}
+
+function Headers_() {
     return <>
         <th>attivo</th>
         <th>richiesta parere</th>

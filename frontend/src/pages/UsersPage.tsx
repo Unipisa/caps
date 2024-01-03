@@ -6,39 +6,9 @@ import {
     ItemAddButton, 
     CsvDownloadButton, ExcelDownloadButton
     } from '../components/TableElements'
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 
 const path="/users" 
-const headers=[
-    {   
-        field: 'id_number',
-        label: "Matricola",
-        enable_link: true,
-        enable_sort: true
-    }, {   
-        field: 'username',
-        label: "Username",
-        enable_link: true,
-        enable_sort: true 
-    }, {   
-        field: 'email',
-        label: "Email",
-        enable_sort: true
-    }, {   
-        field: 'last_name',
-        label: "Cognome",
-        enable_link: true,
-        enable_sort: true
-    }, {   
-        field: 'first_name',
-        label: "Nome",
-        enable_link: true,
-        enable_sort: true
-    }, {
-        field: 'admin',
-        label: "admin"
-    }]
-
 export default function UsersPage({engine}) {
     return <>
         <h1>Utenti</h1>
@@ -62,13 +32,30 @@ export default function UsersPage({engine}) {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={headers} getField={getField} />
+            <QueryTable path="/users" headers={Headers()} renderCells={renderCells} />
+
         </QueryTableCard>
     </>
 
-    function getField(item, field) {
-        const value = item[field]
-        if (field === "admin") return value ? "•" : ""
-        return value
+    function renderCells(item) {
+        return <>
+            <td><a href={item._id}>{item.id_number}</a></td>
+            <td><a href={item._id}>{item.username}</a></td>
+            <td><a href={item._id}>{item.email}</a></td>
+            <td><a href={item._id}>{item.last_name}</a></td>
+            <td><a href={item._id}>{item.first_name}</a></td>
+            <td>{item.admin ? "•" : ""}</td>
+        </>
     }
+}
+
+function Headers() {
+    return <>
+        <th><SortHeader field="id_number">matricola</SortHeader></th>
+        <th><SortHeader field="username">username</SortHeader></th>
+        <th><SortHeader field="email">email</SortHeader></th>
+        <th><SortHeader field="last_name">cognome</SortHeader></th>
+        <th><SortHeader field="first_name">nome</SortHeader></th>
+        <th>admin</th>
+    </>
 }

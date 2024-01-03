@@ -73,7 +73,7 @@ export function QueryTable<T extends {_id:string}>({ path, headers, renderCells}
                     <th></th>
                     { headers }
                 </tr>
-            </thead>        
+            </thead> 
             <TableBody<T> renderCells={renderCells} />
         </TableItems>
     </div>
@@ -225,7 +225,7 @@ function TableBody<T extends {_id:string}>({ renderCells }:{
                 key={ item._id } 
                 style={ selected ? {background: "lightgray" } : {}}>
                 <td><input type="checkbox" checked={ selected } readOnly onClick={ () => onToggle(item) }/></td>
-                { renderCells(item) }
+                {renderCells(item)}
                 <td />
             </tr>})
         }

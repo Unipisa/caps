@@ -3,25 +3,7 @@ import {
     TableTopRightButtons, FilterButton, FilterInput,
     ItemAddButton, CsvDownloadButton, ExcelDownloadButton,
     } from '../components/TableElements'
-import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
-
-const path = "/curricula/"
-const headers=[
-    {   
-        field: 'degree.academic_year',
-        label: "Anno",
-        enable_sort: true
-    }, {   
-        field: 'degree.name',
-        label: "laurea",
-        enable_sort: true,
-        enable_link: true
-    }, {   
-        field: 'name',
-        label: "nome",
-        enable_sort: true,
-        enable_link: true
-    }]
+import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 
 export default function CurriculaPage() {
     return <>
@@ -44,8 +26,24 @@ export default function CurriculaPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path={path} headers={headers}/>
+            <QueryTable path="/curricula" headers={Headers()} renderCells={renderCells}/>
         </QueryTableCard>
+    </>
+}
+
+function renderCells(item) {
+    return <>
+        <td>{item.degree.academic_year}</td>
+        <td>{item.degree.name}</td>
+        <td><a href={item._id}>{item.name}</a></td>
+    </>
+}
+
+function Headers() {
+    return <>
+        <th><SortHeader field="degree.academic_year">anno</SortHeader></th>
+        <th><SortHeader field="degree.name">laurea</SortHeader></th>
+        <th><SortHeader field="name">nome</SortHeader></th>
     </>
 }
 
