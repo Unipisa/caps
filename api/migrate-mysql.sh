@@ -11,14 +11,23 @@ export REMOTE_IP=$( ssh ${REMOTE_USERNAME}@${REMOTE_HOSTNAME} docker inspect cap
 echo "REMOTE_IP: ${REMOTE_IP}"
 
 # obtaining mysql password
-export MYSQL_PASSWORD=$( ssh root@caps.dm.unipi.it "grep CAPS_DB_PASSWORD docker/caps-matematica/caps.env" | cut -f2 -d= )
+export MYSQL_PASSWORD=$( ssh ${REMOTE_USERNAME}@${REMOTE_HOSTNAME} "grep CAPS_DB_PASSWORD docker/caps-matematica/caps.env" | cut -f2 -d= )
 echo "MYSQL_PASSWORD:" $(echo ${MYSQL_PASSWORD} | wc -c) "chars" 
 
 # open port forwarding and run js import script migrate-mysql.js
+echo "opening ssh tunnel"
 ssh -N -L 3306:${REMOTE_IP}:3306 root@caps.dm.unipi.it &
 pidof_ssh=$!
+
+function cleanup {
+  echo "closing ssh tunnel  "
+  kill ${pidof_ssh}
+}
+
+trap cleanup EXIT
+
 sleep 1
 echo "start js script"
 node migrate-mysql.js
 
-kill ${pidof_ssh}
+#kill ${pidof_ssh}

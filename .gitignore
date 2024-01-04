@@ -9,7 +9,7 @@ api/webroot/css/
 api/webroot/node_modules
 api/webroot/index.html
 api/node_modules
-api/env.local
+api/.env
 db
 attachments-db
 nextjs

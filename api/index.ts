@@ -10,7 +10,6 @@ const { randomUUID } = require('crypto')
 const MongoStore = require('connect-mongo')
 const dotenv = require('dotenv')
 dotenv.config() // read environment variabiles from .env
-dotenv.config({ path: `.env.local`, override: true }) // override with .env.local
 
 const ApiException = require('./exceptions/ApiException');
 const router = require('./router');

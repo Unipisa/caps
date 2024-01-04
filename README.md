@@ -19,6 +19,8 @@ bash migrate-mysql.sh
 # avvio server side
 
 Il codice del server si trova nella cartella `api`.
+Copiare il file `.env.sample` in `.env` e mettere almeno la password di ADMIN
+nella configurazione.
 Avviare il server da un terminale
 
 ```bash
@@ -29,39 +31,6 @@ npm start
 Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
 La versione 21 di node dà un deprecation warning con la libreria mongoose:
 conviene usare node v20.9.0.
-
-Per testare le API si può usare una applicazione 
-come `postman`. 
-Ma alcune prove si possono fare direttamente con curl (qui si usa jq per 
-fare il pretty print del JSON):
-```bash
-$ curl -s -H 'Content-Type: application/json' \
-    -X POST \
-    -d '{ "name": "Analisi Numerica", "credits": 6, "sector": "MAT/08", "code": "AA112" }' \
-    http://localhost:3000/api/v0/exams | jq
-{
-  "code": 200,
-  "message": "OK"
-}
-```
-... e poi
-```bash
-$ curl -s -H 'Content-Type: application/json' -X GET http://localhost:3000/api/v0/exams | jq
-{
-  "code": 200,
-  "message": "OK",
-  "data": [
-    {
-      "_id": "624402d236d1e6f756a31993",
-      "name": "Analisi Numerica",
-      "code": "AA112",
-      "sector": "MAT/08",
-      "credits": 6,
-      "__v": 0
-    }
-  ]
-}
-```
 
 # avvio lato client
 

@@ -21,6 +21,8 @@ const router = new express.Router()
 // JSON parsing middleware
 router.use(express.json())
 
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:3000"
+
 function response_envelope(controller) {
     return async function(req, res, next) {
         try {   
@@ -66,13 +68,13 @@ if (env.OAUTH2_CLIENT_ID) {
     tokenURL: env.OAUTH2_TOKEN_URL,
     clientID: env.OAUTH2_CLIENT_ID,
     clientSecret: env.OAUTH2_CLIENT_SECRET,
-    callbackURL: `${env.SERVER_URL}/api/v0/login/oauth2/callback`,
+    callbackURL: `${SERVER_URL}/api/v0/login/oauth2/callback`,
     usernameField: env.OAUTH2_USERNAME_FIELD,
   }))
   console.log("OAUTH2 authentication enabled")
   console.log(`OAUTH2_AUTHORIZE_URL: ${env.OAUTH2_AUTHORIZE_URL}`)
   console.log(`OAUTH2_CLIENT_ID: ${env.OAUTH2_CLIENT_ID}`)
-  console.log(`SERVER_URL: ${env.SERVER_URL}`)
+  console.log(`SERVER_URL: ${SERVER_URL}`)
 } else {
   console.log("OAUTH2 authentication disabled")
   console.log("set OAUTH2_CLIENT_ID to enable")
@@ -112,7 +114,7 @@ router.get('/login/oauth2/callback',
         console.log("OAUTH2 authentication callback")
         const user = req.user.toObject()
         console.log(`login ${JSON.stringify(user)}`)
-        res.redirect(process.env.SERVER_URL)
+        res.redirect(SERVER_URL)
     })
 
 router.post('/logout', function(req, res) {
