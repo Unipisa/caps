@@ -41,7 +41,8 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     */
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
+    
+    //comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 })
 
 userSchema.plugin(passportLocalMongoose)

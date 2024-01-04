@@ -1,5 +1,8 @@
-version: '3'
+# Questo file è un esempio di configurazione di docker-compose per CAPS.
+# Per utilizzarlo, rinominare il file in docker-compose.yml e modificare i parametri
+# di configurazione come indicato nei commenti.
 
+version: '3'
 services:
   caps:
     image: harbor.cs.dm.unipi.it/caps/caps:api
@@ -23,7 +26,9 @@ services:
       - OAUTH2_TOKEN_URL=https://iam.unipi.it/oauth2/token
       - OAUTH2_USERINFO_URL=https://iam.unipi.it/oauth2/userinfo
       - OAUTH2_LOGOUT_URL=https://iam.unipi.it/oidc/logout
-      - OAUTH2_USERNAME_FIELD=email
+      - OAUTH2_USERNAME_FIELD=credential
+# callback url is: ${SERVER_URL}/api/v0/login/oauth2/callback
+
     ports:
       - 3000:3000
     networks:

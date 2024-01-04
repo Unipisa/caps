@@ -13,20 +13,29 @@ class UnipiAuthStrategy extends OAuth2Strategy {
     
       if (! username) throw new Error("invalid username")
     
-      User.findOneAndUpdate({ username: username }, {
-        $set: {
-            username: username, 
-            firstName: profile['given_name'],
-            lastName: profile['family_name'],
-            email: profile['email'],
-          }
-        }, {
-          upsert: true,
-          new: true
-        }, function (err, user) {
+      async function update() {
+        let user = null
+        try {
+          user = await User.findOneAndUpdate({ username: username }, {
+          $set: {
+              username: username, 
+              first_name: profile?.given_name,
+              last_name: profile?.family_name,
+              email: profile?.email,
+              id_number: profile?.unipiMatricolaStudente || profile?.unipiMatricolaDipendente || profile?.credential || profile?.principal || profile?.sub,
+            }
+          }, {
+            upsert: true,
+            new: true
+          })
           user.oauth2 = {accessToken, refreshToken}
-          return cb(err, user)
-        })
+          cb(null, user)
+        } catch (err) {
+          cb(err,null)
+        }
+      }
+
+      update()
     })
   }
 

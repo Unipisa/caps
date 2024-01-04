@@ -63,18 +63,21 @@ passport.deserializeUser(User.deserializeUser())
 // unipi oauth2 authentication
 const env = process.env
 if (env.OAUTH2_CLIENT_ID) {
+  const callbackURL = `${SERVER_URL}/api/v0/login/oauth2/callback`
   passport.use(new UnipiAuthStrategy({
     authorizationURL: env.OAUTH2_AUTHORIZE_URL,
     tokenURL: env.OAUTH2_TOKEN_URL,
     clientID: env.OAUTH2_CLIENT_ID,
     clientSecret: env.OAUTH2_CLIENT_SECRET,
-    callbackURL: `${SERVER_URL}/api/v0/login/oauth2/callback`,
+    callbackURL,
     usernameField: env.OAUTH2_USERNAME_FIELD,
   }))
   console.log("OAUTH2 authentication enabled")
   console.log(`OAUTH2_AUTHORIZE_URL: ${env.OAUTH2_AUTHORIZE_URL}`)
   console.log(`OAUTH2_CLIENT_ID: ${env.OAUTH2_CLIENT_ID}`)
+  console.log(`OAUTH2_USERNAME_FIELD: ${env.OAUTH2_USERNAME_FIELD}`)
   console.log(`SERVER_URL: ${SERVER_URL}`)
+  console.log(`callbackURL: ${callbackURL}`)
 } else {
   console.log("OAUTH2 authentication disabled")
   console.log("set OAUTH2_CLIENT_ID to enable")

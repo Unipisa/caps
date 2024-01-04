@@ -14,6 +14,10 @@ export function useEngine(): Engine {
     return engine
 }
 
+type Config = {
+    CAPS_NAME: string
+}
+
 interface EngineState {
     flashMessages: Array<{ message: string, type: string }>,
     modalConfirmData: {
@@ -23,11 +27,13 @@ interface EngineState {
     },
     user: any,
     connected: boolean,
+    config: Config,
 }
 
 interface Engine {
-    state: EngineState,
+    state: EngineState, // private
     user: any,
+    config: Config,
     modalConfirm: (title: string, content: string) => Promise<boolean>,
     flashMessage: (message: string, type?: string) => void,
     flashSuccess: (message: string) => void,
@@ -40,7 +46,9 @@ interface Engine {
     logout: () => void,
 }
 
-export function useCreateEngine(): Engine {
+export function useCreateEngine(config:{
+    config: Config,
+}): Engine {
     const [state, setState] = useState<EngineState>({
         flashMessages: [],
         modalConfirmData: {
@@ -50,6 +58,7 @@ export function useCreateEngine(): Engine {
         },
         user: null,
         connected: false,
+        config,
     })
 
     const queryClient=useQueryClient()
@@ -81,6 +90,7 @@ export function useCreateEngine(): Engine {
     return {
         state,
         user: state.user,
+        config: state.config,
         
         modalConfirm: (title, content) => {
             return new Promise((resolve) => {

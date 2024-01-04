@@ -33,14 +33,14 @@ import {QueryClient, QueryClientProvider } from 'react-query'
 
 const queryClient = new QueryClient()
 
-export default function SinglePage() {
+export default function SinglePage({config}) {
     return <QueryClientProvider client={queryClient}>
-        <SinglePageInternal/>
+        <SinglePageInternal config={config}/>
     </QueryClientProvider> 
 }
 
-function SinglePageInternal () {
-    const engine = useCreateEngine()
+function SinglePageInternal({config}) {
+    const engine = useCreateEngine(config)
     // engine.sync(useState(engine.state))
     const modalConfirmData = engine.state.modalConfirmData
 

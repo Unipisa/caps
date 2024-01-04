@@ -9,6 +9,7 @@ const cors = require('cors')
 const { randomUUID } = require('crypto')
 const MongoStore = require('connect-mongo')
 const dotenv = require('dotenv')
+const fs = require('fs')
 dotenv.config() // read environment variabiles from .env
 
 const ApiException = require('./exceptions/ApiException');
@@ -24,6 +25,13 @@ function logErrors(err : any, req : any, res : any, next : any) {
     console.error(`catched error: ${err.message}`);
     next(err);
 }
+
+const config = {
+  CAPS_NAME: process.env.CAPS_NAME || "Develop",
+}
+const SPA_FILENAME = path.join(__dirname, "./webroot/index.html")
+const SPA_HTML = fs.readFileSync(SPA_FILENAME, 'utf8')
+    .replace('/**INJECT-CONFIG-HERE**/', JSON.stringify(config))
 
 const mongo_uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/caps'
 mongoose.connect(mongo_uri).then((res : any) => {
@@ -66,9 +74,7 @@ mongoose.connect(mongo_uri).then((res : any) => {
     app.use('/img/', express.static('./webroot/img'));
     app.use('/favicon.ico', express.static('./webroot/favicon.ico'));
     
-    const spa = (req : any, res : any) => res.sendFile(path.join(__dirname, "./webroot/index.html"));
-
-    app.use("/", spa);
+    app.use("/", (req: any,res: any)=>res.send(SPA_HTML));
     app.use(logErrors); // log errors on console
     
     app.use(ApiException.apiErrors); // convert ApiErrors into http responses

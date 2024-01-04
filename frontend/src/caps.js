@@ -11,9 +11,9 @@ import SinglePage from './pages/SinglePage';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function capsStart() {
+function capsStart(config) {
     ReactDOM.render(
-        <SinglePage />, 
+        <SinglePage config={config}/>, 
         document.getElementById("app")
     );
 }

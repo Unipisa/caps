@@ -8,6 +8,10 @@ import settings from "../modules/settings"
 export default function NavBar() {
     const engine = useEngine()
     if (!engine) return null
+    
+    const user = engine.user
+    const config = engine.config
+    
     return <Nav className="navbar-nav bg-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/">
             <div className="sidebar-brand-icon">
@@ -17,7 +21,7 @@ export default function NavBar() {
         </Link>
         <div className="d-flex justify-content-center">
             <div className="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style={{fontSize: "0.7rem"}}>
-            Development        
+            {config.CAPS_NAME}
             </div>
         </div>
         <hr className="sidebar-divider" />
@@ -47,7 +51,7 @@ export default function NavBar() {
                 <span>Nuovo modulo</span>
             </NavLink>
         </NavItem>
-
+        { user.admin && <>
         <hr className="sidebar-divider" />
 
         <div className="sidebar-heading">
@@ -123,7 +127,7 @@ export default function NavBar() {
             <span>Impostazioni</span>
             </NavLink >
         </NavItem>
-    
+    </> }
     <hr className="sidebar-divider" />
     <NavItem>
         <a className="nav-link" href="mailto:help@dm.unipi.it">
