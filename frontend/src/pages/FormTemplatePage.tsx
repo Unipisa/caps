@@ -11,7 +11,7 @@ import { RenderHtml } from '../components/RenderHtml'
 import Group from '../components/Group'
 import { FormTemplateGet } from '../modules/engine'
 
-const path="form_templates/"
+const path=["form_templates"]
 
 export default function FormTemplatePage() {
     const { id } = useParams()

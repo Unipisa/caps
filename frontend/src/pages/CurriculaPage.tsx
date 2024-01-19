@@ -26,7 +26,7 @@ export default function CurriculaPage() {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path="/curricula" headers={Headers()} renderCells={renderCells}/>
+            <QueryTable path={["curricula"]} headers={Headers()} renderCells={renderCells}/>
         </QueryTableCard>
     </>
 }

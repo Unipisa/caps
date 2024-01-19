@@ -1,22 +1,19 @@
 import React from 'react'
 import { Link, useParams } from "react-router-dom"
 
-import { useEngine, useGet, useIndex } from '../modules/engine'
+import { useEngine, useGetDegree, useIndexExam } from '../modules/engine'
 import Card from '../components/Card'
 import LoadingMessage from '../components/LoadingMessage'
 
-const exam_path = '/exams/'
-const degree_path = '/degrees/'
-
 function Group({ name, exam_ids }) {
     const engine = useEngine()
-    const query = useIndex(exam_path, {'ids': exam_ids.join(",")})
+    const query = useIndexExam({'ids': exam_ids.join(",")})
 
     if (query.isLoading) return <tr>
         <th>{ name }</th>
         <td> ...loading... </td>
     </tr>
-    if (query.isError) return <tr>
+    if (query.data === undefined) return <tr>
         <th>{ name }</th>
         <td> ...error... </td>
     </tr>
@@ -31,10 +28,10 @@ function Group({ name, exam_ids }) {
 
 export default function DegreePage() {
     const { id } = useParams();
-    const query = useGet(degree_path, id || '')
+    const query = useGetDegree(id || '')
 
     if (query.isLoading) return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
-    if (query.isError) return <div>errore caricamento corso di studi</div>
+    if (query.data === undefined) return <div>errore caricamento corso di studi</div>
 
     const degree = query.data
 
@@ -81,7 +78,7 @@ export default function DegreePage() {
                 </tr>
                 <tr>
                     <th>Richiesta parere</th>
-                    <td>{ degree.sharing_enabled ? "attiva" : "non attiva" }</td>
+                    <td>{ degree.enable_sharing ? "attiva" : "non attiva" }</td>
                 </tr>
                 <tr>
                     <th>Gruppo esami per la scelta libera</th>

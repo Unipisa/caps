@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import {
     BrowserRouter, Routes, Route
 } from "react-router-dom"
+import axios from 'axios'
 
 import {useCreateEngine, EngineProvider} from '../modules/engine'
 
@@ -20,6 +21,7 @@ import { default as  ExamPage, EditExamPage, AddExamPage } from "./ExamPage"
 import UsersPage from "./UsersPage"
 import UserPage from "./UserPage"
 import SettingsPage from "./SettingsPage"
+import {QueryClient, QueryClientProvider } from 'react-query'
 
 import Login from "../components/Login"
 import Modal from '../components/Modal'
@@ -28,10 +30,27 @@ import NavBar from '../components/NavBar'
 import TopBar from '../components/TopBar'
 import Footer from '../components/Footer'
 import LoadingMessage from '../components/LoadingMessage'
+import {api_root} from '../modules/engine'
 
-import {QueryClient, QueryClientProvider } from 'react-query'
-
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            queryFn: async ({queryKey}) => {
+                let url = api_root.replace(/\/$/, "") // remove trailing slash
+                let params = {}
+                for (const key of queryKey) {
+                    if (typeof key === 'object') {
+                        params = key
+                        break
+                    }
+                    url += '/' + key
+                }
+                const out = await axios.get(url, {params})
+                return out.data
+            }
+        }
+    }
+  })  
 
 export default function SinglePage({config}) {
     return <QueryClientProvider client={queryClient}>

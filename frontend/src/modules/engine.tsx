@@ -2,7 +2,7 @@ import { useState, createContext, useContext } from 'react'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
 import axios from 'axios'
 
-const api_root = '/api/v0/'
+export const api_root = '/api/v0/'
 
 export const EngineContext = createContext<Engine|null>(null)
 
@@ -46,9 +46,7 @@ interface Engine {
     logout: () => void,
 }
 
-export function useCreateEngine(config:{
-    config: Config,
-}): Engine {
+export function useCreateEngine(config: Config): Engine {
     const [state, setState] = useState<EngineState>({
         flashMessages: [],
         modalConfirmData: {
@@ -70,21 +68,6 @@ export function useCreateEngine(config:{
                 ...state.flashMessages, 
                 { message, type }]
         }))
-    }
-
-    const onError = (err) => flashMessage(`${err.name}: ${err.message}`, 'error')
-    const onPossibleValidationError = (err) => {
-        if (err.code === 422) { 
-            // Either show the error as a flash message or as a text near the
-            // form input, not both
-
-            // let errMessage = []
-            // for (const issue in err.issues) {
-            //     errMessage.push(err.issues[issue])
-            // }
-            // flashMessage(`Errore di validazione: ${errMessage.join(", ")}`, 'error')
-        } else
-            onError(err)
     }
 
     return {
@@ -179,75 +162,95 @@ export function useCreateEngine(config:{
     }
 }
 
-export function useGet<T>(path:string, id:string|undefined) {
-    return useQuery<T,any>({
+export function useGet<T>(path:string[], id:string|undefined) {
+    return useQuery<T,any>([...path, id], {/*
         queryKey: [path, id],
         queryFn: async () => {
             const res = await axios.get(`${api_root}${path}${id}`)
             return res.data
-        },
+        },*/
         enabled: !!id,
     })
 }        
 
-export function useIndex<T>(path:string, query={}) {
-    return useQuery<{items: T[],total:number}>({
-        queryKey: [path, query],
+export function useIndex<T>(path:string[], query={}) {
+    return useQuery<{items: T[],total:number}>([...path, query], {
+/*        queryKey: [...path, query],
         queryFn: async () => {
-            const res = await axios.get(`${api_root}${path}`, { params: query })
+            const res = await axios.get(`${api_root}${path.join('/')}`, { params: query })
             return res.data
-        },
+        },*/
         enabled: query !== false,    
     })
 }
 
-export function usePost<T>(path: string) {
+export function usePost<T>(path: string[]) {
     // funziona anche per Multipart Post
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (data: T) => {
-            return await axios.post(`${api_root}${path}`, data)
+            return await axios.post(`${api_root}${path.join('/')}`, data)
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: [path] })
+            await queryClient.invalidateQueries({ queryKey: path })
         },
     })
 }
 
-export function useDelete(path:string, id:string) {
+export function useDelete(path:string[], id:string) {
     const queryClient = useQueryClient()
     return useMutation<any, any, any>({
         mutationFn: async () => {
-            return await axios.delete(`${api_root}${path}${id}`)
+            return await axios.delete(`${api_root}${path.join('/')}/${id}`)
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: [path] })
+            await queryClient.invalidateQueries({ queryKey: path })
         },
     })
 }
 
-export function usePut<T>(path: string, id:string) {
+export function usePut<T>(path: string[], id:string) {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (data: T) => {
-            return await axios.put(`${api_root}${path}${id}`, data)
+            return await axios.put(`${api_root}${path.join('/')}/${id}`, data)
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: [path] })
+            await queryClient.invalidateQueries({ queryKey: path })
         },
     })
 }
 
-export function usePatch<T>(path:string, id:string) {
+export interface WithId {
+    _id: string
+}
+
+export function usePatch<T extends WithId>(path:string[], id:string) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (data: T) => {
-            return await axios.patch(`${api_root}${path}${id}`, data)
+        mutationFn: async (data: Partial<T>) => {
+            return await axios.patch(`${api_root}${path.join('/')}/${id||data._id}`, data)
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: [path] })
+            console.log(`invalidate ${path}`)
+            await queryClient.invalidateQueries({ queryKey: path })
         },
     })
+}
+
+export type UserGet = {
+    _id: string,
+    username: string,
+    name: string,
+    id_number: string,
+    first_name: string,
+    last_name: string,
+    admin: boolean,
+    email: string,
+}
+
+export function usePatchUser(id:string) {
+    return usePatch<UserGet>(['users'], id)
 }
 
 export type ExamGet = {
@@ -261,23 +264,23 @@ export type ExamGet = {
 }
 
 export function useGetExam(id:string|undefined) {
-    return useGet<ExamGet>('exams/', id) 
+    return useGet<ExamGet>(['exams'], id) 
 }
 
 export function useIndexExam(query={}) {
-    return useIndex<ExamGet>('exams/', query)
+    return useIndex<ExamGet>(['exams'], query)
 }
 
 export function usePatchExam(id:string) {
-    return usePatch<ExamGet>('exams/', id)
+    return usePatch<ExamGet>(['exams'], id)
 }
 
 export function usePostExam() {
-    return usePost('exams/')
+    return usePost(['exams'])
 }
 
 export function useDeleteExam(id:string) {
-    return useDelete('exams/', id)
+    return useDelete(['exams'], id)
 }
 
 export type DegreeGet = {
@@ -301,15 +304,15 @@ export type DegreeGet = {
 }
 
 export function useGetDegree(id:string|undefined) {
-    return useGet<DegreeGet>('degrees/', id) 
+    return useGet<DegreeGet>(['degrees'], id) 
 }
 
 export function useIndexDegree(query={}) {
-    return useIndex<DegreeGet>('degrees/', query)
+    return useIndex<DegreeGet>(['degrees'], query)
 }   
 
 export function useDeleteDegree(id:string) {
-    return useDelete('degrees/', id)
+    return useDelete(['degrees'], id)
 }
 
 export type CurriculumGet = {
@@ -342,11 +345,11 @@ export type CurriculumExamGet = {
 }
 
 export function useGetCurriculum(id:string|undefined) {
-    return useGet<CurriculumGet>('curricula/', id) 
+    return useGet<CurriculumGet>(['curricula'], id) 
 }
 
 export function useIndexCurriculum(query={}) {
-    return useIndex<CurriculumGet>('curricula/', query)
+    return useIndex<CurriculumGet>(['curricula'], query)
 }
 
 export type ProposalGet = {
@@ -442,27 +445,27 @@ export type ExternalExamPost = {
 }
 
 export function useGetProposal(id:string|undefined) {
-    return useGet<ProposalGet>('proposals/', id) 
+    return useGet<ProposalGet>(['proposals'], id) 
 }
 
 export function usePostProposal() {
-    return usePost<ProposalPost>('proposals/')
+    return usePost<ProposalPost>(['proposals'])
 }
 
-export function usePutProposal<ProposalPost>(id: string) {
-    return usePut('proposals/', id)
+export function usePutProposal(id: string) {
+    return usePut<ProposalPost>(['proposals'], id)
 }
 
-export function usePatchProposal<ProposalPost>(id: string) {
-    return usePatch('proposals/', id)
+export function usePatchProposal(id: string) {
+    return usePatch<ProposalGet>(['proposals'], id)
 }
 
 export function useIndexProposal(query={}) {
-    return useIndex<ProposalGet>('proposals/', query)
+    return useIndex<ProposalGet>(['proposals'], query)
 }
 
 export function useDeleteProposal(id:string) {
-    return useDelete('proposals/', id)
+    return useDelete(['proposals'], id)
 }
 
 export type FormTemplateGet = {

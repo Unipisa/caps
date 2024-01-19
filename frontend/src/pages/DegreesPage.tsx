@@ -30,7 +30,7 @@ export default function DegreesPage() {
             </QueryTableBar>
             <FilterBadges />
             xxx
-            <QueryTable path="/degrees" headers={Headers()} renderCells={renderCells} />
+            <QueryTable path={["degrees"]} headers={Headers()} renderCells={renderCells} />
         </QueryTableCard>
     </>
 }

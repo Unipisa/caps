@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react'
+import React, { useState, createContext, useContext, Dispatch, SetStateAction } from 'react'
 
 import { useIndex } from '../modules/engine'
 import { Link } from "react-router-dom"
@@ -61,20 +61,22 @@ export function QueryTableBar({ children }) {
 
 }
 
-export function QueryTable<T extends {_id:string}>({ path, headers, renderCells}:{
-    path: string,
+export function QueryTable<T extends {_id:string}>({ path, headers, renderCells, selectedIds, setSelectedIds}:{
+    path: string[],
     headers: JSX.Element|JSX.Element[],
     renderCells: (item: T) => JSX.Element|JSX.Element[],
+    selectedIds?: string[],
+    setSelectedIds?: Dispatch<SetStateAction<string[]>>,
 }) {
     return <div className="table-responsive-lg">
-        <TableItems<T> path={path}>
+        <TableItems<T> path={path} selectedIds={selectedIds} setSelectedIds={setSelectedIds}>
             <thead>
                 <tr>
                     <th></th>
                     { headers }
                 </tr>
             </thead> 
-            <TableBody<T> renderCells={renderCells} />
+            <TableBody<T> renderCells={renderCells}/>
         </TableItems>
     </div>
 }
@@ -120,12 +122,12 @@ export function FilterBadges() {
 
 const ItemsContext = createContext<{
     items: any[],
-    selectedIds: string[],
-    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>,
+    selectedIds?: string[],
+    setSelectedIds?: React.Dispatch<React.SetStateAction<string[]>>,
 }>({
     items: [], 
-    selectedIds: [], 
-    setSelectedIds: () => {}
+    selectedIds: undefined, 
+    setSelectedIds: undefined,
 })
 
 export function useItems<T extends {_id: string}>() {
@@ -140,15 +142,17 @@ export function useSetSelectedIds() {
     return useContext(ItemsContext).setSelectedIds
 }
 
-function TableItems<T>({ path, children }: {
-    path:string,
+function TableItems<T>({ path, selectedIds, setSelectedIds, children }: {
+    path:string[],
     children?: any,
+    selectedIds?: string[],
+    setSelectedIds?: Dispatch<SetStateAction<string[]>>,
 }) {
     const ctx = useQuery()
     if (!ctx) return null
     const { query, setQuery } = ctx 
     const indexQuery = useIndex<T>(path, query)
-    const [ selectedIds, setSelectedIds ] = useState<string[]>([])
+    console.log(`useIndex ${path}`)
     
     if (indexQuery.isError) return <>ERRORE</>
     if (indexQuery.data === undefined) return <LoadingMessage/>
@@ -220,7 +224,7 @@ function TableBody<T extends {_id:string}>({ renderCells }:{
     const setSelectedIds = useSetSelectedIds()
     return <tbody>
         { items.map(item => {
-            const selected = selectedIds.includes(item._id)
+            const selected = selectedIds && selectedIds.includes(item._id)
             return <tr 
                 key={ item._id } 
                 style={ selected ? {background: "lightgray" } : {}}>
@@ -232,6 +236,7 @@ function TableBody<T extends {_id:string}>({ renderCells }:{
     </tbody>            
 
     function onToggle(item) {
+        if (!setSelectedIds) return
         setSelectedIds(ids => {
             if (ids.includes(item._id)) {
                 return ids.filter(id => id !== item._id);

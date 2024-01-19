@@ -7,7 +7,7 @@ import { useIndex } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 
 export default function SettingsPage({}) {
-    const query = useIndex('settings', {})
+    const query = useIndex(['settings'], {})
     if (query.isLoading) return <LoadingMessage>caricamento settings</LoadingMessage>
     const settings = query.data
     return <SettingsInternal settings={settings} submit={submit}/>

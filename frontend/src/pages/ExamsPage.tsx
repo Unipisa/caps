@@ -5,32 +5,7 @@ import {
     } from '../components/TableElements'
 import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader } from '../components/QueryTable'
 
-const path="/exams/" 
-const headers=[
-    {   
-        field: 'name',
-        label: "Nome",
-        enable_link: true,
-        enable_sort: true
-    }, {   
-        field: 'tags',
-        label: "Etichette"
-    }, {   
-        field: 'code',
-        label: "Codice",
-        enable_sort: true
-    }, {   
-        field: 'sector',
-        label: "Settore",
-        enable_sort: true
-    }, {   
-        field: 'credits',
-        label: "Crediti",
-        enable_sort: true 
-    }, {
-        field: 'notes',
-        label: "Note"
-    }]
+const path=["exams"] 
 
 export default function ExamsPage() {
     return <>

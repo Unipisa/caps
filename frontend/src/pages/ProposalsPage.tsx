@@ -2,14 +2,14 @@ import React from 'react'
 
 import { 
     TableTopRightButtons, FilterButton, FilterInput,
-    ItemAddButton, CsvDownloadButton, ExcelDownloadButton, FilterSelect,
+    CsvDownloadButton, ExcelDownloadButton, FilterSelect,
     } from '../components/TableElements'
 import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 import { ProposalGet } from '../modules/engine'
 import { formatDate } from '../modules/dates'
 import StateBadge from '../components/StateBadge'
 
-const path = "/proposals/"
+const path = ["proposals"]
 
 export default function ProposalsPage() {
     return <>

@@ -7,18 +7,7 @@ import {
     } from '../components/TableElements'
 import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
 
-const path="form_templates/"
-const headers=[
-    {   
-        field: 'name',
-        label: "nome",
-        enable_sort: true,
-        enable_link: true
-    }, {
-        field: 'enabled',
-        label: "attivato",
-        enable_sort: true,
-    }]
+const path=["form_templates"]
 
 export default function FormTemplatesPage() {
     return <>

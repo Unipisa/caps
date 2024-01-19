@@ -157,9 +157,9 @@ export default function ExamPage() {
         <h1>{exam.name}</h1>
         <Card>
             <div className="d-flex mb-2">
-                <Link to="/exams">
+                <Link to="/exams/">
                     <button type="button" className="btn btn-sm mr-2 btn-primary">
-                        <i className="fas fa-arrow-left mr-2"></i>
+                        <i className="fas fa-arrow-left mr-2"/>
                         Tutti gli esami
                     </button>
                 </Link>
@@ -169,9 +169,8 @@ export default function ExamPage() {
                 <button
                     type="button"
                     className="btn btn-sm mr-2 btn-danger"
-                    onClick={deleteExam}
-                >
-                    Elimina
+                    onClick={deleteExam}>
+                        Elimina
                 </button>
 
                 <div className="flex-fill"></div>

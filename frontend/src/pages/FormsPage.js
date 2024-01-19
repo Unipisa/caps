@@ -8,7 +8,7 @@ import {
     } from '../components/TableElements'
 import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges} from '../components/QueryTable'
 
-const path = 'forms/'
+const path = ['forms']
 const headers = [
     {
         field: 'user_last_name',

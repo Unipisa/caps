@@ -7,7 +7,7 @@ import Card from '../components/Card'
 import { ItemAddButton } from '../components/TableElements'
 import Comments from '../components/Comments'
 
-const path = "/users/"
+const path = ["users"]
 
 export default function UserPage() {
     const { id } = useParams()

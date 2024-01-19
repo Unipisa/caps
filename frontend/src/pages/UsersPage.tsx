@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import { 
     TableTopRightButtons, 
@@ -7,9 +7,12 @@ import {
     CsvDownloadButton, ExcelDownloadButton
     } from '../components/TableElements'
 import {QueryTableCard, QueryTableBar, QueryTable, FilterBadges, SortHeader} from '../components/QueryTable'
+import {usePatchUser} from '../modules/engine'
 
-const path="/users" 
 export default function UsersPage({engine}) {
+    const [selectedIds,setSelectedIds] = useState([] as string[])
+    const patcher = usePatchUser('') // id will be passed with payload
+
     return <>
         <h1>Utenti</h1>
         <QueryTableCard sort="last_name">
@@ -32,7 +35,7 @@ export default function UsersPage({engine}) {
                 </TableTopRightButtons>
             </QueryTableBar>
             <FilterBadges />
-            <QueryTable path="/users" headers={Headers()} renderCells={renderCells} />
+            <QueryTable path={["users"]} headers={Headers()} renderCells={renderCells} selectedIds={selectedIds} setSelectedIds={setSelectedIds}/>
 
         </QueryTableCard>
     </>

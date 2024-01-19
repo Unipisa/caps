@@ -65,7 +65,7 @@ export default function CurriculumPage() {
                 Crediti: { `${year_section.credits}` } <br />
                 <table>
                     <tbody>
-                    { year_section.exams.map(entry => <ExamEntry key={entry._id} entry={entry} />)}
+                    { year_section.exams.map((entry,i) => <ExamEntry key={i} entry={entry} />)}
                     </tbody>
                 </table>
             </Card>
