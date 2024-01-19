@@ -28,6 +28,18 @@ export default function UsersPage({engine}) {
                 <ItemAddButton>
                     Aggiungi utente
                 </ItemAddButton>
+                <button type="button" className="btn btn-sm btn-danger mr-2"
+                    onClick={() => set_admin(true)} disabled={!selectedIds.length}>
+                    <span className="d-none d-md-inline ml-2">
+                        rendi admin
+                    </span>
+                </button>
+                <button type="button" className="btn btn-sm btn-danger mr-2"
+                    onClick={() => set_admin(false)} disabled={!selectedIds.length}>
+                    <span className="d-none d-md-inline ml-2">
+                        rimuovi da admin
+                    </span>
+                </button>
 
                 <TableTopRightButtons>
                     <CsvDownloadButton cb={async (query)=>[]}/>
@@ -49,6 +61,12 @@ export default function UsersPage({engine}) {
             <td><a href={item._id}>{item.first_name}</a></td>
             <td>{item.admin ? "•" : ""}</td>
         </>
+    }
+
+    async function set_admin(admin) {
+        for (const id of selectedIds) {
+            await patcher.mutate({_id: id, admin: admin})
+        }
     }
 }
 
