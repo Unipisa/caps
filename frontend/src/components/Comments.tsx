@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-import assert from 'assert'
 
 import { useEngine, useIndex, useDelete, usePost } from "../modules/engine"
 import Card from "./Card";
 import LoadingMessage from '../components/LoadingMessage'
 
 export default function Comments({object_id}) {
-    const commentsQuery = useIndex('comments/', { object_id })
+    const commentsQuery = useIndex(['comments'], { object_id })
 
-    if (commentsQuery.isLoading) return <LoadingMessage>caricamento commenti...</LoadingMessage>
     if (commentsQuery.isError) return <div>errore caricamento commenti</div>    
+    if (commentsQuery.data === undefined) return <LoadingMessage>caricamento commenti...</LoadingMessage>
 
     const comments = commentsQuery.data.items
 
@@ -30,7 +29,7 @@ function CommentCard({ comment, userUpdater }:
         userUpdater?: (user: Comment) => void 
     }) {
     const engine = useEngine()
-    const deleter = useDelete('comments/', comment._id)
+    const deleter = useDelete(['comments'], comment._id)
 
     if (!engine) return null
 
@@ -66,8 +65,8 @@ function CommentCard({ comment, userUpdater }:
 */
 function CommentWidget({object_id}) {
     const engine = useEngine()
-    const attachmentInserter = usePost('attachments/')
-    const commentInserter = usePost('comments/')
+    const attachmentInserter = usePost(['attachments'])
+    const commentInserter = usePost(['comments'])
     const [text, setText] = useState("")
     const [files, setFiles] = useState<number[]>([])
     const [error, setError] = useState<any>({})
