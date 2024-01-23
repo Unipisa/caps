@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-apache-bullseye
 
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
     && docker-php-ext-install gd ldap pdo_mysql intl zip curl opcache pdo_pgsql
 
-ENV NODE_VERSION=18.15.0
+ENV NODE_VERSION=18.19.0
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
