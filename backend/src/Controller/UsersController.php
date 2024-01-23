@@ -312,8 +312,19 @@ class UsersController extends AppController {
                 );
 
                 $api_data = $client->getParsedResponse($request);
-                $number = $api_data['Corsi'][0]['Matricola'];
-            } catch (\Exception | \Error $e) {
+                $course_name = getenv('CAPS_CORSO_STUDIO');
+                $number = 0;
+                if ($course_name) {
+                    foreach ($api_data['Corsi'] as $c) {
+                        if ($c["Corso_studio"] == $course_name) {
+                            $number = $c['Matricola'];
+                        }
+                    }
+                }
+                if ($number == 0) {
+                    $number = $api_data['Corsi'][0]['Matricola'];
+                }                
+            } catch (\Exception | \Error $e) {                
                 $number = $uid;
             }
 
