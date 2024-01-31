@@ -49,6 +49,8 @@ export default function ProposalPage() {
     const curriculum = curriculumQuery.data
     const owner = (user && user?._id === proposal?.user_id)
 
+    if (query.isError) return <LoadingMessage>errore caricamento piano di studi... [{`${query.error}`}]</LoadingMessage>
+
     if (!proposal || (proposal?.curriculum_id && (curriculum === null || degree === null))) {
         return <LoadingMessage>caricamento piano di studi...</LoadingMessage>
     }
@@ -119,13 +121,14 @@ export default function ProposalPage() {
     }
 
     function DownloadButtons() {
+        if (!proposal) return
         return <>
-            <a className="d-none d-md-inline" href="">
+            <a className="d-none d-md-inline" href={`/proposals/${proposal._id}/pdf`}>
                 <Button className="button-sm mr-2">
                     <i className="fas fa-file-pdf"></i> Scarica come PDF
                 </Button>
             </a>
-            <a className="d-none d-md-inline" href="">
+            <a className="d-none d-md-inline" href={`/proposals/${proposal._id}/pdf?comments=1`}>
                 <Button className="button-sm">
                 <i className="fas fa-file-pdf mr-2"></i>PDF inclusi i commenti
                 </Button>
@@ -135,10 +138,10 @@ export default function ProposalPage() {
                     <i className="fas fa-file-pdf"></i>
                 </Button>
                 <div className="dropdown-menu p-3">
-                    <a className="dropdown-item" href="">
+                    <a className="dropdown-item" href={`/proposals/${proposal._id}/pdf`}>
                         <i className="fas fa-file-pdf"></i> Scarica come PDF
                     </a>
-                    <a className="dropdown-item" href="">
+                    <a className="dropdown-item" href={`/proposals/${proposal._id}/pdf?comments=1`}>
                         <i className="fas fa-file-pdf"></i> PDF inclusi i commenti
                     </a>
                 </div>

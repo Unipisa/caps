@@ -44,7 +44,7 @@ export default function ProposalsPage() {
     function renderCells(item: ProposalGet) {
         return <>
             <td><StateBadge state={item.state}/></td>
-            <td><a href={item.user_id}>{item.user_name}</a></td>
+            <td><a href={item._id}>{item.user_name}</a></td>
             <td>{item.degree_academic_year}</td>
             <td>{item.degree_name}</td>
             <td>{item.curriculum_name}</td>
