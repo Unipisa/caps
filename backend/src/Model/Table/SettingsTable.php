@@ -58,7 +58,8 @@ class SettingsTable extends Table
         [ 'field' => 'disclaimer', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'notified-emails', 'value' => '', 'fieldtype' => 'text' ],
         [ 'field' => 'approval-signature-text', 'value' => '', 'fieldtype' => 'text' ],
-        [ 'field' => 'pdf-name', 'value' => 'CAPS_%d_%n_%s_%c']
+        [ 'field' => 'pdf-name', 'value' => 'CAPS_%d_%n_%s_%c'],
+        [ 'field' => 'support-email', 'value' => ''],
     ];
 
     private $settingsInstance = null;

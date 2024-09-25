@@ -211,13 +211,15 @@ $actionName = $this->request->getParam('action');
     <?php endif; ?>
 
     <!-- Divider -->
+    <?php if($settings['support-email']): ?>
     <hr class="sidebar-divider">
     <li class="nav-item">
-        <a class="nav-link" href="mailto:help@dm.unipi.it">
+        <a class="nav-link" href="mailto:<?= $settings['support-email'] ?>">
             <i class="fas f-fw fa-at"></i>
             <span>Supporto</span>
         </a>
     </li>
+    <?php endif; ?>
 
 </ul>
 <!-- End of Sidebar -->
