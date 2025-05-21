@@ -72,6 +72,8 @@ function LocalLogin({}) {
         <div id="local-login" className="collapse_"> 
             {/* collapse not working anymore !?!*/}
             <div className="card-body">
+                <form>
+                <p>Effettua il login usando le credenziali locali.</p>
                     <div className="input form-group">
                         <label htmlFor="username">Username</label>
                         <input className="form-control" type="text" value={username} onChange={evt => setUsername(evt.target.value)} id="username"/>
@@ -87,6 +89,7 @@ function LocalLogin({}) {
                         </small>
                         <input type="submit" onClick={login} className="btn btn-primary mr-auto" value="Login"/>
                     </div>
+                </form>
             </div>
         </div>
     </>

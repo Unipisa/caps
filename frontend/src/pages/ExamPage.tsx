@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import CKEditor from '@ckeditor/ckeditor5-react'
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 import { useEngine, useDeleteExam, 
     useGetExam, usePatchExam, usePostExam } from '../modules/engine'
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Group from '../components/Group'
+import { Editor } from '@tinymce/tinymce-react';
+import HTMLEditor from '../components/HTMLEditor'
 
 function ExamForm({ mutate, exam }) {
     const [data, setData] = useState(exam)
@@ -63,20 +63,13 @@ function ExamForm({ mutate, exam }) {
                     value={(data.tags || []).join(", ")}
                     onChange={e => setData(data => ({...data, tags: e.target.value.split(", ").map(tag => tag.trim())}))}
                 />
-                <Group controlId="notes" label="Note">
+                <Group controlId="notes" label="Note" style={{".mce-notification": {"display": 'none !important',}}}>
                     <Form.Text>Questo messaggio viene mostrato quando lo studente seleziona l'esame nel piano di studi.</Form.Text>
-                    <CKEditor
-                        id="notes"
-                        editor={ClassicEditor}
-                        config={{
-                            toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList']
-                        }}
-                        data={data.notes || ''}
-                        onChange={(event, editor) => {
-                            const notes = editor.getData()
-                            setData(data => ({...data, notes}))
-                        }}
-                    />
+
+                    <HTMLEditor
+                        content={data.notes || ''}
+                        setContent={notes => setData(data => ({...data, notes}))}>
+                    </HTMLEditor>
                 </Group>
                 <Button onClick={submit}>Salva Esame</Button>
             </Form>

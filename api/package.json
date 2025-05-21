@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./index.ts"
+    "start": "nodemon --watch models --watch controller --watch exceptions ./index.ts"
   },
   "bin": {
     "caps-backend": "index.ts"
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
-    "nodemon": "^3.0.2",
+    "nodemon": "^3.1.10",
     "typescript": "^5.3.3"
   }
 }
