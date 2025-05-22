@@ -1,30 +1,11 @@
-import React from 'react'
-import { Link, useParams } from "react-router-dom"
+import React, {useState} from 'react'
+import { Link, useParams, useNavigate } from "react-router-dom"
+import { Form } from "react-bootstrap"
 
-import { useEngine, useGetDegree, useIndexExam } from '../modules/engine'
+import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree } from '../modules/engine'
 import Card from '../components/Card'
+import Group from '../components/Group'
 import LoadingMessage from '../components/LoadingMessage'
-
-function Group({ name, exam_ids }) {
-    const engine = useEngine()
-    const query = useIndexExam({'ids': exam_ids.join(",")})
-
-    if (query.isLoading) return <tr>
-        <th>{ name }</th>
-        <td> ...loading... </td>
-    </tr>
-    if (query.data === undefined) return <tr>
-        <th>{ name }</th>
-        <td> ...error... </td>
-    </tr>
-
-    const exams = query.data
-
-    return <tr>
-        <th>{ name }</th>
-        <td>{  exams.items.map(e => e.name).join(", ") }</td>
-    </tr>
-}
 
 export default function DegreePage() {
     const { id } = useParams();
@@ -45,8 +26,10 @@ export default function DegreePage() {
                         Tutti i corsi di studi
                     </button>
                 </Link>
-                <a href="#">
-                    <button type="button" className="btn btn-sm mr-2 btn-primary">Modifica</button>
+                <a href={`/degrees/edit/${id}`}>
+                    <button type="button" className="btn btn-sm mr-2 btn-primary">
+                        Modifica
+                    </button>
                 </a>
                 <a href="#" onClick={ () => confirm('Sei sicuro di voler cancellare questo esame?')}>
                     <button type="button" className="btn btn-sm mr-2 btn-danger">Elimina</button>
@@ -144,10 +127,108 @@ export default function DegreePage() {
             <table className="table">
                 <tbody>
                     { Object.entries(degree.groups).map(([name, exams]) => 
-                        <Group key={ name } name={ name } exam_ids={ exams }/>)}
+                        <ExamGroup key={ name } name={ name } exam_ids={ exams }/>)}
                 </tbody>
             </table>
         </Card>
     </>
 }
 
+export function EditDegreePage() {
+    const { id } = useParams()
+    const isNew = id === '__new__'
+    const query = useGetDegree(id || '')
+    const updater = usePatchDegree(id || '')
+    const poster = usePostDegree()
+    const mutate = isNew ? poster.mutate : updater.mutate
+    const degree = query.data
+    const isEdit = degree?._id !== undefined
+
+    if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
+    if (query.isError) return <div>Errore: {query.error.message}</div>
+
+    return <>
+        <h1>{isEdit ? "Modifica" : "Nuovo"} corso di Laurea</h1>
+        <DegreeForm mutate={mutate} degree={degree} />
+    </>
+}
+
+function DegreeForm({ mutate, degree }) {
+    const [data, setData] = useState(degree)
+    const [validation, setValidation] = useState<any>({})
+    const engine = useEngine()
+    const navigate = useNavigate()
+    const current_year = new Date().getFullYear()
+    
+    return <Card>
+        { JSON.stringify({data})}
+        <Group
+            validationError={validation.name}
+            controlId="name"
+            label="Nome"
+            type="text"
+            value={data.name || ''}
+            onChange={setter("name")}
+        />
+        <Group
+            validationError={validation.academic_year}
+            controlId="academic_year"
+            label="Anno accademico (solo anno di inizio)"
+            type="number"
+            value={data.academic_year || current_year}
+            onChange={setter("academic_year")}
+        />
+        <Group 
+            validationError={validation.years}
+            controlId="years"
+            label="Anni"
+            type="number"
+            value={data.years || 3}
+            onChange={setter("years")}
+        />
+        <Group
+            validationError={validation.enabled}
+            controlId="enabled">
+            <Form.Check 
+                type="checkbox" 
+                label="Attivato" 
+                checked={data.enabled || false} 
+                onChange={(e) => setData(data => ({...data, enabled: e.target.checked}))}
+            />
+        </Group>
+        <h4>funzionalità opzionali</h4>
+        {/*
+        <Group 
+            validationError={validation.enable_sharing}
+            controlId="enable_sharing"
+            label="Richiesta di parere"
+            type="select"
+            value={data.enable_sharing || }
+        />*/}
+    </Card>
+
+    function setter(field) {
+        return e => setData(data => ({...data, [field]: e.target.value}))
+    }
+}
+
+function ExamGroup({ name, exam_ids }) {
+    const engine = useEngine()
+    const query = useIndexExam({'ids': exam_ids.join(",")})
+
+    if (query.isLoading) return <tr>
+        <th>{ name }</th>
+        <td> ...loading... </td>
+    </tr>
+    if (query.data === undefined) return <tr>
+        <th>{ name }</th>
+        <td> ...error... </td>
+    </tr>
+
+    const exams = query.data
+
+    return <tr>
+        <th>{ name }</th>
+        <td>{  exams.items.map(e => e.name).join(", ") }</td>
+    </tr>
+}

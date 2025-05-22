@@ -43,7 +43,7 @@ npm ci # una tantum
 npm run watch:dev
 ```
 
-Ora la pagina web si dovrebbe vedere qui: http://localhost:3000/
+Ora la pagina web si dovrebbe vedere qui: http://localhost:9000/
 
 # struttura dei dati
 

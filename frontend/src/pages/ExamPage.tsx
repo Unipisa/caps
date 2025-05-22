@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -8,7 +8,6 @@ import { useEngine, useDeleteExam,
 import LoadingMessage from '../components/LoadingMessage'
 import Card from '../components/Card'
 import Group from '../components/Group'
-import { Editor } from '@tinymce/tinymce-react';
 import HTMLEditor from '../components/HTMLEditor'
 
 function ExamForm({ mutate, exam }) {

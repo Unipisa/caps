@@ -315,6 +315,14 @@ export function useDeleteDegree(id:string) {
     return useDelete(['degrees'], id)
 }
 
+export function usePatchDegree(id:string) {
+    return usePatch<DegreeGet>(['degrees'], id)
+}
+
+export function usePostDegree() {
+    return usePost(['degrees'])
+}
+
 export type CurriculumGet = {
     _id: string,
     name: string,

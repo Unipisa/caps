@@ -7,12 +7,12 @@ import axios from 'axios'
 import {useEngine, useCreateEngine, EngineProvider} from '../modules/engine'
 
 import ProposalsPage from "./ProposalsPage"
-import { default as ProposalPage, EditProposalPage, NewProposalPage } from "./ProposalPage"
+import { default as ProposalPage, EditProposalPage } from "./ProposalPage"
 import ProposalPagePdf from "./ProposalPagePdf"
 import FormsPage from "./FormsPage"
 import FormPage from "./FormPage"
 import DegreesPage from "./DegreesPage"
-import DegreePage from "./DegreePage"
+import { default as DegreePage, EditDegreePage } from "./DegreePage"
 import CurriculaPage from "./CurriculaPage"
 import CurriculumPage from "./CurriculumPage"
 import FormTemplatesPage from './FormTemplatesPage'
@@ -106,6 +106,7 @@ function PageWithNavBar(props) {
                     <Route path="/forms/:id" element={<FormPage/>}/>
                     <Route path="/degrees" element={<DegreesPage/>}/>
                     <Route path="/degrees/:id" element={<DegreePage/>}/>
+                    <Route path="/degrees/edit/:id" element={<EditDegreePage/>}/>
                     <Route path="/curricula" element={<CurriculaPage/>}/>
                     <Route path="/curricula/:id" element={<CurriculumPage/>}/>
                     <Route path="/form_templates/:id" element={<FormTemplatePage/>}/>

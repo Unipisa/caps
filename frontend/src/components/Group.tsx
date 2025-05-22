@@ -4,14 +4,14 @@ import Form from 'react-bootstrap/Form'
 
 export default function Group({ controlId, label, validationError, children, ...controlProps }:{
     controlId: string,
-    label: string,
+    label?: string,
     validationError?: string,
     children?: any,
     [key: string]: any,
 }) {
     return (
         <Form.Group className="mb-3" controlId={controlId} >
-        <Form.Label>{label}</Form.Label>
+        { label && <Form.Label>{label}</Form.Label> }
         {
             children === undefined
             ? <Form.Control
