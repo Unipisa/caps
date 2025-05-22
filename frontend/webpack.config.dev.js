@@ -65,7 +65,7 @@ module.exports = {
     }
   },
   plugins: [
-    // new CAPSDeployPlugin(),
+    new CAPSDeployPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
     }),
