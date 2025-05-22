@@ -1,4 +1,4 @@
-require("regenerator-runtime/runtime");
+// require("regenerator-runtime/runtime");
 
 import "../scss/main.scss";
 

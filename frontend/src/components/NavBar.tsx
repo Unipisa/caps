@@ -21,7 +21,7 @@ export default function NavBar() {
         </Link>
         <div className="d-flex justify-content-center">
             <div className="text-white text-uppercase font-weight-bold my-2 mx-2 px-2" style={{fontSize: "0.7rem"}}>
-            {config.CAPS_NAME}
+                {config.CAPS_NAME}
             </div>
         </div>
         <hr className="sidebar-divider" />

@@ -24,7 +24,7 @@ function SettingsInternal({settings, submit}:{
 }) {
     const [data, setData] = useState(settings)
     return <div>
-        <h1>Impostazioni</h1>
+        <h1>Impostazioni2</h1>
         <Form>
         <Card>
             <Card.Header>
