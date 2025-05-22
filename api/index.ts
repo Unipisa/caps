@@ -52,6 +52,8 @@ mongoose.connect(mongo_uri).then((res : any) => {
     const client = mongoose.connection.getClient()
     console.log(`client: ${client}`)
     console.log(`dbName: ${process.env.MONGO_DB}`)
+    console.log(`SESSION_SECRET: ${process.env.SESSION_SECRET}`)
+    console.log(`CORS_ORIGIN: ${cors_origin}`)
     app.use(session({
         secret: process.env.SESSION_SECRET || randomUUID(),
         cookie: { maxAge: 2628000000 },

@@ -95,7 +95,10 @@ router.post('/login', function(req, res) {
   
 async function loginController(req) {
     const user = req.user.toObject()
-    console.log(`login/password: ${user.username}`)
+
+    if (user) {
+        console.log(`Logged in as user: ${user.username}`)
+    }
 
     // return user as if it was fetched from /users/:id
     const gotUser = await UserController.view({params: {id: `${user._id}`}})
