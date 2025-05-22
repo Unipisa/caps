@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useEngine, useIndex, useDelete, usePost } from "../modules/engine"
 import Card from "./Card";
 import LoadingMessage from '../components/LoadingMessage'
+import Form from 'react-bootstrap/Form'
 
 export default function Comments({object_id}) {
     const commentsQuery = useIndex(['comments'], { object_id })
@@ -37,7 +38,8 @@ function CommentCard({ comment, userUpdater }:
         <div className='mb-2 rounded border border-left-info p-1 d-flex justify-content-between align-items-end'>
             <div>
                 <div>{comment.content}</div>
-                {comment.attachmentsData.map(attachment => <div key={attachment._id}><a href={`/api/v0/attachments/${attachment.signedId}/content`}>{attachment.filename}</a></div>)}
+                {comment.attachmentsData.map(attachment => <div key={attachment._id}>
+                    <a href={`/api/v0/attachments/${attachment.signedId}/content`}>{attachment.filename}</a></div>)}
                 <div><strong>{comment.creator_id.name}</strong> - {(new Date(comment.createdAt)).toLocaleString()}</div>
             </div>
             <div className='btn btn-sm btn-danger' onClick={deleteComment}>Elimina</div>
@@ -129,7 +131,7 @@ function CommentWidget({object_id}) {
     
     return <Card title="Aggiungi allegato o commento">
         <div className="d-flex flex-column">
-            <textarea className="mb-3" value={text} onChange={e => setText(e.target.value)}/>
+            <Form.Control as="textarea" className="mb-3" value={text} onChange={e => setText(e.target.value)}/>
             <div className="d-flex flex-column">
                 {
                     files.map(id => {
