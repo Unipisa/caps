@@ -54,19 +54,20 @@ function Proposals({id}) {
 
     const proposals = proposalsQuery.data.items
 
-    return <div className='row'>
+    return <>
         { 
             proposals.length == 0 && 
-            <div>
-                Nessun piano di studi presentato.            
-            </div>
+                <Card>Nessun piano di studi presentato.</Card>
         }
+        <div className='row'>
         {
+            
             proposals.map(proposal => 
                 <ProposalCard key={proposal._id} proposal={proposal} />
             )
-        }
-    </div>
+        }    
+        </div>
+    </>
 }
 
 function ProposalCard({proposal}) {
@@ -93,7 +94,7 @@ function ProposalCard({proposal}) {
             })
     }
 
-    console.log(`proposal ${JSON.stringify(proposal)}`)
+    // console.log(`proposal ${JSON.stringify(proposal)}`)
 
     const [state, stateClass] = {
         draft: ["Bozza", "secondary"],

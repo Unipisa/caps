@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import ProposalInfo from "./ProposalInfo";
 import LoadingMessage from "./LoadingMessage";
+import Card from "./Card";
 
 function ProposalsBlock(props) {
     return <div className={props.className}>
@@ -15,7 +16,7 @@ function ProposalsBlock(props) {
         </h2>
         { props.proposals === undefined && <LoadingMessage>Caricamento dei piani in corso</LoadingMessage>}
         { (props.proposals !== undefined && props.proposals.length == 0) && <p>
-            Nessun piano di studio presentato.
+            <Card>Nessun piano di studio presentato.</Card>
             </p> }
         { props.proposals !== undefined && 
         <div className="row">
