@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
-import { Form } from "react-bootstrap"
+import { Form, Dropdown } from "react-bootstrap"
+import MultiSelect from "react-bootstrap-multiselect"
+import 'react-bootstrap-multiselect/css/bootstrap-multiselect.css'
 
 import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree } from '../modules/engine'
 import Card from '../components/Card'
@@ -177,12 +179,58 @@ export function EditDegreePage() {
 }
 
 function DegreeForm({ mutate, degree, exams }) {
+    const options = [
+        { label: 'Mela', value: 'mela' },
+        { label: 'Banana', value: 'banana' },
+        { label: 'Arancia', value: 'arancia' }
+      ];
+    
+      const handleChange = (selectedOptions) => {
+        console.log('Selezionato:', selectedOptions);
+      };
+    
+      return (
+        <div className="container mt-5">
+          <h3>Frutta preferita</h3>
+          <MultiSelect
+            multiple
+            onChange={handleChange}
+            enableFiltering
+            includeSelectAllOption
+            buttonClass="btn btn-primary"
+          >
+            {options.map(option => 
+                <option key={option.value} value={option.value}>{option.label}</option>)}
+          </MultiSelect>  
+        </div>
+      );
+    }
+
+function DegreeForm_({mutate,degree,exams}) {
     const [data, setData] = useState(degree)
     const [validation, setValidation] = useState<any>({})
     const engine = useEngine()
     const navigate = useNavigate()
     const current_year = new Date().getFullYear()
     
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const options = [
+        { value: 'One', selected: true },
+        { value: 'Two' },
+        { value: 'Three' }
+    ];
+    
+    const handleChange = (selected) => {
+        setSelectedOptions(selected);
+    };
+    return (
+    <MultiSelect
+    onChange={handleChange}
+    data={options}
+    multiple
+    />
+    );
+
     return <Card>
         <Group
             validationError={validation.name}
@@ -229,6 +277,23 @@ function DegreeForm({ mutate, degree, exams }) {
             </Form.Select>
         </Group>
         <h4>gruppi di esami</h4>
+
+        <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+            Select Options
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+            {["A","B","C"].map((option, index) => (
+            <Dropdown.Item
+                key={index}
+                onClick={() => {}}
+                active={["B"].includes(option)}
+            >
+            {option}
+            </Dropdown.Item>
+            ))}
+            </Dropdown.Menu>
+        </Dropdown>
 
         <Group 
             validationError={validation.default_group}
