@@ -147,6 +147,12 @@ async function importData() {
     }
 
     // Import degrees
+    /* 
+    enable_sharing:
+        0: 'Non abilitata'
+        1: 'Abilitata'
+        2: 'Solo per gli amministratori'
+    */
     write("> Degrees ")
     degrees = {}
     degreesByNewId = {}
@@ -160,7 +166,7 @@ async function importData() {
         e.academic_year = element.academic_year;
         e.years = element.years;
         e.enabled = element.enabled;
-        e.enable_sharing = element.enable_sharing;
+        e.sharing_mode = ["disabled", "enabled", "admin"][element.enable_sharing]
         const my_groups = {}
         groups
             .filter(g => g.degree_id===element.id)

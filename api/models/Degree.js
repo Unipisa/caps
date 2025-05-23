@@ -34,10 +34,11 @@ const Degree = mongoose.model('Degree', {
         required: true,
         default: false
     },
-    enable_sharing: {
-        type: Boolean,
+    sharing_mode: {
+        type: String,
         required: true,
-        default: true
+        default: "disabled",
+        enum: ["disabled", "enabled", "admin"]
     },
     default_group: String, 
     approval_confirmation: {
