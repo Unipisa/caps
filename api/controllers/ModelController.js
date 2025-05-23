@@ -121,12 +121,13 @@ const ModelController = {
         return res
     },
 
-    view: async (Model, id, { populate } = {}) => {
+    view: async (Model, id, { populate, toObject } = {}) => {
         try {
             const empty = id === '__new__'
             let obj = empty ? new Model() : await Model.findById(id)
             if (populate !== undefined) obj = await obj.populate(populate)
-            obj = obj.toObject()
+            if (toObject) obj = toObject(obj)
+            else obj = obj.toObject()
             if (empty) obj._id = undefined
             return obj
         } catch(err) {

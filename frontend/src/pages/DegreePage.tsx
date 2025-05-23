@@ -135,26 +135,48 @@ export default function DegreePage() {
     </>
 }
 
+function ExamGroup({ name, exam_ids }) {
+    const query = useIndexExam({'ids': exam_ids.join(",")})
+
+    if (query.isLoading) return <tr>
+        <th>{ name }</th>
+        <td> ...loading... </td>
+    </tr>
+    if (query.data === undefined) return <tr>
+        <th>{ name }</th>
+        <td> ...error... </td>
+    </tr>
+
+    const exams = query.data
+
+    return <tr>
+        <th>{ name }</th>
+        <td>{  exams.items.map(e => e.name).join(", ") }</td>
+    </tr>
+}
+
 export function EditDegreePage() {
     const { id } = useParams()
     const isNew = id === '__new__'
     const query = useGetDegree(id || '')
     const updater = usePatchDegree(id || '')
     const poster = usePostDegree()
+    const exams = useIndexExam()
     const mutate = isNew ? poster.mutate : updater.mutate
     const degree = query.data
     const isEdit = degree?._id !== undefined
 
-    if (query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
+    if (query.isLoading || exams.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
     if (query.isError) return <div>Errore: {query.error.message}</div>
+    if (exams.isError) return <div>Errore: {`${exams}`}</div>
 
     return <>
         <h1>{isEdit ? "Modifica" : "Nuovo"} corso di Laurea</h1>
-        <DegreeForm mutate={mutate} degree={degree} />
+        <DegreeForm mutate={mutate} degree={degree} exams={exams} />
     </>
 }
 
-function DegreeForm({ mutate, degree }) {
+function DegreeForm({ mutate, degree, exams }) {
     const [data, setData] = useState(degree)
     const [validation, setValidation] = useState<any>({})
     const engine = useEngine()
@@ -162,7 +184,6 @@ function DegreeForm({ mutate, degree }) {
     const current_year = new Date().getFullYear()
     
     return <Card>
-        { JSON.stringify({data})}
         <Group
             validationError={validation.name}
             controlId="name"
@@ -205,6 +226,19 @@ function DegreeForm({ mutate, degree }) {
                     <option value="disabled">disabilitata</option>
                     <option value="enabled">abilitata</option>
                     <option value="admin">amministratori</option>
+            </Form.Select>
+        </Group>
+        <h4>gruppi di esami</h4>
+
+        <Group 
+            validationError={validation.default_group}
+            controlId="default_group"
+            label="gruppo esami a scelta libera">
+            {} <Form.Select value={data.default_group} onChange={onChange("default_group")}>
+                    <option value="">tutti gli esami</option>
+                    { Object.keys(data.groups).map(name => 
+                        <option value={name}>{name}</option>
+                    ) }
             </Form.Select>
         </Group>
         
@@ -270,8 +304,10 @@ function DegreeForm({ mutate, degree }) {
                 setContent={setContent("free_choice_message")}>
             </HTMLEditor>
         </Group>
-    {/* manca gruppo esami a scelta libera */}
-        
+
+        <pre>
+            { JSON.stringify({data,exams},null,2)}
+        </pre>
     </Card>
 
     function setContent(field) {
@@ -285,25 +321,4 @@ function DegreeForm({ mutate, degree }) {
     function onChangeCheck(field) {
         return e => setData(data => ({...data, [field]: e.target.checked}))
     }
-}
-
-function ExamGroup({ name, exam_ids }) {
-    const engine = useEngine()
-    const query = useIndexExam({'ids': exam_ids.join(",")})
-
-    if (query.isLoading) return <tr>
-        <th>{ name }</th>
-        <td> ...loading... </td>
-    </tr>
-    if (query.data === undefined) return <tr>
-        <th>{ name }</th>
-        <td> ...error... </td>
-    </tr>
-
-    const exams = query.data
-
-    return <tr>
-        <th>{ name }</th>
-        <td>{  exams.items.map(e => e.name).join(", ") }</td>
-    </tr>
 }

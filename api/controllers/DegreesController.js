@@ -42,7 +42,14 @@ const DegreesController = {
 
     view: async req => {
         const { id } = req.params
-        return await ModelController.view(Degree, id)
+        return await ModelController.view(Degree, id, {toObject})
+
+        function toObject(degree) {
+            return {
+                ...degree.toObject(),
+                groups: Object.fromEntries(degree.groups.entries())
+            }
+        }
     },
 
     post: async req => {
