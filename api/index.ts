@@ -134,7 +134,7 @@ async function create_admin_user() {
   }
 
   const n = await User.countDocuments({})
-  if ( n == 0) {
+  if (n == 0) {
     console.log(`No users in database. Create one by setting ADMIN_USER and ADMIN_PASSWORD`)
   }
 }
