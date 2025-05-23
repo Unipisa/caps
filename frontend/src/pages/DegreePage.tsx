@@ -6,6 +6,7 @@ import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree } 
 import Card from '../components/Card'
 import Group from '../components/Group'
 import LoadingMessage from '../components/LoadingMessage'
+import HTMLEditor from '../components/HTMLEditor'
 
 export default function DegreePage() {
     const { id } = useParams();
@@ -168,7 +169,7 @@ function DegreeForm({ mutate, degree }) {
             label="Nome"
             type="text"
             value={data.name || ''}
-            onChange={setter("name")}
+            onChange={onChange("name")}
         />
         <Group
             validationError={validation.academic_year}
@@ -176,7 +177,7 @@ function DegreeForm({ mutate, degree }) {
             label="Anno accademico (solo anno di inizio)"
             type="number"
             value={data.academic_year || current_year}
-            onChange={setter("academic_year")}
+            onChange={onChange("academic_year")}
         />
         <Group 
             validationError={validation.years}
@@ -184,7 +185,7 @@ function DegreeForm({ mutate, degree }) {
             label="Anni"
             type="number"
             value={data.years || 3}
-            onChange={setter("years")}
+            onChange={onChange("years")}
         />
         <Group
             validationError={validation.enabled}
@@ -192,23 +193,97 @@ function DegreeForm({ mutate, degree }) {
             <Form.Check 
                 type="checkbox" 
                 label="Attivato" 
-                checked={data.enabled || false} 
-                onChange={(e) => setData(data => ({...data, enabled: e.target.checked}))}
+                checked={data.enabled ?? false} 
+                onChange={onChangeCheck("enabled")}
             />
         </Group>
-        <h4>funzionalità opzionali</h4>
-        {/*
         <Group 
-            validationError={validation.enable_sharing}
-            controlId="enable_sharing"
-            label="Richiesta di parere"
-            type="select"
-            value={data.enable_sharing || }
-        />*/}
+            validationError={validation.sharing_mode}
+            controlId="sharing_mode"
+            label="Richiesta di parere">
+            {} <Form.Select  aria-label='Richiesta di parere' value={data.sharing_mode} onChange={onChange("sharing_mode")}>
+                    <option value="disabled">disabilitata</option>
+                    <option value="enabled">abilitata</option>
+                    <option value="admin">amministratori</option>
+            </Form.Select>
+        </Group>
+        
+        <h4>notifiche email</h4>
+        <Group
+            validationError={validation.submission_confirmation}
+            controlId="submission_confirmation">
+            <Form.Check 
+                type="checkbox" 
+                label="conferma invio" 
+                checked={data.submission_confirmation ?? true} 
+                onChange={onChangeCheck("submission_confirmation")}
+            />
+        </Group>
+        <Group
+            validationError={validation.approval_confirmation}
+            controlId="approval_confirmation">
+            <Form.Check 
+                type="checkbox" 
+                label="conferma approvazione" 
+                checked={data.approval_confirmation ?? true} 
+                onChange={onChangeCheck("approval_confirmation")}
+            />
+        </Group>
+        <Group
+            validationError={validation.rejection_confirmation}
+            controlId="rejection_confirmation">
+            <Form.Check 
+                type="checkbox" 
+                label="conferma rifiuto" 
+                checked={data.rejection_confirmation ?? true} 
+                onChange={onChangeCheck("rejection_confirmation")}
+            />
+        </Group>
+
+        <h4>messaggi</h4>
+        <Group controlId="approval_message" label="Approvazione" style={{".mce-notification": {"display": 'none !important',}}}>
+            <Form.Text>Questo messaggio viene mostrato allo studente quando visualizza un piano che è già stato approvato.</Form.Text>
+            <HTMLEditor
+                content={data.approval_message || ''}
+                setContent={setContent("approval_message")}>
+            </HTMLEditor>
+        </Group>
+        <Group controlId="rejection_message" label="Invio" style={{".mce-notification": {"display": 'none !important',}}}>
+            <Form.Text>Questo messaggio viene mostrato allo studente quando invia un piano; può contenere ad esempio delle istruzioni da seguire dopo l'invio.</Form.Text>
+            <HTMLEditor
+                content={data.submission_message || ''}
+                setContent={setContent("submission_message")}>
+            </HTMLEditor>
+        </Group>
+        <Group controlId="rejection_message" label="Rifiuto" style={{".mce-notification": {"display": 'none !important',}}}>
+            <Form.Text>Questo messaggio viene mostrato allo studente quando visualizza un piano che è stato rigettato.</Form.Text>
+            <HTMLEditor
+                content={data.rejection_message || ''}
+                setContent={setContent("rejection_message")}>
+            </HTMLEditor>
+        </Group>
+        <Group controlId="free_choice_message" label="Esami a scelta" style={{".mce-notification": {"display": 'none !important',}}}>
+            <Form.Text>
+            Questo messaggio viene mostrato allo studente quando seleziona un esame a scelta libera (modificando la struttura del piano). Può contenere indicazioni su come riportare esami di altre istituzioni, e/o che dettagli sia necessario inserire.</Form.Text>
+            <HTMLEditor
+                content={data.free_choice_message || ''}
+                setContent={setContent("free_choice_message")}>
+            </HTMLEditor>
+        </Group>
+    {/* manca gruppo esami a scelta libera */}
+        
     </Card>
 
-    function setter(field) {
+    function setContent(field) {
+        return value => setData(data => ({...data, [field]: value}))
+    }
+
+    function onChange(field) {
         return e => setData(data => ({...data, [field]: e.target.value}))
+    }    
+
+    function onChangeCheck(field) {
+        return e => setData(data => ({...data, [field]: e.target.checked}))
     }
 }
 
