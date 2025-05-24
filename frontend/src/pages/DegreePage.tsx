@@ -1,10 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, Dispatch, SetStateAction} from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { Form, Dropdown } from "react-bootstrap"
-import MultiSelect from "react-bootstrap-multiselect"
-import 'react-bootstrap-multiselect/css/bootstrap-multiselect.css'
+import Select, {MultiValue} from "react-select"
 
-import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree } from '../modules/engine'
+import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree, ExamGet } from '../modules/engine'
 import Card from '../components/Card'
 import Group from '../components/Group'
 import LoadingMessage from '../components/LoadingMessage'
@@ -163,14 +162,16 @@ export function EditDegreePage() {
     const query = useGetDegree(id || '')
     const updater = usePatchDegree(id || '')
     const poster = usePostDegree()
-    const exams = useIndexExam()
+    const exams_query = useIndexExam()
     const mutate = isNew ? poster.mutate : updater.mutate
     const degree = query.data
     const isEdit = degree?._id !== undefined
 
-    if (query.isLoading || exams.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
+    if (query.isLoading || exams_query.isLoading) return <LoadingMessage>caricamento...</LoadingMessage>
     if (query.isError) return <div>Errore: {query.error.message}</div>
-    if (exams.isError) return <div>Errore: {`${exams}`}</div>
+    if (exams_query.isError || !exams_query.data) return <div>Errore: {`${exams_query}`}</div>
+
+    const exams = exams_query.data.items
 
     return <>
         <h1>{isEdit ? "Modifica" : "Nuovo"} corso di Laurea</h1>
@@ -178,59 +179,22 @@ export function EditDegreePage() {
     </>
 }
 
-function DegreeForm({ mutate, degree, exams }) {
-    const options = [
-        { label: 'Mela', value: 'mela' },
-        { label: 'Banana', value: 'banana' },
-        { label: 'Arancia', value: 'arancia' }
-      ];
-    
-      const handleChange = (selectedOptions) => {
-        console.log('Selezionato:', selectedOptions);
-      };
-    
-      return (
-        <div className="container mt-5">
-          <h3>Frutta preferita</h3>
-          <MultiSelect
-            multiple
-            onChange={handleChange}
-            enableFiltering
-            includeSelectAllOption
-            buttonClass="btn btn-primary"
-          >
-            {options.map(option => 
-                <option key={option.value} value={option.value}>{option.label}</option>)}
-          </MultiSelect>  
-        </div>
-      );
-    }
+type ExamGroup = {
+    name: string,
+    exam_ids: string[]
+}
 
-function DegreeForm_({mutate,degree,exams}) {
+function DegreeForm({mutate, degree, exams}) {
     const [data, setData] = useState(degree)
+    const [groups, setGroups] = useState<ExamGroup[]>(Object.entries(degree.groups as Record<string,string[]>)
+        .map(([name,exam_ids])=>({name, exam_ids}))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    )
     const [validation, setValidation] = useState<any>({})
     const engine = useEngine()
     const navigate = useNavigate()
     const current_year = new Date().getFullYear()
-    
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const options = [
-        { value: 'One', selected: true },
-        { value: 'Two' },
-        { value: 'Three' }
-    ];
-    
-    const handleChange = (selected) => {
-        setSelectedOptions(selected);
-    };
-    return (
-    <MultiSelect
-    onChange={handleChange}
-    data={options}
-    multiple
-    />
-    );
-
+          
     return <Card>
         <Group
             validationError={validation.name}
@@ -276,24 +240,10 @@ function DegreeForm_({mutate,degree,exams}) {
                     <option value="admin">amministratori</option>
             </Form.Select>
         </Group>
+
         <h4>gruppi di esami</h4>
 
-        <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Select Options
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-            {["A","B","C"].map((option, index) => (
-            <Dropdown.Item
-                key={index}
-                onClick={() => {}}
-                active={["B"].includes(option)}
-            >
-            {option}
-            </Dropdown.Item>
-            ))}
-            </Dropdown.Menu>
-        </Dropdown>
+        <EditGroups groups={groups} setGroups={setGroups} exams={exams} />
 
         <Group 
             validationError={validation.default_group}
@@ -301,12 +251,12 @@ function DegreeForm_({mutate,degree,exams}) {
             label="gruppo esami a scelta libera">
             {} <Form.Select value={data.default_group} onChange={onChange("default_group")}>
                     <option value="">tutti gli esami</option>
-                    { Object.keys(data.groups).map(name => 
-                        <option value={name}>{name}</option>
+                    { groups.map(group => 
+                        <option key={group.name} value={group.name}>{group.name}</option>
                     ) }
             </Form.Select>
         </Group>
-        
+    
         <h4>notifiche email</h4>
         <Group
             validationError={validation.submission_confirmation}
@@ -385,5 +335,74 @@ function DegreeForm_({mutate,degree,exams}) {
 
     function onChangeCheck(field) {
         return e => setData(data => ({...data, [field]: e.target.checked}))
+    }
+}
+
+function EditGroups({groups, setGroups, exams}:{
+    groups: ExamGroup[],
+    setGroups: Dispatch<ExamGroup[]>,
+    exams: ExamGet[]
+}) {
+    const examDict = Object.fromEntries(exams.map(exam => [exam._id,exam]))
+    return <>
+        { groups.map((group,i) => 
+            <EditGroup 
+                key={i} 
+                name={group.name} 
+                setName={name => setGroups(groups.map(g => (g.name===group.name 
+                    ? {name, exam_ids: g.exam_ids} 
+                    : g)))}
+                group={group.exam_ids}
+                setGroup={ids => setGroups(groups.map(g => (g.name===group.name
+                    ? {name: g.name, exam_ids: ids}
+                    : g)))}
+                examDict={examDict} 
+            />)}
+    </>
+}
+
+type Option = {
+    value: string;
+    label: string;
+  };
+
+function EditGroup({name, setName, group, setGroup, examDict}:{
+    name: string,
+    setName: Dispatch<string>,
+    group: string[],
+    setGroup: Dispatch<string[]>
+    examDict: Record<string, {_id: string, name: string, code: string}>
+}) {
+    const sort_fun = (a,b) => a.label.localeCompare(b.label)
+    const options: Option[] = Object.values(examDict).map(option_from_exam).sort(sort_fun)
+    const selected: Option[] = group.map(option_from_exam_id).sort(sort_fun)
+
+    // TODO: l'ordinamento non funziona
+    // sembra che la select ordini sempre in base al codice
+
+    return <Group controlId={`group-${name}`} label="gruppo">
+        {} <input value={name} onChange={e => setName(e.target.value)} />
+        <Select isMulti isSearchable 
+            options={options} 
+            value={selected}
+            onChange={onChange}
+        />
+    </Group>
+
+    function option_from_exam(exam) {
+        return {
+            value: exam?._id,
+            label: `${exam.code} ${exam.name}`
+        }
+    }
+
+    function option_from_exam_id(exam_id) {
+        const exam = examDict[exam_id]
+        if (!exam) return {value: exam_id, label: exam_id}
+        return option_from_exam(exam)
+    }
+
+    function onChange(new_options: readonly Option[]) {
+        setGroup(new_options.map(option => option.value))
     }
 }
