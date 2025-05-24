@@ -138,7 +138,7 @@ const ModelController = {
 
     patch: async (Model, id, data) => {
         try {
-            console.log(`ModelController.patch ${Model} ${id} ${JSON.stringify(data)}`)
+            console.log(`ModelController.patch ${id} ${JSON.stringify(data)}`)
             await Model.findByIdAndUpdate(id, data, { runValidators: true })
             return {ok: true}
         } catch(err) {

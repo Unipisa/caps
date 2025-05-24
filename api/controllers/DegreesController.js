@@ -54,6 +54,12 @@ const DegreesController = {
 
     post: async req => {
         return await ModelController.post(Degree, req.body)
+    },
+
+    patch: async req => {
+        const { id } = req.params;
+        const data = req.body
+        return await ModelController.patch(Degree, id, req.body)
     }
 }
 

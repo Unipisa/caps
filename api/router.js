@@ -146,6 +146,7 @@ router.get('/forms/:id', require_user, response_envelope(Forms.view))
 
 router.get('/degrees', require_user, response_envelope(Degrees.index))
 router.get('/degrees/:id', require_user, response_envelope(Degrees.view))
+router.patch('/degrees/:id', require_admin, response_envelope(Degrees.patch))
 router.post('/degrees', require_admin, response_envelope(Degrees.post))
 
 router.get('/curricula', require_user, response_envelope(Curricula.index))

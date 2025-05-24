@@ -2,6 +2,7 @@ import React, {useState, Dispatch } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { Form } from "react-bootstrap"
 import Select from "react-select"
+import Button from 'react-bootstrap/Button'
 
 import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree, ExamGet } from '../modules/engine'
 import Card from '../components/Card'
@@ -185,6 +186,7 @@ type ExamGroup = {
 }
 
 function DegreeForm({mutate, degree, exams}) {
+    const [error, setError] = useState<string>('')
     const [data, setData] = useState(degree)
     const [groups, setGroups] = useState<ExamGroup[]>(Object.entries(degree.groups as Record<string,string[]>)
         .map(([name,exam_ids])=>({name, exam_ids}))
@@ -196,6 +198,7 @@ function DegreeForm({mutate, degree, exams}) {
     const current_year = new Date().getFullYear()
           
     return <Card>
+        {error && <div className="alert alert-danger">{error}</div>}
         <Group
             validationError={validation.name}
             controlId="name"
@@ -320,9 +323,11 @@ function DegreeForm({mutate, degree, exams}) {
             </HTMLEditor>
         </Group>
 
-        <pre>
+        <Button onClick={submit}>salva corso di Laurea</Button>
+
+        {/* <pre>
             { JSON.stringify({data,exams},null,2)}
-        </pre>
+        </pre> */}
     </Card>
 
     function setContent(field) {
@@ -335,6 +340,27 @@ function DegreeForm({mutate, degree, exams}) {
 
     function onChangeCheck(field) {
         return e => setData(data => ({...data, [field]: e.target.checked}))
+    }
+
+    function submit() {
+        data.groups = Object.fromEntries(groups.map(group => [group.name, group.exam_ids]))
+        data.academic_year = parseInt(data.academic_year)
+        data.years = parseInt(data.years)
+        mutate(data,
+            {
+                onSuccess: (res) => {
+                    const id = degree._id || res.data
+                    navigate(`/degrees/${id}`)
+                },
+                onError: (err) => {
+                    if (err.response?.status === 422) {
+                        setValidation(err.response.data.issues)
+                    } else {
+                        setError(`${err}`)
+                    }
+                }
+            }
+        )
     }
 }
 
