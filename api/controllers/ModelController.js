@@ -88,7 +88,7 @@ function queryFieldsToPipeline(query={}, fields={}) {
             match: {$literal: $match},
         }},
     ]
-    console.log(`queryFieldsToPipeline ${JSON.stringify(query)} => ${JSON.stringify(pipeline)}`)
+    // console.log(`queryFieldsToPipeline ${JSON.stringify(query)} => ${JSON.stringify(pipeline)}`)
     return pipeline
 }
 
@@ -106,7 +106,8 @@ const ModelController = {
         // vengono serializzati correttamente:
         // gli ObjectId sembrano stringhe,
         // le RegExp sembrano oggetti vuoti
-        console.log(`${Model.modelName}.index PIPELINE ${JSON.stringify(pipeline)}`)
+        //
+        // console.log(`${Model.modelName}.index PIPELINE ${JSON.stringify(pipeline)}`)
 
         const [ res ] = await Model.aggregate(pipeline)
 
@@ -131,14 +132,17 @@ const ModelController = {
             if (empty) obj._id = undefined
             return obj
         } catch(err) {
-            console.log(`not found ${id}`)
-            throw new NotFoundError()
+            if (err instanceof mongoose.Error.NotFoundError) {
+                console.log(`not found ${id}`)
+                throw new NotFoundError()
+            }
+            throw err
         }
     },
 
     patch: async (Model, id, data) => {
         try {
-            console.log(`ModelController.patch ${id} ${JSON.stringify(data)}`)
+            console.log(`ModelController.patch ${Model.modelName} ${id} ${JSON.stringify(data)}`)
             await Model.findByIdAndUpdate(id, data, { runValidators: true })
             return {ok: true}
         } catch(err) {

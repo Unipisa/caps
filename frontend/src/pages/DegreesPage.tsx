@@ -9,7 +9,7 @@ import {
 
 export default function DegreesPage() {
     return <>
-        <h1>Corsi di Laurea</h1>
+        <h1>Corsi di Studio</h1>
         <QueryTableCard sort="academic_year" direction={-1}>
             <QueryTableBar>
                 <FilterButton>
@@ -21,7 +21,7 @@ export default function DegreesPage() {
                 </FilterButton>
 
                 <ItemAddButton>
-                    Aggiungi corso di Laurea
+                    Aggiungi corso di studio
                 </ItemAddButton>
 
                 <TableTopRightButtons>

@@ -27,7 +27,8 @@ const Degree = mongoose.model('Degree', {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: Exam
                 }
-            ]
+            ],
+        default: () => new Map()
     },
     enabled: {
         type: Boolean,

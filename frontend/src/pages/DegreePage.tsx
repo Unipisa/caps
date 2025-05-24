@@ -126,8 +126,8 @@ export default function DegreePage() {
             <table className="table">
                 <tbody>
                     <tr>
-                        <th>scelta libera</th>
-                        <td> { `gruppo ${degree.default_group}` || "tutti gli esami" } </td>
+                        <th><i>scelta libera</i></th>
+                        <td> { degree.default_group ? `gruppo ${degree.default_group}` : <i>tutti gli esami</i> } </td>
                     </tr>
                     { Object.entries(degree.groups).map(([name, exams]) => 
                         <ExamGroup key={ name } name={ name } exam_ids={ exams }/>)}
@@ -186,8 +186,12 @@ type ExamGroup = {
 }
 
 function DegreeForm({mutate, degree, exams}) {
+    const current_year = new Date().getFullYear()
     const [error, setError] = useState<string>('')
-    const [data, setData] = useState(degree)
+    const [data, setData] = useState({
+        academic_year: current_year,
+        years: 3,
+        ...degree})
     const [groups, setGroups] = useState<ExamGroup[]>(Object.entries(degree.groups as Record<string,string[]>)
         .map(([name,exam_ids])=>({name, exam_ids}))
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -195,7 +199,6 @@ function DegreeForm({mutate, degree, exams}) {
     const [validation, setValidation] = useState<any>({})
     const engine = useEngine()
     const navigate = useNavigate()
-    const current_year = new Date().getFullYear()
           
     return <Card>
         {error && <div className="alert alert-danger">{error}</div>}
@@ -212,7 +215,7 @@ function DegreeForm({mutate, degree, exams}) {
             controlId="academic_year"
             label="Anno accademico (solo anno di inizio)"
             type="number"
-            value={data.academic_year || current_year}
+            value={data.academic_year}
             onChange={onChange("academic_year")}
         />
         <Group 
@@ -220,7 +223,7 @@ function DegreeForm({mutate, degree, exams}) {
             controlId="years"
             label="Anni"
             type="number"
-            value={data.years || 3}
+            value={data.years}
             onChange={onChange("years")}
         />
         <Group
@@ -343,10 +346,17 @@ function DegreeForm({mutate, degree, exams}) {
     }
 
     function submit() {
-        data.groups = Object.fromEntries(groups.map(group => [group.name, group.exam_ids]))
-        data.academic_year = parseInt(data.academic_year)
-        data.years = parseInt(data.years)
-        mutate(data,
+        const groups_array = Object.fromEntries(groups.map(group => [group.name, group.exam_ids]))
+        const academic_year = parseInt(data.academic_year)
+        const years = parseInt(data.years)
+        const payload = {
+            ...data,
+            academic_year,
+            years,
+            groups: groups_array,
+        }
+        console.log(`submitting`, JSON.stringify({payload,data,degree}, null, 2))
+        mutate(payload,
             {
                 onSuccess: (res) => {
                     const id = degree._id || res.data
@@ -355,6 +365,7 @@ function DegreeForm({mutate, degree, exams}) {
                 onError: (err) => {
                     if (err.response?.status === 422) {
                         setValidation(err.response.data.issues)
+                        setError(`${err.response.data.message}`)
                     } else {
                         setError(`${err}`)
                     }
@@ -383,8 +394,16 @@ function EditGroups({groups, setGroups, exams}:{
                     ? {name: g.name, exam_ids: ids}
                     : g)))}
                 examDict={examDict} 
+                erase={() => setGroups(groups.filter(g => g.name !== group.name))}
             />)}
+        <Button onClick={add_group} disabled={groups.filter(group => group.name==="").length>0}>
+            aggiungi gruppo di esami
+        </Button>
     </>
+
+    function add_group() {
+        setGroups([...groups, {name: "", exam_ids: []}])
+    }
 }
 
 type Option = {
@@ -392,12 +411,13 @@ type Option = {
     label: string;
   };
 
-function EditGroup({name, setName, group, setGroup, examDict}:{
-    name: string,
-    setName: Dispatch<string>,
-    group: string[],
+function EditGroup({name, setName, group, setGroup, examDict, erase}:{
+    name: string
+    setName: Dispatch<string>
+    group: string[]
     setGroup: Dispatch<string[]>
     examDict: Record<string, {_id: string, name: string, code: string}>
+    erase: () => void
 }) {
     const sort_fun = (a,b) => a.label.localeCompare(b.label)
     const options: Option[] = Object.values(examDict).map(option_from_exam).sort(sort_fun)
@@ -408,6 +428,7 @@ function EditGroup({name, setName, group, setGroup, examDict}:{
 
     return <Group controlId={`group-${name}`} label="gruppo">
         {} <input value={name} onChange={e => setName(e.target.value)} />
+        {} <Button variant="danger" onClick={erase}>elimina gruppo</Button>
         <Select isMulti isSearchable 
             options={options} 
             value={selected}
