@@ -1,7 +1,7 @@
-import React, {useState, Dispatch, SetStateAction} from 'react'
+import React, {useState, Dispatch } from 'react'
 import { Link, useParams, useNavigate } from "react-router-dom"
-import { Form, Dropdown } from "react-bootstrap"
-import Select, {MultiValue} from "react-select"
+import { Form } from "react-bootstrap"
+import Select from "react-select"
 
 import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree, ExamGet } from '../modules/engine'
 import Card from '../components/Card'
@@ -66,10 +66,6 @@ export default function DegreePage() {
                     <td>{ degree.enable_sharing ? "attiva" : "non attiva" }</td>
                 </tr>
                 <tr>
-                    <th>Gruppo esami per la scelta libera</th>
-                    <td> { degree.default_group || "tutti gli esami" } </td>
-                </tr>
-                <tr>
                     <th></th>
                     <td></td>
                 </tr>
@@ -128,6 +124,10 @@ export default function DegreePage() {
         <Card title="Gruppi di esami">
             <table className="table">
                 <tbody>
+                    <tr>
+                        <th>scelta libera</th>
+                        <td> { `gruppo ${degree.default_group}` || "tutti gli esami" } </td>
+                    </tr>
                     { Object.entries(degree.groups).map(([name, exams]) => 
                         <ExamGroup key={ name } name={ name } exam_ids={ exams }/>)}
                 </tbody>
