@@ -2,6 +2,11 @@ import React from "react";
 import Card from "./Card";
 import FA from "react-fontawesome";
 
+export interface FlashMessage {
+    type: 'error' | 'success' | 'info';
+    message: string;
+}
+
 export function FlashCard({className, message, onClick}:{
     className: string,
     message: string,
@@ -17,7 +22,10 @@ export function FlashCard({className, message, onClick}:{
     </Card>;
 }
 
-export default function Flash({ messages, onClick }) {
+export default function Flash({ messages, onClick }:{
+    messages: FlashMessage[],
+    onClick?: () => void
+}) {
     function classForType(type) {
         switch(type) {
             case 'error': return "danger";

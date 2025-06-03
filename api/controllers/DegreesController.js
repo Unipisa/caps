@@ -60,6 +60,11 @@ const DegreesController = {
         const { id } = req.params;
         const data = req.body
         return await ModelController.patch(Degree, id, req.body)
+    },
+
+    delete: async req => {
+        const { id } = req.params;
+        return await ModelController.delete(Degree, id)
     }
 }
 

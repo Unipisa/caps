@@ -4,7 +4,7 @@ import { Form } from "react-bootstrap"
 import Select from "react-select"
 import Button from 'react-bootstrap/Button'
 
-import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree, ExamGet } from '../modules/engine'
+import { useEngine, useGetDegree, useIndexExam, usePostDegree, usePatchDegree, useDeleteDegree, ExamGet } from '../modules/engine'
 import Card from '../components/Card'
 import Group from '../components/Group'
 import LoadingMessage from '../components/LoadingMessage'
@@ -13,6 +13,9 @@ import HTMLEditor from '../components/HTMLEditor'
 export default function DegreePage() {
     const { id } = useParams();
     const query = useGetDegree(id || '')
+    const deleter = useDeleteDegree(id || '')
+    const engine = useEngine()
+    const navigate = useNavigate()
 
     if (query.isLoading) return <LoadingMessage>caricamento corso di studi...</LoadingMessage>
     if (query.data === undefined) return <div>errore caricamento corso di studi</div>
@@ -34,7 +37,7 @@ export default function DegreePage() {
                         Modifica
                     </button>
                 </a>
-                <a href="#" onClick={ () => confirm('Sei sicuro di voler cancellare questo esame?')}>
+                <a href="#" onClick={() => deleteDegree()}>
                     <button type="button" className="btn btn-sm mr-2 btn-danger">Elimina</button>
                 </a>
 
@@ -135,6 +138,22 @@ export default function DegreePage() {
             </table>
         </Card>
     </>
+
+    function deleteDegree() {
+        if (!confirm("Sei sicuro di voler cancellare questo corso di Laurea?"))
+            return false;
+
+        deleter.mutate(id, {
+            onSuccess: () => {
+                engine.flashSuccess("Corso di Laurea cancellato con successo")
+                navigate('/degrees')
+            },
+            onError: (err) => {
+                console.error("Errore durante la cancellazione del corso di Laurea", err)
+                engine.flashError(`${err}`)
+            }
+        })
+    }
 }
 
 function ExamGroup({ name, exam_ids }) {

@@ -68,6 +68,11 @@ const CurriculaController = {
 
     post: async req => {
         return await ModelController.post(Curriculum, req.body)
+    },
+
+    delete: async req => {
+        const { id } = req.params;
+        return await ModelController.delete(Curriculum, id);
     }
 }
 

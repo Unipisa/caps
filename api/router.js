@@ -148,9 +148,13 @@ router.get('/degrees', require_user, response_envelope(Degrees.index))
 router.get('/degrees/:id', require_user, response_envelope(Degrees.view))
 router.patch('/degrees/:id', require_admin, response_envelope(Degrees.patch))
 router.post('/degrees', require_admin, response_envelope(Degrees.post))
+router.delete('/degrees/:id', require_admin, response_envelope(Degrees.delete))
 
 router.get('/curricula', require_user, response_envelope(Curricula.index))
 router.get('/curricula/:id', require_user, response_envelope(Curricula.view))
+router.patch('/curricula/:id', require_admin, response_envelope(Curricula.patch))
+router.post('/curricula', require_admin, response_envelope(Curricula.post))
+router.delete('/curricula/:id', require_admin, response_envelope(Curricula.delete))
 
 router.get('/form_templates/', require_admin, response_envelope(FormTemplates.index))
 router.get('/form_templates/:id', require_admin, response_envelope(FormTemplates.view))

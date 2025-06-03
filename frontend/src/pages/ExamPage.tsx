@@ -123,21 +123,6 @@ export default function ExamPage() {
     const navigate = useNavigate()
     const deleter = useDeleteExam(id || '')
 
-    function deleteExam() {
-        if (!confirm("Sei sicuro di voler cancellare questo esame?"))
-            return false;
-
-        deleter.mutate(id, {
-            onSuccess: () => {
-                engine.flashSuccess("Esame cancellato con successo")
-                navigate('/exams')
-            },
-            onError: (err) => {
-                engine.flashError(`${err}`)
-            }
-        })
-    }
-
     if (query.isError) return <div>Errore: {query.error.message}</div>
     if (query.data === undefined) return <LoadingMessage>caricamento esame...</LoadingMessage>
 
@@ -236,6 +221,22 @@ export default function ExamPage() {
             </table>
         </Card>
     </>
+
+    function deleteExam() {
+        if (!confirm("Sei sicuro di voler cancellare questo esame?"))
+            return false;
+
+        deleter.mutate(id, {
+            onSuccess: () => {
+                engine.flashSuccess("Esame cancellato con successo")
+                navigate('/exams')
+            },
+            onError: (err) => {
+                engine.flashError(`${err}`)
+            }
+        })
+    }
+
 }
 
 

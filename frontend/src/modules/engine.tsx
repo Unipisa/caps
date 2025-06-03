@@ -339,6 +339,18 @@ export type CurriculumGet = {
     }[]
 }
 
+export function usePatchCurriculum(id:string) {
+    return usePatch<CurriculumGet>(['curricula'], id)
+}
+
+export function usePostCurriculum() {
+    return usePost<CurriculumGet>(['curricula'])
+}   
+
+export function useDeleteCurriculum(id:string) {
+    return useDelete(['curricula'], id)
+}
+
 export type CurriculumExamGet = {
     __t: 'CompulsoryExam',
     exam_id: string,
