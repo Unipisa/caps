@@ -9,6 +9,7 @@ import Card from '../components/Card'
 import Group from '../components/Group'
 import LoadingMessage from '../components/LoadingMessage'
 import HTMLEditor from '../components/HTMLEditor'
+import { displayAcademicYears } from '../modules/utils'
 
 export default function DegreePage() {
     const { id } = useParams();
@@ -55,7 +56,7 @@ export default function DegreePage() {
                 <tbody>
                 <tr>
                     <th>Anno accademico</th>
-                    <td>{ degree.academic_year }/{ degree.academic_year + 1 }</td>
+                    <td>{ displayAcademicYears(degree.academic_year) }</td>
                 </tr>
                 <tr>
                     <th>Durata anni</th>

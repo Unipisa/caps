@@ -22,7 +22,9 @@ export default function CurriculumPage() {
     const degree = curriculum.degree
 
     return <>
-        <h1>{ curriculum.name }</h1>
+        <h1>Curriculum { curriculum.name } 
+            {} { degree?.name } 
+            {} { displayAcademicYears(degree?.academic_year) }</h1>
         <Card>
             <div className="d-flex mb-2">
                 <Link to="/degrees">
@@ -36,21 +38,36 @@ export default function CurriculumPage() {
                         Modifica
                     </button>
                 </a>
+                <a href={'#'}>
+                    <button type="button" className="btn btn-sm mr-2 btn-primary">
+                        inserisci piano
+                    </button>
+                </a>
                 <a href="#" onClick={ () => deleteCurriculum() }>
                     <button type="button" className="btn btn-sm mr-2 btn-danger">Elimina</button>
                 </a>
 
                 <div className="flex-fill"></div>
-
-                <div className="btn btn-sm btn-primary mr-2" >
-                    <i className="fas fa-download mr-2"></i> Esporta in CSV
-                </div>
             </div>
+            <table className="table">
+                <tbody>
+                    <tr>
+                        <th>Laurea</th>
+                        <td>{degree.name} { displayAcademicYears(degree.academic_year) }</td>
+                    </tr>
+                    <tr>
+                        <th>Nome</th>
+                        <td>{ curriculum.name }</td>
+                    </tr>
+                    <tr>
+                        <th>Nota</th>
+                        <td>{ curriculum.notes }</td>
+                    </tr>
+                </tbody>
+            </table>
         </Card>
-        <h3>{ degree?.name } { degree.academic_year ? displayAcademicYears(degree.academic_year) : '????-????'}</h3>
         { curriculum.years.map((year_section, year_count) =>
-            <Card key={`year-${year_count}`} title={`${ordinal(year_count+1)} anno`}> 
-                Crediti: { `${year_section.credits}` } <br />
+            <Card key={`year-${year_count}`} title={`${ordinal(year_count+1)} anno (${year_section.credits} CFU)`}> 
                 <table>
                     <tbody>
                     { year_section.exams.map((entry,i) => <ExamEntry key={i} entry={entry} />)}
@@ -70,7 +87,7 @@ export default function CurriculumPage() {
             onSuccess: () => {
                 console.log("Curriculum cancellato con successo")
                 engine.flashSuccess("Curriculum cancellato con successo")
-                navigate('/curricula')
+                navigate('/curricula/')
             },
             onError: (err) => {
                 console.error("Errore durante la cancellazione del curriculum", err)
