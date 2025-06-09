@@ -334,9 +334,9 @@ class UsersController extends AppController {
 
             $authuser = [ 
                 'username' => $uid,
-                'givenname' => $data['given_name'],
-                'surname' => $data['family_name'],
-                'name' => $data['given_name'] . ' ' . $data['family_name'],
+                'givenname' => $data['given_name'] ?? explode(' ', $data['name'], 2)[0],
+                'surname' => $data['family_name'] ?? (strpos($data['name'], ' ') !== false ? explode(' ', $data['name'], 2)[1] : ''),
+                'name' => $data['name'] . ' ' . ($data['family_name'] ?? ''),
                 'number' => $number,
                 'admin' => false,
                 'email' => $data['email']
