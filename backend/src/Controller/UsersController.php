@@ -131,19 +131,35 @@ class UsersController extends AppController {
             $user = $this->Users->newEmptyEntity();
         }
 
-        // We save the user data no matter what, just in case it has changed
-        // since the last update.
-        $user = $this->Users->patchEntity($user, [
-            'name' => ucwords(strtolower($authuser['name'])),
+        $patchData = [
+            // 'name' => ucwords(strtolower($authuser['name'])),
             'username' => $authuser['username'],
             'number' => $authuser['number'],
-            'surname' => $authuser['surname'],
-            'givenname' => $authuser['givenname'],
+            // 'surname' => $authuser['surname'],
+            // 'givenname' => $authuser['givenname'],
             'email' => $authuser['email'],
             'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
                 // if the user is not found; otherwise a user might have been granted admin privileges
                 // locally and we respect that.
-        ]);
+        ];
+
+        // If we get new data for givenname, surname, name, overwrite what we have in the database.
+        if (isset($authuser['name']) || $user->isNew()) {
+            $patchData['name'] = ucwords(strtolower($authuser['name']));
+        }
+        if (isset($authuser['surname']) || $user->isNew()) {
+            $patchData['surname'] = $authuser['surname'];
+        }
+        if (isset($authuser['givenname']) || $user->isNew()) {
+            $patchData['givenname'] = $authuser['givenname'];
+        }
+        if (isset($authuser['number']) || $user->isNew()) {
+            $patchData['number'] = $authuser['number'];
+        }
+
+        // We save the user data no matter what, just in case it has changed
+        // since the last update.
+        $user = $this->Users->patchEntity($user, $patchData);
 
         if ($this->Users->save($user)) {
             $this->Authentication->setIdentity($user);
@@ -330,13 +346,16 @@ class UsersController extends AppController {
 
             // Make sure that if we have no information on the user id
             // in the system, we fall back to using the user id.
-            $number = $number == "" ? $uid : $number;
+            $number = $number == "" ? null : $number;
+
+
+            $given_name = $data['given_name'] ?? '';
 
             $authuser = [ 
                 'username' => $uid,
-                'givenname' => $data['given_name'] ?? explode(' ', $data['name'], 2)[0],
-                'surname' => $data['family_name'] ?? (strpos($data['name'], ' ') !== false ? explode(' ', $data['name'], 2)[1] : ''),
-                'name' => $data['name'] . ' ' . ($data['family_name'] ?? ''),
+                'givenname' => $data['given_name'],
+                'surname' => $data['family_name'],
+                'name' => $data['name'],
                 'number' => $number,
                 'admin' => false,
                 'email' => $data['email']
