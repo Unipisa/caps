@@ -144,8 +144,8 @@ class UsersController extends AppController {
         ];
 
         // If we get new data for givenname, surname, name, overwrite what we have in the database.
-        if (isset($authuser['name']) || $user->isNew()) {
-            $patchData['name'] = ucwords(strtolower($authuser['name']));
+        if (isset($authuser['surname']) || isset($authuser['givenname']) || $user->isNew()) {
+            $patchData['name'] = ucwords(strtolower($authuser['givenname'] . ' ' . $authuser['surname']));
         }
         if (isset($authuser['surname']) || $user->isNew()) {
             $patchData['surname'] = $authuser['surname'];
@@ -355,7 +355,7 @@ class UsersController extends AppController {
                 'username' => $uid,
                 'givenname' => $data['given_name'],
                 'surname' => $data['family_name'],
-                'name' => $data['name'],
+                'name' => $data['given_name'] . ' ' . $data['family_name'],
                 'number' => $number,
                 'admin' => false,
                 'email' => $data['email']
