@@ -16,7 +16,7 @@ export default function CurriculaPage() {
                     <FilterInput name="degree" label="laurea" />
                 </FilterButton>
 
-                <ItemAddButton>
+                                <ItemAddButton to="/curricula/edit">
                     Aggiungi Curriculum
                 </ItemAddButton>
 

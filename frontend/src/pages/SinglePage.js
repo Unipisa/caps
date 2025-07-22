@@ -15,6 +15,7 @@ import DegreesPage from "./DegreesPage"
 import { default as DegreePage, EditDegreePage } from "./DegreePage"
 import CurriculaPage from "./CurriculaPage"
 import CurriculumPage from "./CurriculumPage"
+import { EditCurriculumPage, AddCurriculumPage } from "./CurriculumEditPage"
 import FormTemplatesPage from './FormTemplatesPage'
 import { default as FormTemplatePage, EditFormTemplatePage, AddFormTemplatePage } from './FormTemplatePage'
 import ExamsPage from "./ExamsPage"
@@ -108,6 +109,8 @@ function PageWithNavBar(props) {
                     <Route path="/degrees/:id" element={<DegreePage/>}/>
                     <Route path="/degrees/edit/:id" element={<EditDegreePage/>}/>
                     <Route path="/curricula" element={<CurriculaPage/>}/>
+                    <Route path="/curricula/edit/:id" element={<EditCurriculumPage/>}/>
+                    <Route path="/curricula/edit" element={<AddCurriculumPage/>}/>
                     <Route path="/curricula/:id" element={<CurriculumPage/>}/>
                     <Route path="/form_templates/:id" element={<FormTemplatePage/>}/>
                     <Route path="/form_templates" element={<FormTemplatesPage/>}/>
