@@ -37,6 +37,7 @@ const schema = createSchema({
       academic_year: Int!
       years: Int!
       enabled: Boolean!
+      sharing_mode: String!
     }
 
     type Curriculum {
