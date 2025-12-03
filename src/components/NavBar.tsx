@@ -7,7 +7,7 @@ export default function NavBar() {
   const isAdmin = true; // Placeholder
 
   return (
-    <Nav className="navbar-nav bg-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <Nav className="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
       <Link className="sidebar-brand d-flex align-items-center justify-content-center" href="/">
         <div className="sidebar-brand-icon">
           <img src="/img/cherubino_white.png" className="mx-1" alt="Logo" />

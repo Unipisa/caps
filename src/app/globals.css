@@ -42,12 +42,22 @@ body {
 }
 
 .sidebar {
-  width: 6.5rem;
+  width: 15rem;
   min-height: 100vh;
+  background-color: #003D4C !important;
 }
 
 .sidebar .nav-item .nav-link {
-  width: 6.5rem;
+  width: 15rem;
+  color: white !important;
+}
+
+.sidebar .sidebar-brand-text {
+  color: white !important;
+}
+
+.sidebar .sidebar-heading {
+  color: #adb5bd !important;
 }
 
 .sidebar .sidebar-brand {
@@ -133,10 +143,6 @@ body {
 }
 
 .sticky-footer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: calc(100% - 6.5rem);
   height: 60px;
   background-color: #f8f9fc;
 }
