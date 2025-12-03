@@ -1,36 +1,208 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nuovo sviluppo CAPS api+react
 
-## Getting Started
+Per provare il repository si può avviare un database mongo di prova con 
+```
+sudo docker-compose up
+```
+che poi è possibile interrogare direttamente con ```sudo docker-compose exec mongo mongosh```,
+per eventualmente controllare se sono stati inseriti i dati. 
 
-First, run the development server:
+# import dati da mysql
 
+Devi avere una chiave SSH per entrare sul server CAPS.
+Allora puoi dare il comando:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd api
+bash migrate-mysql.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# avvio server side
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Il codice del server si trova nella cartella `api`.
+Copiare il file `.env.sample` in `.env` e mettere almeno la password di ADMIN
+nella configurazione.
+Avviare il server da un terminale
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd api
+npm ci # una tantum
+npm start
+```
+Se dà errore `TextEncoder is not defined` bisogna aggiornare `node`.
+La versione 21 di node dà un deprecation warning con la libreria mongoose:
+conviene usare node v20.9.0.
 
-## Learn More
+# avvio lato client
 
-To learn more about Next.js, take a look at the following resources:
+Il codice `react` del client si trova nella cartella `frontend`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Per compilare e tenere aggiornato il codice javascript durante lo sviluppo:
+```bash
+cd frontend
+npm ci # una tantum
+npm run watch:dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Ora la pagina web si dovrebbe vedere qui: http://localhost:9000/
 
-## Deploy on Vercel
+# struttura dei dati
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Possibili princìpi da seguire:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* dovrà essere possibile migrare automaticamente i dati vecchi nella nuova struttura
+* https://www.scylladb.com/glossary/nosql-design-principles/
+* https://www.mongodb.com/nosql-explained/data-modeling
+
+## Vecchia Struttura dati sql
+
+    Attachment [attachments]
+        id
+        filename
+        user -> User [user_id]
+        proposal -> Proposal [proposal_id]
+        data
+        mimetype
+        comment
+        created
+
+    ChosenExam [chosen_exams]
+        id
+        credits
+        chosen_year
+        exam -> Exam [exam_id]
+        proposal -> Proposal [proposal_id]
+        compulsory_group -> CompulsoryGroup [compulsory_group_id] (*) (!) 
+        compulsory_exam -> CompulsoryExams [compulsory_exam_id] (*) (!) 
+        free_choice_exam -> FreeChoiceExam [free_choice_exam_id] (*) (!) 
+        (*) uno solo dei tre puo' essere non null: indica la corrispondenza dell'esame nel curriculum
+        (*) se tutti e tre sono null vuol dire che l'esame non era previsto nel curriculum
+
+    ChosenFreeChoiceExam [chosen_free_choice_exams]
+        id
+        name
+        credits
+        chosen_year
+        proposal -> Proposal [proposal_id]
+
+    CompulsoryExam [compulsory_exams]
+        id
+        year
+        position
+        exam -> Exam [exam_id]
+        curriculum -> Curriculum [curriculum_id]
+
+    CompulsoryGroup [compulsory_groups]
+        id
+        year
+        position
+        group -> Group [group_id]
+        curriculum -> Curriculum [curriculum_id]
+
+    Curriculum [curricula]
+        id
+        name
+        notes
+        degree -> Degree [degree_id]
+        proposals <- Proposals 
+        free_choice_exams <- FreeChoiceExam
+        compulsory_exams <- CompulsoryExam
+        compulsory_groups <- CompulsoryGroup
+
+    Degree [degrees]
+        id
+        name
+        academic_year
+        years
+        enabled
+        enable_sharing
+        approval_confirmation
+        rejection_confirmation
+        submission_confirmation
+        approval_message
+        rejection_message
+        submission_message
+        free_choice_message
+        <- Curricula
+        <- Group
+
+    Exam [exams]
+        id
+        name
+        code
+        sector
+        credits
+        <-> Group [exams_groups]
+
+    FreeChoiceExam [free_choice_exams]
+        id
+        year
+        position
+        curriculum -> Curriculum [curriculum_id]
+        group -> Group [group_id, NULL]
+
+    Form [forms]
+        id
+        form_template -> FormTemplate
+        user > User
+        state
+        date_submitted
+        date_managed
+        data
+
+    FormTemplate [form_templates]
+        id
+        name
+        text
+        enabled
+        notify_emails
+        require_approval
+
+    Group [groups]
+        id
+        degree -> Degree [degree_id]
+        name
+        <-> Exam [exams_groups]
+
+    ProposalAuth [proposal_auths]
+        id
+        email
+        secret
+        created
+        proposal -> Proposal [proposal_id]
+
+    Proposal
+        id
+        modified (date)
+        state in ['draft','submitted','approved','rejected']
+        submitted_date (date)
+        approved_date (date)
+        user -> User [user_id]
+        curriculum -> Curriculum [curriculum_id]
+        <- ChosenExam
+        <- ChosenFreeChoiceExam
+        <- ProposalAuth
+        <- Attachment
+
+    Settings [settings]
+        id
+        field
+        value
+        fieldtype
+
+    Tag [tags]
+        id
+        name
+        <-> Exam [tags_exams]
+
+    User [users]
+        id
+        username
+        name
+        number
+        givenname
+        surname
+        email
+        admin (bool)
+        password (encrypted)
+
+(!) nel database manca il constraint!!
