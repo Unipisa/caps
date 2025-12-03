@@ -9,15 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@types/bcrypt": "^6.0.0",
     "@types/passport-local-mongoose": "^6.1.5",
     "bcrypt": "^6.0.0",
+    "bootstrap": "^5.3.8",
     "graphql": "^16.12.0",
     "graphql-yoga": "^5.17.1",
     "mongoose": "^9.0.0",
     "next": "16.0.6",
     "passport-local-mongoose": "^9.0.0",
     "react": "19.2.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "19.2.0"
   },
   "devDependencies": {

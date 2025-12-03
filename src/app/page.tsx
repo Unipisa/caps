@@ -1,10 +1,10 @@
-import UsersList from "../components/UsersList";
+import Dashboard from "../components/Dashboard";
+import Layout from "../components/Layout";
 
 export default function Home() {
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-4">CAPS - Compilazione Assistita Piani di Studio</h1>
-      <UsersList />
-    </div>
+    <Layout>
+      <Dashboard />
+    </Layout>
   );
 }
