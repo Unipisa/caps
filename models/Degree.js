@@ -1,0 +1,82 @@
+
+const mongoose = require('mongoose')
+const Exam = require('./Exam')
+
+const Degree = mongoose.model('Degree', {
+    old_id: {
+        type: Number,
+        required: false
+    },
+    name: { 
+        type: String, 
+        required: true
+    },
+    academic_year: { 
+        type: Number,
+        required: true
+    },
+    years: {
+        type: Number,
+        required: true,
+        default: 3
+    },
+    groups: {
+        type: Map,
+        of: [
+                { 
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: Exam
+                }
+            ],
+        default: () => new Map()
+    },
+    enabled: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    sharing_mode: {
+        type: String,
+        required: true,
+        default: "disabled",
+        enum: ["disabled", "enabled", "admin"]
+    },
+    default_group: String, 
+    approval_confirmation: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    rejection_confirmation: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    submission_confirmation: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    approval_message: {
+        type: String,
+        required: false,
+        default: ""
+    },
+    rejection_message: {
+        type: String,
+        required: false,
+        default: ""
+    },
+    submission_message: {
+        type: String,
+        required: false,
+        default: ""
+    },
+    free_choice_message: {
+        type: String,
+        required: false,
+        default: ""
+    },
+})
+
+module.exports = Degree;
