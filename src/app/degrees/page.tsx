@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Layout from '../../components/Layout';
 
 interface Degree {
@@ -100,7 +101,7 @@ export default function DegreesPage() {
                         <td>{degree.enabled ? '•' : ''}</td>
                         <td>{translateSharingMode(degree.sharing_mode)}</td>
                         <td>{displayAcademicYears(degree.academic_year)}</td>
-                        <td><a href="#">{degree.name}</a></td>
+                        <td><Link href={`/degrees/${degree.id}`}>{degree.name}</Link></td>
                         <td>{degree.years}</td>
                       </tr>
                     ))}
