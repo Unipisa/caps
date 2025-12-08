@@ -3,6 +3,100 @@
 ## Panoramica del Progetto
 Questo progetto rappresenta la migrazione completa del sistema CAPS (Sistema di Gestione Piani di Studio) da CakePHP/Node.js a una moderna architettura Next.js con TypeScript e GraphQL.
 
+## ⚠️ Avviso Importante: Mantenimento dell'Aspetto Originale
+**L'aspetto esteriore del progetto deve rimanere identico all'originale.** Durante la migrazione e lo sviluppo futuro, fare sempre riferimento alla struttura e all'aspetto del progetto originale conservato nella directory `old/`. Questo include:
+
+- Layout e disposizione degli elementi
+- Schema colori e tema Bootstrap
+- Icone e risorse statiche
+- Struttura delle pagine e navigazione
+- Comportamento interattivo dell'interfaccia
+
+Prima di apportare qualsiasi modifica al frontend, consultare i file nella directory `old/frontend/` e `old/api/webroot/` per garantire la fedeltà visiva al design originale. La migrazione tecnica non deve compromettere l'esperienza utente consolidata.
+
+## Struttura del Progetto Originale
+Il codice del progetto originale è conservato nella directory `old/` e rappresenta l'implementazione precedente basata su CakePHP/Node.js. Questa struttura fornisce il contesto per la migrazione e serve come riferimento per verificare la completezza della conversione.
+
+### Directory `old/`
+- **ARCHITECTURE.md**: Documentazione architetturale del progetto originale
+- **docker-compose-production.yml** e **docker-compose.yml**: Configurazioni Docker per ambiente di produzione e sviluppo
+- **Dockerfile**: Immagine Docker per il deployment
+- **LICENSE** e **README.md**: Documentazione legale e principale del progetto originale
+
+#### Sottodirectory `api/`
+Contiene il backend API originale:
+- **index.ts**: Punto di ingresso principale dell'API
+- **middlewares.js**: Middleware per l'autenticazione e gestione richieste
+- **migrate-mysql.js** e **migrate-mysql.sh**: Script per migrazione da MySQL
+- **package.json**: Dipendenze Node.js del backend
+- **router.js**: Definizione delle rotte API
+- **test.js**: File di test
+- **unipiAuth.js**: Modulo di autenticazione Unipi
+
+##### `controllers/`
+Controller per gestire le richieste API:
+- AttachmentController.js
+- CommentController.js
+- CurriculaController.js
+- DegreesController.js
+- ExamsController.js
+- FormsController.js
+- FormTemplates.js
+- ModelController.js
+- ProposalsController.js
+- SettingsController.js
+- UsersController.js
+
+##### `exceptions/`
+- ApiException.js: Gestione errori API
+
+##### `models/`
+Modelli dati originali (JavaScript):
+- Attachment.js
+- Comment.js
+- Curriculum.js
+- CurriculumExam.js
+- Degree.js
+- Exam.js
+- Form.js
+- FormTemplate.js
+- Proposal.js
+- ProposalSchema.js
+- Settings.js
+- User.js
+- Validators.js
+
+##### `util/`: Utilità varie
+##### `webroot/`: File statici del backend
+- index.html
+- robots.txt
+- files/, img/, js/: Risorse statiche
+
+#### Sottodirectory `frontend/`
+Contiene il frontend originale:
+- **deploy-plugin.js**: Plugin per deployment
+- **index.html**: Pagina principale
+- **package.json**: Dipendenze frontend
+- **webpack.config.dev.js** e **webpack.config.js**: Configurazioni Webpack per sviluppo e produzione
+
+##### `js/`
+- caps.js, caps.min.js: Codice JavaScript principale e minificato
+
+##### `scss/`
+- caps.scss, forms.scss, main.scss: Fogli di stile SCSS
+
+##### `src/`
+- caps.js: Codice sorgente principale
+- components/, modules/, old_components/, pages/: Struttura componenti e pagine
+
+##### `test/`
+- test.js: File di test frontend
+
+##### `dev-webroot/`: Risorse per sviluppo
+- robots.txt, files, img, js, index.html
+
+Questa struttura del progetto originale evidenzia l'architettura precedente basata su separazione backend/frontend con CakePHP/Node.js, che è stata completamente rifattorizzata nella nuova implementazione Next.js + GraphQL.
+
 ## Architettura Tecnica
 - **Frontend**: Next.js 15 con App Router e TypeScript
 - **Backend API**: GraphQL Yoga (sostituto di Apollo per migliore compatibilità)

@@ -1,6 +1,7 @@
 import User from '@/models/User';
 import Degree from '@/models/Degree';
 import Curriculum from '@/models/Curriculum';
+import Proposal from '@/models/Proposal';
 
 export const Mutation = {
   createUser: async (_: any, { username, password, admin }: { username: string; password: string; admin?: boolean }) => {
@@ -72,6 +73,79 @@ export const Mutation = {
     } catch (error) {
       console.error('Error deleting curriculum:', error);
       return false;
+    }
+  },
+  createProposal: async (_: any, { input }: { input: { curriculum_id: string; state: string; exams?: any[][]; attachments?: any[] } }) => {
+    try {
+      // TODO: Add validation similar to original controller
+      const curriculum = await Curriculum.findById(input.curriculum_id);
+      if (!curriculum) throw new Error('Curriculum not found');
+
+      const degree = await Degree.findById(curriculum.degree_id);
+      if (!degree) throw new Error('Degree not found');
+
+      const proposal = new Proposal({
+        ...input,
+        curriculum_name: curriculum.name,
+        degree_academic_year: degree.academic_year,
+        degree_name: degree.name,
+        degree_id: degree._id,
+        date_modified: new Date(),
+        date_submitted: input.state === 'submitted' ? new Date() : null,
+        exams: input.exams || curriculum.years.map(() => []),
+        attachments: input.attachments || [],
+      });
+
+      await proposal.save();
+      return proposal;
+    } catch (error) {
+      console.error('Error creating proposal:', error);
+      throw error;
+    }
+  },
+  updateProposal: async (_: any, { id, input }: { id: string; input: { curriculum_id?: string; state?: string; exams?: any[][]; attachments?: any[] } }) => {
+    try {
+      // TODO: Add validation and permission checks
+      const updateData: any = { ...input };
+      if (input.state) {
+        updateData.date_modified = new Date();
+        if (input.state === 'submitted') {
+          updateData.date_submitted = new Date();
+        }
+      }
+
+      const updatedProposal = await Proposal.findByIdAndUpdate(id, updateData, { new: true });
+      return updatedProposal;
+    } catch (error) {
+      console.error('Error updating proposal:', error);
+      throw error;
+    }
+  },
+  deleteProposal: async (_: any, { id }: { id: string }) => {
+    try {
+      // TODO: Add permission checks
+      await Proposal.findByIdAndDelete(id);
+      return true;
+    } catch (error) {
+      console.error('Error deleting proposal:', error);
+      return false;
+    }
+  },
+  changeProposalState: async (_: any, { id, state }: { id: string; state: string }) => {
+    try {
+      // TODO: Add admin permission checks
+      const updateData: any = { state, date_modified: new Date() };
+      if (state === 'approved' || state === 'rejected') {
+        updateData.date_managed = new Date();
+      } else {
+        updateData.date_managed = null;
+      }
+
+      const updatedProposal = await Proposal.findByIdAndUpdate(id, updateData, { new: true });
+      return updatedProposal;
+    } catch (error) {
+      console.error('Error changing proposal state:', error);
+      throw error;
     }
   },
 };

@@ -91,17 +91,32 @@ export type Exam = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  changeProposalState?: Maybe<Proposal>;
   createCurriculum?: Maybe<Curriculum>;
+  createProposal?: Maybe<Proposal>;
   createUser?: Maybe<User>;
   deleteCurriculum?: Maybe<Scalars['Boolean']['output']>;
   deleteDegree?: Maybe<Scalars['Boolean']['output']>;
+  deleteProposal?: Maybe<Scalars['Boolean']['output']>;
   updateCurriculum?: Maybe<Curriculum>;
   updateDegree?: Maybe<Degree>;
+  updateProposal?: Maybe<Proposal>;
+};
+
+
+export type MutationChangeProposalStateArgs = {
+  id: Scalars['ID']['input'];
+  state: Scalars['String']['input'];
 };
 
 
 export type MutationCreateCurriculumArgs = {
   input: CurriculumInput;
+};
+
+
+export type MutationCreateProposalArgs = {
+  input: ProposalInput;
 };
 
 
@@ -122,6 +137,11 @@ export type MutationDeleteDegreeArgs = {
 };
 
 
+export type MutationDeleteProposalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateCurriculumArgs = {
   id: Scalars['ID']['input'];
   input: CurriculumInput;
@@ -131,6 +151,12 @@ export type MutationUpdateCurriculumArgs = {
 export type MutationUpdateDegreeArgs = {
   id: Scalars['ID']['input'];
   input: DegreeInput;
+};
+
+
+export type MutationUpdateProposalArgs = {
+  id: Scalars['ID']['input'];
+  input: ProposalInput;
 };
 
 export type Proposal = {
@@ -143,6 +169,13 @@ export type Proposal = {
   id: Scalars['ID']['output'];
   state: Scalars['String']['output'];
   user?: Maybe<User>;
+};
+
+export type ProposalInput = {
+  attachments?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  curriculum_id: Scalars['ID']['input'];
+  exams?: InputMaybe<Array<InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>>>;
+  state: Scalars['String']['input'];
 };
 
 export type Query = {
@@ -199,7 +232,14 @@ export type QueryProposalArgs = {
 
 
 export type QueryProposalsArgs = {
+  curriculum_name?: InputMaybe<Scalars['String']['input']>;
+  degree_academic_year?: InputMaybe<Scalars['Int']['input']>;
+  degree_name?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
+  user_first_name?: InputMaybe<Scalars['String']['input']>;
   user_id?: InputMaybe<Scalars['ID']['input']>;
+  user_last_name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -289,11 +329,24 @@ export type GetDegreesForListQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetDegreesForListQuery = { __typename?: 'Query', degrees: Array<{ __typename?: 'Degree', id: string, name: string, academic_year: number, years: number, enabled: boolean, sharing_mode: string }> };
 
 export type GetMyProposalsQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
+  userId?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
 
 export type GetMyProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string, state: string, date_modified?: string | null, date_submitted?: string | null, date_managed?: string | null, user?: { __typename?: 'User', id: string, name?: string | null, username: string } | null, curriculum?: { __typename?: 'Curriculum', id: string, name: string } | null, degree?: { __typename?: 'Degree', id: string, name: string, academic_year: number } | null }> };
+
+export type GetProposalsPageQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  user_first_name?: InputMaybe<Scalars['String']['input']>;
+  user_last_name?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
+  curriculum_name?: InputMaybe<Scalars['String']['input']>;
+  degree_name?: InputMaybe<Scalars['String']['input']>;
+  degree_academic_year?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetProposalsPageQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string, state: string, date_modified?: string | null, date_submitted?: string | null, date_managed?: string | null, user?: { __typename?: 'User', id: string, username: string, first_name?: string | null, last_name?: string | null, id_number?: string | null } | null, curriculum?: { __typename?: 'Curriculum', id: string, name: string } | null, degree?: { __typename?: 'Degree', id: string, name: string, academic_year: number } | null }> };
 
 export type GetUsersForPageQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;

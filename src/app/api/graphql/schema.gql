@@ -77,7 +77,7 @@ type Query {
   degree(id: ID!): Degree
   curricula: [Curriculum!]!
   curriculum(id: ID!): Curriculum
-  proposals(user_id: ID): [Proposal!]!
+  proposals(user_id: ID, limit: Int, user_first_name: String, user_last_name: String, state: String, curriculum_name: String, degree_name: String, degree_academic_year: Int): [Proposal!]!
   proposal(id: ID!): Proposal
   attachments(uploader_id: ID): [Attachment!]!
   attachment(id: ID!): Attachment
@@ -90,6 +90,10 @@ type Mutation {
   createCurriculum(input: CurriculumInput!): Curriculum
   updateCurriculum(id: ID!, input: CurriculumInput!): Curriculum
   deleteCurriculum(id: ID!): Boolean
+  createProposal(input: ProposalInput!): Proposal
+  updateProposal(id: ID!, input: ProposalInput!): Proposal
+  deleteProposal(id: ID!): Boolean
+  changeProposalState(id: ID!, state: String!): Proposal
 }
 
 input DegreeInput {
@@ -113,6 +117,13 @@ input CurriculumInput {
   name: String!
   notes: String
   degree_id: ID!
+}
+
+input ProposalInput {
+  curriculum_id: ID!
+  state: String!
+  exams: [[JSON]]
+  attachments: [JSON]
 }
 
 input DegreeInput {

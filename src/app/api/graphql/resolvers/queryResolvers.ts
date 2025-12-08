@@ -82,10 +82,19 @@ export const Query = {
   curriculum: async (_: any, { id }: { id: string }) => {
     return await Curriculum.findById(id);
   },
-  proposals: async (_: any, { user_id }: { user_id?: string }) => {
+  proposals: async (_: any, { limit, user_first_name, user_last_name, state, curriculum_name, degree_name, degree_academic_year }: { limit?: number; user_first_name?: string; user_last_name?: string; state?: string; curriculum_name?: string; degree_name?: string; degree_academic_year?: number }) => {
     const query: any = {};
-    if (user_id) query.user_id = user_id;
-    return await Proposal.find(query);
+    if (user_first_name) query.user_first_name = new RegExp(user_first_name, 'i');
+    if (user_last_name) query.user_last_name = new RegExp(user_last_name, 'i');
+    if (state) query.state = state;
+    if (curriculum_name) query.curriculum_name = new RegExp(curriculum_name, 'i');
+    if (degree_name) query.degree_name = new RegExp(degree_name, 'i');
+    if (degree_academic_year) query.degree_academic_year = degree_academic_year;
+    const mongoQuery = Proposal.find(query);
+    if (limit) {
+      mongoQuery.limit(limit);
+    }
+    return await mongoQuery;
   },
   proposal: async (_: any, { id }: { id: string }) => {
     return await Proposal.findById(id);
