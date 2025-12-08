@@ -87,7 +87,25 @@ const schema = createSchema({
 
     type Mutation {
       createUser(username: String!, password: String!, admin: Boolean): User
+      updateDegree(id: ID!, input: DegreeInput!): Degree
       deleteDegree(id: ID!): Boolean
+    }
+
+    input DegreeInput {
+      name: String!
+      academic_year: Int!
+      years: Int!
+      enabled: Boolean!
+      sharing_mode: String!
+      groups: JSON
+      default_group: String
+      approval_confirmation: Boolean!
+      rejection_confirmation: Boolean!
+      submission_confirmation: Boolean!
+      approval_message: String
+      rejection_message: String
+      submission_message: String
+      free_choice_message: String
     }
   `,
   resolvers: {
@@ -161,6 +179,34 @@ const schema = createSchema({
         await (user as any).setPassword(password);
         await user.save();
         return user;
+      },
+      updateDegree: async (_: any, { id, input }: { id: string, input: any }) => {
+        try {
+          const updatedDegree = await Degree.findByIdAndUpdate(id, input, { new: true });
+          if (updatedDegree) {
+            return {
+              id: updatedDegree._id,
+              name: updatedDegree.name,
+              academic_year: updatedDegree.academic_year,
+              years: updatedDegree.years,
+              enabled: updatedDegree.enabled,
+              sharing_mode: updatedDegree.sharing_mode,
+              groups: Object.fromEntries(updatedDegree.groups),
+              default_group: updatedDegree.default_group,
+              approval_confirmation: updatedDegree.approval_confirmation,
+              rejection_confirmation: updatedDegree.rejection_confirmation,
+              submission_confirmation: updatedDegree.submission_confirmation,
+              approval_message: updatedDegree.approval_message,
+              rejection_message: updatedDegree.rejection_message,
+              submission_message: updatedDegree.submission_message,
+              free_choice_message: updatedDegree.free_choice_message,
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error('Error updating degree:', error);
+          throw error;
+        }
       },
       deleteDegree: async (_: any, { id }: { id: string }) => {
         try {
