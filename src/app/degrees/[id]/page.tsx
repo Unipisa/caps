@@ -1,10 +1,12 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Layout from '../../../components/Layout';
-import { useQuery } from '@apollo/client/react';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { gql } from '@apollo/client';
+import { GET_DEGREES } from '../page';
 
 const GET_DEGREE = gql`
   query GetDegree($id: ID!) {
@@ -25,6 +27,12 @@ const GET_DEGREE = gql`
       submission_message
       free_choice_message
     }
+  }
+`;
+
+const DELETE_DEGREE = gql`
+  mutation DeleteDegree($id: ID!) {
+    deleteDegree(id: $id)
   }
 `;
 
@@ -71,11 +79,33 @@ function translateSharingMode(mode: string) {
 
 export default function DegreePage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const { loading, error, data } = useQuery<{ degree: Degree }>(GET_DEGREE, {
     variables: { id },
     skip: !id,
   });
+
+  const [deleteDegreeMutation] = useMutation(DELETE_DEGREE, {
+    refetchQueries: [{ query: GET_DEGREES }],
+  });
+
+  const handleDelete = async () => {
+    if (!confirm("Sei sicuro di voler eliminare questo corso di laurea?")) {
+      return;
+    }
+
+    try {
+      await deleteDegreeMutation({
+        variables: { id },
+      });
+      
+      router.push('/degrees');
+    } catch (error) {
+      console.error('Error deleting degree:', error);
+      alert('Errore durante l\'eliminazione del corso di laurea');
+    }
+  };
 
   const degree = data?.degree;
 
@@ -90,12 +120,23 @@ export default function DegreePage() {
         <div className="card-body">
           <div className="d-flex mb-2">
             <Link href="/degrees">
-              <button type="button" className="btn btn-sm mr-2 btn-primary">
-                <i className="fas fa-arrow-left mr-2"></i>
+              <button type="button" className="btn btn-sm btn-primary me-2">
+                <i className="fas fa-arrow-left me-2"></i>
                 Tutti i corsi di studi
               </button>
             </Link>
-            {/* TODO: Add edit and delete buttons when implemented */}
+            <Link href={`/degrees/edit/${id}`}>
+              <button type="button" className="btn btn-sm btn-primary me-2">
+                Modifica
+              </button>
+            </Link>
+            <button
+              type="button"
+              className="btn btn-sm btn-danger"
+              onClick={handleDelete}
+            >
+              Elimina
+            </button>
           </div>
           <table className="table">
             <thead>

@@ -87,6 +87,7 @@ const schema = createSchema({
 
     type Mutation {
       createUser(username: String!, password: String!, admin: Boolean): User
+      deleteDegree(id: ID!): Boolean
     }
   `,
   resolvers: {
@@ -160,6 +161,15 @@ const schema = createSchema({
         await (user as any).setPassword(password);
         await user.save();
         return user;
+      },
+      deleteDegree: async (_: any, { id }: { id: string }) => {
+        try {
+          await Degree.findByIdAndDelete(id);
+          return true;
+        } catch (error) {
+          console.error('Error deleting degree:', error);
+          return false;
+        }
       },
     },
     Proposal: {

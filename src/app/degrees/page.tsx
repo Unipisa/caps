@@ -18,6 +18,8 @@ const GET_DEGREES = gql`
   }
 `;
 
+export { GET_DEGREES };
+
 interface Degree {
   id: string;
   name: string;
