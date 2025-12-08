@@ -47,6 +47,6 @@ const ExamSchema = new mongoose.Schema<IExam>({
     },
 });
 
-const Exam = mongoose.model<IExam>('Exam', ExamSchema);
+const Exam = mongoose.models.Exam || mongoose.model<IExam>('Exam', ExamSchema);
 
 export default Exam;

@@ -1,6 +1,70 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client/react';
+import { gql } from '@apollo/client';
+
+const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      username
+      name
+      email
+      admin
+    }
+  }
+`;
+
+const GET_EXAMS = gql`
+  query GetExams {
+    exams {
+      id
+      name
+      code
+      sector
+      credits
+    }
+  }
+`;
+
+const GET_DEGREES = gql`
+  query GetDegrees {
+    degrees {
+      id
+      name
+      academic_year
+      enabled
+    }
+  }
+`;
+
+const GET_CURRICULA = gql`
+  query GetCurricula {
+    curricula {
+      id
+      name
+      notes
+    }
+  }
+`;
+
+const GET_PROPOSALS = gql`
+  query GetProposals {
+    proposals {
+      id
+      state
+      user {
+        username
+      }
+      curriculum {
+        name
+      }
+      degree {
+        name
+      }
+    }
+  }
+`;
 
 interface User {
   id: string;
@@ -40,56 +104,23 @@ interface Proposal {
 }
 
 export default function Dashboard() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [degrees, setDegrees] = useState<Degree[]>([]);
-  const [curricula, setCurricula] = useState<Curriculum[]>([]);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const usersQuery = useQuery<{ users: User[] }>(GET_USERS);
+  const examsQuery = useQuery<{ exams: Exam[] }>(GET_EXAMS);
+  const degreesQuery = useQuery<{ degrees: Degree[] }>(GET_DEGREES);
+  const curriculaQuery = useQuery<{ curricula: Curriculum[] }>(GET_CURRICULA);
+  const proposalsQuery = useQuery<{ proposals: Proposal[] }>(GET_PROPOSALS);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const queries = [
-          { name: 'users', query: 'users { id username name email admin }' },
-          { name: 'exams', query: 'exams { id name code sector credits }' },
-          { name: 'degrees', query: 'degrees { id name academic_year enabled }' },
-          { name: 'curricula', query: 'curricula { id name notes }' },
-          { name: 'proposals', query: 'proposals { id state user { username } curriculum { name } degree { name } }' },
-        ];
+  const users = usersQuery.data?.users || [];
+  const exams = examsQuery.data?.exams || [];
+  const degrees = degreesQuery.data?.degrees || [];
+  const curricula = curriculaQuery.data?.curricula || [];
+  const proposals = proposalsQuery.data?.proposals || [];
 
-        const results: any = {};
+  const loading = usersQuery.loading || examsQuery.loading || degreesQuery.loading || curriculaQuery.loading || proposalsQuery.loading;
+  const error = usersQuery.error || examsQuery.error || degreesQuery.error || curriculaQuery.error || proposalsQuery.error;
 
-        for (const { name, query } of queries) {
-          const response = await fetch('/api/graphql', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: `{ ${query} }` }),
-          });
-          const result = await response.json();
-          if (result.errors) {
-            throw new Error(result.errors[0].message);
-          }
-          results[name] = result.data[name];
-        }
-
-        setUsers(results.users);
-        setExams(results.exams);
-        setDegrees(results.degrees);
-        setCurricula(results.curricula);
-        setProposals(results.proposals);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading data</p>;
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;

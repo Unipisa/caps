@@ -1,8 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
+import { useQuery } from '@apollo/client/react';
+import { gql } from '@apollo/client';
+
+const GET_DEGREES = gql`
+  query GetDegrees {
+    degrees {
+      id
+      name
+      academic_year
+      years
+      enabled
+      sharing_mode
+    }
+  }
+`;
 
 interface Degree {
   id: string;
@@ -27,51 +41,9 @@ function translateSharingMode(mode: string) {
 }
 
 export default function DegreesPage() {
-  const [degrees, setDegrees] = useState<Degree[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { loading, error, data } = useQuery<{ degrees: Degree[] }>(GET_DEGREES);
 
-  useEffect(() => {
-    const fetchDegrees = async () => {
-      try {
-        const response = await fetch('/api/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `
-              query {
-                degrees {
-                  id
-                  name
-                  academic_year
-                  years
-                  enabled
-                  sharing_mode
-                }
-              }
-            `,
-          }),
-        });
-        const result = await response.json();
-        if (result.errors) {
-          setError('Errore nel caricamento dei corsi di laurea');
-          console.error(result.errors);
-        } else {
-          const sortedDegrees = result.data.degrees.sort((a: Degree, b: Degree) => b.academic_year - a.academic_year);
-          setDegrees(sortedDegrees);
-        }
-      } catch (err: any) {
-        setError('Errore di rete');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDegrees();
-  }, []);
+  const degrees = data?.degrees ? [...data.degrees].sort((a: Degree, b: Degree) => b.academic_year - a.academic_year) : [];
 
   return (
     <Layout>
@@ -79,7 +51,7 @@ export default function DegreesPage() {
         <h1>Corsi di Studio</h1>
 
         {loading && <p>Caricamento...</p>}
-        {error && <p className="text-danger">{error}</p>}
+        {error && <p className="text-danger">Errore nel caricamento dei corsi di laurea</p>}
 
         {!loading && !error && (
           <div className="card shadow mb-4">

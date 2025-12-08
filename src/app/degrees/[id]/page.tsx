@@ -1,9 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Layout from '../../../components/Layout';
+import { useQuery } from '@apollo/client/react';
+import { gql } from '@apollo/client';
+
+const GET_DEGREE = gql`
+  query GetDegree($id: ID!) {
+    degree(id: $id) {
+      id
+      name
+      academic_year
+      years
+      enabled
+      sharing_mode
+      groups
+      default_group
+      approval_confirmation
+      rejection_confirmation
+      submission_confirmation
+      approval_message
+      rejection_message
+      submission_message
+      free_choice_message
+    }
+  }
+`;
+
+const GET_EXAMS_BY_IDS = gql`
+  query GetExamsByIds($ids: [ID!]!) {
+    examsByIds(ids: $ids) {
+      id
+      name
+      code
+    }
+  }
+`;
 
 interface Degree {
   id: string;
@@ -39,65 +72,15 @@ function translateSharingMode(mode: string) {
 export default function DegreePage() {
   const params = useParams();
   const id = params.id as string;
-  const [degree, setDegree] = useState<Degree | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { loading, error, data } = useQuery<{ degree: Degree }>(GET_DEGREE, {
+    variables: { id },
+    skip: !id,
+  });
 
-  useEffect(() => {
-    const fetchDegree = async () => {
-      try {
-        const response = await fetch('/api/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `
-              query GetDegree($id: ID!) {
-                degree(id: $id) {
-                  id
-                  name
-                  academic_year
-                  years
-                  enabled
-                  sharing_mode
-                  groups
-                  default_group
-                  approval_confirmation
-                  rejection_confirmation
-                  submission_confirmation
-                  approval_message
-                  rejection_message
-                  submission_message
-                  free_choice_message
-                }
-              }
-            `,
-            variables: { id },
-          }),
-        });
-        const result = await response.json();
-        if (result.errors) {
-          setError('Errore nel caricamento del corso di laurea');
-          console.error(result.errors);
-        } else {
-          setDegree(result.data.degree);
-        }
-      } catch (err: any) {
-        setError('Errore di rete');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchDegree();
-    }
-  }, [id]);
+  const degree = data?.degree;
 
   if (loading) return <Layout><p>Caricamento corso di studi...</p></Layout>;
-  if (error) return <Layout><p className="text-danger">{error}</p></Layout>;
+  if (error) return <Layout><p className="text-danger">Errore nel caricamento del corso di laurea</p></Layout>;
   if (!degree) return <Layout><p>Corso di studi non trovato</p></Layout>;
 
   return (
@@ -225,57 +208,23 @@ export default function DegreePage() {
 }
 
 function ExamGroup({ name, exam_ids }: { name: string; exam_ids: string[] }) {
-  const [exams, setExams] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { loading, error, data } = useQuery<{ examsByIds: { id: string; name: string; code: string }[] }>(
+    GET_EXAMS_BY_IDS,
+    {
+      variables: { ids: exam_ids },
+      skip: exam_ids.length === 0,
+    }
+  );
 
-  useEffect(() => {
-    const fetchExams = async () => {
-      if (exam_ids.length === 0) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await fetch('/api/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `
-              query GetExams($ids: [ID!]!) {
-                examsByIds(ids: $ids) {
-                  id
-                  name
-                  code
-                }
-              }
-            `,
-            variables: { ids: exam_ids },
-          }),
-        });
-        const result = await response.json();
-        if (result.errors) {
-          console.error(result.errors);
-        } else {
-          setExams(result.data.examsByIds);
-        }
-      } catch (err: any) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExams();
-  }, [exam_ids]);
+  const exams = data?.examsByIds || [];
 
   if (loading) return <tr><th>{name}</th><td>...caricamento...</td></tr>;
-  if (exams.length === 0) return <tr><th>{name}</th><td>...errore...</td></tr>;
+  if (error || exams.length === 0) return <tr><th>{name}</th><td>...errore...</td></tr>;
 
   return (
     <tr>
       <th>{name}</th>
-      <td>{exams.map(e => e.name).join(", ")}</td>
+      <td>{exams.map((e) => e.name).join(", ")}</td>
     </tr>
   );
 }

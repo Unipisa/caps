@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@apollo/client": "^4.0.9",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@types/bcrypt": "^6.0.0",
     "@types/passport-local-mongoose": "^6.1.5",

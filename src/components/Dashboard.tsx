@@ -1,6 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client/react';
+import { gql } from '@apollo/client';
+
+const GET_USERS_COUNT = gql`
+  query GetUsersCount {
+    users {
+      id
+    }
+  }
+`;
+
+const GET_EXAMS_COUNT = gql`
+  query GetExamsCount {
+    exams {
+      id
+    }
+  }
+`;
+
+const GET_DEGREES_COUNT = gql`
+  query GetDegreesCount {
+    degrees {
+      id
+    }
+  }
+`;
+
+const GET_CURRICULA_COUNT = gql`
+  query GetCurriculaCount {
+    curricula {
+      id
+    }
+  }
+`;
+
+const GET_PROPOSALS_COUNT = gql`
+  query GetProposalsCount {
+    proposals {
+      id
+    }
+  }
+`;
 
 interface User {
   id: string;
@@ -40,62 +81,29 @@ interface Proposal {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({
-    users: 0,
-    exams: 0,
-    degrees: 0,
-    curricula: 0,
-    proposals: 0,
-  });
+  const usersQuery = useQuery<{ users: { id: string }[] }>(GET_USERS_COUNT);
+  const examsQuery = useQuery<{ exams: { id: string }[] }>(GET_EXAMS_COUNT);
+  const degreesQuery = useQuery<{ degrees: { id: string }[] }>(GET_DEGREES_COUNT);
+  const curriculaQuery = useQuery<{ curricula: { id: string }[] }>(GET_CURRICULA_COUNT);
+  const proposalsQuery = useQuery<{ proposals: { id: string }[] }>(GET_PROPOSALS_COUNT);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const queries = [
-          { name: 'users', query: 'users { id }' },
-          { name: 'exams', query: 'exams { id }' },
-          { name: 'degrees', query: 'degrees { id }' },
-          { name: 'curricula', query: 'curricula { id }' },
-          { name: 'proposals', query: 'proposals { id }' },
-        ];
+  const stats = {
+    users: usersQuery.data?.users?.length || 0,
+    exams: examsQuery.data?.exams?.length || 0,
+    degrees: degreesQuery.data?.degrees?.length || 0,
+    curricula: curriculaQuery.data?.curricula?.length || 0,
+    proposals: proposalsQuery.data?.proposals?.length || 0,
+  };
 
-        const results: any = {};
-
-        for (const { name, query } of queries) {
-          const response = await fetch('/api/graphql', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: `{ ${query} }` }),
-          });
-          const result = await response.json();
-          if (result.errors) {
-            console.error(`Error fetching ${name}:`, result.errors);
-            results[name] = [];
-          } else {
-            results[name] = result.data[name];
-          }
-        }
-
-        setStats({
-          users: results.users.length,
-          exams: results.exams.length,
-          degrees: results.degrees.length,
-          curricula: results.curricula.length,
-          proposals: results.proposals.length,
-        });
-      } catch (err: any) {
-        console.error('Failed to fetch stats:', err);
-      }
-    };
-
-    fetchStats();
-  }, []);
+  const loading = usersQuery.loading || examsQuery.loading || degreesQuery.loading || curriculaQuery.loading || proposalsQuery.loading;
+  const error = usersQuery.error || examsQuery.error || degreesQuery.error || curriculaQuery.error || proposalsQuery.error;
 
   return (
     <div>
       <h1 className="h3 mb-4 text-gray-800">Pannello di Controllo</h1>
+
+      {loading && <p>Caricamento statistiche...</p>}
+      {error && <p className="text-danger">Errore nel caricamento delle statistiche</p>}
 
       <div className="row">
         <div className="col-xl-3 col-md-6 mb-4">

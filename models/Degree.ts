@@ -96,6 +96,6 @@ const DegreeSchema = new mongoose.Schema<IDegree>({
     },
 });
 
-const Degree = mongoose.model<IDegree>('Degree', DegreeSchema);
+const Degree = mongoose.models.Degree || mongoose.model<IDegree>('Degree', DegreeSchema);
 
 export default Degree;
