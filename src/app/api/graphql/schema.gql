@@ -1,14 +1,15 @@
 scalar JSON
 
-type User {
-  id: ID!
-  username: String!
-  name: String
-  email: String
-  admin: Boolean!
-}
-
-type Exam {
+  type User {
+    id: ID!
+    username: String!
+    name: String
+    id_number: String
+    first_name: String
+    last_name: String
+    email: String
+    admin: Boolean!
+  }type Exam {
   id: ID!
   name: String!
   code: String
@@ -55,7 +56,7 @@ type Proposal {
 }
 
 type Query {
-  users: [User!]!
+  users(limit: Int, username: String, id_number: String, first_name: String, last_name: String, email: String, admin: Boolean): [User!]!
   user(id: ID!): User
   exams: [Exam!]!
   examsByIds(ids: [ID!]!): [Exam!]!

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ApolloWrapper } from '../components/ApolloWrapper';
 

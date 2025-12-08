@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --bs-primary: #003D4C;
+  --bs-primary-rgb: 0, 61, 76;
 }
 
 @theme inline {
@@ -23,6 +25,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.875rem;
 }
 
 /* Custom styles for CAPS layout */
@@ -49,6 +52,12 @@ body {
 
 .sidebar .nav-item .nav-link {
   width: 15rem;
+  color: #adb5bd !important;
+  font-size: 0.85rem;
+  font-weight: 300;
+}
+
+.sidebar .nav-item.active .nav-link {
   color: white !important;
 }
 
@@ -114,12 +123,8 @@ body {
   border-bottom: 1px solid #e3e6f0;
 }
 
-.border-left-primary {
-  border-left: 0.25rem solid #4e73df !important;
-}
-
 .border-left-success {
-  border-left: 0.25rem solid #1cc88a !important;
+  border-left: 0.25rem solid #5BA150 !important;
 }
 
 .border-left-info {
@@ -127,7 +132,7 @@ body {
 }
 
 .border-left-warning {
-  border-left: 0.25rem solid #f6c23e !important;
+  border-left: 0.25rem solid #d8b940 !important;
 }
 
 .border-left-danger {
@@ -145,4 +150,15 @@ body {
 .sticky-footer {
   height: 60px;
   background-color: #f8f9fc;
+}
+
+/* Table link styles */
+.table a {
+  color: #5a5c69 !important;
+  text-decoration: none !important;
+}
+
+.table a:hover {
+  color: #003D4C !important;
+  text-decoration: underline !important;
 }

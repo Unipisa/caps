@@ -5,8 +5,29 @@ import Curriculum from '../../../../../models/Curriculum';
 import Proposal from '../../../../../models/Proposal';
 
 export const Query = {
-  users: async () => {
-    return await User.find();
+  users: async (_: any, { limit, username, id_number, first_name, last_name, email, admin }: {
+    limit?: number;
+    username?: string;
+    id_number?: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    admin?: boolean;
+  }) => {
+    const query: any = {};
+    
+    if (username) query.username = new RegExp(username, 'i');
+    if (id_number) query.id_number = new RegExp(id_number, 'i');
+    if (first_name) query.first_name = new RegExp(first_name, 'i');
+    if (last_name) query.last_name = new RegExp(last_name, 'i');
+    if (email) query.email = new RegExp(email, 'i');
+    if (admin !== undefined) query.admin = admin;
+    
+    const mongoQuery = User.find(query);
+    if (limit) {
+      mongoQuery.limit(limit);
+    }
+    return await mongoQuery;
   },
   user: async (_: any, { id }: { id: string }) => {
     return await User.findById(id);
