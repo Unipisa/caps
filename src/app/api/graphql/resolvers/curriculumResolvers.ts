@@ -1,4 +1,4 @@
-import Degree from '../../../../../models/Degree';
+import Degree from '@/models/Degree';
 
 export const Curriculum = {
   degree: async (parent: any) => {

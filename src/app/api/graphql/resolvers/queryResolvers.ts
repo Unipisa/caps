@@ -1,8 +1,8 @@
-import User from '../../../../../models/User';
-import Exam from '../../../../../models/Exam';
-import Degree from '../../../../../models/Degree';
-import Curriculum from '../../../../../models/Curriculum';
-import Proposal from '../../../../../models/Proposal';
+import User from '@/models/User';
+import Exam from '@/models/Exam';
+import Degree from '@/models/Degree';
+import Curriculum from '@/models/Curriculum';
+import Proposal from '@/models/Proposal';
 
 export const Query = {
   users: async (_: any, { limit, username, id_number, first_name, last_name, email, admin }: {

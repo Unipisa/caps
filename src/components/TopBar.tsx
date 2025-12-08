@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from 'react-bootstrap';
+import Image from 'next/image';
 
 export default function TopBar() {
   // TODO: Add user authentication
@@ -25,7 +25,7 @@ export default function TopBar() {
 
       <ul className="navbar-nav ml-auto">
         <div className="d-none d-md-block nav-item my-auto">
-          <img src="/img/logo_blue_small.png" alt="Logo" />
+          <Image src="/img/logo_blue_small.png" width={100} height={40} alt="Logo" />
         </div>
 
         <div className="topbar-divider d-none d-sm-block"></div>

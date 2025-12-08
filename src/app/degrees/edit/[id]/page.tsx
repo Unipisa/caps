@@ -85,12 +85,15 @@ export default function EditDegreePage() {
   });
 
   const [formData, setFormData] = useState<Partial<Degree>>({});
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (data?.degree) {
+    if (data?.degree && !initialized) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(data.degree);
+      setInitialized(true);
     }
-  }, [data]);
+  }, [data, initialized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +128,7 @@ export default function EditDegreePage() {
     }
   };
 
-  const handleChange = (field: keyof Degree, value: any) => {
+  const handleChange = (field: keyof Degree, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

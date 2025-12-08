@@ -1,6 +1,6 @@
-import User from '../../../../../models/User';
-import Curriculum from '../../../../../models/Curriculum';
-import Degree from '../../../../../models/Degree';
+import User from '@/models/User';
+import Curriculum from '@/models/Curriculum';
+import Degree from '@/models/Degree';
 
 export const Proposal = {
   user: async (parent: any) => {

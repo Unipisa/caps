@@ -6,7 +6,7 @@ import { useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 
 const GET_DEGREES = gql`
-  query GetDegrees {
+  query GetDegreesForList {
     degrees {
       id
       name

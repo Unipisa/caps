@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 
 const GET_USERS = gql`
-  query GetUsers($limit: Int, $username: String, $id_number: String, $first_name: String, $last_name: String, $email: String, $admin: Boolean) {
+  query GetUsersForPage($limit: Int, $username: String, $id_number: String, $first_name: String, $last_name: String, $email: String, $admin: Boolean) {
     users(limit: $limit, username: $username, id_number: $id_number, first_name: $first_name, last_name: $last_name, email: $email, admin: $admin) {
       id
       username

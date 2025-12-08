@@ -43,43 +43,6 @@ const GET_PROPOSALS_COUNT = gql`
   }
 `;
 
-interface User {
-  id: string;
-  username: string;
-  name?: string;
-  email?: string;
-  admin: boolean;
-}
-
-interface Exam {
-  id: string;
-  name: string;
-  code?: string;
-  sector: string;
-  credits: number;
-}
-
-interface Degree {
-  id: string;
-  name: string;
-  academic_year: number;
-  enabled: boolean;
-}
-
-interface Curriculum {
-  id: string;
-  name: string;
-  notes?: string;
-}
-
-interface Proposal {
-  id: string;
-  state: string;
-  user?: User;
-  curriculum?: Curriculum;
-  degree?: Degree;
-}
-
 export default function Dashboard() {
   const usersQuery = useQuery<{ users: { id: string }[] }>(GET_USERS_COUNT);
   const examsQuery = useQuery<{ exams: { id: string }[] }>(GET_EXAMS_COUNT);

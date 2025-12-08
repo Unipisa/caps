@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Nav, NavItem } from 'react-bootstrap';
 import { usePathname } from 'next/navigation';
 
@@ -12,7 +15,7 @@ export default function NavBar() {
     <Nav className="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
       <Link className="sidebar-brand d-flex align-items-center justify-content-center" href="/">
         <div className="sidebar-brand-icon">
-          <img src="/img/cherubino_white.png" className="mx-1" alt="Logo" />
+          <Image src="/img/cherubino_white.png" width={32} height={32} className="mx-1" alt="Logo" />
         </div>
         <div className="sidebar-brand-text mx-3">CAPS<sup>3.0</sup></div>
       </Link>

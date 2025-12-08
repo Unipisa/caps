@@ -73,6 +73,32 @@ type Mutation {
   createUser(username: String!, password: String!, admin: Boolean): User
   updateDegree(id: ID!, input: DegreeInput!): Degree
   deleteDegree(id: ID!): Boolean
+  createCurriculum(input: CurriculumInput!): Curriculum
+  updateCurriculum(id: ID!, input: CurriculumInput!): Curriculum
+  deleteCurriculum(id: ID!): Boolean
+}
+
+input DegreeInput {
+  name: String!
+  academic_year: Int!
+  years: Int!
+  enabled: Boolean!
+  sharing_mode: String!
+  groups: JSON
+  default_group: String
+  approval_confirmation: Boolean!
+  rejection_confirmation: Boolean!
+  submission_confirmation: Boolean!
+  approval_message: String
+  rejection_message: String
+  submission_message: String
+  free_choice_message: String
+}
+
+input CurriculumInput {
+  name: String!
+  notes: String
+  degree_id: ID!
 }
 
 input DegreeInput {

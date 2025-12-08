@@ -1,5 +1,6 @@
-import User from '../../../../../models/User';
-import Degree from '../../../../../models/Degree';
+import User from '@/models/User';
+import Degree from '@/models/Degree';
+import Curriculum from '@/models/Curriculum';
 
 export const Mutation = {
   createUser: async (_: any, { username, password, admin }: { username: string; password: string; admin?: boolean }) => {
@@ -42,6 +43,34 @@ export const Mutation = {
       return true;
     } catch (error) {
       console.error('Error deleting degree:', error);
+      return false;
+    }
+  },
+  createCurriculum: async (_: any, { input }: { input: { name: string; notes?: string; degree_id: string } }) => {
+    try {
+      const curriculum = new Curriculum(input);
+      await curriculum.save();
+      return curriculum;
+    } catch (error) {
+      console.error('Error creating curriculum:', error);
+      throw error;
+    }
+  },
+  updateCurriculum: async (_: any, { id, input }: { id: string; input: { name?: string; notes?: string; degree_id?: string } }) => {
+    try {
+      const updatedCurriculum = await Curriculum.findByIdAndUpdate(id, input, { new: true });
+      return updatedCurriculum;
+    } catch (error) {
+      console.error('Error updating curriculum:', error);
+      throw error;
+    }
+  },
+  deleteCurriculum: async (_: any, { id }: { id: string }) => {
+    try {
+      await Curriculum.findByIdAndDelete(id);
+      return true;
+    } catch (error) {
+      console.error('Error deleting curriculum:', error);
       return false;
     }
   },

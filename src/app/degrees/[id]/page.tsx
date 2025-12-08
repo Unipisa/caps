@@ -201,7 +201,7 @@ export default function DegreePage() {
         </div>
         <div className="card-body">
           <p>
-            L'approvazione, invio, e rifiuto di un piano di studi possono essere comunicati
+            L&apos;approvazione, invio, e rifiuto di un piano di studi possono essere comunicati
             via e-mail allo studente e agli indirizzi specificati nelle
             <a href="/settings">impostazioni</a>.
             Questo avviene

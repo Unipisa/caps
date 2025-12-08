@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 
 const GET_USERS = gql`
-  query GetUsers {
+  query GetUsersForList {
     users {
       id
       username
@@ -16,7 +16,7 @@ const GET_USERS = gql`
 `;
 
 const GET_EXAMS = gql`
-  query GetExams {
+  query GetExamsForList {
     exams {
       id
       name
@@ -28,7 +28,7 @@ const GET_EXAMS = gql`
 `;
 
 const GET_DEGREES = gql`
-  query GetDegrees {
+  query GetDegreesForUsersList {
     degrees {
       id
       name
@@ -39,7 +39,7 @@ const GET_DEGREES = gql`
 `;
 
 const GET_CURRICULA = gql`
-  query GetCurricula {
+  query GetCurriculaForUsersList {
     curricula {
       id
       name
