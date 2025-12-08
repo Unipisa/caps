@@ -36,6 +36,28 @@ Endpoint: `/api/graphql`
 ### Mutation Disponibili
 - `createUser`: Creazione nuovo utente
 
+## GraphQL Codegen
+Il progetto utilizza GraphQL Code Generator per generare automaticamente tipi TypeScript dallo schema GraphQL, garantendo type safety nelle operazioni GraphQL.
+
+### Configurazione
+- **File di configurazione**: `codegen.yml`
+- **Schema GraphQL**: `src/app/api/graphql/schema.gql`
+- **File generato**: `src/generated/graphql.ts`
+
+### Plugin Utilizzati
+- `typescript`: Genera tipi TypeScript per lo schema GraphQL
+- `typescript-operations`: Genera tipi per query e mutazioni specifiche
+
+### Comando per Generare
+```bash
+npm run codegen
+```
+
+### Utilizzo nel Progetto
+I tipi generati vengono importati nei componenti React per type checking delle risposte GraphQL. Le query GraphQL sono definite manualmente nei componenti per maggiore controllo.
+- Autocompletamento in IDE
+- Prevenzione errori di runtime dovuti a mismatch di tipi
+
 ## Layout e UI
 Riproduzione completa del layout originale del progetto CakePHP:
 

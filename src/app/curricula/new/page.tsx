@@ -6,7 +6,8 @@ import Link from 'next/link';
 import Layout from '../../../components/Layout';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { gql } from '@apollo/client';
-import { GetDegreesForCurriculaDocument, GetDegreesForCurriculaQuery } from '../../../generated/graphql';
+import { GET_DEGREES_FOR_CURRICULA } from '../../../lib/queries';
+import { GetDegreesForCurriculaQuery } from '../../../generated/graphql';
 
 const CREATE_CURRICULUM = gql`
   mutation CreateCurriculum($input: CurriculumInput!) {
@@ -34,7 +35,7 @@ export default function NewCurriculumPage() {
     degree_id: '',
   });
 
-  const { data: degreesData } = useQuery<GetDegreesForCurriculaQuery>(GetDegreesForCurriculaDocument);
+  const { data: degreesData } = useQuery<GetDegreesForCurriculaQuery>(GET_DEGREES_FOR_CURRICULA);
   const [createCurriculum, { loading: createLoading }] = useMutation(CREATE_CURRICULUM);
 
   const handleSubmit = async (e: React.FormEvent) => {

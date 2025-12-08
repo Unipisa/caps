@@ -5,9 +5,3 @@ generates:
     plugins:
       - typescript
       - typescript-operations
-      - typescript-react-apollo
-    config:
-      withHooks: false
-      withHOC: false
-      withComponent: false
-      withSuspenseQueries: false

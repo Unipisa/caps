@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 import { useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
-import { GetCurriculaForListDocument, GetDegreesForCurriculaDocument, GetCurriculaForListQuery, GetDegreesForCurriculaQuery } from '../../generated/graphql';
+import { GetCurriculaForListQuery, GetDegreesForCurriculaQuery } from '../../generated/graphql';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _GET_CURRICULA = gql`
@@ -52,8 +52,8 @@ export default function CurriculaPage() {
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  const { loading, error, data } = useQuery<GetCurriculaForListQuery>(GetCurriculaForListDocument);
-  const { data: degreesData } = useQuery<GetDegreesForCurriculaQuery>(GetDegreesForCurriculaDocument);
+  const { loading, error, data } = useQuery<GetCurriculaForListQuery>(_GET_CURRICULA);
+  const { data: degreesData } = useQuery<GetDegreesForCurriculaQuery>(_GET_DEGREES);
 
   let curricula = data?.curricula ? [...data.curricula].sort((a, b) => {
     if (!a.degree || !b.degree) return 0;
