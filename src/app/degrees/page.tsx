@@ -50,7 +50,7 @@ export default function DegreesPage() {
   return (
     <Layout>
       <div>
-        <h1>Corsi di Studio</h1>
+        <h2>Corsi di Studio</h2>
 
         {loading && <p>Caricamento...</p>}
         {error && <p className="text-danger">Errore nel caricamento dei corsi di laurea</p>}

@@ -135,7 +135,7 @@ export default function EditDegreePage() {
 
   return (
     <Layout>
-      <h1>Modifica Corso di Studi: {data.degree.name}</h1>
+      <h2>Modifica Corso di Studi: {data.degree.name}</h2>
 
       <div className="card shadow mb-4">
         <div className="card-body">

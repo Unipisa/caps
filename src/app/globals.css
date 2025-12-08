@@ -5,6 +5,12 @@
   --foreground: #171717;
   --bs-primary: #003D4C;
   --bs-primary-rgb: 0, 61, 76;
+  --bs-secondary: #484818;
+  --bs-secondary-rgb: 72, 72, 24;
+  --bs-success: #5BA150;
+  --bs-success-rgb: 91, 161, 80;
+  --bs-warning: #d8b940;
+  --bs-warning-rgb: 216, 185, 64;
 }
 
 @theme inline {
@@ -140,7 +146,26 @@ body {
 }
 
 .text-primary {
-  color: #5a5c69 !important;
+  color: #003D4C !important;
+}
+
+.btn-primary {
+  background-color: #003D4C !important;
+  border-color: #003D4C !important;
+}
+
+.btn-outline-primary {
+  color: #003D4C !important;
+  border-color: #003D4C !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #003D4C !important;
+  color: white !important;
+}
+
+h2 {
+  color: var(--bs-primary);
 }
 
 .text-gray-800 {

@@ -103,7 +103,7 @@ export default function UsersPage() {
   return (
     <Layout>
       <div>
-        <h1>Utenti</h1>
+        <h2 className="text-primary">Utenti</h2>
 
         {error && <p className="text-danger">Errore nel caricamento degli utenti</p>}
 
@@ -114,7 +114,7 @@ export default function UsersPage() {
             <div className="card-header d-flex justify-content-between align-items-center">
               <div>
                 <button
-                  className="btn btn-outline-primary btn-sm me-2"
+                  className="btn btn-secondary btn-sm me-2"
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <i className="fas fa-filter"></i>
@@ -124,7 +124,7 @@ export default function UsersPage() {
                   Aggiungi utente
                 </button>
                 <button
-                  className="btn btn-success btn-sm me-2"
+                  className="btn btn-secondary btn-sm me-2"
                   disabled={!selectedIds.length}
                 >
                   Rendi admin

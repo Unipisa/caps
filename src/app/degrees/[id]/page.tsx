@@ -115,7 +115,7 @@ export default function DegreePage() {
 
   return (
     <Layout>
-      <h1>{degree.name}</h1>
+      <h2>{degree.name}</h2>
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="d-flex mb-2">
