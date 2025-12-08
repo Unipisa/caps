@@ -15,6 +15,19 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type Attachment = {
+  __typename?: 'Attachment';
+  content?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  encoding?: Maybe<Scalars['String']['output']>;
+  filename?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  mimetype?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+};
+
 export type Curriculum = {
   __typename?: 'Curriculum';
   degree?: Maybe<Degree>;
@@ -134,6 +147,8 @@ export type Proposal = {
 
 export type Query = {
   __typename?: 'Query';
+  attachment?: Maybe<Attachment>;
+  attachments: Array<Attachment>;
   curricula: Array<Curriculum>;
   curriculum?: Maybe<Curriculum>;
   degree?: Maybe<Degree>;
@@ -145,6 +160,16 @@ export type Query = {
   proposals: Array<Proposal>;
   user?: Maybe<User>;
   users: Array<User>;
+};
+
+
+export type QueryAttachmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryAttachmentsArgs = {
+  uploader_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -170,6 +195,11 @@ export type QueryExamsByIdsArgs = {
 
 export type QueryProposalArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryProposalsArgs = {
+  user_id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -258,6 +288,13 @@ export type GetDegreesForListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetDegreesForListQuery = { __typename?: 'Query', degrees: Array<{ __typename?: 'Degree', id: string, name: string, academic_year: number, years: number, enabled: boolean, sharing_mode: string }> };
 
+export type GetMyProposalsQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type GetMyProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string, state: string, date_modified?: string | null, date_submitted?: string | null, date_managed?: string | null, user?: { __typename?: 'User', id: string, name?: string | null, username: string } | null, curriculum?: { __typename?: 'Curriculum', id: string, name: string } | null, degree?: { __typename?: 'Degree', id: string, name: string, academic_year: number } | null }> };
+
 export type GetUsersForPageQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
@@ -320,3 +357,10 @@ export type GetProposalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetProposalsQuery = { __typename?: 'Query', proposals: Array<{ __typename?: 'Proposal', id: string, state: string, user?: { __typename?: 'User', username: string } | null, curriculum?: { __typename?: 'Curriculum', name: string } | null, degree?: { __typename?: 'Degree', name: string } | null }> };
+
+export type GetAttachmentsQueryVariables = Exact<{
+  uploader_id?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type GetAttachmentsQuery = { __typename?: 'Query', attachments: Array<{ __typename?: 'Attachment', id: string, filename?: string | null, mimetype?: string | null, size?: number | null, createdAt?: string | null, uploader?: { __typename?: 'User', id: string, username: string, name?: string | null } | null }> };

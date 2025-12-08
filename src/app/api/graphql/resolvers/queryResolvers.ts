@@ -3,6 +3,7 @@ import Exam from '@/models/Exam';
 import Degree from '@/models/Degree';
 import Curriculum from '@/models/Curriculum';
 import Proposal from '@/models/Proposal';
+import Attachment from '@/models/Attachment';
 
 export const Query = {
   users: async (_: any, { limit, username, id_number, first_name, last_name, email, admin }: {
@@ -81,10 +82,20 @@ export const Query = {
   curriculum: async (_: any, { id }: { id: string }) => {
     return await Curriculum.findById(id);
   },
-  proposals: async () => {
-    return await Proposal.find();
+  proposals: async (_: any, { user_id }: { user_id?: string }) => {
+    const query: any = {};
+    if (user_id) query.user_id = user_id;
+    return await Proposal.find(query);
   },
   proposal: async (_: any, { id }: { id: string }) => {
     return await Proposal.findById(id);
+  },
+  attachments: async (_: any, { uploader_id }: { uploader_id?: string }) => {
+    const query: any = {};
+    if (uploader_id) query.uploader_id = uploader_id;
+    return await Attachment.find(query).populate('uploader_id');
+  },
+  attachment: async (_: any, { id }: { id: string }) => {
+    return await Attachment.findById(id).populate('uploader_id');
   },
 };

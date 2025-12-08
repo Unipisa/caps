@@ -9,3 +9,20 @@ export const GET_DEGREES_FOR_CURRICULA = gql`
     }
   }
 `;
+
+export const GET_ATTACHMENTS = gql`
+  query GetAttachments($uploader_id: ID) {
+    attachments(uploader_id: $uploader_id) {
+      id
+      filename
+      mimetype
+      size
+      createdAt
+      uploader {
+        id
+        username
+        name
+      }
+    }
+  }
+`;

@@ -30,8 +30,8 @@ export default function NavBar() {
         Utente
       </div>
 
-      <NavItem className={pathname === '/users/profile' ? 'active' : ''}>
-        <Link className="nav-link" href="/users/profile">
+      <NavItem className={pathname === '/documents' ? 'active' : ''}>
+        <Link className="nav-link" href="/documents">
           <i className="fas fa-file-alt mr-1"></i>
           <span>I miei documenti</span>
         </Link>

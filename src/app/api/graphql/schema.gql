@@ -55,6 +55,18 @@ type Proposal {
   date_managed: String
 }
 
+type Attachment {
+  id: ID!
+  filename: String
+  mimetype: String
+  encoding: String
+  uploader: User
+  size: Int
+  content: String
+  createdAt: String
+  updatedAt: String
+}
+
 type Query {
   users(limit: Int, username: String, id_number: String, first_name: String, last_name: String, email: String, admin: Boolean): [User!]!
   user(id: ID!): User
@@ -65,8 +77,10 @@ type Query {
   degree(id: ID!): Degree
   curricula: [Curriculum!]!
   curriculum(id: ID!): Curriculum
-  proposals: [Proposal!]!
+  proposals(user_id: ID): [Proposal!]!
   proposal(id: ID!): Proposal
+  attachments(uploader_id: ID): [Attachment!]!
+  attachment(id: ID!): Attachment
 }
 
 type Mutation {
