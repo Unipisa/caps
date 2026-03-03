@@ -76,7 +76,7 @@ fi
 echo "Configuration: DOCKER = ${DOCKER}"
 
 if [ -z $DOCKERCOMPOSE ]; then
-  DOCKERCOMPOSE="sudo docker-compose"
+  DOCKERCOMPOSE="sudo docker compose"
 fi
 echo "Configuration: DOCKERCOMPOSE = ${DOCKERCOMPOSE}"
 

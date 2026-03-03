@@ -37,7 +37,7 @@ services:
     container_name: caps-db
     env_file:
       - caps.env
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    # command: --default-authentication-plugin=mysql_native_password
     volumes: 
       - ./database:/var/lib/mysql
     cap_add:
