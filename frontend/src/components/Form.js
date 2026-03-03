@@ -304,7 +304,7 @@ class Form extends CapsPage {
             </div>
             { this.props.edit && 
             <div className="form-group btn-group mt-4">
-                <button onClick={(evt) => this.onSave('submit', evt)} className="btn btn-success">Invia</button>
+                <input type="submit" onClick={(evt) => this.onSave('submit', evt)} className="btn btn-success" value="Invia" />
                 <button onClick={(evt) => this.onSave('save', evt)} className="btn btn-primary">Salva bozza</button> 
             </div>
             }
