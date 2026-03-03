@@ -24,7 +24,8 @@ ENV NODE_VERSION=18.19.0
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-	&& sed -i "s|session.gc_maxlifetime = .*|session.gc_maxlifetime = 86400|g" "$PHP_INI_DIR/php.ini"
+	&& sed -i "s|session.gc_maxlifetime = .*|session.gc_maxlifetime = 86400|g" "$PHP_INI_DIR/php.ini" \
+	&& sed -i "s|upload_max_filesize = .*|upload_max_filesize = 50M|g" "$PHP_INI_DIR/php.ini"
 
 COPY backend /backend
 COPY frontend /frontend
