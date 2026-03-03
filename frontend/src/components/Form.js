@@ -212,6 +212,12 @@ class Form extends CapsPage {
 
     onSave(action, evt) {
         evt.preventDefault();
+        const form = document.getElementById('form-form')
+
+        if (!(form && form.reportValidity())) {
+            return false;
+        }
+
         let payload = new URLSearchParams();
         if (this.props.edit) {
             const formData = new FormData(document.getElementById('form-form'));
