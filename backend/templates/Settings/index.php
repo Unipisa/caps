@@ -56,6 +56,13 @@
             </textarea>
         </div>
 
+        <div class="form-group">
+            <label for="caps-setting-support-email" class="caps-setting-header">Email di supporto</label>
+            <div class="caps-setting-description">Questo indirizzo viene mostrato all'utente nella barra laterale per 
+                contattare il supporto. Se non impostato, il bottone non è mostrato.</div>
+            <input id="caps-setting-support-email" name="support-email" class="form-control" value="<?= h($settings['support-email']); ?>"></input>
+        </div>
+
     <?= $this->element('card-end') ?>
 
     <?= $this->element('card-start', [ 'header' => 'Piani di studio' ]) ?>

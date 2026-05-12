@@ -65,8 +65,6 @@ class ProposalsController extends RestController
             unset($proposal['user']['admin']);
             unset($proposal['curriculum']['notes']);
             unset($proposal['curriculum']['notes']);
-            unset($proposal['curriculum']['credits']); // non si cancella così
-            unset($proposal['curriculum']['credits_per_year']);
             unset($proposal['curriculum']['degree']['years']);
             unset($proposal['curriculum']['degree']['enable_sharing']);
             unset($proposal['curriculum']['degree']['approval_confirmation']);

@@ -17,7 +17,7 @@ class FormAuthsController extends RestController {
         $d = $this->applyFilters($d);
 
         if (!$this->user['admin']) {
-            $d = $d->where(['user_id' => this->user['id']]);
+            $d = $d->where(['user_id' => $this->user['id']]);
         }
 
         foreach($d as $x) {

@@ -127,6 +127,12 @@ if ($message != "") {
             <th>Anno di immatricolazione</th>
             <td><?= $proposal['curriculum']['degree']->academic_years() ?></td>
         </tr>
+        <?php if ($proposal['curriculum']['notes']): ?>
+        <tr>
+            <th>Note</th>
+            <td><?= $proposal['curriculum']['notes'] ?></td>
+        </tr>
+        <?php endif; ?>
     </table>
 <?= $this->element('card-end'); ?>
 

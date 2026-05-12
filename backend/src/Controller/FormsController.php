@@ -28,12 +28,21 @@ use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
 use Cake\Mailer\Email;
+use Cake\Validation\Validation;
+use App\Form\FormsFilterForm;
 
 
 class FormsController extends AppController
 {    
     public function index()
     {
+        $forms = $this->Forms->find()->contain([ 'FormTemplates', 'Users' ]);
+
+        $filterForm = new FormsFilterForm($forms);
+        $forms = $filterForm->validate_and_execute($this->request->getQuery());
+
+        $this->set('data', $forms);
+        $this->viewBuilder()->setOption('serialize', 'data');
     }  
 
     public function edit($form_id = null)
@@ -64,6 +73,10 @@ class FormsController extends AppController
             $data = $this->request->getData();
             $form = $this->Forms->patchEntity($form, $data);
             $form->user_id = $this->user['id'];
+
+            $form_template = $this->Forms->FormTemplates->get($form['form_template_id']);
+            $form->template_text = $form_template['text'];
+
             if ($data['action'] == 'submit') {
                 $form->date_submitted = Time::now();
                 $form->state = "submitted";
@@ -174,16 +187,31 @@ class FormsController extends AppController
     {
         $email = new Email();
 
+        $form_data = json_decode($form['data'], true);
+
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(
-            function ($address) {
-                return trim($address);
+            function ($address) use ($form_data) {
+                $address = trim($address);
+
+                if ($address && $address[0] == '$') {
+                    // Try to find the field in the form data for the substituion
+                    $key = substr($address, 1);
+                    if (array_key_exists($key, $form_data)) {
+                        return trim($form_data[$key]);
+                    }
+                }
+
+                return $address;
             },
             explode(',', $form['form_template']['notify_emails'])
         );
+
+        // We only select valid email addresses, the remaining are ignored.
         $cc_addresses = array_filter($cc_addresses, function ($address) {
-            return trim($address) != "";
+            return Validation::email($address);
         });
+
         if (count($cc_addresses) > 0) {
             $email->addCc($cc_addresses);
         }
@@ -202,7 +230,7 @@ class FormsController extends AppController
             $this->log("User " . $form['user']['username'] . " has no email");
             return False;
         }
-        $email = $this->createEmail($form)
+        $email = $this->createEmail($form)        
             ->setTo($form['user']['email'])
             ->setSubject($subject . ": " . $form['form_template']['name']);
         $email->viewBuilder()->setTemplate($template_name);

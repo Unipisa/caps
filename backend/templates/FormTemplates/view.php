@@ -61,6 +61,10 @@
                         <th>Richiede approvazione</th>
                         <td><?= h($form_template['require_approval'] ? 'Sì' : 'No') ?></td>
                     </tr>
+                    <tr>
+                        <th>Note</th>
+                        <td><?= h($form_template['notes']) ?></td>
+                    </tr>
                 </table>
 
                 <h4>Modello</h4>

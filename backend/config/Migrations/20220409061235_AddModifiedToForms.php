@@ -25,7 +25,7 @@ class AddModifiedToForms extends AbstractMigration
 
     public function down() {
         $table = $this->table('forms');
-        $table->dropColumn('modified');
+        $table->removeColumn('modified');
         $table->update();
     }
 }

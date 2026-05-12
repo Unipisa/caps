@@ -13,7 +13,9 @@ class CurriculaController extends RestController {
 
     public function index() {
         $c = $this->Curricula->find('all', [
-            'contains' => CurriculaController::$associations
+		'contains' => CurriculaController::$associations,
+                'order' => [ 'Curricula.name' => 'ASC' ]
+
         ]);
 
         $c = $this->applyFilters($c);

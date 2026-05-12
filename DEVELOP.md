@@ -3,7 +3,12 @@
 ## Ambiente preconfigurato in docker
 
 Il modo più semplice per avviare un server di sviluppo è quello di utilizzare 
-un container docker pre configurato. Basta dare il comando:
+un container docker pre configurato. 
+```
+ cp docker/caps.env.template  docker/caps.env
+
+```
+e poi dare il comando:
 
 ```bash
 ./start-dev-server.sh

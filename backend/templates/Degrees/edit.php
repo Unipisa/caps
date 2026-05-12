@@ -119,6 +119,10 @@
             <?php echo $this->Form->control('rejection_confirmation', 
                 ['label' => 'Conferma e-mail al rifuto']); ?>
         </div>
+        <div class="form-check mb-2" id="caps-degree-attachment-confirmation">
+            <?php echo $this->Form->control('attachment_confirmation', 
+                ['label' => 'Conferma e-mail per commenti e allegati']); ?>
+        </div>
     </div>
 
     <?php

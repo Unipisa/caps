@@ -47,7 +47,12 @@ class Form extends CapsPage {
         if (form === null && this.props.id !== undefined) {
             form = await restClient.get(`forms/${this.props.id}`);
             form_template = form.form_template;
-            html = this.compile_html(form_template.text, form.data, form.state, form.user);
+            // We reload the template for drafts, but we use the one at "save-time"
+            // for submitted forms. 
+            html = this.compile_html(
+                this.props.edit ? form_template.text : form.template_text, 
+                form.data, form.state, form.user
+            );
             // this.loadDocuments(form.id);
         }
         if (form_template === null && this.props.form_template_id) {
@@ -57,8 +62,12 @@ class Form extends CapsPage {
         if (form_template === null && form_templates === null) {
             form_templates = await restClient.get('form_templates', { 'enabled': true });            
         }
-        this.setState({form, form_template, form_templates, html});
-        this.loadDocuments(form.id);
+
+        this.setState({form, form_template, form_templates, html}, () => {
+            if (form && form.id)
+                this.loadDocuments(form.id);
+        });
+        
     }
 
     async loadDocuments(form_id) {
@@ -319,7 +328,7 @@ class Form extends CapsPage {
 
         if (this.state.form.state == "approved") {
             badges.push(<span key="approved-badge" className="badge badge-success mr-2 mb-2">
-                Approvato in data { Moment(item.date_managed).format("DD/MM/YYYY") }
+                Approvato in data { Moment(this.state.form.date_managed).format("DD/MM/YYYY") }
             </span>);
         }
 

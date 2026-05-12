@@ -20,28 +20,31 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-namespace App\Model\Entity;
 
-use Cake\ORM\Entity;
+?>
+<style>
+    table, td, tr, th {
+        text-align: left;
+    }
+    .proposal-tag {
+        display: inline-block;
+        border-radius: 2px;
+        border: 1px solid black;
+        padding: 1px 4px 1px 4px;
+        font-size: 80%;
+        margin-left: 6px;
+        font-weight: bold;
+    }
+</style>
 
-class Form extends Entity
-{
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @var array
-     */
-    protected $_accessible = [
-        'user_id' => true,
-        'form_template_id' => true,
-        'data' => true,
-        'state' => true,
-        'date_submitted' => true,
-        'date_managed' => true,
-        'template_text' => true
-    ];
-}
+<?= $this->fetch('content') ?>
+
+<h3>E' stato aggiunto un commento al piano di studi</h3>
+<i><?= $comment ?></i>
+<p>
+    
+</p>
+<p>
+<?= $this->Html->link("Vai al piano di studi", 
+        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id']]) ?>
+</p>

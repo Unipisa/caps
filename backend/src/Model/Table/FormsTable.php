@@ -65,6 +65,8 @@ class FormsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Timestamp');
+
         $this->belongsTo('FormTemplates', [
             'foreignKey' => 'form_template_id',
             'joinType' => 'INNER',
@@ -74,6 +76,10 @@ class FormsTable extends Table
             'joinType' => 'INNER',
         ]);
         $this->hasMany('FormAuths', [
+            'foreignKey' => 'form_id',
+            'dependent' => true
+        ]);
+        $this->hasMany('FormAttachments', [
             'foreignKey' => 'form_id',
             'dependent' => true
         ]);

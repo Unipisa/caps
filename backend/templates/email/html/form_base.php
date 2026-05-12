@@ -40,8 +40,13 @@
 
 <?= $this->fetch('content') ?>
 
+<?php if ($form['form_template']['notes']): ?>
+    <?= h($form['form_template']['notes']) ?>
+<?php endif; ?>
+
 <p>
-    <a href="<?= $this->Url->build('forms/view/' . $form['id'], [ 'fullBase' => true ]) ?>">Visualizza modulo</a>
+    <a href="<?= $this->Url->build('forms/view/' . $form['id'], [ 'fullBase' => true ]) ?>">Visualizza modulo</a><br>
+    Nota: il modulo è visibile solo da chi lo ha sottomesso e gli amministratori del sistema.
 </p>
 <p>
     Nome e cognome: <?= h($form['user']['name']) ?><br>

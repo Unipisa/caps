@@ -125,12 +125,18 @@ class ExamsController extends AppController
     }
 
     private function chosen_exams($exam_id) {
+        $last_approved = TableRegistry::getTableLocator()->get('Proposals')->find()
+           ->select(['lastapproved'=>'MAX(Proposals.id)'])
+	   ->where(['state' => 'approved'])
+           ->group(['user_id'])
+           ->enableHydration(false);
+
         $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
         $query =  $ChosenExams->find();
         $query = $query
             ->where([
                 'exam_id' => $exam_id,
-                'Proposals.state' => 'approved'
+                'Proposals.id IN' => $last_approved
                 ])
             ->contain(['Proposals' => ['Users', 'Curricula' => ['Degrees']]])
             ->select([
@@ -141,7 +147,7 @@ class ExamsController extends AppController
                 'degree_name' => 'Degrees.name'
                 ])
             ->group(['curriculum_id'])
-            ->order(['count' => 'Desc']);
+	    ->order(['count' => 'Desc']);
 
         return $query;
     }
