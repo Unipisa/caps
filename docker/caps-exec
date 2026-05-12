@@ -17,8 +17,9 @@ msg "Starting the CAPS Docker manager"
 msg "Adjust permissions of directory /backend/logs"
 chown www-data:www-data /backend/logs -R
 
-msg "Making sure that /tmp is 777"
-chmod 777 /tmp
+msg "Making sure that /tmp and /backend/tmp is 777"
+chmod 777 /tmp 
+chmod 777 /backend/tmp 
 
 if [ "${CAPS_DB_DRIVER}" = "postgres" ]; then
   # Wait for Postgres
