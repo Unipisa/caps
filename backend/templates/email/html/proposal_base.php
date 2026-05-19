@@ -158,3 +158,13 @@ Anno Accademico <?= $year ?>/<?=  ($year + 1) ?><br>
             </table>
         </div>
 <?php endfor; ?>
+
+<?php if (!empty($proposal['note'])): ?>
+<div>
+    <h3>Nota</h3>
+    <?php if (!empty($proposal['curriculum']['degree']['note_label'])): ?>
+        <p><?= $proposal['curriculum']['degree']['note_label'] ?></p>
+    <?php endif; ?>
+    <p style="white-space: pre-wrap;"><?= h($proposal['note']) ?></p>
+</div>
+<?php endif; ?>
