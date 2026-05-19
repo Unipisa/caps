@@ -250,7 +250,7 @@ if ($message != "") {
 
 <?php if (!empty($proposal['note'])): ?>
 <?= $this->element('card-start', [ 'header' => h('Nota') ]) ?>
-    <p><?= h($proposal['note']) ?></p>
+    <p style="white-space: pre-wrap;"><?= h($proposal['note']) ?></p>
 <?= $this->element('card-end'); ?>
 <?php endif; ?>
 

@@ -249,7 +249,7 @@
         <?php if (!empty($settings['note-label'])): ?>
             <p><strong><?= h('Nota') ?></strong></p>
         <?php endif; ?>
-        <p><?= h($proposal['note']) ?></p>
+        <p style="white-space: pre-wrap;"><?= h($proposal['note']) ?></p>
     </div>
     <?php endif; ?>
 
