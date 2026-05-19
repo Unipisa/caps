@@ -23,7 +23,8 @@ export class ProposalEdit extends React.Component {
             'proposal': null, 
             'error': null, 
             'exams': [],
-            'groups': []
+            'groups': [],
+            'note': ''
         };
 
         this.id_counter = 0;
@@ -123,6 +124,7 @@ export class ProposalEdit extends React.Component {
                 chosen_exams,
                 proposal,
                 groups,
+                'note': proposal.note || '',
                 'saving': false // this is set to true when save is clicked, to avoid double requests
         });
     }
@@ -142,7 +144,8 @@ export class ProposalEdit extends React.Component {
             curricula, 
             selected_curriculum, 
             chosen_exams, 
-            groups: await this.loadGroups(degree)
+            groups: await this.loadGroups(degree),
+            note: selected_curriculum ? (this.state.selected_degree.note_default || '') : ''
         });
     }
 
@@ -210,7 +213,8 @@ export class ProposalEdit extends React.Component {
 
                 this.setState({
                     selected_curriculum,
-                    chosen_exams
+                    chosen_exams,
+                    note: this.state.selected_degree.note_default || ''
                 });
             });
         }
@@ -408,6 +412,8 @@ export class ProposalEdit extends React.Component {
 
         payload.append('_csrfToken', this.props.csrfToken);
 
+        payload.append('note', this.state.note);
+
         submitForm(window.location.href, 'post', payload);
     }
 
@@ -477,6 +483,20 @@ export class ProposalEdit extends React.Component {
                     degree={this.state.selected_degree}
                     onSelectedExamsChanged={(s) => this.onSelectedExamsChanged.bind(this)(year, s)}
                     chosen_exams={chosen_exams} />
+            );
+        }
+        
+        if (this.state.selected_degree.note_label) {
+            rows.push(
+                <Card key="proposal-note" title="Nota" className="mt-2">
+                    <p>{this.state.selected_degree.note_label}</p>
+                    <textarea
+                        className="form-control"
+                        value={this.state.note}
+                        onChange={(e) => this.setState({ note: e.target.value })}
+                        rows={4}
+                    />
+                </Card>
             );
         }
 
