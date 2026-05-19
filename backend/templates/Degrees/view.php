@@ -126,11 +126,11 @@
         </p>
         <tr>
             <th>Paragrafo descrittivo</th>
-            <td><?= h($degree['note_label']) ?></td>
+            <td><?= $degree['note_label'] ?></td>
         </tr>
         <tr>
             <th>Testo precompilato</th>
-            <td><?= h($degree['note_default']) ?></td>
+            <td><?= $degree['note_default'] ?></td>
         </tr>
     </table>
 <?= $this->element('card-end'); ?>

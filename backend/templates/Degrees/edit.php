@@ -134,12 +134,13 @@
         </div>
         <div class="form-group">
             <label for="caps-degree-note-label">Paragrafo descrittivo</label>
-            <input id="caps-degree-note-label" type="text" class="form-control"
-                name="note_label" value="<?= h($degree['note_label']) ?>">
+            <textarea id="caps-degree-note-label" name="note_label" 
+            class="form-control caps-settings-html"><?= h($degree['note_label']) ?></textarea>
         </div>
         <div class="form-group">
             <label for="caps-degree-note-default">Testo precompilato</label>
-            <textarea id="caps-degree-note-default" name="note_default" class="form-control"><?= h($degree['note_default']) ?></textarea>
+            <textarea id="caps-degree-note-default" name="note_default" 
+            class="form-control"><?= h($degree['note_default']) ?></textarea>
         </div>
     </div>
 

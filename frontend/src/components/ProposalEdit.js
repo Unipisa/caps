@@ -489,7 +489,7 @@ export class ProposalEdit extends React.Component {
         if (this.state.selected_degree.note_label) {
             rows.push(
                 <Card key="proposal-note" title="Nota" className="mt-2">
-                    <p>{this.state.selected_degree.note_label}</p>
+                    <p dangerouslySetInnerHTML={{__html: this.state.selected_degree.note_label}}></p>
                     <textarea
                         className="form-control"
                         value={this.state.note}
