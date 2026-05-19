@@ -130,7 +130,7 @@
         </tr>
         <tr>
             <th>Testo precompilato</th>
-            <td><?= $degree['note_default'] ?></td>
+            <td style="white-space: pre-wrap;"><?= h($degree['note_default']) ?></td>
         </tr>
     </table>
 <?= $this->element('card-end'); ?>
