@@ -304,6 +304,7 @@ class ProposalsController extends AppController
 
         $this->set('proposal', $proposal);
         $this->set('secrets', $secrets);
+        $this->set('settings', $this->getSettings()); 
 
         // Having this is apparently the only way to enforce validation on
         // the e-mail given in the input.
@@ -516,6 +517,7 @@ class ProposalsController extends AppController
             if (array_key_exists('ChosenFreeChoiceExam', $data)) {
                 $patch_data['chosen_free_choice_exams'] = $data['ChosenFreeChoiceExam'];
             }
+            $patch_data['note'] = $this->request->getData('note') ?? '';
 
             // If the proposal was already submitted, we may have the data set in chosen_exams and
             // chosen_free_choice_exams: we need to get rid of it to replace with the new one.

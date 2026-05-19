@@ -119,4 +119,20 @@
     </table>
 <?= $this->element('card-end'); ?>
 
+<?= $this->element('card-start', [ 'header' => 'Nota nel piano di studi' ]) ?>
+    <table class="table">
+        <p>Il piano di studi può contenere una nota, che viene mostrata allo studente quando visualizza il piano.
+        Se il paragrafo descrittivo è vuoto, la nota non viene mostrata. Altrimenti, viene mostrato un blocco "Nota" con il testo del paragrafo descrittivo, seguito da un campo di testo contenente il testo precompilato, che lo studente può modificare. 
+        </p>
+        <tr>
+            <th>Paragrafo descrittivo</th>
+            <td><?= h($degree['note_label']) ?></td>
+        </tr>
+        <tr>
+            <th>Testo precompilato</th>
+            <td><?= h($degree['note_default']) ?></td>
+        </tr>
+    </table>
+<?= $this->element('card-end'); ?>
+
 
