@@ -248,6 +248,12 @@ if ($message != "") {
 <?php endif; ?>
 <?php endfor; ?>
 
+<?php if (!empty($proposal['note'])): ?>
+<?= $this->element('card-start', [ 'header' => h('Nota') ]) ?>
+    <p style="white-space: pre-wrap;"><?= h($proposal['note']) ?></p>
+<?= $this->element('card-end'); ?>
+<?php endif; ?>
+
 <?= $this->element('card-start', [ 'header' => 'Allegati e commenti' ]) ?>
     <?php
       $visible_attachments = array_filter(

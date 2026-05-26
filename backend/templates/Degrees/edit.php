@@ -125,6 +125,25 @@
         </div>
     </div>
 
+    <div class="form-group mt-4">
+        <div class="caps-setting-header">Nota nel piano di studi</div>
+        <div class="caps-setting-description">
+            Se compilato, nel piano di studi comparirà un blocco "Nota". Il primo campo è un paragrafo
+            descrittivo fisso, il secondo è il testo precompilato che lo studente può modificare.
+            Se il primo campo è vuoto, il blocco nota non viene mostrato.
+        </div>
+        <div class="form-group">
+            <label for="caps-degree-note-label">Paragrafo descrittivo</label>
+            <textarea id="caps-degree-note-label" name="note_label" 
+            class="form-control caps-settings-html"><?= h($degree['note_label']) ?></textarea>
+        </div>
+        <div class="form-group">
+            <label for="caps-degree-note-default">Testo precompilato</label>
+            <textarea id="caps-degree-note-default" name="note_default" 
+            class="form-control"><?= h($degree['note_default']) ?></textarea>
+        </div>
+    </div>
+
     <?php
         if ($degree->isNew()):
             echo $this->Form->submit('Salva corso di laurea');

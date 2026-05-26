@@ -58,7 +58,8 @@ class Proposal extends Entity
         'chosen_free_choice_exams' => true,
         'submitted_date' => true,
         'approved_date' => true,
-        'auths' => true
+        'auths' => true,
+        'note' => true
     ];
 
     public function getStateString()
