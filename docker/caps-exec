@@ -32,7 +32,7 @@ fi
 if [ "${CAPS_DB_DRIVER}" = "mysql" ]; then
   # ... or for Mysql, depending on the user choice
   while ! php -r "try { new PDO(\"mysql:host=${CAPS_DB_HOST};dbname=${CAPS_DB_DATABASE}\", \"${CAPS_DB_USERNAME}\", \"${CAPS_DB_PASSWORD}\"); } catch (PDOException \$e) { exit(1); } exit(0);"; do
-    msg "Waiting for MySQL ${CAPS_DB_HOST} to be ready ... "
+    msg "Waiting for MySQL ${CAPS_DB_HOST} ${CAPS_DB_DATABASE} ${CAPS_DB_USERNAME} to be ready ... "
     sleep 5
   done
 

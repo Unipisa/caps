@@ -6,4 +6,9 @@ backend/vendor
 frontend/js
 frontend/css
 frontend/node_modules
+db
+.git
+node-*
+docker/logs
+docker/database
 
