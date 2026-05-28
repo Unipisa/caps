@@ -162,6 +162,6 @@ Anno Accademico <?= $year ?>/<?=  ($year + 1) ?><br>
 <?php if (!empty($proposal['note'])): ?>
 <div>
     <h3>Nota</h3>
-    <p style="white-space: pre-wrap;"><?= h($proposal['note']) ?></p>
+    <p><?= nl2br(h($proposal['note'])) ?></p>
 </div>
 <?php endif; ?>
