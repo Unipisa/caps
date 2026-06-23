@@ -22,6 +22,7 @@
  */
 namespace App;
 
+use App\Authentication\Authenticator\AdminTokenAuthenticator;
 use App\Identifier\Resolver\UnipiResolver;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
@@ -109,8 +110,12 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'cacheTime' => Configure::read('Asset.cacheTime')
             ]))
 
-            // Add CSRF protection
-            ->add(new SessionCsrfProtectionMiddleware())
+            // Add CSRF protection. Stateless Bearer-token requests are exempt.
+            ->add((new SessionCsrfProtectionMiddleware())->skipCheckCallback(
+                function (ServerRequestInterface $request): bool {
+                    return AdminTokenAuthenticator::matchesRequest($request);
+                }
+            ))
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes
@@ -160,7 +165,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
         ];
 
-        // Load the authenticators. Session should be first.
+        // The administrator token takes precedence over an existing session.
+        $service->loadAuthenticator(AdminTokenAuthenticator::class);
+
+        // Load the remaining authenticators.
         $service->loadAuthenticator('Authentication.Session');
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => $fields,

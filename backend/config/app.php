@@ -60,6 +60,13 @@ return [
         'readonly' => env('CAPS_READONLY', '')
     ],
 
+    // Optional instance-wide Bearer token. Both values must be set to enable it.
+    // The username must identify an existing user, used for ownership and logs.
+    'AdminToken' => [
+        'token' => env('CAPS_ADMIN_TOKEN', ''),
+        'username' => env('CAPS_ADMIN_TOKEN_USER', ''),
+    ],
+
     'UnipiAuthenticate' => [
       'microsoft_oauth2_appid' => '',
       'microsoft_oauth2_client_secret' => '',
