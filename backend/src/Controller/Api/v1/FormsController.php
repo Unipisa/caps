@@ -8,6 +8,7 @@ use App\Model\Entity\FormAuth;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
 use Cake\Mailer\Email;
+use Cake\Http\Exception\BadRequestException;
 
 
 class FormsController extends RestController {
@@ -37,6 +38,7 @@ class FormsController extends RestController {
         $forms = $this->Forms->find('all', 
             [ 'contain' => FormsController::$associations ]);
 
+        $forms = $this->applyDataDateFilter($forms);
         $forms = $this->applyFilters($forms);
 
         // Check permissions
@@ -54,6 +56,42 @@ class FormsController extends RestController {
         }
 
         $this->JSONResponse(ResponseCode::Ok, $forms);
+    }
+
+    private function applyDataDateFilter($query) {
+        // PHP converts dots in query parameter names to underscores.
+        $date = $this->request->getQuery('data__data');
+
+        if ($date === null) {
+            return $query;
+        }
+
+        $parsed = is_string($date)
+            ? \DateTime::createFromFormat('!Y-m-d', $date)
+            : false;
+
+        if (!$parsed || $parsed->format('Y-m-d') !== $date) {
+            throw new BadRequestException(
+                'data.data must use the YYYY-MM-DD format'
+            );
+        }
+
+        return $query->where(function ($exp, $query) use ($date) {
+            $decodedData = $query->func()->json_unquote([
+                'Forms.data' => 'identifier',
+            ]);
+
+            $extractedDate = $query->func()->json_extract([
+                $decodedData,
+                "'$.data'" => 'literal',
+            ]);
+
+            $unquotedDate = $query->func()->json_unquote([
+                $extractedDate,
+            ]);
+
+            return $exp->eq($unquotedDate, $date, 'string');
+        });
     }
 
     public function get($id) {
@@ -219,6 +257,10 @@ class FormsController extends RestController {
 
         return $email;
     }
+
+
+
+
 }
 
 ?>
