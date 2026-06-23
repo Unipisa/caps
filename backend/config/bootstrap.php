@@ -51,23 +51,7 @@ use Cake\Mailer\Email;
 use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
-
-/**
- * Uncomment block of code below if you want to use `.env` file during development.
- * You should copy `config/.env.default to `config/.env` and set/modify the
- * variables as required.
- *
- * It is HIGHLY discouraged to use a .env file in production, due to security risks
- * and decreased performance on each request. The purpose of the .env file is to emulate
- * the presence of the environment variables like they would be present in production.
- */
-// if (!env('APP_NAME') && file_exists(CONFIG . '.env')) {
-//     $dotenv = new \josegonzalez\Dotenv\Loader([CONFIG . '.env']);
-//     $dotenv->parse()
-//         ->putenv()
-//         ->toEnv()
-//         ->toServer();
-// }
+use App\Utility\ConfigDebugger;
 
 /*
  * Read configuration file and inject configuration into various
@@ -80,6 +64,9 @@ use Cake\Utility\Security;
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
+    
+    // Debug configuration on startup (only in debug mode)
+    ConfigDebugger::debugConfig();
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }

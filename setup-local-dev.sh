@@ -52,6 +52,6 @@ bin/cake grant-admin admin --force --password admin
 echo "Local development environment setup complete!"
 echo ""
 echo "To start the development server, run:"
-echo "  bin/cake server"
+echo "  $(pwd)/bin/cake server"
 echo ""
 echo "The application will be available at http://localhost:8765"

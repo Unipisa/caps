@@ -60,11 +60,7 @@ class AdminTokenAuthenticator extends AbstractAuthenticator
      */
     public function authenticate(ServerRequestInterface $request): ResultInterface
     {
-        $header = $request->getHeaderLine('Authorization');
-        if ($header === '') {
-            return new Result(null, Result::FAILURE_CREDENTIALS_MISSING);
-        }
-
+        // Check if this is a request that matches the token
         if (!self::matchesRequest($request)) {
             return new Result(null, Result::FAILURE_CREDENTIALS_INVALID);
         }

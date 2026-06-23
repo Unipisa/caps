@@ -148,7 +148,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function getAuthenticationService(ServerRequestInterface $request) : AuthenticationServiceInterface
     {
         $service = new AuthenticationService();
-
+        
         // Define where users should be redirected to when they are not authenticated
         $service->setConfig([
             'unauthenticatedRedirect' => Router::url([
@@ -158,6 +158,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                     'action' => 'login',
             ]),
             'queryParam' => 'redirect',
+            // For API requests, we don't want to redirect to login page
+            'authError' => 'Access denied',
         ]);
 
         $fields = [
