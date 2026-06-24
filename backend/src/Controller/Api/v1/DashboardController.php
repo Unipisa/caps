@@ -14,6 +14,7 @@ class DashboardController extends RestController
         parent::initialize();
         $this->Proposals = TableRegistry::getTableLocator()->get('proposals');
         $this->Forms = TableRegistry::getTableLocator()->get('forms');
+        $this->ThesisDefenses = TableRegistry::getTableLocator()->get('thesisDefenses');
     }
 
    /** 
@@ -64,6 +65,8 @@ class DashboardController extends RestController
 
     function index() {
         $submitted_count = $this->Proposals->find()->where([ 'state' => 'submitted' ])->count();
+        $submitted_thesis_defenses_count = $this->ThesisDefenses->find()
+            ->where(['state' => 'submitted'])->count();
         $months = 24;
 
         $conn = $this->Proposals->getConnection();
@@ -90,6 +93,7 @@ class DashboardController extends RestController
 
         $data = [
             'submitted_count' => $submitted_count,
+            'submitted_thesis_defenses_count' => $submitted_thesis_defenses_count,
             'proposal_comments' => $proposal_comments,
             'proposal_submission_counts' => $this->get_submission_counts($this->Proposals, 'submitted_date', $months),
             'proposal_approval_counts' => $this->get_submission_counts($this->Proposals, 'approved_date', $months),
@@ -99,4 +103,3 @@ class DashboardController extends RestController
         $this->JSONResponse(ResponseCode::Ok, $data);
     }
 }
-
