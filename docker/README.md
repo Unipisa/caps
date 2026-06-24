@@ -8,6 +8,29 @@ To start the container, you can run
 ```bash
 sudo docker-compose up
 ```
+
+## HTTPS reverse proxies
+
+When CAPS is published through an HTTPS reverse proxy, set its public URL in
+`caps.env` so that CakePHP generates HTTPS redirects and absolute links:
+
+```env
+APP_FULL_BASE_URL=https://caps.example.org
+```
+
+Replace `caps.example.org` with the public hostname, without a trailing slash.
+The reverse proxy should also preserve the original host and scheme. For
+example, with nginx:
+
+```nginx
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Port $server_port;
+```
+
+Restart the CAPS container after changing `caps.env`. Existing installations
+should also clear CakePHP's cache with `bin/cake cache clear_all`.
+
 For later updates, use
 ```bash
 sudo docker-compose up --build
