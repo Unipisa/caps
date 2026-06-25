@@ -32,6 +32,7 @@ return function (RouteBuilder $routes) {
          // Connect '/' to users/login, that will either show the
          // login form or redirect the user to the right location.
         $routes->connect('/', [ 'controller' => 'Users', 'action' => 'login' ]);
+        $routes->connect('/users/login', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
             $api_controllers = [ 

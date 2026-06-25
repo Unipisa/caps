@@ -150,12 +150,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         
         // Define where users should be redirected to when they are not authenticated
         $service->setConfig([
-            'unauthenticatedRedirect' => Router::url([
-                    'prefix' => false,
-                    'plugin' => null,
-                    'controller' => 'Users',
-                    'action' => 'login',
-            ]),
+            'unauthenticatedRedirect' => Router::url('/'),
             'queryParam' => 'redirect',
             // For API requests, we don't want to redirect to login page
             'authError' => 'Access denied',
@@ -173,12 +168,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $service->loadAuthenticator('Authentication.Session');
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => $fields,
-            'loginUrl' => Router::url([
-                'prefix' => false,
-                'plugin' => null,
-                'controller' => 'Users',
-                'action' => 'login',
-            ]),
+            'loginUrl' => [
+                Router::url('/'),
+                Router::url('/users/login'),
+            ],
         ]);
 
         // Load identifiers

@@ -65,8 +65,12 @@ try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
     
-    // Debug configuration on startup (only in debug mode)
-    ConfigDebugger::debugConfig();
+    // Debug configuration on startup only for web requests and `bin/cake server`.
+    $isCakeServerCommand = PHP_SAPI === 'cli'
+        && ($_SERVER['argv'][1] ?? null) === 'server';
+    if (PHP_SAPI !== 'cli' || $isCakeServerCommand) {
+        ConfigDebugger::debugConfig();
+    }
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }

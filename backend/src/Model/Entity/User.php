@@ -148,6 +148,6 @@ class User extends Entity implements IdentityInterface
     }
 
     public function checkPassword(string $password): bool {
-        return (new DefaultPasswordHasher())->hash($password) == $this->password;
+        return (new DefaultPasswordHasher())->check($password, $this->password);
     }
 }

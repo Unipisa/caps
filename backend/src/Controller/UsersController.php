@@ -121,6 +121,12 @@ class UsersController extends AppController {
     }
 
     private function login_user($authuser) {
+        if ($authuser instanceof \App\Model\Entity\User) {
+            $this->Authentication->setIdentity($authuser);
+            Log::write('debug', 'Logged in local user ' . $authuser['username']);
+            return;
+        }
+
         // Try to find the user in the database
         $user = $this->Users->find()
             ->where([ 'username' => $authuser['username'] ])
@@ -181,6 +187,7 @@ class UsersController extends AppController {
 
         if ($this->request->is('post')) {
             $authuser = $this->Authentication->getIdentity();
+            $this->debugLocalAuthenticationAttempt($authuser);
 
             if (! $authuser) {
                 $this->Flash->error('Username o password non corretti');
@@ -214,6 +221,42 @@ class UsersController extends AppController {
 
         $this->set('oauth2_enabled', $this->isOAuth2Enabled());
         $this->set('redirect', $this->request->getQuery(('redirect')));
+    }
+
+    private function debugLocalAuthenticationAttempt($authuser): void
+    {
+        $username = (string)$this->request->getData('username', '');
+        $password = (string)$this->request->getData('password', '');
+        $result = $this->Authentication->getResult();
+        $user = $username === ''
+            ? null
+            : $this->Users->find()
+                ->where(['username' => $username])
+                ->first();
+
+        $debug = [
+            'username' => $username,
+            'has_password_in_request' => $password !== '',
+            'authentication_result_status' => $result ? $result->getStatus() : null,
+            'authentication_result_valid' => $result ? $result->isValid() : null,
+            'authentication_result_errors' => $result ? $result->getErrors() : null,
+            'identity_class' => is_object($authuser) ? get_class($authuser) : null,
+            'identity_username' => $authuser ? ($authuser['username'] ?? null) : null,
+            'local_user_found' => $user !== null,
+            'local_user_id' => $user ? $user['id'] : null,
+            'local_user_admin' => $user ? (bool)$user['admin'] : null,
+            'local_password_hash_prefix' => ($user && $user['password'])
+                ? substr($user['password'], 0, 7)
+                : null,
+            'local_password_hash_length' => ($user && $user['password'])
+                ? strlen($user['password'])
+                : null,
+            'local_password_check' => ($user && $password !== '')
+                ? $user->checkPassword($password)
+                : null,
+        ];
+
+        Log::debug('Local authentication debug: ' . json_encode($debug));
     }
 
     private function isOAuth2Enabled() {
