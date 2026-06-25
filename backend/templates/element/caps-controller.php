@@ -35,6 +35,7 @@
                     '?' => $this->request->getQueryParams('?'),
                     'user' => $user,
                     'settings' => $settings,
+                    'timezone' => $Caps['timezone'],
                 ]) 
                 ?>);
         };

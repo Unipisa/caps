@@ -12,6 +12,7 @@ import CapsLogsController from './controllers/logs-controller';
 import CapsFormTemplatesController from './controllers/form-templates-controller';
 import CapsUsersController from './controllers/users-controller';
 import CapsDashboardController from './controllers/dashboard-controller';
+import CapsThesisDefensesController from './controllers/thesis-defenses-controller';
 
 'use strict'
 
@@ -30,7 +31,8 @@ const routes = {
     "Logs": CapsLogsController,
     "FormTemplates": CapsFormTemplatesController,
     "Users": CapsUsersController,
-    "Dashboard": CapsDashboardController
+    "Dashboard": CapsDashboardController,
+    "ThesisDefenses": CapsThesisDefensesController
 }
 
 /**

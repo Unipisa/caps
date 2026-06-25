@@ -11,15 +11,6 @@ class ThesisDefensesController extends AppController
     public function index()
     {
         $this->requireAdmin();
-        $defenses = $this->ThesisDefenses->find()
-            ->contain(['Users', 'DegreeSessions', 'DegreeSessions.Degrees', 'ThesisDefenseAdvisors'])
-            ->order(['DegreeSessions.start_date' => 'DESC', 'ThesisDefenses.created' => 'DESC']);
-
-        $state = $this->request->getQuery('state');
-        if (in_array($state, ['submitted', 'approved', 'rejected'], true)) {
-            $defenses->where(['ThesisDefenses.state' => $state]);
-        }
-        $this->set(compact('defenses', 'state'));
     }
 
     public function add()

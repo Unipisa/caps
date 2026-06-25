@@ -6,7 +6,38 @@ class ThesisDefensesController extends RestController
     public $allowedFilters = [
         'user_id' => Integer::class,
         'state' => ['type' => String::class, 'options' => ['submitted', 'approved', 'rejected']],
-        'submitted_at' => Integer::class,
+        'user.surname' => [
+            'type' => String::class,
+            'dbfield' => 'Users.surname',
+            'modifier' => 'LIKE',
+        ],
+        'degree_session.degree.name' => [
+            'type' => String::class,
+            'dbfield' => 'Degrees.name',
+            'modifier' => 'LIKE',
+        ],
+        'degree_session.name' => [
+            'type' => String::class,
+            'dbfield' => 'DegreeSessions.name',
+            'modifier' => 'LIKE',
+        ],
+        'title' => [
+            'type' => String::class,
+            'dbfield' => 'ThesisDefenses.title',
+            'modifier' => 'LIKE',
+        ],
+        'scheduled_at' => [
+            'type' => Integer::class,
+            'dbfield' => 'ThesisDefenses.scheduled_at',
+        ],
+        'submitted_at' => [
+            'type' => Integer::class,
+            'dbfield' => 'ThesisDefenses.submitted_at',
+        ],
+        'modified' => [
+            'type' => Integer::class,
+            'dbfield' => 'ThesisDefenses.modified',
+        ],
     ];
 
     public function index()
@@ -16,9 +47,17 @@ class ThesisDefensesController extends RestController
             return;
         }
         $query = $this->ThesisDefenses->find()->contain([
-            'DegreeSessions', 'DegreeSessions.Degrees', 'ThesisDefenseAdvisors',
+            'Users', 'DegreeSessions', 'DegreeSessions.Degrees', 'ThesisDefenseAdvisors',
         ]);
         $query = $this->applyFilters($query);
+
+        foreach ($query as $defense) {
+            unset($defense['user']['password']);
+            unset($defense['user']['username']);
+            unset($defense['user']['email']);
+            unset($defense['user']['admin']);
+        }
+
         $this->JSONResponse(ResponseCode::Ok, $query);
     }
 

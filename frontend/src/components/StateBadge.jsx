@@ -35,11 +35,30 @@ export function formColor(form) {
     }
 }
 
+export function thesisDefenseColor(defense) {
+    switch (defense.state) {
+        case 'approved':
+            return "success";
+        case 'submitted':
+            return "warning";
+        case 'rejected':
+            return "danger";
+        default:
+            return 'secondary';
+    }
+}
+
 const stateNames = {
     'draft': "Bozza",
     'submitted': "Inviato",
     'approved': "Approvato",
     'rejected': "Rifiutato"
+};
+
+const thesisDefenseStateNames = {
+    'submitted': "Da valutare",
+    'approved': "Approvata",
+    'rejected': "Respinta"
 };
 
 export function ProposalStateBadge({ proposal }) {
@@ -50,4 +69,9 @@ export function ProposalStateBadge({ proposal }) {
 export function FormStateBadge({ form }) {
     const color = formColor(form);
     return <span className={ `badge badge-sm badge-${color}` }>{ stateNames[form.state] }</span>
+}
+
+export function ThesisDefenseStateBadge({ defense }) {
+    const color = thesisDefenseColor(defense);
+    return <span className={ `badge badge-sm badge-${color}` }>{ thesisDefenseStateNames[defense.state] }</span>
 }
