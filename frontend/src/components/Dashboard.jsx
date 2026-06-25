@@ -18,6 +18,7 @@ class Dashboard extends CapsPage {
         return <>
             <h1>Pannello di controllo</h1>
 <div className="row">
+    {this.props.data.degree_sessions_enabled &&
     <div className="col-xl-3 col-md-6 mb-4">
         <div className="card shadow border-left-warning h-100">
             <div className="card-body">
@@ -37,7 +38,7 @@ class Dashboard extends CapsPage {
                 </div>
             </div>
         </div>
-    </div>
+    </div>}
     <div className="col-xl-3 col-md-6 mb-4">
         <div className="card shadow border-left-warning">
             <div className="card-body">

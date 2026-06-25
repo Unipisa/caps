@@ -93,6 +93,7 @@ class DashboardController extends RestController
 
         $data = [
             'submitted_count' => $submitted_count,
+            'degree_sessions_enabled' => $this->degree_sessions_enabled,
             'submitted_thesis_defenses_count' => $submitted_thesis_defenses_count,
             'proposal_comments' => $proposal_comments,
             'proposal_submission_counts' => $this->get_submission_counts($this->Proposals, 'submitted_date', $months),

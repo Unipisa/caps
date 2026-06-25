@@ -86,12 +86,14 @@ $actionName = $this->request->getParam('action');
         </li>
         <?php endif; ?>
 
+        <?php if ($degree_sessions_enabled): ?>
         <li class="nav-item">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'add']); ?>">
                 <i class="fas mr-1 fa-graduation-cap"></i>
                 <span>Domanda di laurea</span>
             </a>
         </li>
+        <?php endif; ?>
 
     <?php endif; ?>
 
@@ -133,12 +135,14 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <?php if ($degree_sessions_enabled): ?>
         <li class="nav-item<?= $controllerName == 'ThesisDefenses' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'index']) ?>">
                 <i class="fas mr-1 fa-user-graduate"></i>
                 <span>Domande di laurea</span>
             </a>
         </li>
+        <?php endif; ?>
 
         <li class="nav-item<?= $controllerName == 'Logs' ? ' active' : '' ?>">
             <a class="nav-link caps-form-link" href="<?= $this->Url->build([

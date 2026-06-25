@@ -17,6 +17,7 @@ class UserProfile extends CapsPage {
             'settings': undefined,
             'logged_user': null,
             'form_templates_enabled': null,
+            'degree_sessions_enabled': null,
             'user': undefined, 
             'proposals': undefined,
             'forms': undefined,
@@ -37,7 +38,8 @@ class UserProfile extends CapsPage {
             await this.setStateAsync({
                 'settings': status.settings, 
                 'logged_user': status.user,
-                'form_templates_enabled': status.form_templates_enabled
+                'form_templates_enabled': status.form_templates_enabled,
+                'degree_sessions_enabled': status.degree_sessions_enabled
             });
             this.loadUserData();
         } catch (err) {
@@ -54,7 +56,7 @@ class UserProfile extends CapsPage {
             this.loadProposals();
             this.loadForms();
             this.loadDocuments();
-            this.loadThesisDefenses();
+            if (this.state.degree_sessions_enabled) this.loadThesisDefenses();
         } catch (err) {
             this.flashCatch(err);
         }
@@ -210,10 +212,11 @@ class UserProfile extends CapsPage {
                     proposals={this.state.proposals} 
                     onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                 </ProposalsBlock>
+                {this.state.degree_sessions_enabled &&
                 <ThesisDefensesBlock className="mt-4"
                     defenses={this.state.thesis_defenses}
                     root={this.props.root}>
-                </ThesisDefensesBlock>
+                </ThesisDefensesBlock>}
                 {(this.state.form_templates_enabled || (this.state.forms && this.state.forms.length>0))&&
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}
@@ -223,7 +226,7 @@ class UserProfile extends CapsPage {
                 </FormsBlock>}
                 {this.state.logged_user.admin && 
                 <>
-                <h2>Documenti e allegati</h2>
+                <h2 className="mt-4">Documenti e allegati</h2>
                 <DocumentsBlock className="mt-4"
                     loadingDocument={this.state.loadingDocument} 
                     documents={this.state.documents} 

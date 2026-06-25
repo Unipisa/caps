@@ -139,6 +139,10 @@ class AppController extends Controller
 
     public ?User $user = null;
 
+    public bool $form_templates_enabled = false;
+
+    public bool $degree_sessions_enabled = false;
+
     private function setupTableViews() {
         $this->request->addDetector(
             'xlsx',
@@ -209,6 +213,8 @@ class AppController extends Controller
 
         $this->form_templates_enabled = TableRegistry::getTableLocator()->get('formTemplates')->find()
             ->where(['enabled' => true])->count() > 0;
+        $this->degree_sessions_enabled = TableRegistry::getTableLocator()->get('degreeSessions')->find()
+            ->count() > 0;
 
         $this->set('capsVersion', Application::getVersion());
         $this->set('capsShortVersion', Application::getShortVersion());
@@ -217,6 +223,7 @@ class AppController extends Controller
         $this->set('user', $this->user);
         $this->set('settings', $this->getSettings());
         $this->set('form_templates_enabled', $this->form_templates_enabled);
+        $this->set('degree_sessions_enabled', $this->degree_sessions_enabled);
 
         $this->handleSecrets();
 
