@@ -37,6 +37,20 @@ function writeVersionFile(isProduction) {
 function rewriteScriptTag() {
   const oldScriptTag = /<script\s+type="text\/javascript"\s+src="[^"]*\/js\/caps(?:-[^"]+)?(?:\.min)?\.js"><\/script>/g;
   const oldStylesheetTag = /<link\s+rel="stylesheet"\s+href="[^"]*\/js\/assets\/style-[^"]+\.css"\s*>/g;
+  const devStylesheetTag = '<link rel="stylesheet" href="/scss/main.scss">';
+  const devScriptTag = '<script type="module" src="/src/caps.js"></script>';
+
+  function rewriteHtml(html) {
+    const rewrittenHtml = html
+      .replace(oldStylesheetTag, '')
+      .replace(oldScriptTag, `${devStylesheetTag}\n    ${devScriptTag}`);
+
+    if (rewrittenHtml.includes(devStylesheetTag)) {
+      return rewrittenHtml;
+    }
+
+    return rewrittenHtml.replace('</head>', `    ${devStylesheetTag}\n</head>`);
+  }
 
   return {
     name: 'caps-vite-proxy-html',
@@ -61,10 +75,7 @@ function rewriteScriptTag() {
 
           const contentType = String(res.getHeader('content-type') || '');
           if (contentType.includes('text/html')) {
-            const html = Buffer.concat(chunks)
-              .toString('utf8')
-              .replace(oldStylesheetTag, '')
-              .replace(oldScriptTag, '<script type="module" src="/src/caps.js"></script>');
+            const html = rewriteHtml(Buffer.concat(chunks).toString('utf8'));
 
             res.removeHeader('content-length');
             return originalEnd.call(this, html, 'utf8', callback);
