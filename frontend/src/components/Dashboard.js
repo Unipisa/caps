@@ -19,6 +19,26 @@ class Dashboard extends CapsPage {
             <h1>Pannello di controllo</h1>
 <div className="row">
     <div className="col-xl-3 col-md-6 mb-4">
+        <div className="card shadow border-left-warning h-100">
+            <div className="card-body">
+                <div className="row no-gutters align-items-center">
+                    <div className="col mr-2">
+                        <a href={`${this.props.root}thesis-defenses?state=submitted`}>
+                            <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">Discussioni da valutare</div>
+                        </a>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">{this.props.data.submitted_thesis_defenses_count}</div>
+                    </div>
+                    <div className="col-auto">
+                        <a href={`${this.props.root}thesis-defenses?state=submitted`} className="btn btn-sm btn-primary">
+                            <i className="fas fa-angle-double-right mx-2"></i>
+                            <span className="d-none d-lg-inline">Visualizza</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div className="col-xl-3 col-md-6 mb-4">
         <div className="card shadow border-left-warning">
             <div className="card-body">
                 <div className="row no-gutters align-items-center">

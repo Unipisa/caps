@@ -6,6 +6,7 @@ import DocumentsBlock from "./DocumentsBlock";
 import ProposalsBlock from "./ProposalsBlock";
 import CapsPage from "./CapsPage";
 import restClient from "../modules/api";
+import ThesisDefensesBlock from './ThesisDefensesBlock';
 
 class UserProfile extends CapsPage {
     constructor(props) {
@@ -20,6 +21,7 @@ class UserProfile extends CapsPage {
             'proposals': undefined,
             'forms': undefined,
             'documents': undefined,
+            'thesis_defenses': undefined,
             'loadingDocument': false, 
         };
     }
@@ -52,6 +54,7 @@ class UserProfile extends CapsPage {
             this.loadProposals();
             this.loadForms();
             this.loadDocuments();
+            this.loadThesisDefenses();
         } catch (err) {
             this.flashCatch(err);
         }
@@ -87,6 +90,19 @@ class UserProfile extends CapsPage {
         try {
             const documents = await restClient.get('documents', { 'user_id': this.state.user.id });
             this.setState({ documents });
+        } catch(err) {
+            this.flashCatch(err);
+        }
+    }
+
+    async loadThesisDefenses() {
+        try {
+            const thesis_defenses = await restClient.get('thesis_defenses', {
+                'user_id': this.state.user.id,
+                '_sort': 'submitted_at',
+                '_direction': 'desc'
+            });
+            this.setState({ thesis_defenses });
         } catch(err) {
             this.flashCatch(err);
         }
@@ -194,6 +210,10 @@ class UserProfile extends CapsPage {
                     proposals={this.state.proposals} 
                     onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                 </ProposalsBlock>
+                <ThesisDefensesBlock className="mt-4"
+                    defenses={this.state.thesis_defenses}
+                    root={this.props.root}>
+                </ThesisDefensesBlock>
                 {(this.state.form_templates_enabled || (this.state.forms && this.state.forms.length>0))&&
                 <FormsBlock className="mt-4"
                     onDeleteClicked={this.onFormDeleteClicked.bind(this)}

@@ -86,6 +86,13 @@ $actionName = $this->request->getParam('action');
         </li>
         <?php endif; ?>
 
+        <li class="nav-item">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'add']); ?>">
+                <i class="fas mr-1 fa-graduation-cap"></i>
+                <span>Domanda di laurea</span>
+            </a>
+        </li>
+
     <?php endif; ?>
 
     <?php if (isset($user) && $user != null && $user['admin']): ?>
@@ -126,6 +133,13 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <li class="nav-item<?= $controllerName == 'ThesisDefenses' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'index']) ?>">
+                <i class="fas mr-1 fa-user-graduate"></i>
+                <span>Domande di laurea</span>
+            </a>
+        </li>
+
         <li class="nav-item<?= $controllerName == 'Logs' ? ' active' : '' ?>">
             <a class="nav-link caps-form-link" href="<?= $this->Url->build([
                 'controller' => 'logs',
@@ -151,6 +165,13 @@ $actionName = $this->request->getParam('action');
             ]); ?>">
                 <i class="fas mr-1 fa-university"></i>
                 <span>Corsi di Laurea</span>
+            </a>
+        </li>
+
+        <li class="nav-item<?= $controllerName == 'DegreeSessions' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'degreeSessions', 'action' => 'index']); ?>">
+                <i class="fas mr-1 fa-calendar-alt"></i>
+                <span>Sessioni di laurea</span>
             </a>
         </li>
 
