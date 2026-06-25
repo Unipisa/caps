@@ -68,6 +68,10 @@ class Degree extends Entity
         return $this['academic_year'] . "/" . ($this['academic_year'] % 100 + 1);
     }
 
+    public function _getTitle() {
+        return $this['name'] . " (" . $this['academic_year'] . "/" . ($this['academic_year'] + 1) . ")";
+    }
+
     public function isSharingEnabled($user = null) {
         switch ($this->enable_sharing) {
             case 0:

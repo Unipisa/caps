@@ -58,7 +58,17 @@ class DegreesTableTest extends TestCase
      */
     public function testInitialize()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->assertSame('title', $this->Degrees->getDisplayField());
+    }
+
+    public function testFindListFormatsDegreeTitle()
+    {
+        $degrees = $this->Degrees->find('list')->toArray();
+
+        $this->assertSame(
+            'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis. (2020/2021)',
+            $degrees[1]
+        );
     }
 
     /**

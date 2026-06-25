@@ -54,9 +54,7 @@ class DegreesTable extends Table
         parent::initialize($config);
 
         $this->setTable('degrees');
-        $this->setDisplayField([
-            'name', 
-            'academic_year']);
+        $this->setDisplayField('title');
         $this->setPrimaryKey('id');
 
         $this->hasMany('Curricula', [
