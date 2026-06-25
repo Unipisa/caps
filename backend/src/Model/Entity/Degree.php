@@ -61,7 +61,8 @@ class Degree extends Entity
         'free_choice_message' => true,
         'groups' => true,
         'note_label' => true,   
-        'note_default' => true 
+        'note_default' => true,
+        'thesis_session_notes' => true
     ];
 
     public function academic_years() {

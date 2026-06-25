@@ -35,12 +35,12 @@ return function (RouteBuilder $routes) {
         $routes->connect('/users/login', [ 'controller' => 'Users', 'action' => 'login' ]);
 
         $routes->prefix('api/v1', function (RouteBuilder $routes) {
-            $api_controllers = [ 
-                'Curricula', 'Degrees', 'Documents', 
-                'Exams', 'FormAttachments', 'Forms', 'FormTemplates', 
-                'Groups', 'Proposals', 'Users', 
-                'Dashboard', 'Logs', 'FormAuths', 'ThesisDefenses'
-            ];
+        $api_controllers = [ 
+            'Curricula', 'Degrees', 'DegreeSessions', 'Documents', 
+            'Exams', 'FormAttachments', 'Forms', 'FormTemplates', 
+            'Groups', 'Proposals', 'Users', 
+            'Dashboard', 'Logs', 'FormAuths', 'ThesisDefenses', 'ThesisDefenseAttachments'
+        ];
 
             foreach ($api_controllers as $controller) {
                 $uri = Inflector::underscore($controller);
@@ -48,6 +48,12 @@ return function (RouteBuilder $routes) {
                 $routes->connect('/' . $uri, 
                     ['controller' => $controller, 'action' => 'index']
                 )->setMethods([ 'GET' ]);
+
+                if ($controller === 'ThesisDefenses') {
+                    $routes->connect('/' . $uri,
+                        ['controller' => $controller, 'action' => 'post']
+                    )->setMethods([ 'POST' ]);
+                }
 
                 foreach ([ 'GET', 'POST', 'DELETE', 'PATCH', 'PUT'] as $method) {
                     $routes->connect('/' . $uri . '/*', 

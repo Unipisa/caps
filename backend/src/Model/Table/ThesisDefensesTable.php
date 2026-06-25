@@ -30,7 +30,10 @@ class ThesisDefensesTable extends Table
         return $validator
             ->integer('degree_session_id')->notEmptyString('degree_session_id')
             ->integer('user_id')->notEmptyString('user_id')
+            ->scalar('phone')->maxLength('phone', 64)->allowEmptyString('phone')
             ->scalar('title')->notEmptyString('title')
+            ->scalar('proposed_second_examiners')->allowEmptyString('proposed_second_examiners')
+            ->boolean('public')->allowEmptyString('public')
             ->inList('state', ['submitted', 'approved', 'rejected'])
             ->dateTime('scheduled_at')->allowEmptyDateTime('scheduled_at')
             ->scalar('venue')->maxLength('venue', 255)->allowEmptyString('venue')
@@ -42,9 +45,25 @@ class ThesisDefensesTable extends Table
     {
         $rules->add($rules->existsIn(['degree_session_id'], 'DegreeSessions'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->isUnique(['degree_session_id', 'user_id']), [
+        $rules->add(function ($entity) {
+            if ($entity->state !== 'submitted') {
+                return true;
+            }
+
+            $query = $this->find()
+                ->where([
+                    'user_id' => $entity->user_id,
+                    'state' => 'submitted',
+                ]);
+
+            if (!$entity->isNew()) {
+                $query->where(['id !=' => $entity->id]);
+            }
+
+            return !$query->count();
+        }, 'onlyOneSubmittedThesisDefense', [
             'errorField' => 'degree_session_id',
-            'message' => 'Hai già presentato una domanda per questa sessione.',
+            'message' => 'Hai già presentato una domanda di laurea in attesa di valutazione.',
         ]);
         return $rules;
     }

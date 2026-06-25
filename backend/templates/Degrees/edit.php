@@ -144,6 +144,16 @@
         </div>
     </div>
 
+    <div class="form-group mt-4">
+        <label for="caps-degree-thesis-session-notes" class="caps-setting-header">Istruzioni per la domanda di laurea</label>
+        <div class="caps-setting-description">
+            Questo testo viene mostrato agli studenti quando compilano una nuova domanda di laurea
+            per una sessione di questo corso. Può contenere indicazioni su cosa inserire nei campi.
+        </div>
+        <textarea id="caps-degree-thesis-session-notes"
+                    name="thesis_session_notes" class="form-control caps-settings-html"><?= $degree['thesis_session_notes'] ?></textarea>
+    </div>
+
     <?php
         if ($degree->isNew()):
             echo $this->Form->submit('Salva corso di laurea');
@@ -154,5 +164,4 @@
 <?= $this->element('card-end') ?>
 
 <?= $this->Form->end(); ?>
-
 

@@ -33,7 +33,7 @@ class CreateDegreeSessionsAndThesisDefenses extends AbstractMigration
             ->addColumn('modified', 'datetime', ['null' => true])
             ->addForeignKey('degree_session_id', 'degree_sessions', 'id', ['delete' => 'RESTRICT'])
             ->addForeignKey('user_id', 'users', 'id', ['delete' => 'RESTRICT'])
-            ->addIndex(['degree_session_id', 'user_id'], ['unique' => true])
+            ->addIndex(['degree_session_id', 'user_id'])
             ->addIndex(['state'])
             ->create();
 

@@ -36,6 +36,12 @@
                     'user' => $user,
                     'settings' => $settings,
                     'timezone' => $Caps['timezone'],
+                    'caps' => [
+                        'timezone' => $Caps['timezone'],
+                        'adminToken' => isset($capsAdminToken) ? $capsAdminToken : null,
+                    ],
+                    'form_templates_enabled' => $form_templates_enabled ?? false,
+                    'degree_sessions_enabled' => $degree_sessions_enabled ?? false,
                 ]) 
                 ?>);
         };

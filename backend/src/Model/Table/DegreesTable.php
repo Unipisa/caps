@@ -102,6 +102,10 @@ class DegreesTable extends Table
         $validator
             ->inList('enable_sharing', [ 0, 1, 2 ]);
 
+        $validator
+            ->scalar('thesis_session_notes')
+            ->allowEmptyString('thesis_session_notes');
+
         return $validator;
     }
 }

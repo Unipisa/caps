@@ -1,22 +1,22 @@
-<h1>Gestione domanda di partecipazione</h1>
-<?= $this->element('card-start') ?>
-<?= $this->element('thesis-defense-details', ['defense' => $defense]) ?>
-<hr>
-<?= $this->Form->create($defense) ?>
-<?= $this->Form->control('state', ['label' => 'Stato', 'options' => [
-    'submitted' => 'Da valutare', 'approved' => 'Approvata', 'rejected' => 'Respinta',
-], 'class' => 'form-control']) ?>
-<?= $this->Form->control('scheduled_at', [
-    'label' => 'Data e ora della discussione (' . $Caps['timezone'] . ')',
-    'type' => 'datetime-local',
-    'class' => 'form-control',
-    'value' => $defense->scheduled_at ? $defense->scheduled_at->setTimezone($Caps['timezone'])->format('Y-m-d\TH:i') : '',
-]) ?>
-<small class="form-text text-muted">Inserire l'orario nel fuso orario <?= h($Caps['timezone']) ?>.</small>
-<?= $this->Form->control('venue', ['label' => 'Sede / aula', 'class' => 'form-control']) ?>
-<div class="mt-3">
-    <?= $this->Form->button('Salva', ['class' => 'btn btn-primary']) ?>
-    <?= $this->Html->link('Annulla', ['action' => 'index'], ['class' => 'btn btn-secondary ml-2']) ?>
+<?php
+/**
+ * CAPS - Compilazione Assistita Piani di Studio
+ * Copyright (C) 2014 - 2021 E. Paolini, J. Notarstefano, L. Robol
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+?>
+
+<div id="app">
 </div>
-<?= $this->Form->end() ?>
-<?= $this->element('card-end') ?>
