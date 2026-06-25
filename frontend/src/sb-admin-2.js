@@ -1,4 +1,4 @@
-const jQuery = require('jquery');
+import jQuery from 'jquery';
 
 // We keep track of the manual opening of the sidebar, to avoid hiding in those
 // cases, as it might be unexpected from the user side.

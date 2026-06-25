@@ -40,7 +40,9 @@
       // The following script loads all the JS compiled; it is loaded in minified form when in production, 
       // and in not minified form when in development. 
     ?>
-    
+    <?php if ($this->Caps->cssName() != null): ?>
+    <link rel="stylesheet" href="<?= $this->Url->assetUrl('js/' . $this->Caps->cssName()) ?>">
+    <?php endif; ?>
     <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
 
     <?= $this->element('caps-controller'); ?>

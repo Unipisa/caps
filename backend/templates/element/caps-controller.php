@@ -23,16 +23,26 @@
 ?>
 
 <script>
-    const Caps = new CapsController(
-        '<?= $this->Url->build('/') ?>', 
-        '<?= $this->request->getParam('controller') ?>', 
-        '<?= $this->request->getParam('action') ?>',
-        <?= json_encode([
-            '_csrfToken' => $this->request->getAttribute('csrfToken'),
-            'pass' => $this->request->getParam('pass'),
-            '?' => $this->request->getQueryParams('?'),
-            'user' => $user,
-            'settings' => $settings,
-        ]) 
-        ?>);
+    (function () {
+        const startCaps = function () {
+            window.Caps = new CapsController(
+                '<?= $this->Url->build('/') ?>', 
+                '<?= $this->request->getParam('controller') ?>', 
+                '<?= $this->request->getParam('action') ?>',
+                <?= json_encode([
+                    '_csrfToken' => $this->request->getAttribute('csrfToken'),
+                    'pass' => $this->request->getParam('pass'),
+                    '?' => $this->request->getQueryParams('?'),
+                    'user' => $user,
+                    'settings' => $settings,
+                ]) 
+                ?>);
+        };
+
+        if (window.CapsController) {
+            startCaps();
+        } else {
+            window.addEventListener('caps:ready', startCaps, { once: true });
+        }
+    })();
 </script>

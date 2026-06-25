@@ -36,6 +36,10 @@ class CapsHelper extends Helper {
         return $this->computeAssetVersioning();
     }
 
+    public function cssName() {
+        return $this->readVersionedAsset("caps.css.version", "css_name", "css_time");
+    }
+
     /**
      * Return an appropriate bootstrap color based on the proposal state. 
      * In particular, green if accepted, yellow for submission, red for 
@@ -123,21 +127,30 @@ class CapsHelper extends Helper {
      */
     private function computeAssetVersioning()
     {
-        $js_name = Cache::read('js_name');
-        $js_time = Cache::read('js_time');
-
         $prefix = Configure::read('debug') ? "caps.js" : "caps.min.js";
+        return $this->readVersionedAsset($prefix . ".version", "js_name", "js_time") ?? $prefix;
+    }
 
-        $ver_file = WWW_ROOT . DS . "js" . DS . $prefix . ".version";
-        $ver_time = stat($ver_file)["mtime"];
+    private function readVersionedAsset($version_file, $name_cache_key, $time_cache_key)
+    {
+        $asset_name = Cache::read($name_cache_key);
+        $asset_time = Cache::read($time_cache_key);
 
-        if ($js_name == false || $ver_time > $js_time) {
-            $js_name = file_get_contents($ver_file);
-            Cache::write('js_name', $js_name);
-            Cache::write('js_time', $ver_time);
+        $ver_file = WWW_ROOT . DS . "js" . DS . $version_file;
+
+        if (! file_exists($ver_file)) {
+            return null;
         }
 
-        return $js_name;
+        $ver_time = stat($ver_file)["mtime"];
+
+        if ($asset_name == false || $ver_time > $asset_time) {
+            $asset_name = file_get_contents($ver_file);
+            Cache::write($name_cache_key, $asset_name);
+            Cache::write($time_cache_key, $ver_time);
+        }
+
+        return $asset_name;
     }
 
 }

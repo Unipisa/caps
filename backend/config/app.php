@@ -67,21 +67,6 @@ return [
         'username' => env('CAPS_ADMIN_TOKEN_USER', ''),
     ],
 
-    'UnipiAuthenticate' => [
-      'microsoft_oauth2_appid' => '',
-      'microsoft_oauth2_client_secret' => '',
-
-      // URI del server LDAP da interrogare
-      'ldap_server_uri' => env('CAPS_LDAP_URI', 'ldaps://127.0.0.1:1636/'),
-
-      // DN con cui autenticarsi sul server LDAP
-      'base_dn' => env('CAPS_LDAP_BASE', "ou=people,dc=unipi,dc=it"),
-
-      // True if the verification of the SSL certificate of the LDAP server
-      // is enforced. The values false might be useful in development environments.
-      'verify_cert' => filter_var(env('CAPS_VERIFY_CERT', true), FILTER_VALIDATE_BOOLEAN),
-    ],
-
     /**
      * Configure basic information about the application.
      *

@@ -24,7 +24,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use App\Model\Entity\Group;
 use Cake\ORM\TableRegistry;

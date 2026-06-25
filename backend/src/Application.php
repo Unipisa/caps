@@ -23,7 +23,6 @@
 namespace App;
 
 use App\Authentication\Authenticator\AdminTokenAuthenticator;
-use App\Identifier\Resolver\UnipiResolver;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
@@ -189,9 +188,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'password' => 'password',
             ]
         ]);
-
-        $service->loadIdentifier('App\Authentication\Identifier\UnipiAuthenticate', 
-            Configure::read('UnipiAuthenticate'));
 
         return $service;
     }

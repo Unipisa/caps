@@ -1,12 +1,4 @@
-// Explicitly passing window is required for the mocha tests to work; we detect 
-// the tests environment by checking for jsdom in the useragent. 
-var jQuery = null;
-if (window._resourceLoader && window._resourceLoader._userAgent.includes("jsdom")) {
-    jQuery = require('jquery')(window);
-}
-else {
-    jQuery = require('jquery');
-}
+import jQuery from 'jquery';
 
 // https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/string/levenshtein-distance
 /**
@@ -275,7 +267,4 @@ class CsvUpload {
     }
 }
 
-// export default CsvUpload;
-module.exports = CsvUpload;
-
-
+export default CsvUpload;

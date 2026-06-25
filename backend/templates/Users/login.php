@@ -37,6 +37,9 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template-->
+    <?php if ($this->Caps->cssName() != null): ?>
+    <link rel="stylesheet" href="<?= $this->Url->assetUrl('js/' . $this->Caps->cssName()) ?>">
+    <?php endif; ?>
     <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
 </head>
 
@@ -71,10 +74,10 @@
 
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        Credenziali di Ateneo
+                                        OAuth2
                                     </div>
                                     <div class="card-body">
-                                        <p>Effettua il login usando le credenziali di Ateneo.</p>
+                                        <p>Effettua il login usando il provider OAuth2 configurato.</p>
                                         <?php if ($oauth2_enabled): ?>
                                             <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build(
                                                 [ 'controller' => 'users', 'action' => 'oauth2-login',
