@@ -2,8 +2,6 @@ import "regenerator-runtime/runtime";
 
 import "../scss/main.scss";
 
-import '@fortawesome/fontawesome-free/css/all.css';
-
 // These libraries need to be available as global variables
 import CapsController from './caps-controller.js';
 globalThis.CapsController = CapsController;
