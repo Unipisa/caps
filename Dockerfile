@@ -4,8 +4,6 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
-	libldap2-dev \
-	libsasl2-dev \
         libicu-dev \
         libpq-dev \
         wget \
@@ -18,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
-    && docker-php-ext-install gd ldap pdo_mysql intl zip curl opcache pdo_pgsql
+    && docker-php-ext-install gd pdo_mysql intl zip curl opcache pdo_pgsql
 
 ENV NODE_VERSION=26.3.0
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
