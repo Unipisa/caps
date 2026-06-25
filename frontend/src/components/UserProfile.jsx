@@ -18,6 +18,7 @@ class UserProfile extends CapsPage {
             'logged_user': null,
             'form_templates_enabled': null,
             'degree_sessions_enabled': null,
+            'timezone': null,
             'user': undefined, 
             'proposals': undefined,
             'forms': undefined,
@@ -39,7 +40,8 @@ class UserProfile extends CapsPage {
                 'settings': status.settings, 
                 'logged_user': status.user,
                 'form_templates_enabled': status.form_templates_enabled,
-                'degree_sessions_enabled': status.degree_sessions_enabled
+                'degree_sessions_enabled': status.degree_sessions_enabled,
+                'timezone': status.timezone
             });
             this.loadUserData();
         } catch (err) {
@@ -215,7 +217,8 @@ class UserProfile extends CapsPage {
                 {this.state.degree_sessions_enabled &&
                 <ThesisDefensesBlock className="mt-4"
                     defenses={this.state.thesis_defenses}
-                    root={this.props.root}>
+                    root={this.props.root}
+                    timezone={this.state.timezone}>
                 </ThesisDefensesBlock>}
                 {(this.state.form_templates_enabled || (this.state.forms && this.state.forms.length>0))&&
                 <FormsBlock className="mt-4"

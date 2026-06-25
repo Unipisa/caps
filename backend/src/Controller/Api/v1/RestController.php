@@ -172,7 +172,8 @@ class RestController extends AppController {
             'settings' => $safe_settings, 
             'user' => $this->user,
             'form_templates_enabled' => $this->form_templates_enabled,
-            'degree_sessions_enabled' => $this->degree_sessions_enabled
+            'degree_sessions_enabled' => $this->degree_sessions_enabled,
+            'timezone' => $this->Caps['timezone'],
         ]);
     }
 

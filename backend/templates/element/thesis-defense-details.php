@@ -12,6 +12,6 @@
             <div><?= $this->Html->link($attachment->filename, ['action' => 'attachment', $attachment->id]) ?></div>
         <?php endforeach; ?>
     </dd>
-    <dt class="col-sm-3">Data e ora</dt><dd class="col-sm-9"><?= $defense->scheduled_at ? $defense->scheduled_at->format('d/m/Y H:i') : 'Non ancora assegnate' ?></dd>
+    <dt class="col-sm-3">Data e ora</dt><dd class="col-sm-9"><?= $defense->scheduled_at ? $this->Caps->formatDate($defense->scheduled_at) . ' (' . h($Caps['timezone']) . ')' : 'Non ancora assegnate' ?></dd>
     <dt class="col-sm-3">Sede</dt><dd class="col-sm-9"><?= $defense->venue ? h($defense->venue) : 'Non ancora assegnata' ?></dd>
 </dl>

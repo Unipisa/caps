@@ -19,7 +19,7 @@
             <td><?= h($defense->title) ?></td>
             <td><?= ['submitted' => 'Da valutare', 'approved' => 'Approvata', 'rejected' => 'Respinta'][$defense->state] ?? h($defense->state) ?></td>
             <td>
-                <?= $defense->scheduled_at ? $defense->scheduled_at->format('d/m/Y H:i') : '—' ?>
+                <?= $defense->scheduled_at ? $this->Caps->formatDate($defense->scheduled_at) . ' (' . h($Caps['timezone']) . ')' : '—' ?>
                 <?= $defense->venue ? '<br>' . h($defense->venue) : '' ?>
             </td>
             <td><?= $this->Html->link('Gestisci', ['action' => 'manage', $defense->id], ['class' => 'btn btn-sm btn-primary']) ?></td>

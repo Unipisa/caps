@@ -7,10 +7,10 @@ const stateLabels = {
     rejected: 'Respinta'
 };
 
-function formatDate(value) {
+function formatDate(value, timezone) {
     if (!value) return null;
     return new Intl.DateTimeFormat('it-IT', {
-        dateStyle: 'short', timeStyle: 'short'
+        dateStyle: 'short', timeStyle: 'short', timeZone: timezone
     }).format(new Date(value));
 }
 
@@ -42,7 +42,7 @@ class ThesisDefensesBlock extends React.Component {
                             </div>
                             <div className="text-muted mb-2">{defense.degree_session.degree.name}</div>
                             <p className="mb-2">{defense.title}</p>
-                            {defense.scheduled_at && <p className="mb-0"><strong>Data:</strong> {formatDate(defense.scheduled_at)}</p>}
+                            {defense.scheduled_at && <p className="mb-0"><strong>Data:</strong> {formatDate(defense.scheduled_at, this.props.timezone)} ({this.props.timezone})</p>}
                             {defense.venue && <p className="mb-0"><strong>Sede:</strong> {defense.venue}</p>}
                             <a className="btn btn-sm btn-primary mt-3" href={this.props.root + 'thesis-defenses/view/' + defense.id}>Dettagli</a>
                         </div>

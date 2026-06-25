@@ -108,6 +108,10 @@ class ThesisDefensesController extends AppController
             $allowed = array_intersect_key($this->request->getData(), array_flip([
                 'state', 'scheduled_at', 'venue',
             ]));
+            if (!empty($allowed['scheduled_at'])) {
+                $allowed['scheduled_at'] = (new FrozenTime($allowed['scheduled_at'], $this->Caps['timezone']))
+                    ->setTimezone('UTC');
+            }
             $allowed['managed_at'] = FrozenTime::now();
             $defense = $this->ThesisDefenses->patchEntity($defense, $allowed);
             if ($this->ThesisDefenses->save($defense)) {
