@@ -74,10 +74,10 @@
 
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        OAuth2
+                                        Credenziali di Ateneo
                                     </div>
                                     <div class="card-body">
-                                        <p>Effettua il login usando il provider OAuth2 configurato.</p>
+                                        <p>Effettua il login usando le credenziali di Ateneo.</p>
                                         <?php if ($oauth2_enabled): ?>
                                             <a class="ml-auto btn btn-primary" href="<?php echo $this->Url->build(
                                                 [ 'controller' => 'users', 'action' => 'oauth2-login',
