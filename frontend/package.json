@@ -34,11 +34,11 @@
     "npm-watch": "^0.7.0",
     "popper.js": "^1.16.1",
     "sass": "^1.89.1",
-    "stylelint": "^13.13.1",
-    "stylelint-config-recommended-scss": "^4.3.0",
-    "stylelint-config-standard": "^20.0.0",
-    "stylelint-order": "^4.1.0",
-    "stylelint-scss": "^3.20.1",
+    "stylelint": "^17.14.0",
+    "stylelint-config-recommended-scss": "^17.0.1",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.1",
+    "stylelint-scss": "^7.2.0",
     "uglify-js-es6": "^2.8.9",
     "vite": "^8.1.0",
     "watch": "^1.0.2"
@@ -61,5 +61,16 @@
   },
   "keywords": [],
   "author": "",
-  "license": "AGPL-3.0-or-later"
+  "license": "AGPL-3.0-or-later",
+  "allowScripts": {
+    "@fortawesome/fontawesome-common-types@0.3.0": true,
+    "@fortawesome/fontawesome-common-types@0.2.36": true,
+    "@fortawesome/fontawesome-free@5.15.4": true,
+    "@fortawesome/fontawesome-free@5.15.3": true,
+    "@fortawesome/fontawesome-svg-core@1.3.0": true,
+    "@fortawesome/free-solid-svg-icons@5.15.4": true,
+    "@parcel/watcher@2.5.1": true,
+    "esbuild@0.28.1": true,
+    "nodemon@2.0.15": true
+  }
 }
