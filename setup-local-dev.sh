@@ -22,6 +22,32 @@ if ! command -v composer &> /dev/null; then
     exit 1
 fi
 
+# Check for PHP extensions required by Composer packages
+missing_php_extensions=()
+for extension in dom SimpleXML; do
+    if ! php -m | grep -qi "^${extension}$"; then
+        missing_php_extensions+=("$extension")
+    fi
+done
+
+if [ ${#missing_php_extensions[@]} -gt 0 ]; then
+    php_version="$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;' 2>/dev/null || true)"
+    php_xml_package="php-xml"
+    if [ -n "$php_version" ]; then
+        php_xml_package="php${php_version}-xml"
+    fi
+
+    echo "Error: Missing PHP extension(s): ${missing_php_extensions[*]}"
+    echo "Composer dependencies require the PHP XML extensions DOM and SimpleXML."
+    echo ""
+    echo "On Debian/Ubuntu, install them with:"
+    echo "  sudo apt install ${php_xml_package}"
+    echo ""
+    echo "Then verify with:"
+    echo "  php -m | grep -E '^(dom|SimpleXML)$'"
+    exit 1
+fi
+
 # Install PHP dependencies
 echo "Installing PHP dependencies..."
 composer install
