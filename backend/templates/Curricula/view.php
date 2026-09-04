@@ -54,7 +54,7 @@
                         <td><?php echo h($curriculum['name']); ?></td>
                     </tr>
                 </table>
-
+            
                 <h4>Crediti per anno</h4>
                 <table class="table">
                 <?php foreach ($curriculum['credits'] as $i => $cpy): ?>
@@ -67,10 +67,11 @@
 
                 <?php if ($curriculum['notes'] != ""): ?>
                     <h4>Nota</h4>
-                    <p>
-                        <?php echo h($curriculum['notes']); ?>
-                    </p>
+                    <div>
+                        <?= $curriculum['notes'] ?>
+                    </div>
                 <?php endif; ?>
+
             </div>
         </div>
     </div>
