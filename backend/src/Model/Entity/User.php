@@ -58,6 +58,7 @@ class User extends Entity implements IdentityInterface
         'surname' => true,
         'email' => true,
         'admin' => true,
+        'supervisor' => true,
         'documents' => true
     ];
 
@@ -71,6 +72,17 @@ class User extends Entity implements IdentityInterface
         return $this;
     }
 
+    public function isAdmin() : bool
+    {
+        return (bool)$this['admin'];
+    }
+
+    // supervisors have the same read access as admins, but cannot modify anything
+    public function isAdminOrSupervisor() : bool
+    {
+        return $this->isAdmin() || (bool)$this['supervisor'];
+    }
+
     public function canAddAttachment(Proposal $proposal, $secrets = []) : bool
     {
         return $this['admin'] ||
@@ -80,7 +92,7 @@ class User extends Entity implements IdentityInterface
 
     public function canViewAttachment(Attachment $attachment, $secrets = []) : bool
     {
-        return $this['admin'] ||
+        return $this->isAdminOrSupervisor() ||
             $this['username'] == $attachment->user['username'] ||
             ($attachment->proposal != null && $this['id'] == $attachment->proposal['user_id']) ||
             ($attachment->proposal != null && $attachment->proposal->checkSecrets($secrets));
@@ -100,7 +112,7 @@ class User extends Entity implements IdentityInterface
 
     public function canViewFormAttachment(FormAttachment $attachment, $secrets = []) : bool
     {
-        return $this['admin'] ||
+        return $this->isAdminOrSupervisor() ||
             $this['username'] == $attachment->user['username'] ||
             ($attachment->form != null && $this['id'] == $attachment->form['user_id']);
     }
@@ -118,12 +130,12 @@ class User extends Entity implements IdentityInterface
 
     public function canViewForm(Form $form) : bool
     {
-        return $this['admin'] || ($this['id'] == $form['user_id']);
+        return $this->isAdminOrSupervisor() || ($this['id'] == $form['user_id']);
     }
 
     public function canViewProposal(Proposal $proposal, $secrets = []) : bool 
     {
-        return $this['admin'] || ($this['id'] == $proposal['user_id']) || $proposal->checkSecrets($secrets);
+        return $this->isAdminOrSupervisor() || ($this['id'] == $proposal['user_id']) || $proposal->checkSecrets($secrets);
     }
 
     public function canShareProposal(Proposal $proposal) : bool

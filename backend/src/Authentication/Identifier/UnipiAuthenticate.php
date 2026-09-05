@@ -86,10 +86,11 @@ class UnipiAuthenticate extends AbstractIdentifier {
                 'surname' => $user['surname'],
                 'givenname' => $user['givenname'],
                 'email' => $user['email'],
-                // We only use the database admin flag if the user is
+                // We only use the database admin/supervisor flags if the user is
                 // not found; otherwise a user might have been granted 
-                // admin privileges locally and we respect that.
-                'admin' => $identity['admin'] || $user['admin'] 
+                // admin/supervisor privileges locally and we respect that.
+                'admin' => $identity['admin'] || $user['admin'],
+                'supervisor' => $identity['supervisor'] || $user['supervisor']
             ]);
 
             if ($users_table->save($identity)) {
@@ -146,6 +147,7 @@ class UnipiAuthenticate extends AbstractIdentifier {
                         'name' => $m['cn'][0],
                         'number' => $user['matricola'] = array_get($m, 'unipistudentematricola', [$data['username']])[0],
                         'admin' => False,
+                        'supervisor' => False,
                         'email' => $m['mail'][0]
                     ];
                 }

@@ -45,7 +45,7 @@ $actionName = $this->request->getParam('action');
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <?php if (isset($user) && $user != null && $user['admin']): ?>
+        <?php if (isset($user) && $user != null && $user->isAdminOrSupervisor()): ?>
         <!-- Heading -->
         <div class="sidebar-heading">
             Utente
@@ -88,7 +88,7 @@ $actionName = $this->request->getParam('action');
 
     <?php endif; ?>
 
-    <?php if (isset($user) && $user != null && $user['admin']): ?>
+    <?php if (isset($user) && $user != null && $user->isAdminOrSupervisor()): ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -203,10 +203,12 @@ $actionName = $this->request->getParam('action');
         </li>
 
         <li class="nav-item<?= $controllerName == 'Settings' ? ' active' : '' ?>">
+            <?php if ($user->isAdmin()): ?>
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'settings', 'action' => 'index']); ?>">
             <i class="fas mr-1 fa-wrench"></i>
             <span>Impostazioni</span>
             </a>
+            <?php endif; ?>
         </li>
     <?php endif; ?>
 

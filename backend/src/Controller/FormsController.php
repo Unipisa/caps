@@ -121,7 +121,7 @@ class FormsController extends AppController
             return true;
         }
 
-        if ($user['admin']) {
+        if ($user->isAdminOrSupervisor()) {
             return true;
         }
 

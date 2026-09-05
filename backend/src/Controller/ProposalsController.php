@@ -167,8 +167,8 @@ class ProposalsController extends AppController
         $proposals = $this->Proposals->find()
             ->contain([ 'Users', 'Curricula', 'Curricula.Degrees' ]);
 
-        if ($this->user['admin']) {
-            // admin può vedere tutti i proposal
+        if ($this->user->isAdminOrSupervisor()) {
+            // admin e supervisor possono vedere tutti i proposal
         } else {
             // posso vedere solo i miei proposal
             $proposals = $proposals->where(['Users.id' => $this->user['id']]);
@@ -322,7 +322,7 @@ class ProposalsController extends AppController
 
         // authorization
         $secrets = $this->getSecrets();
-        if (!$proposal->checkSecrets($secrets) && $proposal['user']['id'] != $this->user['id'] && !$this->user['admin']) {
+        if (!$proposal->checkSecrets($secrets) && $proposal['user']['id'] != $this->user['id'] && !$this->user->isAdminOrSupervisor()) {
             throw new ForbiddenException(__(''));
         }
 

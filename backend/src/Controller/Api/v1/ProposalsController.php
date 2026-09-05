@@ -46,9 +46,9 @@ class ProposalsController extends RestController
             ->contain(ProposalsController::$associations);
         $proposals = $this->applyFilters($proposals);
 
-        // Check permissions: users can see their proposals, and admins are 
+        // Check permissions: users can see their proposals, and admins/supervisors are 
         // always allowed to perform any query they like.
-        if (!$this->user['admin'] && $this->user['id'] != $this->request->getQuery('user_id')) {
+        if (!$this->user->isAdminOrSupervisor() && $this->user['id'] != $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
@@ -63,6 +63,7 @@ class ProposalsController extends RestController
             unset($proposal['user']['number']);
             unset($proposal['user']['email']);
             unset($proposal['user']['admin']);
+            unset($proposal['user']['supervisor']);
             unset($proposal['curriculum']['notes']);
             unset($proposal['curriculum']['notes']);
             unset($proposal['curriculum']['degree']['years']);

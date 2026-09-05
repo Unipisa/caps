@@ -201,7 +201,7 @@ class UserProfile extends CapsPage {
                     root={this.props.root}
                     form_templates_enabled={this.state.form_templates_enabled}>
                 </FormsBlock>}
-                {this.state.logged_user.admin && 
+                {(this.state.logged_user.admin || this.state.logged_user.supervisor) && 
                 <>
                 <h2>Documenti e allegati</h2>
                 <DocumentsBlock className="mt-4"

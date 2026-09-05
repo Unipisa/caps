@@ -40,7 +40,7 @@ class FormsController extends RestController {
         $forms = $this->applyFilters($forms);
 
         // Check permissions
-        if (!$this->user['admin'] && $this->user['id'] != $this->request->getQuery('user_id')) {
+        if (!$this->user->isAdminOrSupervisor() && $this->user['id'] != $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }

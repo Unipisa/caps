@@ -164,12 +164,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $service->loadAuthenticator('Authentication.Session');
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => $fields,
-            'loginUrl' => Router::url([
-                'prefix' => false,
-                'plugin' => null,
-                'controller' => 'Users',
-                'action' => 'login',
-            ]),
+            // '/' is also routed to Users::login (see routes.php), so both literal paths must be
+            // accepted; Router::url() would resolve to '/' for both since it's the first matching
+            // route, so we list the literal paths instead of relying on reverse routing.
+            'loginUrl' => [ '/users/login', '/' ],
         ]);
 
         // Load identifiers

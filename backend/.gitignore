@@ -11,6 +11,8 @@
 /test_caps.sqlite
 /config/app.php
 /config/Migrations/schema-dump-default.lock
+/config/Migrations/schema-dump-test.lock
+/.phpunit.result.cache
 
 # OS generated files #
 ######################

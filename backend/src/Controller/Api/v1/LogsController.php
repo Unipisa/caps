@@ -25,7 +25,7 @@ class LogsController extends RestController {
         $logs = $this->applyFilters($logs);
 
         // Check permissions
-        if (!$this->user['admin']) {
+        if (!$this->user->isAdminOrSupervisor()) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }

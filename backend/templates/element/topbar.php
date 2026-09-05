@@ -61,7 +61,7 @@
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                     <div class="dropdown-item">
-                        Collegato come <strong><?= $user['username'] ?></strong> (<?= $user['admin'] ? 'amministratore' : 'studente' ?>)
+                        Collegato come <strong><?= $user['username'] ?></strong> (<?= $user->isAdmin() ? 'amministratore' : ($user->isAdminOrSupervisor() ? 'supervisore' : 'studente') ?>)
                     </div>
                     <div class="dropdown-divider"></div>
 

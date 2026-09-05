@@ -50,7 +50,7 @@ class UsersController extends AppController {
     public function view($id = null) {}
 
     public function index() {
-        if (!$this->user['admin']) {
+        if (!$this->user->isAdminOrSupervisor()) {
             throw new ForbiddenException();
         }
         $users = $this->Users->find('all');
@@ -58,8 +58,11 @@ class UsersController extends AppController {
         $filterForm = new UsersFilterForm($users);
         $users = $filterForm->validate_and_execute($this->request->getQuery());
         if ($this->request->is("post")) {
+            if (!$this->user->isAdmin()) {
+                throw new ForbiddenException();
+            }
             $action = null;
-            foreach(['set_admin', 'clear_admin'] as $i) {
+            foreach(['set_admin', 'clear_admin', 'set_supervisor', 'clear_supervisor'] as $i) {
                 if ($this->request->getData($i)) {
                     if ($action) {
                         $this->Flash->error(__('richiesta non valida'));
@@ -107,6 +110,28 @@ class UsersController extends AppController {
                             continue;
                         }
                         $this->Flash->success(__('Aggiunto utente {username} agli amministratori', ['username' => $user['username']]));
+                    } else if ($action === 'clear_supervisor') {
+                        if (!$user['supervisor']) {
+                            $this->Flash->error(__('L\'utente {username} non è supervisore',['username' => $user['username']]));
+                            continue;
+                        }
+                        $user['supervisor'] = false;
+                        if (!$this->Users->save($user)) {
+                            $this->Flash->error(__('Impossibile salvare il dato'));
+                            continue;
+                        }
+                        $this->Flash->success(__('Rimosso utente {username} dai supervisori', ['username' => $user['username']]));
+                    } else if ($action === 'set_supervisor') {
+                        if ($user['supervisor']) {
+                            $this->Flash->error(__('L\'utente {username} è già supervisore', ['username' => $user['username']]));
+                            continue;
+                        }
+                        $user['supervisor'] = true;
+                        if (!$this->Users->save($user)) {
+                            $this->Flash->error(__('Impossibile salvare il dato'));
+                            continue;
+                        }
+                        $this->Flash->success(__('Aggiunto utente {username} ai supervisori', ['username' => $user['username']]));
                     }
                 }
                 return $this->redirect(['action' => 'index']);
@@ -199,7 +224,7 @@ class UsersController extends AppController {
         }
         else {
             if ($this->Authentication->getIdentity()) {
-                if ($this->user['admin']) {
+                if ($this->user->isAdminOrSupervisor()) {
                     return $this->redirect([ 'controller' => 'dashboard' ]);
                 }
                 else {
