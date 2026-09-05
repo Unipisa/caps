@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
         libicu-dev \
         libpq-dev \
         wget \
-        ssh \
+        openssh-client \
         libcurl4-openssl-dev \
 	libzip-dev \
         postgresql-client \
