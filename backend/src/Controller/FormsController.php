@@ -121,7 +121,8 @@ class FormsController extends AppController
             return true;
         }
 
-        if ($user->isAdminOrSupervisor()) {
+        // Admins can view any form (not supervisors)
+        if ($user->isAdmin()) {
             return true;
         }
 

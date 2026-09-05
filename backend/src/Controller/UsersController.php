@@ -50,7 +50,8 @@ class UsersController extends AppController {
     public function view($id = null) {}
 
     public function index() {
-        if (!$this->user->isAdminOrSupervisor()) {
+        if (!$this->user->isAdmin()) {
+            // only admin (not supervisors) can view the list of users
             throw new ForbiddenException();
         }
         $users = $this->Users->find('all');
@@ -224,10 +225,11 @@ class UsersController extends AppController {
         }
         else {
             if ($this->Authentication->getIdentity()) {
-                if ($this->user->isAdminOrSupervisor()) {
+                if ($this->user->isAdmin()) {
                     return $this->redirect([ 'controller' => 'dashboard' ]);
-                }
-                else {
+                } else if ($this->user->isAdminOrSupervisor()) {
+                    return $this->redirect([ 'controller' => 'proposals' ]);
+                } else {
                     return $this->redirect([ 'controller' => 'users', 'action' => 'view' ]);
                 }
             }

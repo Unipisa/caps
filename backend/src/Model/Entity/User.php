@@ -77,7 +77,7 @@ class User extends Entity implements IdentityInterface
         return (bool)$this['admin'];
     }
 
-    // supervisors have the same read access as admins, but cannot modify anything
+    // supervisors can only see proposals but cannot modify anything or see anything else
     public function isAdminOrSupervisor() : bool
     {
         return $this->isAdmin() || (bool)$this['supervisor'];
@@ -112,7 +112,7 @@ class User extends Entity implements IdentityInterface
 
     public function canViewFormAttachment(FormAttachment $attachment, $secrets = []) : bool
     {
-        return $this->isAdminOrSupervisor() ||
+        return $this->isAdmin() ||
             $this['username'] == $attachment->user['username'] ||
             ($attachment->form != null && $this['id'] == $attachment->form['user_id']);
     }
@@ -130,7 +130,7 @@ class User extends Entity implements IdentityInterface
 
     public function canViewForm(Form $form) : bool
     {
-        return $this->isAdminOrSupervisor() || ($this['id'] == $form['user_id']);
+        return $this->isAdmin() || ($this['id'] == $form['user_id']);
     }
 
     public function canViewProposal(Proposal $proposal, $secrets = []) : bool 
