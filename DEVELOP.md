@@ -55,11 +55,15 @@ cd frontend/
 cd ..
 cd backend
   composer install # installa pacchetti PHP
+  cp example.env config/.env
+  # modifica le variabili d'ambiente in config/.env secondo le tue esigenze
+  export $(grep -v '^#' config/.env | xargs)
   bin/cake migrations migrate # crea il database
   vendor/bin/phpunit # esegue test
   bin/cake server # fai partire il server
 cd ..
 ```
+
 ## Configurazione di CakePHP
 
 Per utilizzare un server LDAP con certificato SSL non valido, ad esempio perchè inoltrato
@@ -87,11 +91,11 @@ in locale, va inoltrata la porta tramite SSH:
 ```bash
 ssh -L 1636:idm2.unipi.it:636 utente@caps.dm.unipi.it
 ```
-e poi vanno definite le seguenti variabili d'ambiente, ad esempio:
+e poi vanno definite le seguenti variabili d'ambiente in ```config/.env```, ad esempio:
 ```bash
-export CAPS_LDAP_URI=ldaps://127.0.0.1:1636/
-export CAPS_LDAP_BASE=ou=people,dc=unipi,dc=it
-export CAPS_VERIFY_CERT=false
+CAPS_LDAP_URI=ldaps://127.0.0.1:1636/
+CAPS_LDAP_BASE=ou=people,dc=unipi,dc=it
+CAPS_VERIFY_CERT=false
 ```
 
 Questa procedura viene gestita in automatico dall'immagine [Docker](docker/README.md). 
