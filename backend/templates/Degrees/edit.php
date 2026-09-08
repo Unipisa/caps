@@ -82,9 +82,9 @@
     </div>
 
     <div class="form-group">
-        <label for="caps-setting-rejected-message" class="caps-setting-header">Messaggio per piani rigettati</label>
+        <label for="caps-setting-rejected-message" class="caps-setting-header">Messaggio per piani rifiutati</label>
         <div class="caps-setting-description">
-            Questo messaggio viene mostrato allo studente quando visualizza un piano che è stato rigettato.
+            Questo messaggio viene mostrato allo studente quando visualizza un piano che è stato rifiutato.
         </div>
         <textarea id="caps-setting-rejected-message"
                     name="rejection_message" class="form-control caps-settings-html">
@@ -117,7 +117,7 @@
         </div>
         <div class="form-check mb-2" id="caps-degree-rejection-confirmation">
             <?php echo $this->Form->control('rejection_confirmation', 
-                ['label' => 'Conferma e-mail al rifuto']); ?>
+                ['label' => 'Conferma e-mail al rifiuto']); ?>
         </div>
         <div class="form-check mb-2" id="caps-degree-attachment-confirmation">
             <?php echo $this->Form->control('attachment_confirmation', 

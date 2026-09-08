@@ -231,7 +231,7 @@ class DegreesController extends AppController
             // give an indication to the user of what would be sensible to put there.
             if ($degree->isNew()) {
               $degree['approval_message'] = "Il piano di studi è stato approvato.";
-              $degree['rejection_message'] = "Il piano di studi è stato rigettato.";
+              $degree['rejection_message'] = "Il piano di studi è stato rifiutato.";
               $degree['submission_message'] = "Il piano di studi è stato correttamente sottomesso.";
             }
         }

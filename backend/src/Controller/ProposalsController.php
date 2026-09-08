@@ -153,7 +153,7 @@ class ProposalsController extends AppController
 
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
-            ->setSubject('Piano di studi rigettato');
+            ->setSubject('Piano di studi rifiutato');
         $email->viewBuilder()->setTemplate('rejection');
         try {
             $email->send();

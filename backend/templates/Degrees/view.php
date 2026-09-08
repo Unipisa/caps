@@ -116,6 +116,10 @@
             <th>Rifiuto</th>
             <td><?= $degree['rejection_confirmation'] ? 'E-mail abilitata' : 'E-mail disabilitata' ?></td>
         </tr>
+        <tr>
+            <th>Commenti e allegati</th>
+            <td><?= $degree['attachment_confirmation'] ? 'E-mail abilitata' : 'E-mail disabilitata' ?></td>
+        </tr>
     </table>
 <?= $this->element('card-end'); ?>
 
