@@ -32,11 +32,13 @@
             'type' => 'select',
             'options' => [
                 '' => __('tutti'),
-                'admin' => __('admin')]],
+                'admin' => __('admin'),
+                'supervisor' => __('supervisore')]],
         'email' => __('email'),
         'surname' => __('cognome'),
         'givenname' => __('nome')]]) ?>
 
+    <?php if ($user->isAdmin()): ?>
     <button type="button" class="ml-2 btn btn-sm btn-primary" onclick="Caps.submitForm('admin-form', { 'set_admin' : 1 }, 'Confermi di voler aggiungere gli utenti selezionati agli amministratori?')">
         Aggiungi agli amministratori
     </button>
@@ -44,6 +46,15 @@
     <button type="button" class="ml-2 btn btn-sm btn-danger" onclick="Caps.submitForm('admin-form', { 'clear_admin': 1}, 'Confermi di voler rimuovere gli utenti selezionati dagli amministratori?')">
         Rimuovi dagli amministratori
     </button>
+
+    <button type="button" class="ml-2 btn btn-sm btn-primary" onclick="Caps.submitForm('admin-form', { 'set_supervisor' : 1 }, 'Confermi di voler aggiungere gli utenti selezionati ai supervisori?')">
+        Aggiungi ai supervisori
+    </button>
+
+    <button type="button" class="ml-2 btn btn-sm btn-danger" onclick="Caps.submitForm('admin-form', { 'clear_supervisor': 1}, 'Confermi di voler rimuovere gli utenti selezionati dai supervisori?')">
+        Rimuovi dai supervisori
+    </button>
+    <?php endif; ?>
 </div>
 
 <?php echo $this->element('filter_badges'); ?>
@@ -88,6 +99,8 @@
         <td>
             <?php
                 echo $user['admin'] ? "admin" : "";
+                echo " ";
+                echo $user['supervisor'] ? "supervisor" : "";
             ?>
         </td>
     </tr>

@@ -30,5 +30,5 @@ $this->extend('/email/html/proposal_base');
 </p>
 <p>
 <?= $this->Html->link("Vai al piano di studi", 
-        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id']]) ?>
+        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id'], 'prefix' => false]) ?>
 </p>

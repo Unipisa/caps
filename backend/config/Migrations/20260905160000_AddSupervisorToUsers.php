@@ -20,14 +20,26 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-$this->extend('/email/html/proposal_base');
-?>
+use Migrations\AbstractMigration;
 
-<h3>Piano di studi sottomesso</h3>
-<p>
-    Il piano di studi è stato correttamente sottomesso.
-</p>
-<p>
-<?= $this->Html->link("Vai al piano di studi", 
-        ['controller' => 'Proposals', 'action' => 'view', '_full' => true, $proposal['id'], 'prefix' => false]) ?>
-</p>
+class AddSupervisorToUsers extends AbstractMigration
+{
+    /**
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * http://docs.phinx.org/en/latest/migrations.html#the-change-method
+     * @return void
+     */
+    public function change()
+    {
+        $table = $this->table('users');
+
+        $table->addColumn('supervisor', 'boolean', [
+            'null' => false,
+            'default' => false
+        ]);
+
+        $table->update();
+    }
+}

@@ -21,9 +21,18 @@ cd caps
 ### 2. Install PHP Dependencies
 Navigate to the backend directory and install all PHP dependencies using Composer:
 ```bash
-cd backend
-composer install
+  cd backend
+  composer install # installa pacchetti PHP
+  cp example.env config/.env
+  # modifica le variabili d'ambiente in config/.env secondo le tue esigenze
+  export $(grep -v '^#' config/.env | xargs)
+  bin/cake migrations migrate # crea il database
+  vendor/bin/phpunit # esegue test
+  bin/cake server # fai partire il server
+cd ..
 ```
+
+## Configurazione di CakePHP
 
 ### 3. Set up the Database
 #### Option A: Using SQLite (for development)
@@ -50,7 +59,6 @@ Copy the example environment file:
 ```bash
 cp example.env .env
 ```
-
 Edit the `.env` file to set up your database connection:
 ```bash
 # For SQLite

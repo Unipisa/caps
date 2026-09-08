@@ -15,9 +15,9 @@ class FormAttachmentsController extends RestController {
             [ 'contain' => FormAttachmentsController::$associations ]
         );
 
-        // If the user is not the admin, then we restrict the view to forms 
+        // If the user is not an admin, then we restrict the view to forms 
         // which he/she has control over
-        if (! $this->user['admin']) {
+        if (! $this->user->isAdmin()) {
             $d = $d->where([ 'Forms.user_id' => $this->user->id ]);
         }
 
