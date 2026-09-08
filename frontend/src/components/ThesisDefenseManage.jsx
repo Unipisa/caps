@@ -4,17 +4,18 @@ import Flash from './Flash';
 
 function formatDateLocal(dateStr, timezone) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    // API timestamps without an explicit offset are stored in UTC.
+    const utcValue = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(dateStr) ? dateStr : `${dateStr}Z`;
+    const date = new Date(utcValue);
     if (isNaN(date.getTime())) return '';
-    
-    // Convert to local datetime-local string format (YYYY-MM-DDTHH:mm)
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: timezone || 'UTC',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(date);
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
 }
 
 function ThesisDefenseManage({ root, apiRoot, csrfToken, caps, user, defenseId }) {
@@ -43,14 +44,7 @@ function ThesisDefenseManage({ root, apiRoot, csrfToken, caps, user, defenseId }
                 setState(data.data.state || '');
                 setVenue(data.data.venue || '');
                 
-                // Convert scheduled_at from UTC to local for the datetime-local input
-                if (data.data.scheduled_at) {
-                    const utcDate = new Date(data.data.scheduled_at + 'Z');
-                    const localStr = utcDate.toISOString().slice(0, 16);
-                    setScheduledAt(localStr);
-                } else {
-                    setScheduledAt('');
-                }
+                setScheduledAt(formatDateLocal(data.data.scheduled_at, caps?.timezone));
             } else {
                 const data = await response.json();
                 setFlash({ type: 'error', message: data.message || 'Impossibile caricare la domanda.' });
@@ -78,30 +72,14 @@ function ThesisDefenseManage({ root, apiRoot, csrfToken, caps, user, defenseId }
         setSaving(true);
         setFlash(null);
 
-        // Build the datetime string in the configured timezone
-        let scheduledAtValue = null;
-        if (scheduledAt) {
-            // Create a date from the local datetime-local value
-            const localDate = new Date(scheduledAt);
-            // Convert to the configured timezone
-            if (caps && caps.timezone) {
-                // The datetime-local input contains a local time
-                // We need to send it as UTC
-                const tzOffset = localDate.getTime() - localDate.UTC();
-                const utcTime = localDate.getTime() - tzOffset;
-                scheduledAtValue = new Date(utcTime).toISOString();
-            } else {
-                scheduledAtValue = localDate.toISOString();
-            }
-        }
-
         try {
             const payload = {
                 state: state,
                 venue: venue,
             };
-            if (scheduledAtValue) {
-                payload.scheduled_at = scheduledAtValue;
+            if (scheduledAt) {
+                // The API interprets this wall time in the configured timezone and converts it to UTC.
+                payload.scheduled_at = scheduledAt;
             }
 
             const response = await fetch(`${apiRoot}thesis_defenses/${defenseId}`, {
