@@ -4,7 +4,7 @@ on: push
 
 jobs:
   docker:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - name: JS tests
@@ -18,14 +18,14 @@ jobs:
         run: |
           cd backend/
           sudo apt-get update
-          sudo apt-get install php8.1
-          php8.1 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php8.1 composer-setup.php
-          php8.1 -r "unlink('composer-setup.php');"
+          sudo apt-get install php8.3
+          php8.3 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php8.3 composer-setup.php
+          php8.3 -r "unlink('composer-setup.php');"
           sudo apt-get -y install php-mbstring php-intl php-xml php-sqlite3 php-mysql php-zip php-ldap php-gd
-          php8.1 composer.phar -n install
+          php8.3 composer.phar -n install
           bin/cake migrations migrate
-          php8.1 vendor/bin/phpunit --debug
+          php8.3 vendor/bin/phpunit --debug
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Docker meta
