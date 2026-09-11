@@ -54,9 +54,7 @@ class DegreesTable extends Table
         parent::initialize($config);
 
         $this->setTable('degrees');
-        $this->setDisplayField([
-            'name', 
-            'academic_year']);
+        $this->setDisplayField('title');
         $this->setPrimaryKey('id');
 
         $this->hasMany('Curricula', [
@@ -103,6 +101,10 @@ class DegreesTable extends Table
         // 2: only admins
         $validator
             ->inList('enable_sharing', [ 0, 1, 2 ]);
+
+        $validator
+            ->scalar('thesis_session_notes')
+            ->allowEmptyString('thesis_session_notes');
 
         return $validator;
     }

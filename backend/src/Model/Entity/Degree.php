@@ -61,11 +61,16 @@ class Degree extends Entity
         'free_choice_message' => true,
         'groups' => true,
         'note_label' => true,   
-        'note_default' => true 
+        'note_default' => true,
+        'thesis_session_notes' => true
     ];
 
     public function academic_years() {
         return $this['academic_year'] . "/" . ($this['academic_year'] % 100 + 1);
+    }
+
+    public function _getTitle() {
+        return $this['name'] . " (" . $this['academic_year'] . "/" . ($this['academic_year'] + 1) . ")";
     }
 
     public function isSharingEnabled($user = null) {

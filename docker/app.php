@@ -34,6 +34,11 @@ return [
         'readonly' => ('@CAPS_READONLY@' == '') ? false : '@CAPS_READONLY@'
     ],
 
+    'AdminToken' => [
+        'token' => env('CAPS_ADMIN_TOKEN', ''),
+        'username' => env('CAPS_ADMIN_TOKEN_USER', ''),
+    ],
+
     'UnipiAuthenticate' => [
       'microsoft_oauth2_appid' => '@MICROSOFT_OAUTH2_APPID@',
       'microsoft_oauth2_client_secret' => '@MICROSOFT_OAUTH2_CLIENT_SECRET@',

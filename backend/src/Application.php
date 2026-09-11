@@ -22,7 +22,7 @@
  */
 namespace App;
 
-use App\Identifier\Resolver\UnipiResolver;
+use App\Authentication\Authenticator\AdminTokenAuthenticator;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.12.7';
+    public static $_CAPSVERSION = '2.13.0';
 
     /**
      * application version number
@@ -102,15 +102,22 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $middlewareQueue
             // Catch any exceptions in the lower layers,
             // and make an error page/response
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
+            ->add(new ErrorHandlerMiddleware(array_merge(Configure::read('Error'), [
+                // HTTP requests need a response renderer, including when run by CLI tests.
+                'exceptionRenderer' => \Cake\Error\Renderer\WebExceptionRenderer::class,
+            ])))
 
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime')
             ]))
 
-            // Add CSRF protection
-            ->add(new SessionCsrfProtectionMiddleware())
+            // Add CSRF protection. Stateless Bearer-token requests are exempt.
+            ->add((new SessionCsrfProtectionMiddleware())->skipCheckCallback(
+                function (ServerRequestInterface $request): bool {
+                    return AdminTokenAuthenticator::matchesRequest($request);
+                }
+            ))
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes
@@ -143,16 +150,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function getAuthenticationService(ServerRequestInterface $request) : AuthenticationServiceInterface
     {
         $service = new AuthenticationService();
-
+        
         // Define where users should be redirected to when they are not authenticated
         $service->setConfig([
-            'unauthenticatedRedirect' => Router::url([
-                    'prefix' => false,
-                    'plugin' => null,
-                    'controller' => 'Users',
-                    'action' => 'login',
-            ]),
+            'unauthenticatedRedirect' => Router::url('/'),
             'queryParam' => 'redirect',
+            // For API requests, we don't want to redirect to login page
+            'authError' => 'Access denied',
         ]);
 
         $fields = [
@@ -160,16 +164,17 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
         ];
 
-        // Load the authenticators. Session should be first.
+        // The administrator token takes precedence over an existing session.
+        $service->loadAuthenticator(AdminTokenAuthenticator::class);
+
+        // Load the remaining authenticators.
         $service->loadAuthenticator('Authentication.Session');
         $service->loadAuthenticator('Authentication.Form', [
             'fields' => $fields,
-            'loginUrl' => Router::url([
-                'prefix' => false,
-                'plugin' => null,
-                'controller' => 'Users',
-                'action' => 'login',
-            ]),
+            'loginUrl' => [
+                Router::url('/'),
+                Router::url('/users/login'),
+            ],
         ]);
 
         // Load identifiers
@@ -179,9 +184,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'password' => 'password',
             ]
         ]);
-
-        $service->loadIdentifier('App\Authentication\Identifier\UnipiAuthenticate', 
-            Configure::read('UnipiAuthenticate'));
 
         return $service;
     }

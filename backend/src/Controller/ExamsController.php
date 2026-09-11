@@ -23,7 +23,6 @@
 
 namespace App\Controller;
 
-use App\Auth\UnipiAuthenticate;
 use App\Controller\Event;
 use App\Model\Entity\Exam;
 use App\Model\Entity\Tag;

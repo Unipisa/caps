@@ -4,6 +4,22 @@ Sono attualmente in sviluppo delle API REST per CAPS, che vengono usate
 da (buona parte) del codice Javascript e in particolare la parte di 
 interfaccia utente sviluppata in React. 
 
+## Autenticazione amministrativa con token
+
+Se l'istanza configura `CAPS_ADMIN_TOKEN` e `CAPS_ADMIN_TOKEN_USER`, tutte le
+API possono essere invocate con privilegi amministrativi passando il token
+nell'header HTTP `Authorization`:
+
+```http
+Authorization: Bearer <CAPS_ADMIN_TOKEN>
+```
+
+`CAPS_ADMIN_TOKEN_USER` deve essere lo username di un utente già presente nel
+database. L'utente viene usato per attribuire operazioni, log e record creati;
+i privilegi amministrativi sono applicati soltanto alla richiesta autenticata
+dal token. Il token non viene accettato nella query string e deve essere usato
+esclusivamente tramite HTTPS.
+
 ## Metodi disponibili
 
 I Controller sono in `backend/src/Controller/Api/v1/` e i vari endpoint supportano i metodi HTTP GET, POST, PATCH e DELETE. 

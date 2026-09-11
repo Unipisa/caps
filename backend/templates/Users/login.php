@@ -37,6 +37,9 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template-->
+    <?php if ($this->Caps->cssName() != null): ?>
+    <link rel="stylesheet" href="<?= $this->Url->assetUrl('js/' . $this->Caps->cssName()) ?>">
+    <?php endif; ?>
     <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
 </head>
 

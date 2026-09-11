@@ -30,13 +30,6 @@ use Cake\Console\ConsoleOptionParser;
 use App\Model\Entity\User;
 
 class GrantAdminCommand extends Command {
-
-    public function initialize() : void
-    {
-        parent::initialize();
-        $this->loadModel('Users');
-    }
-
     protected function buildOptionParser(ConsoleOptionParser $parser) : ConsoleOptionParser
     {
         $parser->addArgument('username', [
@@ -62,12 +55,13 @@ class GrantAdminCommand extends Command {
     {
         $username = $args->getArgument('username');
         $password = $args->getOption('password');
+        $usersTable = $this->fetchTable('Users');
         
         if ($username == null) {
             $io->error("No user provided");
             return;
         }
-        $users = $this->Users->find()->where([ 'username' => $username ]);
+        $users = $usersTable->find()->where([ 'username' => $username ]);
         
         if ($users->count() == 0)
         {
@@ -80,7 +74,7 @@ class GrantAdminCommand extends Command {
                 $user['givenname'] = '';
                 $user['surname'] = $username;
                 $user['number'] = '000000';
-                if ($this->Users->save($user)) {
+                if ($usersTable->save($user)) {
                     $io->info("New user $username created");
                 } else {
                     $io->error("Creation of new user failed");
@@ -101,7 +95,7 @@ class GrantAdminCommand extends Command {
                 $user['password'] = $password;
                 $io->info("password set");
             }
-            if (! $this->Users->save($user))
+            if (! $usersTable->save($user))
             {
                 $io->error("Database error while saving user $username.");
             }

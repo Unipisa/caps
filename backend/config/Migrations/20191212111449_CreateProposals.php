@@ -53,7 +53,7 @@ class CreateProposals extends AbstractMigration
         ]);
         $table->addColumn('modified', 'datetime', [
             'default' => null,
-            'null' => null,
+            'null' => false,
         ]);
         $table->addForeignKey('user_id', 'users', 'id');
         $table->create();

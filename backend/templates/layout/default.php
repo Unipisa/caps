@@ -42,7 +42,9 @@
     ?>
     <?php echo $this->Html->meta('csrfToken', $this->request->getAttribute('csrfToken')); ?>
 
-    
+    <?php if ($this->Caps->cssName() != null): ?>
+    <link rel="stylesheet" href="<?= $this->Url->assetUrl('js/' . $this->Caps->cssName()) ?>">
+    <?php endif; ?>
     <script type="text/javascript" src="<?= $this->Url->assetUrl('js/' . $this->Caps->jsName()) ?>"></script>
 
     <?= $this->element('caps-controller'); ?>

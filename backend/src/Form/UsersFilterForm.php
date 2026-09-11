@@ -35,7 +35,7 @@ class UsersFilterForm extends FilterForm
           ->addField('surname', ['type' => 'string'])
           ->addField('givenname', ['type' => 'string'])
           ->addField('email', ['type' => 'string'])
-          ->addField('admin', ['type' => 'select', 'options' => ['admin']])
+          ->addField('admin', ['type' => 'select', 'options' => ['admin', 'supervisor']])
           ;
     }
 
@@ -43,6 +43,8 @@ class UsersFilterForm extends FilterForm
       $this->setData($data);
       if ($this->getData('admin') === 'admin') {
           $this->filterFieldValue('Users.admin', true);
+      } elseif ($this->getData('admin') === 'supervisor') {
+          $this->filterFieldValue('Users.supervisor', true);
       }
       $this->filterFieldLike('Users.name', 'name');
       $this->filterFieldLike('Users.surname', 'surname');

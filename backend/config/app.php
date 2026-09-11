@@ -26,7 +26,6 @@ use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
 use Cake\Database\Driver\Postgres;
 use Cake\Database\Driver\Sqlite;
-use Cake\Error\ExceptionRenderer;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
 use Cake\Mailer\Transport\DebugTransport;
@@ -60,19 +59,11 @@ return [
         'readonly' => env('CAPS_READONLY', '')
     ],
 
-    'UnipiAuthenticate' => [
-      'microsoft_oauth2_appid' => '',
-      'microsoft_oauth2_client_secret' => '',
-
-      // URI del server LDAP da interrogare
-      'ldap_server_uri' => env('CAPS_LDAP_URI', 'ldaps://127.0.0.1:1636/'),
-
-      // DN con cui autenticarsi sul server LDAP
-      'base_dn' => env('CAPS_LDAP_BASE', "ou=people,dc=unipi,dc=it"),
-
-      // True if the verification of the SSL certificate of the LDAP server
-      // is enforced. The values false might be useful in development environments.
-      'verify_cert' => filter_var(env('CAPS_VERIFY_CERT', true), FILTER_VALIDATE_BOOLEAN),
+    // Optional instance-wide Bearer token. Both values must be set to enable it.
+    // The username must identify an existing user, used for ownership and logs.
+    'AdminToken' => [
+        'token' => env('CAPS_ADMIN_TOKEN', ''),
+        'username' => env('CAPS_ADMIN_TOKEN_USER', ''),
     ],
 
     /**
@@ -234,7 +225,6 @@ return [
      */
     'Error' => [
         'errorLevel' => E_ALL,
-        'exceptionRenderer' => ExceptionRenderer::class,
         'skipLog' => [],
         'log' => true,
         'trace' => true,

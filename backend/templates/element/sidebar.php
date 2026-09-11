@@ -40,12 +40,12 @@ $actionName = $this->request->getParam('action');
         </div>
     </div>
 
-    <?php if ($user): ?>
+    <?php if ($user && $user != null && (!$user->isAdminOrSupervisor() || $user->isAdmin())): ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <?php if (isset($user) && $user != null && $user['admin']): ?>
+        <?php if (isset($user) && $user != null && $user->isAdmin()): ?>
         <!-- Heading -->
         <div class="sidebar-heading">
             Utente
@@ -85,11 +85,18 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
         <?php endif; ?>
+        <?php if ($degree_sessions_enabled): ?>
+        <li class="nav-item">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'add']); ?>">
+                <i class="fas mr-1 fa-graduation-cap"></i>
+                <span>Domanda di laurea</span>
+            </a>
+        </li>
+        <?php endif; ?>
 
     <?php endif; ?>
 
-    <?php if (isset($user) && $user != null && $user['admin']): ?>
-
+    <?php if (isset($user) && $user != null && $user->isAdmin()): ?>
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -126,6 +133,15 @@ $actionName = $this->request->getParam('action');
             </a>
         </li>
 
+        <?php if ($degree_sessions_enabled): ?>
+        <li class="nav-item<?= $controllerName == 'ThesisDefenses' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'index']) ?>">
+                <i class="fas mr-1 fa-user-graduate"></i>
+                <span>Domande di laurea</span>
+            </a>
+        </li>
+        <?php endif; ?>
+
         <li class="nav-item<?= $controllerName == 'Logs' ? ' active' : '' ?>">
             <a class="nav-link caps-form-link" href="<?= $this->Url->build([
                 'controller' => 'logs',
@@ -151,6 +167,13 @@ $actionName = $this->request->getParam('action');
             ]); ?>">
                 <i class="fas mr-1 fa-university"></i>
                 <span>Corsi di Laurea</span>
+            </a>
+        </li>
+
+        <li class="nav-item<?= $controllerName == 'DegreeSessions' ? ' active' : '' ?>">
+            <a class="nav-link" href="<?= $this->Url->build(['controller' => 'degreeSessions', 'action' => 'index']); ?>">
+                <i class="fas mr-1 fa-calendar-alt"></i>
+                <span>Sessioni di laurea</span>
             </a>
         </li>
 
@@ -203,11 +226,34 @@ $actionName = $this->request->getParam('action');
         </li>
 
         <li class="nav-item<?= $controllerName == 'Settings' ? ' active' : '' ?>">
+            <?php if ($user->isAdmin()): ?>
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'settings', 'action' => 'index']); ?>">
             <i class="fas mr-1 fa-wrench"></i>
             <span>Impostazioni</span>
             </a>
+            <?php endif; ?>
         </li>
+    <?php endif; ?>
+
+    <?php if (isset($user) && $user != null && $user->isAdminOrSupervisor() && !$user->isAdmin()): ?>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+            Gestione
+        </div>
+
+        <li class="nav-item<?= $controllerName == 'Proposals' ? ' active' : '' ?>">
+            <a class="nav-link caps-proposal-link" href="<?= $this->Url->build([
+                'controller' => 'proposals',
+                'action' => 'index'
+            ]) ?>">
+                <i class="fas mr-1 fa-file-alt"></i>
+                <span>Piani di studio</span>
+            </a>
+        </li>
+
     <?php endif; ?>
 
     <!-- Divider -->

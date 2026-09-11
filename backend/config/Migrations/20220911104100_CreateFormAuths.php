@@ -50,7 +50,7 @@ class CreateFormAuths extends AbstractMigration
         ]);
         $table->addColumn('created', 'datetime',[
             'default' => null,
-            'null' => null,
+            'null' => false,
         ]);
         $table->create();
 

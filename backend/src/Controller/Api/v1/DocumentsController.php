@@ -17,7 +17,7 @@ class DocumentsController extends RestController {
 
         $d = $this->applyFilters($d);
 
-        if (!$this->user['admin']) {
+        if (!$this->user->isAdminOrSupervisor()) {
             $d = $d->where(["owner_id" => $this->user['id']]);
         }
 
@@ -27,6 +27,7 @@ class DocumentsController extends RestController {
             unset($x['user']['number']);
             unset($x['user']['email']);
             unset($x['user']['admin']);
+            unset($x['user']['supervisor']);
         }
 
         $this->JSONResponse(ResponseCode::Ok, $d);
