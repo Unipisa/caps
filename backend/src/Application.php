@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.12.4';
+    public static $_CAPSVERSION = '2.13.0';
 
     /**
      * application version number
@@ -102,7 +102,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $middlewareQueue
             // Catch any exceptions in the lower layers,
             // and make an error page/response
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
+            ->add(new ErrorHandlerMiddleware(array_merge(Configure::read('Error'), [
+                // HTTP requests need a response renderer, including when run by CLI tests.
+                'exceptionRenderer' => \Cake\Error\Renderer\WebExceptionRenderer::class,
+            ])))
 
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware([

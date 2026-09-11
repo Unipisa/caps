@@ -46,9 +46,9 @@ class ProposalsController extends RestController
             ->contain(ProposalsController::$associations);
         $proposals = $this->applyFilters($proposals);
 
-        // Check permissions: users can see their proposals, and admins are 
+        // Check permissions: users can see their proposals, and admins/supervisors are 
         // always allowed to perform any query they like.
-        if (!$this->user['admin'] && $this->user['id'] != $this->request->getQuery('user_id')) {
+        if (!$this->user->isAdminOrSupervisor() && $this->user['id'] != $this->request->getQuery('user_id')) {
             $this->JSONResponse(ResponseCode::Forbidden);
             return;
         }
@@ -63,6 +63,7 @@ class ProposalsController extends RestController
             unset($proposal['user']['number']);
             unset($proposal['user']['email']);
             unset($proposal['user']['admin']);
+            unset($proposal['user']['supervisor']);
             unset($proposal['curriculum']['notes']);
             unset($proposal['curriculum']['notes']);
             unset($proposal['curriculum']['degree']['years']);
@@ -120,11 +121,14 @@ class ProposalsController extends RestController
             $this->JSONResponse(ResponseCode::Error, null, 'The current user can not edit this proposal or proposal does not exist.');
         }
 
+        $state_changed = false;
+
         foreach($payload as $field => $value) {
             if ($field == "state") {
                 // Solo il proprietario e l'amministratore possono modifica
                 if ($this->user['admin'] || $proposal['state'] == "draft") {
                     $proposal[$field] = $value;
+                    $state_changed = true;
                     $this->logProposalAction($proposal, $value, []);
                 } else {
                     $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted proposal');
@@ -140,7 +144,21 @@ class ProposalsController extends RestController
                 }
             }
         }
+
         $this->Proposals->save($proposal);
+
+        if ($state_changed) {
+            if ($proposal['state'] == 'approved') {
+                $proposal['approved_date'] = \Cake\I18n\Time::now();
+                $this->Proposals->save($proposal);
+                $this->notifyApproval($proposal);
+            } elseif ($proposal['state'] == 'rejected') {
+                $proposal['approved_date'] = null;
+                $this->Proposals->save($proposal);
+                $this->notifyRejection($proposal);
+            }
+        }
+
         $this->JSONResponse(ResponseCode::Ok, $proposal);
     }
 
@@ -244,6 +262,50 @@ class ProposalsController extends RestController
             ->setEmailFormat('html');
 
         return $email;
+    }
+
+    private function notifyApproval($proposal)
+    {
+        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
+            return;
+        }
+
+        if (! $proposal['curriculum']['degree']['approval_confirmation']) {
+            return;
+        }
+
+        $email = $this->createProposalEmail($proposal)
+            ->setTo($proposal['user']['email'])
+            ->setSubject('Piano di studi approvato');
+        $email->viewBuilder()->setTemplate('approval');
+
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the approval email: " . $e->getMessage());
+        }
+    }
+
+    private function notifyRejection($proposal)
+    {
+        if ($proposal['user']['email'] == "" || $proposal['user']['email'] == null) {
+            return;
+        }
+
+        if (! $proposal['curriculum']['degree']['rejection_confirmation']) {
+            return;
+        }
+
+        $email = $this->createProposalEmail($proposal)
+            ->setTo($proposal['user']['email'])
+            ->setSubject('Piano di studi rigettato');
+        $email->viewBuilder()->setTemplate('rejection');
+
+        try {
+            $email->send();
+        } catch (\Exception $e) {
+            $this->log("Could not send the rejection email: " . $e->getMessage());
+        }
     }
 
 }

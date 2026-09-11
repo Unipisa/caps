@@ -41,9 +41,6 @@
                     [ 'label' => 'Corso di Laurea', 'disabled' => ! $curriculum->isNew() ]
                 );
                 echo $this->Form->control('name', [ 'label' => 'Nome' ]);
-                echo $this->Form->control(
-                    'notes'
-                );
                 ?>
                 <?php if (! $curriculum->isNew()): ?>
                 <h4>Crediti per anno</h4>
@@ -57,6 +54,11 @@
                     </div>
                 <?php endfor; ?>
                 <?php endif; ?>
+                <div class="form-group">
+                    <label for="caps-curriculum-notes">Nota</label>
+                    <textarea id="caps-curriculum-notes" name="notes" 
+                        class="form-control caps-settings-html"><?= $curriculum['notes'] ?></textarea>
+                </div>
                 <?php
                 echo $this->Form->submit($curriculum->isNew() ? 'Crea' : 'Aggiorna');
                 echo $this->Form->end();

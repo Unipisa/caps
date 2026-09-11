@@ -22,7 +22,7 @@
  */
 use Migrations\AbstractMigration;
 
-class CreateFormAuths extends AbstractMigration
+class AddSupervisorToUsers extends AbstractMigration
 {
     /**
      * Change Method.
@@ -33,27 +33,13 @@ class CreateFormAuths extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('form_auths');
-        
-        $table->addColumn('form_id', 'integer', [
-            'default' => null,
-            'limit' => 11,
-            'null' => false,
-        ]);
-        $table->addColumn('email', 'string', [
-            'null' => false,
-        ]);
-        $table->addColumn('secret', 'string', [
-            'default' => null,
-            'limit' => 255,
-            'null' => false,
-        ]);
-        $table->addColumn('created', 'datetime',[
-            'default' => null,
-            'null' => false,
-        ]);
-        $table->create();
+        $table = $this->table('users');
 
-        $table->addForeignKey('form_id', 'forms')->save();
+        $table->addColumn('supervisor', 'boolean', [
+            'null' => false,
+            'default' => false
+        ]);
+
+        $table->update();
     }
 }

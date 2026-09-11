@@ -49,8 +49,8 @@ class DocumentsController extends AppController
             'contain' => ['Users']
         ]);
 
-        // Only administrators can see documents
-        if ($this->user['admin']) {
+        // Only administrators and supervisors can see documents
+        if ($this->user->isAdminOrSupervisor()) {
             return $this->response
                 ->withStringBody(stream_get_contents($document['data']))
                 ->withType($document['mimetype'])
@@ -164,7 +164,7 @@ class DocumentsController extends AppController
         /* come controllo i permessi?!?
         if (! $this->user || ! $this->user->canViewAttachment($attachment))
         */
-        if (!$this->user['admin']) {
+        if (!$this->user->isAdminOrSupervisor()) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
         }
         $signatures = $document->signatures();

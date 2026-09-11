@@ -38,13 +38,11 @@ require __DIR__ . '/paths.php';
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 
 use Cake\Cache\Cache;
-use Cake\Error\ConsoleErrorHandler;
 use Cake\Core\Configure;
 use Cake\Core\Configure\Engine\PhpConfig;
 use Cake\Core\Plugin;
 use Cake\Database\Type;
 use Cake\Datasource\ConnectionManager;
-use Cake\Error\ErrorHandler;
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
@@ -52,6 +50,27 @@ use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
 use App\Utility\ConfigDebugger;
+use Cake\Error\ErrorTrap;
+use Cake\Error\ExceptionTrap;
+
+/**
+ * Uncomment block of code below if you want to use `.env` file during development.
+ * You should copy `../example.env` to `config/.env` and set/modify the
+ * variables as required.
+ *
+ * It is HIGHLY discouraged to use a .env file in production, due to security risks
+ * and decreased performance on each request. The purpose of the .env file is to emulate
+ * the presence of the environment variables like they would be present in production.
+ */
+if (!env('CAPS_CDS') && file_exists(CONFIG . '.env')) {
+    // CAPS_CDS is used (instead of APP_NAME, which this project never sets) to detect
+    // whether env vars are already provided by the environment (e.g. production Docker env_file).
+    $dotenv = new \josegonzalez\Dotenv\Loader([CONFIG . '.env']);
+    $dotenv->parse()
+        ->putenv()
+        ->toEnv()
+        ->toServer();
+}
 
 /*
  * Read configuration file and inject configuration into various
@@ -114,11 +133,8 @@ ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
  * Register application error and exception handlers.
  */
 $isCli = PHP_SAPI === 'cli';
-if ($isCli) {
-    (new ConsoleErrorHandler(Configure::read('Error')))->register();
-} else {
-    (new ErrorHandler(Configure::read('Error')))->register();
-}
+(new ErrorTrap(Configure::read('Error')))->register();
+(new ExceptionTrap(Configure::read('Error')))->register();
 
 /*
  * Include the CLI bootstrap overrides.
