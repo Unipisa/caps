@@ -1,5 +1,7 @@
 FROM php:8.5-apache-trixie
 
+# PHP 8.5's official image already builds cURL and OPcache into PHP. Trying to
+# install either again leaves no shared modules/* artifact for the helper.
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -16,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
-    && docker-php-ext-install gd pdo_mysql intl zip curl opcache pdo_pgsql
+    && docker-php-ext-install gd pdo_mysql intl zip pdo_pgsql \
+    && php -r "foreach (['curl', 'Zend OPcache', 'gd', 'intl', 'pdo_mysql', 'pdo_pgsql', 'zip'] as \$extension) { if (!extension_loaded(\$extension)) { fwrite(STDERR, \"Missing PHP extension: {\$extension}\\n\"); exit(1); } }"
 
 ENV NODE_VERSION=26.8.2
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
@@ -47,4 +50,3 @@ RUN sed -i "s/memory_limit = .*/memory_limit = 512M/" /usr/local/etc/php/php.ini
 WORKDIR /backend
 
 CMD './caps-exec'
-
