@@ -55,4 +55,22 @@ class ProposalsControllerTest extends MyIntegrationTestCase
         $this->get('/curricula');
         $this->assertResponseOk();
     }
+
+    public function testJsonExportUsesConfiguredFields(): void
+    {
+        $this->adminSession();
+        $this->get('/proposals/index.json');
+
+        $this->assertResponseOk();
+        $data = json_decode((string)$this->_response->getBody(), true);
+        $this->assertNotEmpty($data);
+        $this->assertArrayHasKey('note', $data[0]);
+        $this->assertArrayHasKey('user', $data[0]);
+        $this->assertArrayHasKey('curriculum', $data[0]);
+        $this->assertArrayNotHasKey('password', $data[0]['user']);
+        $this->assertSame(
+            ['id', 'name', 'academic_year'],
+            array_keys($data[0]['curriculum']['degree'])
+        );
+    }
 }

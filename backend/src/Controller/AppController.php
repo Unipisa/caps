@@ -135,6 +135,14 @@ function flatten($object)
  */
 class AppController extends Controller
 {
+    /**
+     * Dot-separated fields included in JSON and spreadsheet exports.
+     * An empty list preserves the existing export behavior.
+     *
+     * @var list<string>
+     */
+    protected array $exportFields = [];
+
     // Reference to the settingsTable, which is cached in case the user requests some configuration keys. In this way,
     // we make sure that subsequent requests for configuration keys will be handled by this cache instead of triggering
     // a new query to the database.
@@ -360,19 +368,86 @@ class AppController extends Controller
         return $query->where([$primaryKey . ' IN' => $ids]);
     }
 
+    /**
+     * Build the nested field tree used by projectExportValue().
+     *
+     * @return array<string, mixed>
+     */
+    private function exportFieldTree(): array
+    {
+        $tree = [];
+        foreach ($this->exportFields as $field) {
+            $node = &$tree;
+            foreach (explode('.', $field) as $segment) {
+                $node[$segment] ??= [];
+                $node = &$node[$segment];
+            }
+            $node['__include'] = true;
+            unset($node);
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Recursively retain only fields present in the export schema.
+     */
+    private function projectExportValue(mixed $value, array $tree): mixed
+    {
+        if (isset($tree['__include'])) {
+            return $value;
+        }
+
+        if ($value instanceof \Cake\Datasource\EntityInterface) {
+            $value = $value->toArray();
+        } elseif ($value instanceof \Traversable) {
+            $value = iterator_to_array($value, false);
+        } elseif (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        if (array_is_list($value)) {
+            return array_map(fn($item) => $this->projectExportValue($item, $tree), $value);
+        }
+
+        $projected = [];
+        foreach ($tree as $field => $subtree) {
+            if ($field !== '__include' && array_key_exists($field, $value)) {
+                $projected[$field] = $this->projectExportValue($value[$field], $subtree);
+            }
+        }
+
+        return $projected;
+    }
+
+    private function projectExportFields(mixed $data): mixed
+    {
+        if ($this->exportFields === []) {
+            return $data;
+        }
+
+        return $this->projectExportValue($data, $this->exportFieldTree());
+    }
+
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);
 
-        if ($this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
+        if ($this->request->is('json') || $this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
             $vars = $this->viewBuilder()->getOption('serialize');
             if (! is_array($vars)) {
                 $vars = [ $vars ];
             }
 
             foreach ($vars as $var) {
-                // We only convert times to strings for CSV requests. 
-                $data = flatten($this->viewBuilder()->getVar($var));
+                $data = $this->projectExportFields($this->viewBuilder()->getVar($var));
+                if (!$this->request->is('json')) {
+                    $data = flatten($data);
+                }
                 $this->set($var, $data);
             }
         }

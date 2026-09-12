@@ -10,7 +10,6 @@ import { FilterButton, FilterInput, FilterSelect, FilterBadges,
         ActionButtons, ActionButton, ColumnHeader,
         ResponsiveButton, ResponsiveButtons 
         } from './Table';
-import { CSVDownload, CSVLink } from "react-csv";
 
 class Proposals extends ItemsBase {
     constructor(props) {
@@ -75,16 +74,9 @@ class Proposals extends ItemsBase {
 
                     <div className="col-auto">
                         <button type="button" className="btn btn-sm btn-primary mr-2"
-                            onClick={async () => this.setState({csvData: await this.csvData()})}>
+                            onClick={() => this.downloadExport('csv')}>
                             <i className="fas fw fa-download"></i><span className="ml-2 d-none d-md-inline">Esporta in CSV</span>
                         </button>
-                        {this.state.csvData !== undefined 
-                            ? <CSVDownload 
-                                data={this.state.csvData.data}
-                                headers={this.state.csvData.headers}
-                                filename="caps-piani.csv"
-                                target="_blank" /> 
-                            : null }
                         <button type="button" className="btn btn-sm btn-primary" onClick={() => this.downloadExport('xlsx')}>
                             <i className="fas fw fa-file-excel"></i>
                                 <span className="ml-2 d-none d-md-inline">

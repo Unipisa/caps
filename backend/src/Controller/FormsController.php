@@ -33,7 +33,27 @@ use App\Form\FormsFilterForm;
 
 
 class FormsController extends AppController
-{    
+{
+    protected array $exportFields = [
+        'id',
+        'state',
+        'date_submitted',
+        'date_managed',
+        'data',
+        'modified',
+        'user.id',
+        'user.username',
+        'user.name',
+        'user.number',
+        'user.givenname',
+        'user.surname',
+        'user.email',
+        'form_template.name',
+        'form_template.enabled',
+        'form_template.notify_emails',
+        'form_template.require_approval'
+    ];
+
     public function index()
     {
         $forms = $this->Forms->find()->contain([ 'FormTemplates', 'Users' ]);

@@ -41,6 +41,26 @@ use DateTime;
 
 class ProposalsController extends AppController
 {
+    protected array $exportFields = [
+        'id',
+        'modified',
+        'state',
+        'submitted_date',
+        'approved_date',
+        'note',
+        'user.id',
+        'user.name',
+        'user.givenname',
+        'user.surname',
+        'curriculum.id',
+        'curriculum.name',
+        'curriculum.credits_per_year',
+        'curriculum.credits',
+        'curriculum.degree.id',
+        'curriculum.degree.name',
+        'curriculum.degree.academic_year',
+    ];
+
     public array $paginate = [
         'sortableFields' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
         'limit' => 10,
