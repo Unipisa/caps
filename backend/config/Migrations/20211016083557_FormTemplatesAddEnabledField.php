@@ -22,9 +22,9 @@
  */
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class FormTemplatesAddEnabledField extends AbstractMigration
+class FormTemplatesAddEnabledField extends BaseMigration
 {
     /**
      * Change Method.

@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class RemoveDuplicatedExams extends AbstractMigration
+class RemoveDuplicatedExams extends BaseMigration
 {
     public function up()
     {
@@ -90,10 +90,7 @@ class RemoveDuplicatedExams extends AbstractMigration
     private function myExecute($sql, $params) {
         $conn = $this->getAdapter()->getConnection();
 
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
-
-        return $stmt;
+        return $conn->execute($sql, $params);
     }
 
 }

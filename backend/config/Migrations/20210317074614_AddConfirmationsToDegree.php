@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddConfirmationsToDegree extends AbstractMigration
+class AddConfirmationsToDegree extends BaseMigration
 {
     /**
      * We add some fields to the degrees table: 

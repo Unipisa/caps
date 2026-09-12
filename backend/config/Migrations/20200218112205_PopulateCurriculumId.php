@@ -20,10 +20,10 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 use Cake\ORM\TableRegistry;
 
-class PopulateCurriculumId extends AbstractMigration
+class PopulateCurriculumId extends BaseMigration
 {
     /**
      * Change Method.

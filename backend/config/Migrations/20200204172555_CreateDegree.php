@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class CreateDegree extends AbstractMigration
+class CreateDegree extends BaseMigration
 {
     /**
      * Change Method.
@@ -57,6 +57,7 @@ class CreateDegree extends AbstractMigration
         ]);
         $table->update();
         $table->addForeignKey('degree_id', 'degrees', 'id');
+        $table->update();
 
         // Insert the only two degrees that were supported up to this revision
         $this->table('degrees')->insert([

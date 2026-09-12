@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class RemoveThesisDefenseUniqueRequestIndex extends AbstractMigration
+class RemoveThesisDefenseUniqueRequestIndex extends BaseMigration
 {
     public function up(): void
     {

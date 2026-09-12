@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
 
-class CreateDegreeSessionsAndThesisDefenses extends AbstractMigration
+class CreateDegreeSessionsAndThesisDefenses extends BaseMigration
 {
     public function change(): void
     {
@@ -51,10 +51,10 @@ class CreateDegreeSessionsAndThesisDefenses extends AbstractMigration
             ->addColumn('filename', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('mimetype', 'string', ['limit' => 255, 'null' => false])
             ->addColumn('created', 'datetime', ['null' => true]);
-        if ($this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
-            $attachments->addColumn('data', 'blob', ['null' => false, 'limit' => MysqlAdapter::BLOB_LONG]);
+        if ($this->getAdapter()->getAdapterType() === 'mysql') {
+            $attachments->addColumn('data', 'binary', ['null' => false, 'limit' => MysqlAdapter::BLOB_LONG]);
         } else {
-            $attachments->addColumn('data', 'blob', ['null' => false]);
+            $attachments->addColumn('data', 'binary', ['null' => false]);
         }
         $attachments
             ->addForeignKey('thesis_defense_id', 'thesis_defenses', 'id', ['delete' => 'CASCADE'])

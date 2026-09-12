@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
     colors="true"
     processIsolation="false"
     stopOnFailure="false"
@@ -19,17 +20,17 @@
     </testsuites>
 
     <!-- Ignore vendor tests in code coverage reports -->
-    <filter>
-        <whitelist>
+    <source>
+        <include>
             <directory suffix=".php">src/</directory>
             <directory suffix=".php">plugins/*/src/</directory>
-            <exclude>
-                <file>src/Console/Installer.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
+        </include>
+        <exclude>
+            <file>src/Console/Installer.php</file>
+        </exclude>
+    </source>
 
-  <extensions>
-    <extension class="\Cake\TestSuite\Fixture\PHPUnitExtension" />
-  </extensions>
+    <extensions>
+        <bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
+    </extensions>
 </phpunit>

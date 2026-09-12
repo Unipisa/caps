@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class CreateCompulsoryExams extends AbstractMigration
+class CreateCompulsoryExams extends BaseMigration
 {
     /**
      * Change Method.
@@ -55,7 +55,8 @@ class CreateCompulsoryExams extends AbstractMigration
             'null' => false,
         ]);
         $table->create();
-        $table->addForeignKey('exam_id', 'exam', 'id');
+        $table->addForeignKey('exam_id', 'exams', 'id');
         $table->addForeignKey('curriculum_id', 'curricula', 'id');
+        $table->update();
     }
 }

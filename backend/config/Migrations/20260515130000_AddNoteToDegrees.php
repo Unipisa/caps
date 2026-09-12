@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-use Migrations\AbstractMigration;
-class AddNoteToDegrees extends AbstractMigration
+use Migrations\BaseMigration;
+class AddNoteToDegrees extends BaseMigration
 {
     public function change()
     {

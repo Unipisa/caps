@@ -44,13 +44,15 @@ class ProposalsControllerTest extends MyIntegrationTestCase
         $this->get('/proposals/edit');
         $this->assertResponseOk();
 
-        $this->get('/exams.json');
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+
+        $this->get('/exams');
         $this->assertResponseOk();
 
-        $this->get('/groups.json');
+        $this->get('/groups');
         $this->assertResponseOk();
 
-        $this->get('/curricula.json');
+        $this->get('/curricula');
         $this->assertResponseOk();
     }
 }

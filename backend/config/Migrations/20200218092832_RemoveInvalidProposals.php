@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class RemoveInvalidProposals extends AbstractMigration
+class RemoveInvalidProposals extends BaseMigration
 {
     /**
      * Change Method.
@@ -34,7 +34,7 @@ class RemoveInvalidProposals extends AbstractMigration
     public function up()
     {
       // Migrate the current data
-        $db = $this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $db = $this->getAdapter()->getAdapterType();
         if ($db == 'mysql') {
             $this->execute('delete proposals from proposals left join curricula_proposals as cp on proposals.id=cp.proposal_id where cp.id is null;');
         }

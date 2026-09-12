@@ -22,9 +22,9 @@
  */
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddNotifyFieldToFormTemplate extends AbstractMigration
+class AddNotifyFieldToFormTemplate extends BaseMigration
 {
     /**
      * Change Method.

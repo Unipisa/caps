@@ -20,13 +20,13 @@ use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\TestCase;
 use InvalidArgumentException;
 
 /**
  * ApplicationTest class
  */
-class ApplicationTest extends IntegrationTestCase
+class ApplicationTest extends TestCase
 {
 
     public function getApp()
@@ -67,7 +67,7 @@ class ApplicationTest extends IntegrationTestCase
 
         $app = $this->getMockBuilder(Application::class)
             ->setConstructorArgs([dirname(dirname(__DIR__)) . '/config'])
-            ->setMethods(['addPlugin'])
+            ->onlyMethods(['addPlugin'])
             ->getMock();
 
         $app->method('addPlugin')
