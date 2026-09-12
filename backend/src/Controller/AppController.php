@@ -146,6 +146,13 @@ class AppController extends Controller
 
     public bool $degree_sessions_enabled = false;
 
+    /**
+     * Application configuration exposed to controllers and views.
+     *
+     * @var array<string, mixed>
+     */
+    public array $Caps = [];
+
     private function setupTableViews() {
         $this->request->addDetector(
             'xlsx',

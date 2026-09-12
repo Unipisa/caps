@@ -57,7 +57,6 @@ class FormsTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\FormsTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -68,7 +67,6 @@ class FormsTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\FormsTable::buildRules()
      */
     public function testBuildRules(): void
     {

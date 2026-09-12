@@ -21,6 +21,12 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
+<?php
+$Caps = ($Caps ?? []) + ['readonly' => false];
+$email_configured ??= true;
+$settings = ($settings ?? []) + ['disclaimer' => ''];
+$user ??= null;
+?>
 <!-- Topbar -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 

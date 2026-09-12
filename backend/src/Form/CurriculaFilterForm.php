@@ -35,7 +35,7 @@ class CurriculaFilterForm extends FilterForm
           ->addField('degree', ['type' => 'string']);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
         $this->filterFieldLike('Curricula.name', 'name');

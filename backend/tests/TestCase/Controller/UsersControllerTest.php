@@ -24,6 +24,8 @@ use Cake\ORM\TableRegistry;
 class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
+
+    protected $Users;
     
     protected array $fixtures = [
         'app.Degrees',

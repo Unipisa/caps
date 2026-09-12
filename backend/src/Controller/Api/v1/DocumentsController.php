@@ -11,9 +11,7 @@ class DocumentsController extends RestController {
     public $allowedFilters = [ 'user_id' => Integer::class ];
 
     public function index() {
-        $d = $this->Documents->find('all', 
-            [ 'contain' => DocumentsController::$associations ]
-        );
+        $d = $this->Documents->find('all', contain: DocumentsController::$associations);
 
         $d = $this->applyFilters($d);
 

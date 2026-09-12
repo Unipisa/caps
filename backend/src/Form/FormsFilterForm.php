@@ -36,7 +36,7 @@ class FormsFilterForm extends FilterForm
           ->addField('name', ['type' => 'string']);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
 

@@ -21,6 +21,7 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
+<?php $capsVersion ??= \App\Application::getVersion(); ?>
 <!-- Footer -->
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">

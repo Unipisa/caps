@@ -119,7 +119,7 @@ class RestController extends AppController {
         return $query;
     }
 
-    protected function JSONResponse(ResponseCode $code, mixed $data = null, string $message = null) : void {
+    protected function JSONResponse(ResponseCode $code, mixed $data = null, ?string $message = null) : void {
         $this->viewBuilder()->setOption('serialize', 'response');
         $this->viewBuilder()->setClassName('\Cake\View\JsonView');
 

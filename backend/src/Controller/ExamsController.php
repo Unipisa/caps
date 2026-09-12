@@ -48,7 +48,7 @@ class ExamsController extends AppController
     private function exams()
     {
         return $this->Exams->find()
-            ->order([ 'Exams.name' => 'asc' ]);
+            ->orderBy([ 'Exams.name' => 'asc' ]);
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -59,7 +59,7 @@ class ExamsController extends AppController
     public function index()
     {
         $exams = $this->Exams->find()
-            ->order([ 'Exams.name' => 'asc' ])
+            ->orderBy([ 'Exams.name' => 'asc' ])
             ->contain([ 'Tags']);
 
         $filterForm = new ExamsFilterForm($exams);
@@ -184,9 +184,7 @@ class ExamsController extends AppController
         }
 
         if ($id) { // edit
-            $exam = $this->Exams->get($id, [
-                'contain' => [ 'Groups', 'Tags' ]
-            ]);
+            $exam = $this->Exams->get($id, contain: [ 'Groups', 'Tags' ]);
             if (!$exam) {
                 throw new NotFoundException(__('Errore: esame non esistente.'));
             }

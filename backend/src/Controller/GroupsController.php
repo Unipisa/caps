@@ -56,7 +56,7 @@ class GroupsController extends AppController
     {
         $groups = $this->Groups->find('all')->contain([ 
             'Exams' => function ($q) {
-                return $q->order([ 'Exams.name' => 'asc' ]);
+                return $q->orderBy([ 'Exams.name' => 'asc' ]);
                 },
             'Degrees' 
             ]);

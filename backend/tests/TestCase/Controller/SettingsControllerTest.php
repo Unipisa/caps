@@ -8,7 +8,6 @@ use Cake\TestSuite\TestCase;
 /**
  * App\Controller\SettingsController Test Case
  *
- * @uses \App\Controller\SettingsController
  */
 class SettingsControllerTest extends TestCase
 {

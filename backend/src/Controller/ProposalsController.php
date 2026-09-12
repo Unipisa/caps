@@ -591,11 +591,12 @@ class ProposalsController extends AppController
             $this->Proposals->Curricula
             ->find()
             ->contain([ 'Degrees' ])
-            ->find('list', [
-                'valueField' => function ($c) {
+            ->find(
+                'list',
+                valueField: function ($c) {
                     return $c->toString();
                 }
-            ])
+            )
         );
         $this->set('proposal', $proposal);
     }

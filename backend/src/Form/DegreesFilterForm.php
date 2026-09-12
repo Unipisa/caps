@@ -36,7 +36,7 @@ class DegreesFilterForm extends FilterForm
           ->addField('enabled', ['type' => 'select', 'options' => [0, 1]]);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
         $this->filterFieldLike('Degrees.name', 'name');

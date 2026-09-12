@@ -8,7 +8,6 @@ use Cake\TestSuite\TestCase;
 /**
  * App\Controller\AttachmentsController Test Case
  *
- * @uses \App\Controller\AttachmentsController
  */
 class AttachmentsControllerTest extends MyIntegrationTestCase
 {

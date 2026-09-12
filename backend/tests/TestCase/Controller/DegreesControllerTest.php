@@ -6,10 +6,11 @@ use Cake\ORM\TableRegistry;
 /**
  * App\Controller\DegreesController Test Case
  *
- * @uses \App\Controller\DegreesController
  */
 class DegreesControllerTest extends MyIntegrationTestCase
 {
+    protected $Degrees;
+
     /**
      * Fixtures
      *

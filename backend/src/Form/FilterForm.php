@@ -28,6 +28,8 @@ use Cake\Validation\Validator;
 
 class FilterForm extends Form
 {
+    protected $query;
+
     public function __construct($query)
     {
         parent::__construct();

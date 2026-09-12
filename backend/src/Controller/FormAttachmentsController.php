@@ -43,7 +43,7 @@ class FormAttachmentsController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view(string $id = null) : \Cake\Http\Response
+    public function view(?string $id = null) : \Cake\Http\Response
     {
         $attachment = $this->FormAttachments->get($id, [
             'contain' => ['Users', 'Forms', 'Forms.Users' ]
