@@ -174,6 +174,7 @@ class ProposalsController extends AppController
 
         $filterForm = new ProposalsFilterForm($proposals);
         $proposals = $filterForm->validate_and_execute($this->request->getQuery());
+        $proposals = $this->applyExportSelection($proposals, 'Proposals.id');
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {

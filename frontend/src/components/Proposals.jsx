@@ -85,7 +85,7 @@ class Proposals extends ItemsBase {
                                 filename="caps-piani.csv"
                                 target="_blank" /> 
                             : null }
-                        <button type="button" className="btn btn-sm btn-primary" onClick={() => { location.pathname += '.xlsx' }}>
+                        <button type="button" className="btn btn-sm btn-primary" onClick={() => this.downloadExport('xlsx')}>
                             <i className="fas fw fa-file-excel"></i>
                                 <span className="ml-2 d-none d-md-inline">
                                     <span className="d-none d-xl-inline">Esporta in </span>Excel

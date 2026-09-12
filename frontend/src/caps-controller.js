@@ -70,13 +70,27 @@ class CapsController {
         });
     }
 
-    // Trigger a CSV download using Javascript. 
+    selectedIds() {
+        return Array.from(document.querySelectorAll('input[name="selection[]"]:checked'))
+            .map(input => input.value);
+    }
+
+    download(extension) {
+        const url = new URL(window.location.href);
+        url.pathname += `.${extension}`;
+        url.searchParams.delete('selection[]');
+
+        this.selectedIds().forEach(id => url.searchParams.append('selection[]', id));
+        window.location.href = url.toString();
+    }
+
+    // Trigger a CSV download using Javascript.
     downloadCSV() {
-        location.pathname += '.csv';
+        this.download('csv');
     }
 
     downloadXLSX() {
-        location.pathname += '.xlsx';
+        this.download('xlsx');
     }
     
 

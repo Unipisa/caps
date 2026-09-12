@@ -333,6 +333,33 @@ class AppController extends Controller
         return $this->settingsTable->getSetting($field, $default);
     }
 
+    /**
+     * Restrict an exported query to the rows selected in the table, when any.
+     */
+    protected function applyExportSelection($query, string $primaryKey): mixed
+    {
+        if (!$this->request->is(['csv', 'xlsx', 'ods'])) {
+            return $query;
+        }
+
+        $selection = $this->request->getQuery('selection');
+        if ($selection === null || $selection === []) {
+            return $query;
+        }
+
+        $selection = is_array($selection) ? $selection : [$selection];
+        $ids = array_values(array_filter(
+            $selection,
+            static fn($id): bool => is_scalar($id) && ctype_digit((string)$id) && (int)$id > 0
+        ));
+
+        if (count($ids) !== count($selection)) {
+            throw new \Cake\Http\Exception\BadRequestException(__('Invalid export selection'));
+        }
+
+        return $query->where([$primaryKey . ' IN' => $ids]);
+    }
+
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);

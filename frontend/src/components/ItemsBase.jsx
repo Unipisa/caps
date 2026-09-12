@@ -165,6 +165,28 @@ class ItemsBase extends CapsPage {
         return this.state.rows.filter(row => row.selected).length;
     }
 
+    selectedItems() {
+        return (this.state.rows || [])
+            .filter(row => row.selected)
+            .map(row => row.item);
+    }
+
+    exportQueryString() {
+        const params = new URLSearchParams();
+
+        Object.entries(this.state.query).forEach(([key, value]) => {
+            if (key !== '_limit') params.append(key, value);
+        });
+        this.selectedItems().forEach(item => params.append('selection[]', item.id));
+
+        return params.toString();
+    }
+
+    downloadExport(extension) {
+        const query = this.exportQueryString();
+        window.location.href = `${this.props.root}${this.items_name()}.${extension}${query ? `?${query}` : ''}`;
+    }
+
     async approveSelected() {
         if (await this.confirm("Confermi approvazione?", 
             `Vuoi approvare ${this.countSelected()} ${this.item_items_noun()} selezionati?`)) {
@@ -227,12 +249,17 @@ class ItemsBase extends CapsPage {
 
     async csvData() {
         try {
-            let query = {...this.state.query};
+            const selected = this.selectedItems();
+            let data = selected;
 
-            // carica tutti i dati, rimuovi "limit"
-            // ma mantieni eventuali filtri (e ordinamento)
-            delete query._limit;
-            const data = await restClient.get(`${this.items_name()}/`, query);
+            if (selected.length === 0) {
+                let query = {...this.state.query};
+
+                // carica tutti i dati, rimuovi "limit"
+                // ma mantieni eventuali filtri (e ordinamento)
+                delete query._limit;
+                data = await restClient.get(`${this.items_name()}/`, query);
+            }
 
             // collect all keys from all forms
             let keys = [];

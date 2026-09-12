@@ -80,6 +80,9 @@ class FilterForm extends Form
             '1' => TRUE
         ];
         $value = $this->getData($field);
+        if ($value === null) {
+            return;
+        }
         if (array_key_exists($value, $bool_values)) {
             $this->query = $this->query->where([
                 $dbfield => $bool_values[$value]

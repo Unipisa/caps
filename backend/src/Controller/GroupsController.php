@@ -61,23 +61,24 @@ class GroupsController extends AppController
             'Degrees' 
             ]);
 
-        // We currently eliminate the exams from groups when exporting to 
-        // CSV or XLSX formats; this is probably not particularly useful, 
-        // but it's not easy to effectively represent the hierarchical data. 
+        $filterForm = new GroupsFilterForm($groups);
+        $groups = $filterForm->validate_and_execute($this->request->getQuery());
+        $groups = $this->applyExportSelection($groups, 'Groups.id');
+
+        // We currently eliminate the exams from groups when exporting to
+        // CSV or XLSX formats; this is probably not particularly useful,
+        // but it's not easy to effectively represent the hierarchical data.
         //
-        // Note that the pagination is computed only for standard views. 
+        // Note that the pagination is computed only for standard views.
         if ($this->request->is([ 'csv', 'xlsx' ])) {
             $groups = array_map(function ($g) {
                 $g->exams = [];
                 return $g;
             }, $groups->toArray());
-        }
-        else {
+        } else {
             $this->set('paginated_groups', $this->paginate($groups->cleanCopy()));
         }
-        
-        $filterForm = new GroupsFilterForm($groups);
-        $groups = $filterForm->validate_and_execute($this->request->getQuery());
+
         $this->set('filterForm', $filterForm);
         $this->set('groups', $groups);
         $this->viewBuilder()->setOption('serialize', ['groups']); // overwritten below if CSV is requested

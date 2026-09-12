@@ -59,6 +59,7 @@ class CurriculaController extends AppController
 
         $filterForm = new CurriculaFilterForm($curricula);
         $curricula = $filterForm->validate_and_execute($this->request->getQuery());
+        $curricula = $this->applyExportSelection($curricula, 'Curricula.id');
         $this->set('filterForm', $filterForm);
 
         $this->set('curricula', $curricula);

@@ -28,22 +28,12 @@ class Forms extends ItemsBase {
         return <>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b></>
     }
 
-    encodeQueryParams(query) {
-        const params = new URLSearchParams();
-
-        Object.entries(query).forEach( ([key, el]) => {
-            params.append(key, el)
-        })
-
-        return params.toString()
-    }
-
     downloadCSV() {
-        window.location.href = "/forms.csv?" + this.encodeQueryParams(this.state.query)
+        this.downloadExport('csv');
     }
 
     downloadXLSX() {
-        window.location.href = "/forms.xlsx?" + this.encodeQueryParams(this.state.query)
+        this.downloadExport('xlsx');
     }
 
     renderPage() {

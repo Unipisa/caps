@@ -57,6 +57,7 @@ class DegreesController extends AppController
         
         $filterForm = new DegreesFilterForm($degrees);
         $degrees = $filterForm->validate_and_execute($this->request->getQuery());
+        $degrees = $this->applyExportSelection($degrees, 'Degrees.id');
         $this->set('filterForm', $filterForm);
 
         $this->set('degrees', $degrees);

@@ -64,6 +64,7 @@ class ExamsController extends AppController
 
         $filterForm = new ExamsFilterForm($exams);
         $exams = $filterForm->validate_and_execute($this->request->getQuery());
+        $exams = $this->applyExportSelection($exams, 'Exams.id');
         $this->set('filterForm', $filterForm);
 
         if ($this->request->is("post")) {

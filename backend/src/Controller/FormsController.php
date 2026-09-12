@@ -40,6 +40,7 @@ class FormsController extends AppController
 
         $filterForm = new FormsFilterForm($forms);
         $forms = $filterForm->validate_and_execute($this->request->getQuery());
+        $forms = $this->applyExportSelection($forms, 'Forms.id');
 
         $this->set('data', $forms);
         $this->viewBuilder()->setOption('serialize', 'data');

@@ -84,6 +84,25 @@ class DegreesControllerTest extends MyIntegrationTestCase
         $this->assertResponseOK();
     }
 
+    public function testCsvExportHonorsSelection(): void
+    {
+        $this->Degrees = TableRegistry::getTableLocator()->get('Degrees');
+        $otherDegree = $this->Degrees->newEntity([
+            'name' => 'Degree that must not be exported',
+            'academic_year' => 2021,
+            'years' => 2,
+            'enable_sharing' => 1,
+        ]);
+        $this->Degrees->saveOrFail($otherDegree);
+
+        $this->adminSession();
+        $this->get('/degrees.csv?selection%5B%5D=1');
+
+        $this->assertResponseOK();
+        $this->assertResponseContains('Lorem ipsum dolor sit amet');
+        $this->assertResponseNotContains('Degree that must not be exported');
+    }
+
     /**
      * Test add method
      *
