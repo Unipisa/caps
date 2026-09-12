@@ -8,7 +8,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class UsersFixture extends TestFixture
 {
-    public $records = [
+    public array $records = [
         [
             'id' => 1,
             'username' => 'mario.rossi',

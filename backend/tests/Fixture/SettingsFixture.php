@@ -8,7 +8,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class SettingsFixture extends TestFixture
 {
-    public $records = [
+    public array $records = [
         [
             'field' => 'Lorem ipsum dolor sit amet',
             'value' => 'Lorem ipsum dolor sit amet',

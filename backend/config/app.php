@@ -98,7 +98,7 @@ return [
         'namespace' => 'App',
         'encoding' => env('APP_ENCODING', 'UTF-8'),
         'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
-        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
+        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'Etc/UTC'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',
@@ -251,7 +251,7 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => getenv('SMTP_HOST') ? SmtpTransport::class : DebugTransport::class,
+            'className' => env('SMTP_HOST') ? SmtpTransport::class : DebugTransport::class,
             /*
              * The following keys are used in SMTP transports:
              */
@@ -323,7 +323,7 @@ return [
             'timezone' => 'UTC',
             'flags' => [],
             'cacheMetadata' => true,
-            'log' => false,
+            'log' => null,
 
             /**
              * Set identifier quoting to true if you are using reserved words or
@@ -378,7 +378,7 @@ return [
             'path' => LOGS,
             'file' => 'debug',
             'url' => env('LOG_DEBUG_URL', null),
-            'scopes' => false,
+            'scopes' => null,
             'levels' => ['notice', 'info', 'debug'],
         ],
         'error' => [
@@ -386,7 +386,7 @@ return [
             'path' => LOGS,
             'file' => 'error',
             'url' => env('LOG_ERROR_URL', null),
-            'scopes' => false,
+            'scopes' => null,
             'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
         ],
         // To enable this dedicated query log, you need set your datasource's log flag to true

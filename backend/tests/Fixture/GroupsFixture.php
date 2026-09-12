@@ -8,9 +8,9 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class GroupsFixture extends TestFixture
 {
-    public $table = 'groups';
+    public string $table = 'groups';
 
-    public $records = [
+    public array $records = [
         [ 
             'id' => 1, 
             'degree_id' => 1, 

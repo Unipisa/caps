@@ -44,7 +44,7 @@ class Exam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'code' => true,
         'sector' => true,

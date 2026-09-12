@@ -37,9 +37,8 @@ use App\Form\DegreesFilterForm;
  */
 class DegreesController extends AppController
 {
-    public $paginate = [
-//        'contain' => [ 'Degrees' ],
-        'sortWhitelist' => [ 'academic_year', 'name' ],
+    public array $paginate = [
+        'sortableFields' => [ 'academic_year', 'name' ],
         'limit' => 10,
         'order' => [
             'academic_year' => 'desc',
@@ -61,7 +60,7 @@ class DegreesController extends AppController
         $this->set('filterForm', $filterForm);
 
         $this->set('degrees', $degrees);
-        $this->set('_serialize', [ 'degrees' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'degrees' ]);
         $this->set('paginated_degrees', $this->paginate($degrees->cleanCopy()));
 
         if ($this->request->is("post")) {
@@ -202,12 +201,10 @@ class DegreesController extends AppController
      */
     public function view($id = null)
     {
-        $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula', 'Groups', 'default_group']
-        ]);
+        $degree = $this->Degrees->get($id, contain: ['Curricula', 'Groups', 'default_group']);
 
         $this->set('degree', $degree);
-        $this->set('_serialize', 'degree');
+        $this->viewBuilder()->setOption('serialize', 'degree');
     }
 
     /**
@@ -302,11 +299,9 @@ class DegreesController extends AppController
     }
 
     public function curricula($id) {
-        $degree = $this->Degrees->get($id, [
-            'contain' => ['Curricula']
-        ]);
+        $degree = $this->Degrees->get($id, contain: ['Curricula']);
 
         $this->set('curricula', $degree['curricula']);
-        $this->set('_serialize', [ 'curricula' ]);
+        $this->viewBuilder()->setOption('serialize', [ 'curricula' ]);
     }
 }

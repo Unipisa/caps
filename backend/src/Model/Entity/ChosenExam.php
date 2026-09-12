@@ -46,7 +46,7 @@ class ChosenExam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'credits' => true,
         'exam_id' => true,
         'proposal_id' => true,

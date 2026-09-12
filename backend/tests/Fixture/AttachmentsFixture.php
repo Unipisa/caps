@@ -8,7 +8,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class AttachmentsFixture extends TestFixture
 {
-    public $table = 'attachments';
+    public string $table = 'attachments';
 
     public function init() : void
     {

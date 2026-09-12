@@ -52,7 +52,7 @@ class DuplicateDegrees extends AbstractMigration
         
         $new_degrees = []; // old_degree_id -> academic_year -> new_degree_id 
 
-        $DegreesTable = TableRegistry::get('Degrees');
+        $DegreesTable = \Cake\ORM\TableRegistry::getTableLocator()->get('Degrees');
 
         foreach ($q as $record) {
             $record['curricula_id'] = intval($record['curricula_id']);

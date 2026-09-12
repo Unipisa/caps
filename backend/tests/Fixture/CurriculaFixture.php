@@ -10,9 +10,9 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class CurriculaFixture extends TestFixture
 {
-    public $table = 'curricula';
+    public string $table = 'curricula';
 
-    public $records = [
+    public array $records = [
         [
             'id' => 1,
             'name' => 'Lorem ipsum dolor sit amet',

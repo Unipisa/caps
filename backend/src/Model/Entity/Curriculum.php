@@ -44,7 +44,7 @@ class Curriculum extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'proposals' => true,
         'compulsory_exams' => true,
@@ -55,7 +55,7 @@ class Curriculum extends Entity
         'credits_per_year' => true
     ];
 
-    protected $_virtual = ['credits'];
+    protected array $_virtual = ['credits'];
 
     public function toString()
     {

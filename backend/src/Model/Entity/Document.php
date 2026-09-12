@@ -33,7 +33,7 @@ use App\Model\Entity\DocumentBase;
  * @property int|null $owner_id
  * @property int|null $user_id
  * @property string|resource|null $data
- * @property \Cake\I18n\FrozenTime|null $created
+ * @property \Cake\I18n\DateTime|null $created
  * @property string|null $comment
  * @property string|null $mimetype
  *
@@ -50,7 +50,7 @@ class Document extends DocumentBase
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'filename' => true,
         'owner_id' => true,
         'user_id' => true,

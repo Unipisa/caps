@@ -69,9 +69,9 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
         // Update the entries by setting the year guessing that
         // the exams are given in the right order, and with 60
         // credits per year.
-        $tbl = TableRegistry::get('Proposals');
-        $chosen_exams_tbl = TableRegistry::get('ChosenExams');
-        $chosen_free_choice_exams_tbl = TableRegistry::get('ChosenFreeChoiceExams');
+        $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('Proposals');
+        $chosen_exams_tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenExams');
+        $chosen_free_choice_exams_tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams');
 
         $proposals = $tbl->find()
             ->contain([ 'ChosenExams', 'ChosenFreeChoiceExams',

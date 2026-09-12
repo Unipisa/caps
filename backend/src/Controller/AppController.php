@@ -35,6 +35,9 @@ use stdClass;
 use Cake\Event\EventInterface;
 use App\Model\Entity\User;
 use App\Model\Entity\Log;
+use App\View\CsvView;
+use App\View\OdsView;
+use App\View\XlsxView;
 
 function is_associative_array($item)
 {
@@ -56,7 +59,7 @@ function recurseFlattenObject($object)
     }
     foreach ($properties as $key => $val) {
         if (is_object($val) || is_associative_array($val)) {
-            if ($val instanceof FrozenTime) {
+            if ($val instanceof \Cake\I18n\DateTime) {
                 $obj->{$key} = $val;
             } else {
                 $subobj = recurseFlattenObject($val);
@@ -170,10 +173,6 @@ class AppController extends Controller
                 'value' => 'csv',
             ]
         );
-
-        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
-        $this->RequestHandler->setConfig('viewClassMap.ods',  'Ods');
-        $this->RequestHandler->setConfig('viewClassMap.csv',  'Csv');
     }
 
     /**
@@ -189,9 +188,9 @@ class AppController extends Controller
     {
         parent::initialize();
 
-        $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false, 
-        ]);
+        // $this->loadComponent('RequestHandler', [
+        //    'enableBeforeRedirect' => false, 
+        //]);
 
         // Hook up the correct views for Csv, Xslx, Ods, and similar data types. 
         $this->setupTableViews();
@@ -211,9 +210,9 @@ class AppController extends Controller
         $this->Caps = Configure::Read('Caps');
         if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
 
-        $this->form_templates_enabled = TableRegistry::getTableLocator()->get('formTemplates')->find()
+        $this->form_templates_enabled = TableRegistry::getTableLocator()->get('FormTemplates')->find()
             ->where(['enabled' => true])->count() > 0;
-        $this->degree_sessions_enabled = TableRegistry::getTableLocator()->get('degreeSessions')->find()
+        $this->degree_sessions_enabled = TableRegistry::getTableLocator()->get('DegreeSessions')->find()
             ->count() > 0;
 
         $this->set('capsVersion', Application::getVersion());
@@ -227,6 +226,12 @@ class AppController extends Controller
 
         $this->handleSecrets();
 
+        $this->addViewClasses([
+            XlsxView::class,
+            OdsView::class,
+            CsvView::class,
+        ]);
+
     }
 
     public function beforeFilter(EventInterface $event) {
@@ -237,7 +242,7 @@ class AppController extends Controller
             }
         }
 
-        $this->response->setTypeMap('xslx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->response->setTypeMap('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $this->response->setTypeMap('ods', 'application/vnd.oasis.opendocument.spreadsheet');
     }
 
@@ -347,7 +352,7 @@ class AppController extends Controller
             "user_id" => $this->user["id"],
             "external_type" => "proposal",
             "external_id" => $proposal["id"],
-            "timestamp" => FrozenTime::now(),
+            "timestamp" => \Cake\I18n\DateTime::now(),
             "action" => $action,
             "detail" => json_encode($details_data)
         ]);

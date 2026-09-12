@@ -22,7 +22,7 @@ class ChosenExamsTableTest extends TestCase
      *
      * @var array
      */
-    public $fixtures = [
+    public array $fixtures = [
         'app.ChosenExams',
         'app.Exams',
         'app.Proposals'

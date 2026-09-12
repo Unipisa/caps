@@ -42,23 +42,55 @@ return function (RouteBuilder $routes) {
             'Dashboard', 'Logs', 'FormAuths', 'ThesisDefenses', 'ThesisDefenseAttachments'
         ];
 
+            // Public degree ceremony schedule. This must precede the generic
+            // /degree_sessions/* route, which dispatches GET requests to get().
+            $routes->connect('/degree_sessions/today', [
+                'controller' => 'DegreeSessions',
+                'action' => 'today',
+            ])->setMethods([ 'GET' ]);
+
             foreach ($api_controllers as $controller) {
                 $uri = Inflector::underscore($controller);
+                $dashedUri = Inflector::dasherize($controller);
 
                 $routes->connect('/' . $uri, 
                     ['controller' => $controller, 'action' => 'index']
                 )->setMethods([ 'GET' ]);
 
+                if ($dashedUri !== $uri) {
+                    $routes->connect('/' . $dashedUri,
+                        ['controller' => $controller, 'action' => 'index'],
+                        ['_name' => $controller . ':index:dashed']
+                    )->setMethods([ 'GET' ]);
+                }
+
                 if ($controller === 'ThesisDefenses') {
                     $routes->connect('/' . $uri,
                         ['controller' => $controller, 'action' => 'post']
                     )->setMethods([ 'POST' ]);
+
+                    if ($dashedUri !== $uri) {
+                        $routes->connect('/' . $dashedUri,
+                            ['controller' => $controller, 'action' => 'post'],
+                            ['_name' => $controller . ':post:dashed']
+                        )->setMethods([ 'POST' ]);
+                    }
                 }
 
                 foreach ([ 'GET', 'POST', 'DELETE', 'PATCH', 'PUT'] as $method) {
                     $routes->connect('/' . $uri . '/*', 
                         [ 'controller' => $controller, 'action' => strtolower($method) ]
                     )->setMethods([ $method ]);
+
+                    if ($dashedUri !== $uri) {
+                        $routes->connect('/' . $dashedUri . '/*',
+                            [
+                                'controller' => $controller,
+                                'action' => strtolower($method),
+                            ],
+                            ['_name' => $controller . ':' . strtolower($method) . ':item:dashed']
+                        )->setMethods([ $method ]);
+                    }
                 }
             }
 

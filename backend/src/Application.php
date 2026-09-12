@@ -26,7 +26,7 @@ use App\Authentication\Authenticator\AdminTokenAuthenticator;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
-use Authentication\Identifier\IdentifierInterface;
+use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
@@ -73,7 +73,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
-        $this->addPlugin('Migrations');
+	// Not needed since CakePHP 5
+        // $this->addPlugin('Migrations');
         $this->addPlugin('Authentication');
 
         if (PHP_SAPI === 'cli') {
@@ -85,7 +86,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
          * Debug Kit should not be installed on a production system
          */
         if (Configure::read('debug')) {
-            $this->addPlugin(\DebugKit\Plugin::class);
+	    $this->addPlugin('DebugKit');
         }
 
         // Load more plugins here
@@ -160,8 +161,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         ]);
 
         $fields = [
-            IdentifierInterface::CREDENTIAL_USERNAME => 'username',
-            IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
+            AbstractIdentifier::CREDENTIAL_USERNAME => 'username',
+            AbstractIdentifier::CREDENTIAL_PASSWORD => 'password'
         ];
 
         // The administrator token takes precedence over an existing session.

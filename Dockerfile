@@ -1,4 +1,4 @@
-FROM php:8.3-apache-trixie
+FROM php:8.5-apache-trixie
 
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     && php /tmp/composer-setup.php --install-dir=/usr/local/bin \
     && docker-php-ext-install gd pdo_mysql intl zip curl opcache pdo_pgsql
 
-ENV NODE_VERSION=26.3.0
+ENV NODE_VERSION=26.8.2
 ENV PATH="/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \

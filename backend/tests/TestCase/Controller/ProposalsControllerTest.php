@@ -13,7 +13,7 @@ class ProposalsControllerTest extends MyIntegrationTestCase
 {
     use IntegrationTestTrait;
 
-    public $fixtures = [
+    public array $fixtures = [
             'app.Users',
             'app.Proposals',
             'app.Curricula',

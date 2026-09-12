@@ -22,24 +22,29 @@
  */
 namespace App\View;
 
-use Cake\View\View;
-use App\View\SpreadsheetView;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
-use Cake\I18n\FrozenTime;
 
 class OdsView extends SpreadsheetView
 {
-    public function render(?string $template = null, $layout = null) : string {
+    /**
+     * @inheritDoc
+     */
+    public static function contentType(): string
+    {
+        return 'application/vnd.oasis.opendocument.spreadsheet';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function render(?string $template = null, string|false|null $layout = null): string
+    {
         $spreadsheet = $this->renderSpreadsheet(false);
 
         $writer = new Ods($spreadsheet);
-        $tmpfile = tempnam("/tmp", "ods-writer-");
-        $writer->save($tmpfile);
-        $res = file_get_contents($tmpfile);
-        
-        unlink($tmpfile);
+        ob_start();
+        $writer->save('php://output');
 
-        return $res;
+        return (string)ob_get_clean();
     }
 }

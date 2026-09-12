@@ -47,7 +47,7 @@ class CompulsoryExam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'year' => true,
         'position' => true,
         'exam_id' => true,

@@ -37,6 +37,11 @@ require __DIR__ . '/paths.php';
  */
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 
+/*
+ * Load global functions for collections, translations, debugging etc.
+ */
+require CAKE . 'functions.php';
+
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Configure\Engine\PhpConfig;
@@ -45,7 +50,7 @@ use Cake\Database\Type;
 use Cake\Datasource\ConnectionManager;
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
@@ -62,7 +67,7 @@ use Cake\Error\ExceptionTrap;
  * and decreased performance on each request. The purpose of the .env file is to emulate
  * the presence of the environment variables like they would be present in production.
  */
-if (!env('CAPS_CDS') && file_exists(CONFIG . '.env')) {
+if (!getenv('CAPS_CDS') && file_exists(CONFIG . '.env')) {
     // CAPS_CDS is used (instead of APP_NAME, which this project never sets) to detect
     // whether env vars are already provided by the environment (e.g. production Docker env_file).
     $dotenv = new \josegonzalez\Dotenv\Loader([CONFIG . '.env']);
@@ -165,7 +170,6 @@ if (!Configure::read('App.fullBaseUrl')) {
 Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
 TransportFactory::setConfig(Configure::consume('EmailTransport'));
-Email::setConfig(Configure::consume('Email'));
 Log::setConfig(Configure::consume('Log'));
 Security::setSalt(Configure::consume('Security.salt'));
 

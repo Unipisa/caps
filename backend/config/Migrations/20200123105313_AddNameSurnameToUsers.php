@@ -45,7 +45,7 @@ class AddNameSurnameToUsers extends AbstractMigration
         ]);
         $table->update();
 
-        $tbl = TableRegistry::get('Users');
+        $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('Users');
         $users = $tbl->find();
 
         foreach ($users as $user) {

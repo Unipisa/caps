@@ -31,7 +31,7 @@ use Cake\ORM\Entity;
  * @property int|null $proposal_id
  * @property string|null $email
  * @property string|null $secret
- * @property \Cake\I18n\FrozenTime|null $created
+ * @property \Cake\I18n\DateTime|null $created
  *
  * @property \App\Model\Entity\Proposal $proposal
  * @property \App\Model\Entity\User $user
@@ -47,7 +47,7 @@ class ProposalAuth extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'proposal_id' => true,
         'email' => true,
         'secret' => true,

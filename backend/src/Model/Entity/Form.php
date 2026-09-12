@@ -35,7 +35,7 @@ class Form extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'user_id' => true,
         'form_template_id' => true,
         'data' => true,

@@ -26,7 +26,7 @@ use App\Model\Entity\Form;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\Time;
+use Cake\I18n\DateTime;
 use Cake\Mailer\Email;
 use Cake\Validation\Validation;
 use App\Form\FormsFilterForm;
@@ -78,7 +78,7 @@ class FormsController extends AppController
             $form->template_text = $form_template['text'];
 
             if ($data['action'] == 'submit') {
-                $form->date_submitted = Time::now();
+                $form->date_submitted = DateTime::now();
                 $form->state = "submitted";
             } else {
                 $form->state = "draft";
@@ -144,7 +144,7 @@ class FormsController extends AppController
 
         $this->set('form', $form);
         $_serialize = [ 'form' ];
-        $this->set('_serialize', $_serialize);
+        $this->viewBuilder()->setOption('serialize', $_serialize);
     }
 
     public function delete($id)

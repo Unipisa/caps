@@ -43,7 +43,7 @@ class Degree extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'academic_year' => true,
         'curricula' => true,

@@ -32,8 +32,7 @@ use Cake\Http\Exception\NotFoundException;
 
 class CurriculaController extends AppController
 {
-    public $paginate = [
-        'contain' => [ 'Degrees' ],
+    public array $paginate = [
         'sortableFields' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
@@ -46,8 +45,6 @@ class CurriculaController extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->loadComponent('Paginator');
-        $this->loadComponent('RequestHandler');
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -166,10 +163,10 @@ class CurriculaController extends AppController
         $exams = $exams_table->find('all');
 
         if ($curriculum['degree_id']) {
-            $groups = $groups_table->find('all', [
-                'conditions' => [
-                    'Groups.degree_id' => $curriculum['degree_id']],
-                'contains' => ['Degrees']]);
+            $groups = $groups_table->find('all',
+            conditions: [
+                'Groups.degree_id' => $curriculum['degree_id']],
+            contains: ['Degrees']);
         }
         else {
             $groups = [];
@@ -183,13 +180,13 @@ class CurriculaController extends AppController
             'examsList',
             $exams_table->find(
                 'list',
-                ['order' => ['Exams.name' => 'ASC']]
+                order: ['Exams.name' => 'ASC']
             )
         );
 
         if ($curriculum['degree_id']) {
             $this->set('groupsList', $groups_table->find('list',
-                ['conditions' => ['Groups.degree_id' => $curriculum['degree_id']]]
+                conditions: ['Groups.degree_id' => $curriculum['degree_id']]
             ));
         }
 

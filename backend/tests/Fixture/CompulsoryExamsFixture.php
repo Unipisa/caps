@@ -8,5 +8,5 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class CompulsoryExamsFixture extends TestFixture
 {
-    public $records = [];
+    public array $records = [];
 }

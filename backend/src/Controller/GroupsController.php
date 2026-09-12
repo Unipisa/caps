@@ -33,8 +33,7 @@ use App\Form\GroupsFilterForm;
 
 class GroupsController extends AppController
 {
-    public $paginate = [
-        'contain' => [ 'Degrees' ],
+    public array $paginate = [
         'sortableFields' => [ 'Degrees.academic_year', 'name', 'Degrees.name' ],
         'limit' => 10,
         'order' => [
@@ -81,7 +80,7 @@ class GroupsController extends AppController
         $groups = $filterForm->validate_and_execute($this->request->getQuery());
         $this->set('filterForm', $filterForm);
         $this->set('groups', $groups);
-        $this->set('_serialize', ['groups']); // overwritten below if CSV is requested
+        $this->viewBuilder()->setOption('serialize', ['groups']); // overwritten below if CSV is requested
         $this->viewBuilder()->setOption('serialize', 'groups');
 
         
@@ -172,7 +171,7 @@ class GroupsController extends AppController
             'exams',
             $exams_table->find(
                 'list',
-                ['order' => ['Exams.name' => 'ASC']]
+                order: ['Exams.name' => 'ASC']
             )
         );
         $this->set('degrees', $this->Groups->Degrees->find(

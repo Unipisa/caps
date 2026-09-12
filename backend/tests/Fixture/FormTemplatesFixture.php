@@ -15,7 +15,7 @@ class FormTemplatesFixture extends TestFixture
     *
     * @var string
     */
-    public $table = 'form_templates';
+    public string $table = 'form_templates';
 
     // phpcs:enable
     /**

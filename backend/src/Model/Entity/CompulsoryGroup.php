@@ -47,7 +47,7 @@ class CompulsoryGroup extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'year' => true,
         'position' => true,
         'group_id' => true,

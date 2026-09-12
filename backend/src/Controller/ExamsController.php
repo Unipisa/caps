@@ -33,7 +33,7 @@ use Cake\Http\Exception\NotFoundException;
 
 class ExamsController extends AppController
 {
-    public $paginate = [
+    public array $paginate = [
         'limit' => 15,
         'order' => [
             'Exams.name' => 'asc'
@@ -43,8 +43,6 @@ class ExamsController extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->loadComponent('Paginator');
-        $this->loadComponent('RequestHandler');
     }
 
     private function exams()
@@ -127,7 +125,7 @@ class ExamsController extends AppController
         $last_approved = TableRegistry::getTableLocator()->get('Proposals')->find()
            ->select(['lastapproved'=>'MAX(Proposals.id)'])
 	   ->where(['state' => 'approved'])
-           ->group(['user_id'])
+           ->groupBy(['user_id'])
            ->enableHydration(false);
 
         $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
@@ -145,8 +143,8 @@ class ExamsController extends AppController
                 'curriculum_name' => 'Curricula.name',
                 'degree_name' => 'Degrees.name'
                 ])
-            ->group(['curriculum_id'])
-	    ->order(['count' => 'Desc']);
+            ->groupBy(['curriculum_id'])
+	    ->orderBy(['count' => 'Desc']);
 
         return $query;
     }
@@ -176,7 +174,7 @@ class ExamsController extends AppController
                 $_serialize = [ 'chosen_exams' ];
             }
         }
-        $this->set('_serialize', $_serialize);
+        $this->viewBuilder()->setOption('serialize', $_serialize);
     }
 
     public function edit($id = null)

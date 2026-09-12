@@ -22,7 +22,6 @@
  */
 namespace App\Model\Entity;
 
-use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
 use Cake\Core\Configure;

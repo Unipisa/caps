@@ -45,7 +45,7 @@ class ChosenFreeChoiceExam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'credits' => true,
         'proposal_id' => true,

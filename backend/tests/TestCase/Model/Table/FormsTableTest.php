@@ -23,7 +23,7 @@ class FormsTableTest extends TestCase
      *
      * @var array
      */
-    protected $fixtures = [
+    protected array $fixtures = [
         'app.Forms',
         'app.FormTemplates',
         'app.Users',

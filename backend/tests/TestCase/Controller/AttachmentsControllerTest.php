@@ -19,7 +19,7 @@ class AttachmentsControllerTest extends MyIntegrationTestCase
      *
      * @var array
      */
-    public $fixtures = [
+    public array $fixtures = [
         'app.Users',
         'app.Proposals',
         'app.Settings',

@@ -36,7 +36,7 @@ class FormTemplate extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'enabled' => true,
         'name' => true,
         'text' => true,

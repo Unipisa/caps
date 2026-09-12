@@ -149,7 +149,7 @@ class ProposalsController extends RestController
 
         if ($state_changed) {
             if ($proposal['state'] == 'approved') {
-                $proposal['approved_date'] = \Cake\I18n\Time::now();
+                $proposal['approved_date'] = \Cake\I18n\DateTime::now();
                 $this->Proposals->save($proposal);
                 $this->notifyApproval($proposal);
             } elseif ($proposal['state'] == 'rejected') {
