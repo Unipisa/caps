@@ -1,8 +1,6 @@
 <?php
 namespace App\Controller\Api\v1;
 
-use Cake\Event\EventInterface;
-
 class DegreeSessionsController extends RestController
 {
     public static $associations = [
@@ -21,19 +19,37 @@ class DegreeSessionsController extends RestController
         ],
     ];
 
-    public function beforeFilter(EventInterface $event)
+    /**
+     * Configure the public schedule before authentication is checked.
+     *
+     * @return void
+     */
+    public function initialize(): void
     {
-        parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['today']);
+        parent::initialize();
+        $this->Authentication->allowUnauthenticated(['schedule']);
     }
 
     /**
-     * Return the public schedule for degree sessions taking place today.
+     * Return the public schedule for degree sessions taking place on a future day.
+     *
+     * @param string $day Schedule date in YYYY-MM-DD format.
+     * @return void
      */
-    public function today(): void
+    public function schedule(string $day): void
     {
         $timezone = new \DateTimeZone($this->Caps['timezone']);
-        $today = (new \DateTimeImmutable('now', $timezone))->format('Y-m-d');
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $day, $timezone);
+        if ($date === false || $date->format('Y-m-d') !== $day) {
+            $this->JSONResponse(ResponseCode::BadRequest, null, 'Invalid day: expected YYYY-MM-DD');
+            return;
+        }
+
+        $today = new \DateTimeImmutable('today', $timezone);
+        if ($date <= $today) {
+            $this->JSONResponse(ResponseCode::BadRequest, null, 'The schedule date must be in the future');
+            return;
+        }
 
         $sessions = $this->DegreeSessions->find()
             ->contain([
@@ -48,7 +64,7 @@ class DegreeSessionsController extends RestController
                         ]);
                 },
             ])
-            ->where(['DegreeSessions.start_date' => $today]);
+            ->where(['DegreeSessions.start_date' => $day]);
 
         $rooms = [];
         foreach ($sessions as $session) {
@@ -56,7 +72,7 @@ class DegreeSessionsController extends RestController
 
             foreach ($session->thesis_defenses as $defense) {
                 $scheduledAt = (clone $defense->scheduled_at)->setTimezone($timezone);
-                if ($scheduledAt->format('Y-m-d') !== $today) {
+                if ($scheduledAt->format('Y-m-d') !== $day) {
                     continue;
                 }
 
@@ -68,8 +84,6 @@ class DegreeSessionsController extends RestController
                 if (!isset($rooms[$room])) {
                     $rooms[$room] = [
                         'room' => $room,
-                        // Floors are not currently stored separately from venues.
-                        'floor' => null,
                         'events' => [],
                     ];
                 }
@@ -99,7 +113,7 @@ class DegreeSessionsController extends RestController
                 unset($event['_timestamp']);
 
                 // A long gap denotes a break in the displayed timetable.
-                if ($previousTimestamp !== null && $timestamp - $previousTimestamp >= 3600) {
+                if ($previousTimestamp !== null && $timestamp - $previousTimestamp > 3600) {
                     $events[] = ['html' => '&dash;'];
                 }
 

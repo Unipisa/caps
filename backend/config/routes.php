@@ -42,12 +42,11 @@ return function (RouteBuilder $routes) {
             'Dashboard', 'Logs', 'FormAuths', 'ThesisDefenses', 'ThesisDefenseAttachments'
         ];
 
-            // Public degree ceremony schedule. This must precede the generic
-            // /degree_sessions/* route, which dispatches GET requests to get().
-            $routes->connect('/degree_sessions/today', [
+            // Public degree ceremony schedule.
+            $routes->connect('/degree_sessions/schedule/{day}', [
                 'controller' => 'DegreeSessions',
-                'action' => 'today',
-            ])->setMethods([ 'GET' ]);
+                'action' => 'schedule',
+            ])->setPass(['day'])->setMethods([ 'GET' ]);
 
             foreach ($api_controllers as $controller) {
                 $uri = Inflector::underscore($controller);
