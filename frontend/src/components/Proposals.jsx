@@ -83,6 +83,10 @@ class Proposals extends ItemsBase {
                                     <span className="d-none d-xl-inline">Esporta in </span>Excel
                                 </span>
                         </button>
+                        <button type="button" className="btn btn-sm btn-primary ml-2" onClick={() => this.downloadExport('json')}>
+                            <i className="fas fw fa-code"></i>
+                            <span className="ml-2 d-none d-md-inline">Esporta in JSON</span>
+                        </button>
 
                     </div>
                 </div>

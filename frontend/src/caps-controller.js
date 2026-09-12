@@ -92,6 +92,10 @@ class CapsController {
     downloadXLSX() {
         this.download('xlsx');
     }
+
+    downloadJSON() {
+        this.download('json');
+    }
     
 
     // Submit a form by injecting the name and value of an element; this is used

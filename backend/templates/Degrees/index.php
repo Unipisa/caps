@@ -56,6 +56,9 @@
         <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
             <i class="fas fa-download"></i><span class="ml-2 d-none d-md-inline">Esporta in CSV</span>
         </button>
+        <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadJSON()">
+            <i class="fas fa-code"></i><span class="ml-2 d-none d-md-inline">Esporta in JSON</span>
+        </button>
 
         <a><button class="btn btn-sm btn-primary mr-2"
                 id="caps-duplicate-btn">
@@ -134,4 +137,3 @@
 
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end'); ?>
-

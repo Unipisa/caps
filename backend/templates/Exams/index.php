@@ -50,6 +50,9 @@
         <button type="button" class="btn btn-sm btn-primary mr-2" onclick="Caps.downloadXLSX();">
             <i class="fas fw fa-file-excel"></i><span class="ml-2 d-none d-md-inline"><span class="d-none d-xl-inline">Esporta in </span>Excel</span>
         </button>
+        <button type="button" class="btn btn-sm btn-primary mr-2" onclick="Caps.downloadJSON();">
+            <i class="fas fw fa-code"></i><span class="ml-2 d-none d-md-inline"><span class="d-none d-xl-inline">Esporta in </span>JSON</span>
+        </button>
 
         <div class="dropdown">
             <button type="button" class="btn btn-sm btn-primary mr-2 dropdown-toggle" data-toggle="dropdown">

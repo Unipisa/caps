@@ -40,7 +40,7 @@ class FormsFilterForm extends FilterForm
     {
         $this->setData($data);
 
-        if ($this->getData('state') !== '') {
+        if ($this->getData('state') !== null && $this->getData('state') !== '') {
             $this->filterFieldEqual('Forms.state', 'state');
         }
         $this->filterFieldLike('Users.surname', 'surname');

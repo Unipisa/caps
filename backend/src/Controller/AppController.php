@@ -31,6 +31,7 @@ use App\Application;
 use App\View\XslxView;
 use Cake\I18n\FrozenTime;
 use Cake\Mailer\TransportFactory;
+use Cake\View\JsonView;
 use stdClass;
 use Cake\Event\EventInterface;
 use App\Model\Entity\User;
@@ -242,6 +243,7 @@ class AppController extends Controller
         $this->handleSecrets();
 
         $this->addViewClasses([
+            JsonView::class,
             XlsxView::class,
             OdsView::class,
             CsvView::class,
@@ -346,7 +348,7 @@ class AppController extends Controller
      */
     protected function applyExportSelection($query, string $primaryKey): mixed
     {
-        if (!$this->request->is(['csv', 'xlsx', 'ods'])) {
+        if (!$this->request->is(['json', 'csv', 'xlsx', 'ods'])) {
             return $query;
         }
 
