@@ -34,7 +34,7 @@ class GrantSupervisorCommand extends Command {
     public function initialize() : void
     {
         parent::initialize();
-        $this->loadModel('Users');
+        $this->Users = $this->fetchTable('Users');
     }
 
     protected function buildOptionParser(ConsoleOptionParser $parser) : ConsoleOptionParser
