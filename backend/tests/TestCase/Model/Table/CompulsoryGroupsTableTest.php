@@ -22,7 +22,7 @@ class CompulsoryGroupsTableTest extends TestCase
      *
      * @var array
      */
-    public $fixtures = [
+    public array $fixtures = [
         'app.CompulsoryGroups',
         'app.Groups',
         'app.Curricula'

@@ -20,10 +20,10 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 use Cake\ORM\TableRegistry;
 
-class AddChosenExamsExtendedInfo extends AbstractMigration
+class AddChosenExamsExtendedInfo extends BaseMigration
 {
     /**
      * Change Method.
@@ -50,8 +50,9 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
             'limit' => 11
         ]);
         $table->update();
-        $table->addForeignKey('compulsory_group_id', 'compulsory_group', 'id');
-        $table->addForeignKey('compulsory_exam_id', 'compulsory_exam', 'id');
+        $table->addForeignKey('compulsory_group_id', 'compulsory_groups', 'id');
+        $table->addForeignKey('compulsory_exam_id', 'compulsory_exams', 'id');
+        $table->update();
 
         $table = $this->table('chosen_free_choice_exams');
         $table->addColumn('free_choice_exam_id', 'integer', [
@@ -64,14 +65,15 @@ class AddChosenExamsExtendedInfo extends AbstractMigration
             'limit' => 11
         ]);
         $table->update();
-        $table->addForeignKey('free_choice_exam_id', 'free_choice_exam', 'id');
+        $table->addForeignKey('free_choice_exam_id', 'free_choice_exams', 'id');
+        $table->update();
 
         // Update the entries by setting the year guessing that
         // the exams are given in the right order, and with 60
         // credits per year.
-        $tbl = TableRegistry::get('Proposals');
-        $chosen_exams_tbl = TableRegistry::get('ChosenExams');
-        $chosen_free_choice_exams_tbl = TableRegistry::get('ChosenFreeChoiceExams');
+        $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('Proposals');
+        $chosen_exams_tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenExams');
+        $chosen_free_choice_exams_tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('ChosenFreeChoiceExams');
 
         $proposals = $tbl->find()
             ->contain([ 'ChosenExams', 'ChosenFreeChoiceExams',

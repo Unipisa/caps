@@ -33,7 +33,7 @@ use Cake\Http\Exception\NotFoundException;
 
 class ExamsController extends AppController
 {
-    public $paginate = [
+    public array $paginate = [
         'limit' => 15,
         'order' => [
             'Exams.name' => 'asc'
@@ -43,14 +43,12 @@ class ExamsController extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->loadComponent('Paginator');
-        $this->loadComponent('RequestHandler');
     }
 
     private function exams()
     {
         return $this->Exams->find()
-            ->order([ 'Exams.name' => 'asc' ]);
+            ->orderBy([ 'Exams.name' => 'asc' ]);
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -61,11 +59,12 @@ class ExamsController extends AppController
     public function index()
     {
         $exams = $this->Exams->find()
-            ->order([ 'Exams.name' => 'asc' ])
+            ->orderBy([ 'Exams.name' => 'asc' ])
             ->contain([ 'Tags']);
 
         $filterForm = new ExamsFilterForm($exams);
         $exams = $filterForm->validate_and_execute($this->request->getQuery());
+        $exams = $this->applyExportSelection($exams, 'Exams.id');
         $this->set('filterForm', $filterForm);
 
         if ($this->request->is("post")) {
@@ -127,7 +126,7 @@ class ExamsController extends AppController
         $last_approved = TableRegistry::getTableLocator()->get('Proposals')->find()
            ->select(['lastapproved'=>'MAX(Proposals.id)'])
 	   ->where(['state' => 'approved'])
-           ->group(['user_id'])
+           ->groupBy(['user_id'])
            ->enableHydration(false);
 
         $ChosenExams = TableRegistry::getTableLocator()->get('ChosenExams');
@@ -145,8 +144,8 @@ class ExamsController extends AppController
                 'curriculum_name' => 'Curricula.name',
                 'degree_name' => 'Degrees.name'
                 ])
-            ->group(['curriculum_id'])
-	    ->order(['count' => 'Desc']);
+            ->groupBy(['curriculum_id'])
+	    ->orderBy(['count' => 'Desc']);
 
         return $query;
     }
@@ -176,7 +175,7 @@ class ExamsController extends AppController
                 $_serialize = [ 'chosen_exams' ];
             }
         }
-        $this->set('_serialize', $_serialize);
+        $this->viewBuilder()->setOption('serialize', $_serialize);
     }
 
     public function edit($id = null)
@@ -186,9 +185,7 @@ class ExamsController extends AppController
         }
 
         if ($id) { // edit
-            $exam = $this->Exams->get($id, [
-                'contain' => [ 'Groups', 'Tags' ]
-            ]);
+            $exam = $this->Exams->get($id, contain: [ 'Groups', 'Tags' ]);
             if (!$exam) {
                 throw new NotFoundException(__('Errore: esame non esistente.'));
             }

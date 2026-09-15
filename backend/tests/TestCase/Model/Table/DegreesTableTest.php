@@ -22,7 +22,7 @@ class DegreesTableTest extends TestCase
      *
      * @var array
      */
-    public $fixtures = [
+    public array $fixtures = [
         'app.Degrees',
         'app.Curricula'
     ];

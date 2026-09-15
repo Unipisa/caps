@@ -13,7 +13,7 @@ class TagsExamsFixture extends TestFixture
      *
      * @var string
      */
-    public $table = 'tags_exams';
+    public string $table = 'tags_exams';
 
     /**
      * Fields

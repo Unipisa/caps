@@ -36,11 +36,11 @@ class FormsFilterForm extends FilterForm
           ->addField('name', ['type' => 'string']);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
 
-        if ($this->getData('state') !== '') {
+        if ($this->getData('state') !== null && $this->getData('state') !== '') {
             $this->filterFieldEqual('Forms.state', 'state');
         }
         $this->filterFieldLike('Users.surname', 'surname');

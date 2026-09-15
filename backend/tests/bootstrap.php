@@ -15,6 +15,7 @@ declare(strict_types=1);
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Migrations\TestSuite\Migrator;
@@ -58,4 +59,6 @@ session_id('cli');
 //
 // Will rebuild the database if the migration state differs
 // from the migration history in files.
+Cache::clear('_cake_model_');
 (new Migrator())->run();
+Cache::clear('_cake_model_');

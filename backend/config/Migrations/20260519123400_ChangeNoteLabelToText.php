@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-use Migrations\AbstractMigration;
-class ChangeNoteLabelToText extends AbstractMigration
+use Migrations\BaseMigration;
+class ChangeNoteLabelToText extends BaseMigration
 {
     public function change()
     {

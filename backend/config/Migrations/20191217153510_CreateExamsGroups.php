@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class CreateExamsGroups extends AbstractMigration
+class CreateExamsGroups extends BaseMigration
 {
     /**
      * Change Method.
@@ -44,6 +44,7 @@ class CreateExamsGroups extends AbstractMigration
         ]);
         $table->create();
         $table->addForeignKey('exam_id',  'exams', 'id', [ 'delete' => 'CASCADE' ]);
-        $table->addForeignKey('group_id', 'group', 'id', [ 'delete' => 'CASCADE' ]);
+        $table->addForeignKey('group_id', 'groups', 'id', [ 'delete' => 'CASCADE' ]);
+        $table->update();
     }
 }

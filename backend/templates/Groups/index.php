@@ -45,6 +45,9 @@
         <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
             <i class="fas fa-download"></i><span class="d-none d-md-inline ml-2">Esporta in CSV</span>
         </button>
+        <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadJSON()">
+            <i class="fas fa-code"></i><span class="d-none d-md-inline ml-2">Esporta in JSON</span>
+        </button>
 
     </div>
 
@@ -96,4 +99,3 @@
 
     <?php echo $this->Form->end(); ?>
 <?= $this->element('card-end') ?>
-

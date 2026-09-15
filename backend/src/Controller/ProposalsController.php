@@ -33,7 +33,7 @@ use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Mailer\Email;
-use Cake\I18n\Time;
+use Cake\I18n\DateTime as CakeDateTime;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
 use Dompdf\Dompdf;
@@ -41,8 +41,27 @@ use DateTime;
 
 class ProposalsController extends AppController
 {
-    public $paginate = [
-        'contain' => [ 'Users', 'Curricula.Degrees', 'Curricula' ],
+    protected array $exportFields = [
+        'id',
+        'modified',
+        'state',
+        'submitted_date',
+        'approved_date',
+        'note',
+        'user.id',
+        'user.name',
+        'user.givenname',
+        'user.surname',
+        'curriculum.id',
+        'curriculum.name',
+        'curriculum.credits_per_year',
+        'curriculum.credits',
+        'curriculum.degree.id',
+        'curriculum.degree.name',
+        'curriculum.degree.academic_year',
+    ];
+
+    public array $paginate = [
         'sortableFields' => [ 'Users.surname', 'Degrees.name', 'academic_year', 'Curricula.name', 'modified' ],
         'limit' => 10,
         'order' => [
@@ -53,7 +72,6 @@ class ProposalsController extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->loadComponent('Paginator');
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -176,6 +194,7 @@ class ProposalsController extends AppController
 
         $filterForm = new ProposalsFilterForm($proposals);
         $proposals = $filterForm->validate_and_execute($this->request->getQuery());
+        $proposals = $this->applyExportSelection($proposals, 'Proposals.id');
 
         if ($this->request->is("post")) {
             if (!$this->user['admin']) {
@@ -239,10 +258,10 @@ class ProposalsController extends AppController
 
                         switch ($context['state']) {
                             case 'approved':
-                                $proposal['approved_date'] = Time::now();
+                                $proposal['approved_date'] = CakeDateTime::now();
                                 break;
                             case 'submitted':
-                                $proposal['submitted_date'] = Time::now();
+                                $proposal['submitted_date'] = CakeDateTime::now();
                                 break;
                             case 'rejected':
                                 $proposal['approved_date'] = null;
@@ -331,7 +350,8 @@ class ProposalsController extends AppController
         $builder->setTemplate('Proposals/pdf');
         $pdf = true;
         $user = $this->user;
-        $view = $builder->build(compact('proposal', 'settings', 'Caps', 'app_path', 'secrets', 'user', 'pdf', 'show_comments'));
+        $builder->setVars(compact('proposal', 'settings', 'Caps', 'app_path', 'secrets', 'user', 'pdf', 'show_comments'));
+        $view = $builder->build($this->request, $this->response, $this->getEventManager());
 
         // Generate the PDF
         $dompdf = new Dompdf();
@@ -547,7 +567,7 @@ class ProposalsController extends AppController
                     $proposal['state'] = 'draft';
                 } else {
                     $proposal['state'] = 'submitted';
-                    $proposal['submitted_date'] = Time::now();
+                    $proposal['submitted_date'] = CakeDateTime::now();
                 }
             } else {
                 $proposal['state'] = 'draft';
@@ -592,11 +612,12 @@ class ProposalsController extends AppController
             $this->Proposals->Curricula
             ->find()
             ->contain([ 'Degrees' ])
-            ->find('list', [
-                'valueField' => function ($c) {
+            ->find(
+                'list',
+                valueField: function ($c) {
                     return $c->toString();
                 }
-            ])
+            )
         );
         $this->set('proposal', $proposal);
     }
@@ -671,7 +692,7 @@ class ProposalsController extends AppController
         }
 
         $proposal['state'] = 'approved';
-        $proposal['approved_date'] = Time::now();
+        $proposal['approved_date'] = CakeDateTime::now();
 
         if (! $this->Proposals->save($proposal)) {
             $this->log('Failed to save proposal with ID = ' . $proposal->id);

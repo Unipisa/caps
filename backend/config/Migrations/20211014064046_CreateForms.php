@@ -22,9 +22,9 @@
  */
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class CreateForms extends AbstractMigration
+class CreateForms extends BaseMigration
 {
     /**
      * Change Method.

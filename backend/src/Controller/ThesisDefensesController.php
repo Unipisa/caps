@@ -24,7 +24,7 @@ class ThesisDefensesController extends AppController
             $data = $this->request->getData();
             $data['user_id'] = $this->user['id'];
             $data['state'] = 'submitted';
-            $data['submitted_at'] = FrozenTime::now();
+            $data['submitted_at'] = \Cake\I18n\DateTime::now();
             $data['thesis_defense_advisors'] = array_values(array_filter(
                 $data['thesis_defense_advisors'] ?? [],
                 fn($advisor) => !empty(trim($advisor['name'] ?? '')) || !empty(trim($advisor['email'] ?? ''))
@@ -100,10 +100,10 @@ class ThesisDefensesController extends AppController
                 'state', 'scheduled_at', 'venue',
             ]));
             if (!empty($allowed['scheduled_at'])) {
-                $allowed['scheduled_at'] = (new FrozenTime($allowed['scheduled_at'], $this->Caps['timezone']))
+                $allowed['scheduled_at'] = (new \Cake\I18n\DateTime($allowed['scheduled_at'], $this->Caps['timezone']))
                     ->setTimezone('UTC');
             }
-            $allowed['managed_at'] = FrozenTime::now();
+            $allowed['managed_at'] = \Cake\I18n\DateTime::now();
             $defense = $this->ThesisDefenses->patchEntity($defense, $allowed);
             if ($this->ThesisDefenses->save($defense)) {
                 $this->Flash->success('Domanda aggiornata.');

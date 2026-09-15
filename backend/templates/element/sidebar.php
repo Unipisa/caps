@@ -22,6 +22,9 @@
  */
 $controllerName = $this->request->getParam('controller');
 $actionName = $this->request->getParam('action');
+$capsShortVersion ??= \App\Application::getShortVersion();
+$settings = ($settings ?? []) + ['cds' => '', 'support-email' => ''];
+$user ??= null;
 ?>
 
 <!-- Sidebar -->

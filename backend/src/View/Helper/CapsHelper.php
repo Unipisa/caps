@@ -101,7 +101,7 @@ class CapsHelper extends Helper {
     public function formatDate($d, $fallback = "nessuna data") {
       $Caps = Configure::read('Caps');
 
-      if ($d instanceof Date) {
+      if ($d instanceof \Cake\Chronos\ChronosDate) {
         return $d->setTimezone($Caps['timezone'])->i18nformat('dd/MM/yyyy');
       } 
       

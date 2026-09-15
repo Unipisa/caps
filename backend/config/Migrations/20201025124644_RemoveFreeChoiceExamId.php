@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class RemoveFreeChoiceExamId extends AbstractMigration
+class RemoveFreeChoiceExamId extends BaseMigration
 {
     /**
      * Change Method.
@@ -34,8 +34,10 @@ class RemoveFreeChoiceExamId extends AbstractMigration
     public function up()
     {
         $table = $this->table('chosen_free_choice_exams');
+        $table->dropForeignKey('free_choice_exam_id');
+        $table->update();
         $table->removeColumn('free_choice_exam_id');
-        $table->save();
+        $table->update();
     }
 
     public function down()
@@ -45,6 +47,8 @@ class RemoveFreeChoiceExamId extends AbstractMigration
             'default' => null,
             'null' => true
         ]);
-        $table->save();
+        $table->update();
+        $table->addForeignKey('free_choice_exam_id', 'free_choice_exams', 'id');
+        $table->update();
     }
 }

@@ -45,7 +45,7 @@ class FreeChoiceExam extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'group_id' => true,
         'year' => true,
         'position' => true,

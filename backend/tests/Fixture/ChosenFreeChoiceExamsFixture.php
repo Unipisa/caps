@@ -8,5 +8,5 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class ChosenFreeChoiceExamsFixture extends TestFixture
 {
-    public $records = [];
+    public array $records = [];
 }

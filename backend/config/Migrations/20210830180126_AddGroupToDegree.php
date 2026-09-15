@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddGroupToDegree extends AbstractMigration
+class AddGroupToDegree extends BaseMigration
 {
     /**
      * Change Method.

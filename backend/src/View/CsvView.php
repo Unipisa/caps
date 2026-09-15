@@ -22,24 +22,29 @@
  */
 namespace App\View;
 
-use Cake\View\View;
-use App\View\SpreadsheetView;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use Cake\I18n\FrozenTime;
 
 class CsvView extends SpreadsheetView
 {
-    public function render(?string $template = null, $layout = null) : string {
+    /**
+     * @inheritDoc
+     */
+    public static function contentType(): string
+    {
+        return 'text/csv';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function render(?string $template = null, string|false|null $layout = null): string
+    {
         $spreadsheet = $this->renderSpreadsheet(false);
 
         $writer = new Csv($spreadsheet);
-        $tmpfile = tempnam("/tmp", "csv-writer-");
-        $writer->save($tmpfile);
-        $res = file_get_contents($tmpfile);
-        
-        unlink($tmpfile);
+        ob_start();
+        $writer->save('php://output');
 
-        return $res;
+        return (string)ob_get_clean();
     }
 }

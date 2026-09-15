@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddYearColumn extends AbstractMigration
+class AddYearColumn extends BaseMigration
 {
     /**
      * Change Method.
@@ -35,22 +35,23 @@ class AddYearColumn extends AbstractMigration
     {
         $table = $this->table('degrees');
         $table->addColumn('years', 'integer', [
-            'null' => 'false',
+            // Existing degree rows are populated below before the column is
+            // made non-nullable.
+            'null' => true,
             'limit' => 11
         ]);
         $table->update();
 
-        // Migrate the current data
-        $tbl = \Cake\ORM\TableRegistry::getTableLocator()->get('degrees');
-        foreach ($tbl->find() as $degree) {
-            if (strpos(strtolower($degree['name']), "triennale") !== false) {
-                $degree->years = 3;
-            }
-            else {
-                $degree->years = 2;
-            }
+        // Avoid ORM schema caching while this migration is adding the column.
+        $this->execute(
+            "UPDATE degrees SET years = CASE " .
+            "WHEN LOWER(name) LIKE '%triennale%' THEN 3 ELSE 2 END"
+        );
 
-            $tbl->save($degree, [ 'atomic' => false ]);
-        }
+        $table->changeColumn('years', 'integer', [
+            'null' => false,
+            'limit' => 11,
+        ]);
+        $table->update();
     }
 }

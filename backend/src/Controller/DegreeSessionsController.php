@@ -10,7 +10,8 @@ class DegreeSessionsController extends AppController
         $this->requireAdmin();
         $sessions = $this->DegreeSessions->find()
             ->contain(['Degrees'])
-            ->order(['DegreeSessions.start_date' => 'DESC']);
+            ->order(['DegreeSessions.start_date' => 'DESC'])
+            ->all();
         $this->set(compact('sessions'));
     }
 

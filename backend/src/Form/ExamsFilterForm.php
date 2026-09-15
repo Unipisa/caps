@@ -36,7 +36,7 @@ class ExamsFilterForm extends FilterForm
           ->addField('credits', ['type' => 'integer']);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
         $this->filterFieldLike('Exams.name', 'name');

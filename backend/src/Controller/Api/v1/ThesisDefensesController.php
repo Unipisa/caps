@@ -162,7 +162,7 @@ class ThesisDefensesController extends RestController
             'public' => !empty($data['public']),
             'user_id' => $this->user['id'],
             'state' => 'submitted',
-            'submitted_at' => FrozenTime::now(),
+            'submitted_at' => \Cake\I18n\DateTime::now(),
             'thesis_defense_advisors' => $advisors,
         ], ['associated' => ['ThesisDefenseAdvisors']]);
 
@@ -231,11 +231,11 @@ class ThesisDefensesController extends RestController
         ]));
 
         if (!empty($allowed['scheduled_at'])) {
-            $allowed['scheduled_at'] = (new FrozenTime($allowed['scheduled_at'], $this->Caps['timezone']))
+            $allowed['scheduled_at'] = (new \Cake\I18n\DateTime($allowed['scheduled_at'], $this->Caps['timezone']))
                 ->setTimezone('UTC');
         }
 
-        $allowed['managed_at'] = FrozenTime::now();
+        $allowed['managed_at'] = \Cake\I18n\DateTime::now();
 
         $defense = $this->ThesisDefenses->patchEntity($defense, $allowed);
 
@@ -271,7 +271,7 @@ class ThesisDefensesController extends RestController
         }
 
         $defense->state = 'approved';
-        $defense->managed_at = FrozenTime::now();
+        $defense->managed_at = \Cake\I18n\DateTime::now();
 
         if (!$this->ThesisDefenses->save($defense)) {
             $this->JSONResponse(ResponseCode::Error, null, 'Failed to approve thesis defense');
@@ -299,7 +299,7 @@ class ThesisDefensesController extends RestController
         }
 
         $defense->state = 'rejected';
-        $defense->managed_at = FrozenTime::now();
+        $defense->managed_at = \Cake\I18n\DateTime::now();
 
         if (!$this->ThesisDefenses->save($defense)) {
             $this->JSONResponse(ResponseCode::Error, null, 'Failed to reject thesis defense');

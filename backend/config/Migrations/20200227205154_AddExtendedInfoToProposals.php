@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddExtendedInfoToProposals extends AbstractMigration
+class AddExtendedInfoToProposals extends BaseMigration
 {
     /**
      * Change Method.
@@ -164,8 +164,7 @@ class AddExtendedInfoToProposals extends AbstractMigration
     private function myFetchAll($sql, $params) {
         $conn = $this->getAdapter()->getConnection();
 
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
+        $stmt = $conn->execute($sql, $params);
 
         return $stmt->fetchAll();
     }
@@ -173,10 +172,7 @@ class AddExtendedInfoToProposals extends AbstractMigration
     private function myExecute($sql, $params) {
         $conn = $this->getAdapter()->getConnection();
 
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
-
-        return $stmt;
+        return $conn->execute($sql, $params);
     }
 
     // Build a mapping between the values of the given key in the array data, and the position

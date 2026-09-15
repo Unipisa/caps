@@ -22,8 +22,9 @@ class CurriculaTableTest extends TestCase
      *
      * @var array
      */
-    public $fixtures = [
-        'app.Curricula'
+    public array $fixtures = [
+        'app.Degrees',
+        'app.Curricula',
     ];
 
     /**

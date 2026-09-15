@@ -20,10 +20,10 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 use Cake\ORM\TableRegistry;
 
-class DuplicateDegrees extends AbstractMigration
+class DuplicateDegrees extends BaseMigration
 {
     /**
      * Change Method.
@@ -52,7 +52,7 @@ class DuplicateDegrees extends AbstractMigration
         
         $new_degrees = []; // old_degree_id -> academic_year -> new_degree_id 
 
-        $DegreesTable = TableRegistry::get('Degrees');
+        $DegreesTable = \Cake\ORM\TableRegistry::getTableLocator()->get('Degrees');
 
         foreach ($q as $record) {
             $record['curricula_id'] = intval($record['curricula_id']);

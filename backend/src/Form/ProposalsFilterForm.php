@@ -39,7 +39,7 @@ class ProposalsFilterForm extends FilterForm
           ->addField('free_exam_name', ['type' => 'string']);
     }
 
-    protected function _execute(array $data) : bool
+    protected function process(array $data) : bool
     {
         $this->setData($data);
 

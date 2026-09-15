@@ -22,9 +22,9 @@
  */
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class SetDefaultPasswordToUsers extends AbstractMigration
+class SetDefaultPasswordToUsers extends BaseMigration
 {
     /**
      * Change Method.

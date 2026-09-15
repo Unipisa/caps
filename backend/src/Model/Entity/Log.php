@@ -35,7 +35,7 @@ class Log extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'user_id' => true,
         'timestamp' => true,
         'external_id' => true,

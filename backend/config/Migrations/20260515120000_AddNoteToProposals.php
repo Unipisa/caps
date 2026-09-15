@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-use Migrations\AbstractMigration;
-class AddNoteToProposals extends AbstractMigration
+use Migrations\BaseMigration;
+class AddNoteToProposals extends BaseMigration
 {
     public function change()
     {

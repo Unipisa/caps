@@ -23,7 +23,7 @@ class FormTemplatesTableTest extends TestCase
      *
      * @var array
      */
-    protected $fixtures = [
+    protected array $fixtures = [
         'app.FormTemplates'
     ];
 
@@ -55,7 +55,6 @@ class FormTemplatesTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\FormTemplatesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {

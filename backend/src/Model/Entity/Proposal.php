@@ -33,7 +33,7 @@ use \App\Model\Entity\User;
  * @property bool|null $submitted
  * @property bool|null $frozen
  * @property int|null $user_id
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\DateTime|null $modified
  *
  * @property \App\Model\Entity\User $user
  */
@@ -48,7 +48,7 @@ class Proposal extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'state' => true,
         'user_id' => true, // TODO: Forse questo campo dovrebbe non essere qui?
         'modified' => true,

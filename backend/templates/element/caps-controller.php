@@ -21,6 +21,11 @@
  * Foundation. See https://cakephp.org/ for further details.
  */
 ?>
+<?php
+$Caps = ($Caps ?? []) + ['timezone' => date_default_timezone_get()];
+$settings ??= [];
+$user ??= null;
+?>
 
 <script>
     (function () {

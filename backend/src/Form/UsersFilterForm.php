@@ -39,7 +39,7 @@ class UsersFilterForm extends FilterForm
           ;
     }
 
-    protected function _execute(array $data) : bool {
+    protected function process(array $data) : bool {
       $this->setData($data);
       if ($this->getData('admin') === 'admin') {
           $this->filterFieldValue('Users.admin', true);

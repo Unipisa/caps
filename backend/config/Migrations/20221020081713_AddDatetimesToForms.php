@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddDatetimesToForms extends AbstractMigration
+class AddDatetimesToForms extends BaseMigration
 {
     /**
      * Change Method.
@@ -15,8 +15,7 @@ class AddDatetimesToForms extends AbstractMigration
     public function up()
     {
         $table = $this->table('forms');
-        $conn = $this->getAdapter()->getConnection();
-        if ($conn->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql") {
+        if ($this->getAdapter()->getAdapterType() == "mysql") {
             $this->execute('ALTER TABLE forms MODIFY COLUMN modified datetime, MODIFY COLUMN date_submitted datetime, MODIFY COLUMN date_managed datetime');
         }
         $this->execute('UPDATE forms SET modified=date_submitted WHERE modified IS NULL');

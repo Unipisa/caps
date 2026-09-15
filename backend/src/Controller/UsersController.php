@@ -33,7 +33,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 class UsersController extends AppController {
 
-    public $paginate = [
+    public array $paginate = [
         'limit' => 10,
         'order' => [
             'Users.surname' => 'asc'

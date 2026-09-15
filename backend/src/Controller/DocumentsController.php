@@ -45,9 +45,7 @@ class DocumentsController extends AppController
      */
     public function view($id = null)
     {
-        $document = $this->Documents->get($id, [
-            'contain' => ['Users']
-        ]);
+        $document = $this->Documents->get($id, contain: ['Users']);
 
         // Only administrators and supervisors can see documents
         if ($this->user->isAdminOrSupervisor()) {

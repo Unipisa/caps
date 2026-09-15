@@ -20,9 +20,9 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddEmailToUsers extends AbstractMigration
+class AddEmailToUsers extends BaseMigration
 {
     /**
      * Change Method.
@@ -37,7 +37,7 @@ class AddEmailToUsers extends AbstractMigration
 
         $table->addColumn('email', 'string', [
             'default' => '',
-            'null' => 'false',
+            'null' => false,
             'limit' => 255
         ]);
 

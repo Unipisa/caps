@@ -8,7 +8,6 @@ use Cake\TestSuite\TestCase;
 /**
  * App\Controller\SettingsController Test Case
  *
- * @uses \App\Controller\SettingsController
  */
 class SettingsControllerTest extends TestCase
 {
@@ -19,7 +18,7 @@ class SettingsControllerTest extends TestCase
      *
      * @var array
      */
-    public $fixtures = [
+    public array $fixtures = [
         'app.Settings'
     ];
 

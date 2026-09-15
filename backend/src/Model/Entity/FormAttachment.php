@@ -22,7 +22,6 @@
  */
 namespace App\Model\Entity;
 
-use Cake\I18n\Time;
 use Cake\ORM\Entity;
 use App\Model\Entity\User;
 use Cake\Core\Configure;
@@ -39,7 +38,7 @@ class FormAttachment extends DocumentBase
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'filename' => true,
         'user_id' => true,
         'form_id' => true,

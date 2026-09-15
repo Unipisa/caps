@@ -44,7 +44,7 @@ class Group extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'exams' => true,
         'degree_id' => true

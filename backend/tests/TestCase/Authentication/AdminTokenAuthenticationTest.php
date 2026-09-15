@@ -10,7 +10,7 @@ class AdminTokenAuthenticationTest extends TestCase
 {
     use IntegrationTestTrait;
 
-    protected $fixtures = [
+    protected array $fixtures = [
         'app.Documents',
         'app.FormTemplates',
         'app.Settings',

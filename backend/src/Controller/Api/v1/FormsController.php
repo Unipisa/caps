@@ -3,7 +3,7 @@
 namespace App\Controller\Api\v1;
 
 use App\Controller\Api\v1\RestController;
-use Cake\I18n\Time;
+use Cake\I18n\DateTime;
 use App\Model\Entity\FormAuth;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
@@ -146,7 +146,7 @@ class FormsController extends RestController {
                 // Solo il proprietario e l'amministratore possono modifica
                 if ($this->user['admin'] || $form['state'] == "draft") {
                     $form[$field] = $value;
-                    $form["date_managed"] = Time::now();
+                    $form["date_managed"] = DateTime::now();
                 } else {
                     $this->JSONResponse(ResponseCode::Error, null, 'Cannot change a submitted form');
                     return;

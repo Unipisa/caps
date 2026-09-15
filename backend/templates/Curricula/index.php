@@ -51,6 +51,9 @@
                     <div class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadCSV()">
                         <i class="fas fa-download"></i><span class="ml-2 d-none d-lg-inline">Esporta in CSV</span>
                     </div>
+                    <button class="btn btn-sm btn-primary mr-2" type="button" onclick="Caps.downloadJSON()">
+                        <i class="fas fa-code"></i><span class="ml-2 d-none d-lg-inline">Esporta in JSON</span>
+                    </button>
                 </div>
 
                 <?php echo $this->element('filter_badges', [

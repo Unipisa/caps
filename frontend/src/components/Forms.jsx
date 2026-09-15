@@ -8,7 +8,6 @@ import { FormStateBadge } from './StateBadge';
 import ItemsBase from './ItemsBase';
 import { FilterButton, FilterInput, FilterSelect, FilterBadges, 
         ActionButtons, ActionButton, ColumnHeader } from './Table';
-import { CSVDownload, CSVLink } from "react-csv";
 import restClient from '../modules/api';
 
 class Forms extends ItemsBase {
@@ -28,22 +27,12 @@ class Forms extends ItemsBase {
         return <>modulo <i>{form.form_template.name}</i> di <b>{ form.user.name }</b></>
     }
 
-    encodeQueryParams(query) {
-        const params = new URLSearchParams();
-
-        Object.entries(query).forEach( ([key, el]) => {
-            params.append(key, el)
-        })
-
-        return params.toString()
-    }
-
     downloadCSV() {
-        window.location.href = "/forms.csv?" + this.encodeQueryParams(this.state.query)
+        this.downloadExport('csv');
     }
 
     downloadXLSX() {
-        window.location.href = "/forms.xlsx?" + this.encodeQueryParams(this.state.query)
+        this.downloadExport('xlsx');
     }
 
     renderPage() {
@@ -90,6 +79,9 @@ class Forms extends ItemsBase {
                         </button>
                         <button type="button" className="btn btn-sm btn-primary" onClick={this.downloadXLSX.bind(this)}>
                             <i className="fas fw fa-file-excel"></i><span className="ml-2 d-none d-md-inline">Esporta in XLSX</span>
+                        </button>
+                        <button type="button" className="btn btn-sm btn-primary ml-2" onClick={() => this.downloadExport('json')}>
+                            <i className="fas fw fa-code"></i><span className="ml-2 d-none d-md-inline">Esporta in JSON</span>
                         </button>
                     </div>
                 </div>

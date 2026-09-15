@@ -23,7 +23,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Cake\Auth\DefaultPasswordHasher;
+use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Authentication\IdentityInterface;
 use App\Model\Entity\Proposal;
 use App\Model\Entity\Attachment;
@@ -49,7 +49,7 @@ class User extends Entity implements IdentityInterface
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'username' => true,
         'name' => true,
         'number' => true,
@@ -62,12 +62,18 @@ class User extends Entity implements IdentityInterface
         'documents' => true
     ];
 
-    public function getIdentifier()
+    /**
+     * @inheritDoc
+     */
+    public function getIdentifier(): array|string|int|null
     {
         return $this->username;
     }
 
-    public function getOriginalData()
+    /**
+     * @inheritDoc
+     */
+    public function getOriginalData(): \ArrayAccess|array
     {
         return $this;
     }

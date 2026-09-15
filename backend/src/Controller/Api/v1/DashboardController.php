@@ -4,7 +4,7 @@ namespace App\Controller\Api\v1;
 
 use App\Controller\Api\v1\RestController;
 use Cake\ORM\TableRegistry;
-use Cake\I18n\Time;
+use Cake\I18n\DateTime;
 use Cake\Database\Expression\QueryExpression;
 
 class DashboardController extends RestController
@@ -24,16 +24,14 @@ class DashboardController extends RestController
     private function get_submission_counts($Table, $date_field, $months) {
         // we do this by separate queries because it appears to be
         // difficult to do in a database-independent way.
-        $start = Time::now();
-        $start->day(1); // Go the start of this month
-        $start = $start->addMonth(-$months);
-        $end = new Time($start);
-        $end = $end->addMonth(1);
+        $start = DateTime::now()->startOfMonth();
+        $start = $start->addMonths(-$months);
+        $end = $start->addMonths(1);
         $submission_counts = [];
 
         for ($i = 0; $i < $months; $i++) {
-            $start = $start->addMonth(1);
-            $end   = $end->addMonth(1);
+            $start = $start->addMonths(1);
+            $end   = $end->addMonths(1);
 
             $submission_counts[$i] = $Table->find()->where(
                 function (QueryExpression $exp) use ($start, $end, $date_field) {

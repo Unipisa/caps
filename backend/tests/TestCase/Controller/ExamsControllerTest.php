@@ -9,7 +9,9 @@ use Cake\ORM\TableRegistry;
  */
 class ExamsControllerTest extends MyIntegrationTestCase
 {
-    public $fixtures = [
+    protected $Exams;
+
+    public array $fixtures = [
         'app.Degrees',
         'app.Users', 
         'app.Exams', 

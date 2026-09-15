@@ -22,9 +22,9 @@
  */
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class Utf8Tables extends AbstractMigration
+class Utf8Tables extends BaseMigration
 {
     /**
      * Change Method.
@@ -43,7 +43,7 @@ class Utf8Tables extends AbstractMigration
             'users'  ];
 
         // If the database is MySQL, we convert all table to use the utf8mb4 encoding. 
-        if ($conn->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql")
+        if ($this->getAdapter()->getAdapterType() == "mysql")
         {
             foreach ($tables as $table) 
             {

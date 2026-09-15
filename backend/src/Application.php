@@ -26,7 +26,7 @@ use App\Authentication\Authenticator\AdminTokenAuthenticator;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
-use Authentication\Identifier\IdentifierInterface;
+use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
@@ -50,7 +50,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     // Current CAPS version. This number is displayed in the web interface.
-    public static $_CAPSVERSION = '2.13.0';
+    public static $_CAPSVERSION = '2.14.0';
 
     /**
      * application version number
@@ -73,7 +73,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
-        $this->addPlugin('Migrations');
+	// Not needed since CakePHP 5
+        // $this->addPlugin('Migrations');
         $this->addPlugin('Authentication');
 
         if (PHP_SAPI === 'cli') {
@@ -85,7 +86,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
          * Debug Kit should not be installed on a production system
          */
         if (Configure::read('debug')) {
-            $this->addPlugin(\DebugKit\Plugin::class);
+	    $this->addPlugin('DebugKit');
         }
 
         // Load more plugins here
@@ -160,8 +161,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         ]);
 
         $fields = [
-            IdentifierInterface::CREDENTIAL_USERNAME => 'username',
-            IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
+            AbstractIdentifier::CREDENTIAL_USERNAME => 'username',
+            AbstractIdentifier::CREDENTIAL_PASSWORD => 'password'
         ];
 
         // The administrator token takes precedence over an existing session.
@@ -170,19 +171,12 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         // Load the remaining authenticators.
         $service->loadAuthenticator('Authentication.Session');
         $service->loadAuthenticator('Authentication.Form', [
+            'identifier' => 'Authentication.Password',
             'fields' => $fields,
             'loginUrl' => [
                 Router::url('/'),
                 Router::url('/users/login'),
             ],
-        ]);
-
-        // Load identifiers
-        $service->loadIdentifier('Authentication.Password', [
-            'fields' => [
-                'username' => 'username',
-                'password' => 'password',
-            ]
         ]);
 
         return $service;

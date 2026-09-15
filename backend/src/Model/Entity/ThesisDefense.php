@@ -5,7 +5,7 @@ use Cake\ORM\Entity;
 
 class ThesisDefense extends Entity
 {
-    protected $_accessible = [
+    protected array $_accessible = [
         'degree_session_id' => true, 'user_id' => true, 'phone' => true,
         'title' => true, 'proposed_second_examiners' => true, 'public' => true,
         'state' => true, 'scheduled_at' => true, 'venue' => true,

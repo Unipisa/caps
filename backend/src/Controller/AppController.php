@@ -31,10 +31,14 @@ use App\Application;
 use App\View\XslxView;
 use Cake\I18n\FrozenTime;
 use Cake\Mailer\TransportFactory;
+use Cake\View\JsonView;
 use stdClass;
 use Cake\Event\EventInterface;
 use App\Model\Entity\User;
 use App\Model\Entity\Log;
+use App\View\CsvView;
+use App\View\OdsView;
+use App\View\XlsxView;
 
 function is_associative_array($item)
 {
@@ -56,7 +60,7 @@ function recurseFlattenObject($object)
     }
     foreach ($properties as $key => $val) {
         if (is_object($val) || is_associative_array($val)) {
-            if ($val instanceof FrozenTime) {
+            if ($val instanceof \Cake\I18n\DateTime) {
                 $obj->{$key} = $val;
             } else {
                 $subobj = recurseFlattenObject($val);
@@ -132,6 +136,14 @@ function flatten($object)
  */
 class AppController extends Controller
 {
+    /**
+     * Dot-separated fields included in JSON and spreadsheet exports.
+     * An empty list preserves the existing export behavior.
+     *
+     * @var list<string>
+     */
+    protected array $exportFields = [];
+
     // Reference to the settingsTable, which is cached in case the user requests some configuration keys. In this way,
     // we make sure that subsequent requests for configuration keys will be handled by this cache instead of triggering
     // a new query to the database.
@@ -142,6 +154,13 @@ class AppController extends Controller
     public bool $form_templates_enabled = false;
 
     public bool $degree_sessions_enabled = false;
+
+    /**
+     * Application configuration exposed to controllers and views.
+     *
+     * @var array<string, mixed>
+     */
+    public array $Caps = [];
 
     private function setupTableViews() {
         $this->request->addDetector(
@@ -170,10 +189,6 @@ class AppController extends Controller
                 'value' => 'csv',
             ]
         );
-
-        $this->RequestHandler->setConfig('viewClassMap.xlsx', 'Xlsx');
-        $this->RequestHandler->setConfig('viewClassMap.ods',  'Ods');
-        $this->RequestHandler->setConfig('viewClassMap.csv',  'Csv');
     }
 
     /**
@@ -189,9 +204,9 @@ class AppController extends Controller
     {
         parent::initialize();
 
-        $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false, 
-        ]);
+        // $this->loadComponent('RequestHandler', [
+        //    'enableBeforeRedirect' => false, 
+        //]);
 
         // Hook up the correct views for Csv, Xslx, Ods, and similar data types. 
         $this->setupTableViews();
@@ -211,9 +226,9 @@ class AppController extends Controller
         $this->Caps = Configure::Read('Caps');
         if (!array_key_exists('readonly', $this->Caps)) $this->Caps['readonly'] = False;
 
-        $this->form_templates_enabled = TableRegistry::getTableLocator()->get('formTemplates')->find()
+        $this->form_templates_enabled = TableRegistry::getTableLocator()->get('FormTemplates')->find()
             ->where(['enabled' => true])->count() > 0;
-        $this->degree_sessions_enabled = TableRegistry::getTableLocator()->get('degreeSessions')->find()
+        $this->degree_sessions_enabled = TableRegistry::getTableLocator()->get('DegreeSessions')->find()
             ->count() > 0;
 
         $this->set('capsVersion', Application::getVersion());
@@ -227,6 +242,13 @@ class AppController extends Controller
 
         $this->handleSecrets();
 
+        $this->addViewClasses([
+            JsonView::class,
+            XlsxView::class,
+            OdsView::class,
+            CsvView::class,
+        ]);
+
     }
 
     public function beforeFilter(EventInterface $event) {
@@ -237,7 +259,7 @@ class AppController extends Controller
             }
         }
 
-        $this->response->setTypeMap('xslx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->response->setTypeMap('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $this->response->setTypeMap('ods', 'application/vnd.oasis.opendocument.spreadsheet');
     }
 
@@ -321,19 +343,113 @@ class AppController extends Controller
         return $this->settingsTable->getSetting($field, $default);
     }
 
+    /**
+     * Restrict an exported query to the rows selected in the table, when any.
+     */
+    protected function applyExportSelection($query, string $primaryKey): mixed
+    {
+        if (!$this->request->is(['json', 'csv', 'xlsx', 'ods'])) {
+            return $query;
+        }
+
+        $selection = $this->request->getQuery('selection');
+        if ($selection === null || $selection === []) {
+            return $query;
+        }
+
+        $selection = is_array($selection) ? $selection : [$selection];
+        $ids = array_values(array_filter(
+            $selection,
+            static fn($id): bool => is_scalar($id) && ctype_digit((string)$id) && (int)$id > 0
+        ));
+
+        if (count($ids) !== count($selection)) {
+            throw new \Cake\Http\Exception\BadRequestException(__('Invalid export selection'));
+        }
+
+        return $query->where([$primaryKey . ' IN' => $ids]);
+    }
+
+    /**
+     * Build the nested field tree used by projectExportValue().
+     *
+     * @return array<string, mixed>
+     */
+    private function exportFieldTree(): array
+    {
+        $tree = [];
+        foreach ($this->exportFields as $field) {
+            $node = &$tree;
+            foreach (explode('.', $field) as $segment) {
+                $node[$segment] ??= [];
+                $node = &$node[$segment];
+            }
+            $node['__include'] = true;
+            unset($node);
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Recursively retain only fields present in the export schema.
+     */
+    private function projectExportValue(mixed $value, array $tree): mixed
+    {
+        if (isset($tree['__include'])) {
+            return $value;
+        }
+
+        if ($value instanceof \Cake\Datasource\EntityInterface) {
+            $value = $value->toArray();
+        } elseif ($value instanceof \Traversable) {
+            $value = iterator_to_array($value, false);
+        } elseif (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        if (array_is_list($value)) {
+            return array_map(fn($item) => $this->projectExportValue($item, $tree), $value);
+        }
+
+        $projected = [];
+        foreach ($tree as $field => $subtree) {
+            if ($field !== '__include' && array_key_exists($field, $value)) {
+                $projected[$field] = $this->projectExportValue($value[$field], $subtree);
+            }
+        }
+
+        return $projected;
+    }
+
+    private function projectExportFields(mixed $data): mixed
+    {
+        if ($this->exportFields === []) {
+            return $data;
+        }
+
+        return $this->projectExportValue($data, $this->exportFieldTree());
+    }
+
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);
 
-        if ($this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
+        if ($this->request->is('json') || $this->request->is('csv') || $this->request->is('xlsx') || $this->request->is('ods')) {
             $vars = $this->viewBuilder()->getOption('serialize');
             if (! is_array($vars)) {
                 $vars = [ $vars ];
             }
 
             foreach ($vars as $var) {
-                // We only convert times to strings for CSV requests. 
-                $data = flatten($this->viewBuilder()->getVar($var));
+                $data = $this->projectExportFields($this->viewBuilder()->getVar($var));
+                if (!$this->request->is('json')) {
+                    $data = flatten($data);
+                }
                 $this->set($var, $data);
             }
         }
@@ -347,7 +463,7 @@ class AppController extends Controller
             "user_id" => $this->user["id"],
             "external_type" => "proposal",
             "external_id" => $proposal["id"],
-            "timestamp" => FrozenTime::now(),
+            "timestamp" => \Cake\I18n\DateTime::now(),
             "action" => $action,
             "detail" => json_encode($details_data)
         ]);

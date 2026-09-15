@@ -20,10 +20,10 @@
  * the MIT license, and whose copyright is held by the Cake Software
  * Foundation. See https://cakephp.org/ for further details.
  */
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
 
-class CreateDocuments extends AbstractMigration
+class CreateDocuments extends BaseMigration
 {
     /**
      * Up Method.
@@ -49,15 +49,15 @@ class CreateDocuments extends AbstractMigration
             'limit' => 11,
             'null' => false,
         ]);
-        if ($this->getAdapter()->getConnection()->getAttribute(PDO::ATTR_DRIVER_NAME) == "mysql") {
-            $table->addColumn('data', 'blob', [
+        if ($this->getAdapter()->getAdapterType() == "mysql") {
+            $table->addColumn('data', 'binary', [
                 'default' => null,
                 'null' => true,
                 'limit' => MysqlAdapter::BLOB_LONG
             ]);
         }
         else {
-            $table->addColumn('data', 'blob', [
+            $table->addColumn('data', 'binary', [
                 'default' => null,
                 'null' => true,
             ]);

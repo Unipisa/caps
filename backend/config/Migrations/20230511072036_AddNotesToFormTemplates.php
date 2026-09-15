@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class AddNotesToFormTemplates extends AbstractMigration
+class AddNotesToFormTemplates extends BaseMigration
 {
     /**
      * Change Method.

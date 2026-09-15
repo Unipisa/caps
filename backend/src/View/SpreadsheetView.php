@@ -22,38 +22,53 @@
  */
 namespace App\View;
 
+use Cake\I18n\DateTime;
 use Cake\View\View;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Cake\I18n\FrozenTime;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SpreadsheetView extends View
+abstract class SpreadsheetView extends View
 {
-    protected function renderSpreadsheet(bool $excelDates = true) : Spreadsheet {
+    protected array $_defaultConfig = [
+        'serialize' => null,
+    ];
+
+    /**
+     * Convert the configured view variables into a spreadsheet.
+     *
+     * @param bool $excelDates Whether date values should use Excel date formatting.
+     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
+     */
+    protected function renderSpreadsheet(bool $excelDates = true): Spreadsheet
+    {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $vars = $this->getConfig('serialize');
-        if (! is_array($vars))
-            $vars = [ $vars ];
-            
+        if ($vars === true) {
+            $vars = array_keys($this->viewVars);
+        } elseif (!is_array($vars)) {
+            $vars = [$vars];
+        }
+
         foreach ($vars as $var) {
+            if (!is_string($var)) {
+                continue;
+            }
             $data = $this->get($var);
             foreach ($data as $i => $rowdata) {
-                $cells = [];
-
                 foreach ($rowdata as $j => $celldata) {
-                    if ($celldata instanceof FrozenTime && $excelDates) {
-                        $excelDateValue = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel( intval($celldata->toUnixString()) );
-                        $sheet->setCellValueByColumnAndRow($j + 1, $i + 1, $excelDateValue);
-                        $sheet->getStyleByColumnAndRow($j + 1, $i + 1)
+                    $coordinate = Coordinate::stringFromColumnIndex($j + 1) . ($i + 1);
+                    if ($celldata instanceof DateTime && $excelDates) {
+                        $excelDateValue = Date::PHPToExcel($celldata);
+                        $sheet->setCellValue($coordinate, $excelDateValue);
+                        $sheet->getStyle($coordinate)
                             ->getNumberFormat()
-                            ->setFormatCode(
-                                \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DATETIME
-                            );
-                    }
-                    else {
-                        $sheet->setCellValueByColumnAndRow($j + 1, $i + 1, $celldata);
+                            ->setFormatCode(NumberFormat::FORMAT_DATE_DATETIME);
+                    } else {
+                        $sheet->setCellValue($coordinate, $celldata);
                     }
                 }
             }

@@ -1,0 +1,13 @@
+services:
+  caps:
+    image: mysql:8
+    restart: unless-stopped
+    volumes:
+      - ./database/:/var/lib/mysql
+    environment:
+      - MYSQL_USER=caps
+      - MYSQL_PASSWORD=caps
+      - MYSQL_DATABASE=caps
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+    ports:
+      - 127.0.0.1:3306:3306
