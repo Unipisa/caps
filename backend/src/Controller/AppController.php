@@ -49,9 +49,7 @@ function recurseFlattenObject($object)
 {
     // error_log("recurseFlattenObject (" . gettype($object) . " ) " . json_encode($object));
     $obj = new stdClass(); // empty object
-    $class_name = "";
     if (is_object($object) && method_exists($object, "toArray")) {
-        $class_name = get_class($object);    
         $properties = $object->toArray();
     } elseif (is_array($object)) {
         $properties = $object;
@@ -71,11 +69,6 @@ function recurseFlattenObject($object)
         } elseif (is_array($val)) {
             // sequential array
             $obj->{$key} = implode(",", array_map('json_encode', $val));
-        } else if ($class_name == "App\\Model\\Entity\\Form" && $key == "data") {
-            $subobj = recurseFlattenObject(json_decode($val));
-            foreach ($subobj as $k => $v) {
-                $obj->{$key . "_" . $k} = $v;
-            }
         } else {
             $obj->{$key} = $val;
         }
@@ -104,8 +97,7 @@ function flatten($object)
     $data[] = []; // add first row contains headers
     $headers_map = []; // key => column
     foreach ($array as $obj) {
-        $row = [];
-        array_pad($row, count($headers_map), null);
+        $row = array_pad([], count($headers_map), null);
         $obj = recurseFlattenObject($obj);
         foreach ($obj as $key => $val) {
             if (array_key_exists($key, $headers_map)) {
@@ -143,6 +135,14 @@ class AppController extends Controller
      * @var list<string>
      */
     protected array $exportFields = [];
+
+    /**
+     * Dot-separated JSON object fields expanded into spreadsheet columns.
+     * Nested values are retained as JSON strings instead of being expanded.
+     *
+     * @var list<string>
+     */
+    protected array $exportJsonFields = [];
 
     // Reference to the settingsTable, which is cached in case the user requests some configuration keys. In this way,
     // we make sure that subsequent requests for configuration keys will be handled by this cache instead of triggering
@@ -435,6 +435,164 @@ class AppController extends Controller
         return $this->projectExportValue($data, $this->exportFieldTree());
     }
 
+    /**
+     * Decode one JSON object and prepare its direct properties as spreadsheet cells.
+     *
+     * @param mixed $value JSON text or an already decoded value.
+     * @return array<string, mixed>|null The expanded object, or null when the value is not a JSON object.
+     */
+    private function expandJsonExportValue(mixed $value): ?array
+    {
+        $decoded = $value;
+        if (is_string($value)) {
+            try {
+                $decoded = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException) {
+                return null;
+            }
+        }
+
+        if (is_object($decoded)) {
+            $properties = get_object_vars($decoded);
+        } elseif (is_array($decoded) && !array_is_list($decoded)) {
+            $properties = $decoded;
+        } else {
+            return null;
+        }
+
+        foreach ($properties as $key => $property) {
+            if (is_array($property) || is_object($property)) {
+                $properties[$key] = json_encode(
+                    $property,
+                    JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                );
+            }
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Expand a configured JSON field while mapping the path over exported rows.
+     *
+     * @param mixed $value Current export value.
+     * @param list<string> $path Remaining dot-separated field path.
+     * @return mixed Export value with the selected field expanded.
+     */
+    private function expandJsonExportField(mixed $value, array $path): mixed
+    {
+        if ($value instanceof \Cake\Datasource\EntityInterface) {
+            $value = $value->toArray();
+        } elseif ($value instanceof \Traversable) {
+            $value = iterator_to_array($value, false);
+        } elseif (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        if (array_is_list($value)) {
+            return array_map(fn ($item) => $this->expandJsonExportField($item, $path), $value);
+        }
+
+        $field = array_shift($path);
+        if (array_key_exists($field, $value)) {
+            if ($path !== []) {
+                $value[$field] = $this->expandJsonExportField($value[$field], $path);
+            } else {
+                $expanded = $this->expandJsonExportValue($value[$field]);
+                if ($expanded !== null) {
+                    $result = [];
+                    foreach ($value as $key => $item) {
+                        if ($key === $field) {
+                            foreach ($expanded as $jsonKey => $jsonValue) {
+                                $result[$field . '.' . $jsonKey] = $jsonValue;
+                            }
+                        } else {
+                            $result[$key] = $item;
+                        }
+                    }
+                    $value = $result;
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Expand all JSON fields configured by the controller.
+     *
+     * @param mixed $data Projected export data.
+     * @return mixed Export data with configured JSON objects expanded.
+     */
+    private function expandJsonExportFields(mixed $data): mixed
+    {
+        foreach ($this->exportJsonFields as $field) {
+            $data = $this->expandJsonExportField($data, explode('.', $field));
+        }
+
+        return $data;
+    }
+
+    /**
+     * Decode a configured JSON field while retaining it as a nested value.
+     *
+     * @param mixed $value Current export value.
+     * @param list<string> $path Remaining dot-separated field path.
+     * @return mixed Export value with the selected field decoded.
+     */
+    private function decodeJsonExportField(mixed $value, array $path): mixed
+    {
+        if ($value instanceof \Cake\Datasource\EntityInterface) {
+            $value = $value->toArray();
+        } elseif ($value instanceof \Traversable) {
+            $value = iterator_to_array($value, false);
+        } elseif (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        if (array_is_list($value)) {
+            return array_map(fn ($item) => $this->decodeJsonExportField($item, $path), $value);
+        }
+
+        $field = array_shift($path);
+        if (array_key_exists($field, $value)) {
+            if ($path !== []) {
+                $value[$field] = $this->decodeJsonExportField($value[$field], $path);
+            } elseif (is_string($value[$field])) {
+                try {
+                    $value[$field] = json_decode($value[$field], false, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    // Preserve invalid JSON as its original string value.
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Decode all controller-configured JSON fields for a JSON response.
+     *
+     * @param mixed $data Projected export data.
+     * @return mixed Export data with configured fields decoded.
+     */
+    private function decodeJsonExportFields(mixed $data): mixed
+    {
+        foreach ($this->exportJsonFields as $field) {
+            $data = $this->decodeJsonExportField($data, explode('.', $field));
+        }
+
+        return $data;
+    }
+
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);
@@ -447,7 +605,10 @@ class AppController extends Controller
 
             foreach ($vars as $var) {
                 $data = $this->projectExportFields($this->viewBuilder()->getVar($var));
-                if (!$this->request->is('json')) {
+                if ($this->request->is('json')) {
+                    $data = $this->decodeJsonExportFields($data);
+                } else {
+                    $data = $this->expandJsonExportFields($data);
                     $data = flatten($data);
                 }
                 $this->set($var, $data);

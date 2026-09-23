@@ -149,9 +149,12 @@ class RestController extends AppController {
             'message' => $message,
             'pagination' => $this->paginationData
         ];
-
         $this->set('response', $response);
-        $this->response = $this->response->withStatus($code->value);
+        $this->response = $this->response
+            ->withStatus($code->value)
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     }
 
     function status() {
