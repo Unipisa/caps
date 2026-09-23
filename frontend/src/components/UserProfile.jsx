@@ -214,7 +214,7 @@ class UserProfile extends CapsPage {
                     proposals={this.state.proposals} 
                     onProposalDeleteClicked={this.onProposalDeleteClicked.bind(this)}>
                 </ProposalsBlock>
-                {this.state.degree_sessions_enabled &&
+                {this.state.degree_sessions_enabled && false &&
                 <ThesisDefensesBlock className="mt-4"
                     defenses={this.state.thesis_defenses}
                     root={this.props.root}
