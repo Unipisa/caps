@@ -158,7 +158,8 @@ class UsersController extends AppController {
             ->where([ 'username' => $authuser['username'] ])
             ->first();
 
-        if (! $user) {
+        $isNewUser = ! $user;
+        if ($isNewUser) {
             // ... otherwise create a new user
             $user = $this->Users->newEmptyEntity();
         }
@@ -170,9 +171,9 @@ class UsersController extends AppController {
             // 'surname' => $authuser['surname'],
             // 'givenname' => $authuser['givenname'],
             'email' => $authuser['email'],
-            'admin' => $user ? $user['admin'] : $authuser['admin'] // We only use the database admin flag
-                // if the user is not found; otherwise a user might have been granted admin privileges
-                // locally and we respect that.
+            // Preserve locally granted privileges for existing users. New users
+            // are non-admin unless the authentication provider explicitly says otherwise.
+            'admin' => $isNewUser ? (bool)($authuser['admin'] ?? false) : (bool)$user['admin'],
         ];
 
         // If we get new data for givenname, surname, name, overwrite what we have in the database.

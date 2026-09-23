@@ -74,6 +74,42 @@ class UsersControllerTest extends TestCase
         $this->assertResponseContains('<html>');
     }
 
+    public function testLoginCreatesNonAdminUser(): void
+    {
+        $this->get('/users/login');
+
+        $method = new \ReflectionMethod($this->_controller, 'login_user');
+        $method->invoke($this->_controller, [
+            'username' => 'new.user',
+            'givenname' => 'NEW',
+            'surname' => 'USER',
+            'number' => '1234567',
+            'email' => 'new.user@studenti.unipi.it',
+            'admin' => false,
+        ]);
+
+        $user = $this->Users->findByUsername('new.user')->firstOrFail();
+        $this->assertFalse($user->admin);
+    }
+
+    public function testLoginPreservesExistingAdminPrivileges(): void
+    {
+        $this->get('/users/login');
+
+        $method = new \ReflectionMethod($this->_controller, 'login_user');
+        $method->invoke($this->_controller, [
+            'username' => 'alice.verdi',
+            'givenname' => 'ALICE',
+            'surname' => 'VERDI',
+            'number' => '24680',
+            'email' => 'alice.verdi@aol.com',
+            'admin' => false,
+        ]);
+
+        $user = $this->Users->findByUsername('alice.verdi')->firstOrFail();
+        $this->assertTrue($user->admin);
+    }
+
     /**
      * testUsersPage method
      *
