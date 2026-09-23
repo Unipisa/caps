@@ -75,12 +75,12 @@
         <td><input type=checkbox name="selection[]" value="<?php echo $user['id']; ?>"></td>
         <td>
             <?php echo $this->Html->link(
-                $user['number'],
+                $user['number']??'<undefined>',
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td>
             <?php echo $this->Html->link(
-                $user['username'],
+                $user['username']??'<undefined>',
                 ['action' => 'view', $user['id']]);
             ?></td>
         <td>
