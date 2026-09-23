@@ -39,7 +39,7 @@
 
 <?= $this->fetch('content') ?>
 
-<h3>E' stato aggiunto un commento al piano di studi</h3>
+<h3>È stato aggiunto un allegato/commento al piano di studi</h3>
 <i><?= $comment ?></i>
 <p>
     

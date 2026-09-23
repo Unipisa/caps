@@ -22,11 +22,11 @@
  */
 $this->extend('/email/html/proposal_base');
 ?>
-<h3>Piano di studi rigettato</h3>
+<h3>Piano di studi rifiutato</h3>
 <p>
     Il piano di studi presentato per la <?= $proposal['curriculum']['degree']['name'] ?>,
     <?= $settings['department'] ?>, curriculum <?= $proposal['curriculum']['name'] ?>
-    è stato <strong>rigettato</strong>.
+    è stato <strong>rifiutato</strong>. Si prega di leggere i commenti prima di sottometterne uno nuovo.
 </p>
 <p>
 <?= $this->Html->link("Vai al piano di studi", 

@@ -49,9 +49,11 @@ class ProposalsController extends AppController
         'approved_date',
         'note',
         'user.id',
+        'user.number',
         'user.name',
         'user.givenname',
         'user.surname',
+        'user.email',
         'curriculum.id',
         'curriculum.name',
         'curriculum.credits_per_year',
@@ -171,7 +173,7 @@ class ProposalsController extends AppController
 
         $email = $this->createProposalEmail($proposal)
             ->setTo($proposal['user']['email'])
-            ->setSubject('Piano di studi rigettato');
+            ->setSubject('Piano di studi rifiutato');
         $email->viewBuilder()->setTemplate('rejection');
         try {
             $email->send();

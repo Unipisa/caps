@@ -53,7 +53,7 @@ export class ProposalView extends CapsPage {
             const proposal = await restClient.patch(
                 `proposals/${this.state.proposal.id}`, 
                 { state: "rejected" })
-            this.flashDanger("Piano di studi rigettato");
+            this.flashDanger("Piano di studi rifiutato");
             this.setState({ proposal });
         } catch(e) {
             this.flashCatch(e);
