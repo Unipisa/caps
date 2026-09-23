@@ -1,16 +1,15 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use Cake\TestSuite\TestCase;
+use Cake\TestSuite\EmailTrait;
 use Cake\TestSuite\IntegrationTestTrait;
-use Cake\ORM\TableRegistry;
-use App\Test\TestCase\Controller\MyIntegrationTestCase;
 
 /**
  * UsersControllerTest class
  */
 class ProposalsControllerTest extends MyIntegrationTestCase
 {
+    use EmailTrait;
     use IntegrationTestTrait;
 
     public array $fixtures = [
@@ -18,11 +17,19 @@ class ProposalsControllerTest extends MyIntegrationTestCase
             'app.Proposals',
             'app.Curricula',
             'app.Degrees',
-            'app.Tags', 
+            'app.Tags',
             'app.TagsExams',
             'app.Exams',
-            'app.ExamsGroups', 
-            'app.Groups'
+            'app.ExamsGroups',
+            'app.Groups',
+            'app.Settings',
+            'app.Attachments',
+            'app.ProposalAuths',
+            'app.ChosenExams',
+            'app.ChosenFreeChoiceExams',
+            'app.CompulsoryExams',
+            'app.CompulsoryGroups',
+            'app.FreeChoiceExams',
     ];
 
     public function setUp(): void
@@ -72,5 +79,17 @@ class ProposalsControllerTest extends MyIntegrationTestCase
             ['id', 'name', 'academic_year'],
             array_keys($data[0]['curriculum']['degree'])
         );
+    }
+
+    public function testAdminApproveSendsConfiguredEmail(): void
+    {
+        $this->adminSession();
+
+        $this->get('/proposals/admin-approve/1');
+
+        $this->assertRedirect('/proposals/view/1');
+        $this->assertMailCount(1);
+        $this->assertMailSentTo('mario.rossi@rossi.com');
+        $this->assertMailSubjectContains('Piano di studi approvato');
     }
 }

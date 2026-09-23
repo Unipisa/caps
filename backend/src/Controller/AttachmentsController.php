@@ -26,7 +26,7 @@ use App\Controller\AppController;
 use App\Model\Entity\Attachment;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 
 /**
  * Attachment Controller
@@ -63,7 +63,7 @@ class AttachmentsController extends AppController
     }
     private function createEmail($proposal,$comment)
     {
-        $email = new Email();
+        $email = new Mailer('default');
 
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(
@@ -87,10 +87,10 @@ class AttachmentsController extends AppController
     }
     private function get_proposal($id)
     {
-        return   $this->Attachments->Proposals->get($id, [
-            'contain' => [ 'Users', 'Curricula', 'Curricula.Degrees' ] 
-        ]);
-            
+        return $this->Attachments->Proposals->get(
+            $id,
+            contain: [ 'Users', 'Curricula', 'Curricula.Degrees' ]
+        );
     }
 
     private function notifyAttachment($id,$comment)
@@ -166,9 +166,10 @@ class AttachmentsController extends AppController
             }
 
             // Check that the user owns the given proposal, or is an adminstrator
-            $proposal = $this->Attachments->Proposals->get($attachment['proposal_id'], [
-                'contain' => [ 'Users', 'ProposalAuths' ]
-            ]);
+            $proposal = $this->Attachments->Proposals->get(
+                $attachment['proposal_id'],
+                contain: [ 'Users', 'ProposalAuths' ]
+            );
 
             if (! $this->user || ! $this->user->canAddAttachment($proposal, $secrets)) {
                 throw new ForbiddenException('Impossibile allegare file a questo piano');

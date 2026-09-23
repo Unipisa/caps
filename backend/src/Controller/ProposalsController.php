@@ -32,7 +32,7 @@ use Cake\Log\Log;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\I18n\DateTime as CakeDateTime;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
@@ -92,7 +92,7 @@ class ProposalsController extends AppController
 
     private function createProposalEmail($proposal)
     {
-        $email = new Email();
+        $email = new Mailer('default');
 
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(

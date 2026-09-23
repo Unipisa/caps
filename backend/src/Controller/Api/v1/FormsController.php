@@ -7,7 +7,7 @@ use Cake\I18n\DateTime;
 use App\Model\Entity\FormAuth;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Http\Exception\BadRequestException;
 
 
@@ -234,7 +234,7 @@ class FormsController extends RestController {
 
     private function createFormEmail($form)
     {
-        $email = new Email();
+        $email = new Mailer('default');
 
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(

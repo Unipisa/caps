@@ -6,7 +6,7 @@ use App\Model\Entity\Proposal;
 use App\Model\Entity\ProposalAuth;
 use Cake\Utility\Security;
 use Cake\Validation\Validation;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Http\Exception\ForbiddenException;
 
 
@@ -242,7 +242,7 @@ class ProposalsController extends RestController
 
     private function createProposalEmail($proposal)
     {
-        $email = new Email();
+        $email = new Mailer('default');
 
         // Find the address that need to be notified in Cc, if any
         $cc_addresses = array_map(
