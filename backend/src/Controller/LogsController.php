@@ -26,8 +26,6 @@ use App\Model\Entity\Form;
 use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Mailer\Email;
-
 
 class LogsController extends AppController
 {    

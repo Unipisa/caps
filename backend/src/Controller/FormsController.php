@@ -27,7 +27,7 @@ use App\Controller\AppController;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\DateTime;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Validation\Validation;
 use App\Form\FormsFilterForm;
 
@@ -211,7 +211,7 @@ class FormsController extends AppController
 
     private function createEmail($form)
     {
-        $email = new Email();
+        $email = new Mailer('default');
 
         $form_data = json_decode($form['data'], true);
 

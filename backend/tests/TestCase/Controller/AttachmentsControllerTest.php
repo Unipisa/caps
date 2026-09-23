@@ -1,9 +1,10 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\AttachmentsController;
+use Cake\ORM\TableRegistry;
+use Cake\TestSuite\EmailTrait;
 use Cake\TestSuite\IntegrationTestTrait;
-use Cake\TestSuite\TestCase;
+use Laminas\Diactoros\UploadedFile;
 
 /**
  * App\Controller\AttachmentsController Test Case
@@ -11,6 +12,7 @@ use Cake\TestSuite\TestCase;
  */
 class AttachmentsControllerTest extends MyIntegrationTestCase
 {
+    use EmailTrait;
     use IntegrationTestTrait;
 
     /**
@@ -23,7 +25,9 @@ class AttachmentsControllerTest extends MyIntegrationTestCase
         'app.Proposals',
         'app.Settings',
         'app.Attachments',
-        'app.FormTemplates'
+        'app.FormTemplates',
+        'app.Curricula',
+        'app.Degrees',
     ];
 
     /**
@@ -56,7 +60,27 @@ class AttachmentsControllerTest extends MyIntegrationTestCase
      */
     public function testAdd()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $degrees = TableRegistry::getTableLocator()->get('Degrees');
+        $degree = $degrees->get(1);
+        $degree->attachment_confirmation = true;
+        $degrees->saveOrFail($degree);
+
+        $stream = fopen('php://memory', 'r+');
+        $upload = new UploadedFile($stream, 0, UPLOAD_ERR_OK, '', 'application/octet-stream');
+
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->studentSession(1);
+        $this->configRequest(['files' => ['data' => $upload]]);
+        $this->post('/attachments/add', [
+            'proposal_id' => 1,
+            'comment' => 'Test comment',
+        ]);
+
+        $this->assertRedirect('/proposals/view/1');
+        $this->assertMailCount(1);
+        $this->assertMailSentTo('mario.rossi@rossi.com');
+        $this->assertMailSubjectContains('Allegato/commento aggiunto');
     }
 
     /**
