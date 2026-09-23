@@ -51,7 +51,11 @@ class FormsController extends AppController
         'form_template.name',
         'form_template.enabled',
         'form_template.notify_emails',
-        'form_template.require_approval'
+        'form_template.require_approval',
+    ];
+
+    protected array $exportJsonFields = [
+        'data',
     ];
 
     public function index()
