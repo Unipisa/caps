@@ -18,18 +18,20 @@ class FormsControllerTest extends MyIntegrationTestCase
 
     public function testJsonExportUsesConfiguredFields(): void
     {
+        $this->createFormsWithDifferentJsonKeys();
         $this->adminSession();
         $this->get('/forms/index.json');
 
         $this->assertResponseOk();
         $data = json_decode((string)$this->_response->getBody(), true);
         $this->assertNotEmpty($data);
-        $this->assertArrayHasKey('data', $data[0]);
-        $this->assertArrayHasKey('user', $data[0]);
-        $this->assertArrayHasKey('form_template', $data[0]);
-        $this->assertArrayNotHasKey('password', $data[0]['user']);
-        $this->assertArrayNotHasKey('text', $data[0]['form_template']);
-        $this->assertArrayNotHasKey('code', $data[0]['form_template']);
+        $formsById = array_column($data, null, 'id');
+        $this->assertSame(['A' => 1, 'B' => ['nested' => 2]], $formsById[1]['data']);
+        $this->assertArrayHasKey('user', $formsById[1]);
+        $this->assertArrayHasKey('form_template', $formsById[1]);
+        $this->assertArrayNotHasKey('password', $formsById[1]['user']);
+        $this->assertArrayNotHasKey('text', $formsById[1]['form_template']);
+        $this->assertArrayNotHasKey('code', $formsById[1]['form_template']);
     }
 
     public function testCsvExportExpandsConfiguredJsonFieldsAcrossRows(): void

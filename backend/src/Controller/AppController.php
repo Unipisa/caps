@@ -537,6 +537,62 @@ class AppController extends Controller
         return $data;
     }
 
+    /**
+     * Decode a configured JSON field while retaining it as a nested value.
+     *
+     * @param mixed $value Current export value.
+     * @param list<string> $path Remaining dot-separated field path.
+     * @return mixed Export value with the selected field decoded.
+     */
+    private function decodeJsonExportField(mixed $value, array $path): mixed
+    {
+        if ($value instanceof \Cake\Datasource\EntityInterface) {
+            $value = $value->toArray();
+        } elseif ($value instanceof \Traversable) {
+            $value = iterator_to_array($value, false);
+        } elseif (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        if (array_is_list($value)) {
+            return array_map(fn ($item) => $this->decodeJsonExportField($item, $path), $value);
+        }
+
+        $field = array_shift($path);
+        if (array_key_exists($field, $value)) {
+            if ($path !== []) {
+                $value[$field] = $this->decodeJsonExportField($value[$field], $path);
+            } elseif (is_string($value[$field])) {
+                try {
+                    $value[$field] = json_decode($value[$field], false, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    // Preserve invalid JSON as its original string value.
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Decode all controller-configured JSON fields for a JSON response.
+     *
+     * @param mixed $data Projected export data.
+     * @return mixed Export data with configured fields decoded.
+     */
+    private function decodeJsonExportFields(mixed $data): mixed
+    {
+        foreach ($this->exportJsonFields as $field) {
+            $data = $this->decodeJsonExportField($data, explode('.', $field));
+        }
+
+        return $data;
+    }
+
     public function beforeRender(\Cake\Event\EventInterface $event)
     {
         parent::beforeRender($event);
@@ -549,7 +605,9 @@ class AppController extends Controller
 
             foreach ($vars as $var) {
                 $data = $this->projectExportFields($this->viewBuilder()->getVar($var));
-                if (!$this->request->is('json')) {
+                if ($this->request->is('json')) {
+                    $data = $this->decodeJsonExportFields($data);
+                } else {
                     $data = $this->expandJsonExportFields($data);
                     $data = flatten($data);
                 }
