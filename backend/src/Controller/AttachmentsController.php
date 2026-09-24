@@ -46,7 +46,11 @@ class AttachmentsController extends AppController
      */
     public function view(?string $id = null) : \Cake\Http\Response
     {
-        $attachment = $this->Attachments->get($id, contain: ['Users', 'Proposals', 'Proposals.Users' ]);
+        $attachment = $this->Attachments->get(
+            $id,
+            finder: 'withData',
+            contain: ['Users', 'Proposals', 'Proposals.Users' ],
+        );
 
         if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');
@@ -226,7 +230,11 @@ class AttachmentsController extends AppController
     }
 
     public function signatures($id = null) {
-        $attachment = $this->Attachments->get($id, contain: [ 'Users', 'Proposals', 'Proposals.Users' ]);
+        $attachment = $this->Attachments->get(
+            $id,
+            finder: 'withData',
+            contain: [ 'Users', 'Proposals', 'Proposals.Users' ],
+        );
 
         if (! $this->user || ! $this->user->canViewAttachment($attachment)) {
             throw new ForbiddenException('Impossibile visualizzare il file selezionato');

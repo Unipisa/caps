@@ -22,7 +22,7 @@
  */
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -47,6 +47,22 @@ use Cake\Validation\Validator;
 class DocumentsTable extends Table
 {
     /**
+     * Exclude file contents from normal queries.
+     */
+    public function findAll(SelectQuery $query): SelectQuery
+    {
+        return $query->selectAllExcept($this, ['data']);
+    }
+
+    /**
+     * Include file contents when they are explicitly required.
+     */
+    public function findWithData(SelectQuery $query): SelectQuery
+    {
+        return $query;
+    }
+
+    /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
@@ -66,12 +82,14 @@ class DocumentsTable extends Table
         $this->belongsTo('Owners', [
             'foreignKey' => 'owner_id',
             'dependent' => true,
+            'strategy' => 'select',
             'propertyName' => 'owner',
             'className' => 'Users'
         ]);
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
+            'strategy' => 'select',
             'dependent' => true
         ]);
     }

@@ -81,4 +81,31 @@ class AttachmentsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
+
+    public function testAllFinderExcludesData(): void
+    {
+        $attachment = $this->Attachment->find()->firstOrFail();
+
+        $this->assertFalse($attachment->has('data'));
+    }
+
+    public function testWithDataFinderIncludesData(): void
+    {
+        $attachment = $this->Attachment->find('withData')->firstOrFail();
+
+        $this->assertTrue($attachment->has('data'));
+    }
+
+    public function testProposalsContainAttachmentsExcludesData(): void
+    {
+        $proposal = $this->Attachment->Proposals->get(
+            1,
+            contain: ['Attachments.Users', 'Attachments.Proposals'],
+        );
+
+        $this->assertCount(1, $proposal->attachments);
+        $this->assertFalse($proposal->attachments[0]->has('data'));
+        $this->assertSame(1, $proposal->attachments[0]->user->id);
+        $this->assertSame(1, $proposal->attachments[0]->proposal->id);
+    }
 }
