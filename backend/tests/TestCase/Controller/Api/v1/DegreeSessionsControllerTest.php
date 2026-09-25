@@ -106,12 +106,12 @@ class DegreeSessionsControllerTest extends MyIntegrationTestCase
     /**
      * @return void
      */
-    public function testScheduleRejectsToday(): void
+    public function testScheduleRejectsYesterday(): void
     {
         $timezone = new \DateTimeZone('Europe/Rome');
-        $today = (new \DateTimeImmutable('today', $timezone))->format('Y-m-d');
+        $yesterday = (new \DateTimeImmutable('yesterday', $timezone))->format('Y-m-d');
 
-        $this->get('/api/v1/degree_sessions/schedule/' . $today);
+        $this->get('/api/v1/degree_sessions/schedule/' . $yesterday);
 
         $this->assertResponseCode(400);
         $response = json_decode((string)$this->_response->getBody(), true);
