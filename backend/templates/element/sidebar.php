@@ -88,7 +88,7 @@ $user ??= null;
             </a>
         </li>
         <?php endif; ?>
-        <?php if ($degree_sessions_enabled): ?>
+        <?php if ($degree_sessions_enabled && false): ?>
         <li class="nav-item">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'add']); ?>">
                 <i class="fas mr-1 fa-graduation-cap"></i>
