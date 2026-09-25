@@ -46,7 +46,7 @@ class DegreeSessionsController extends RestController
         }
 
         $today = new \DateTimeImmutable('today', $timezone);
-        if ($date <= $today) {
+        if ($date < $today) {
             $this->JSONResponse(ResponseCode::BadRequest, null, 'The schedule date must be in the future');
             return;
         }
