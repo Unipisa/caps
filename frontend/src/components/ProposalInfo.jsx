@@ -18,16 +18,16 @@ class ProposalInfo extends React.Component {
     renderButtons() {
         return <div className="btn-group">
             {this.props.proposal.state == "draft" && 
-                <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
+                <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/edit/${this.props.proposal.id}`} className="btn btn-sm btn-primary" title="Modifica il piano di studi">
                     <FontAwesomeIcon icon={faEdit} />
                 </a>
             }
             {this.props.proposal.state != "draft" &&
-            <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/duplicate/${this.props.proposal.id}`} className="btn btn-sm btn-primary">
+            <a onClick={(e) => e.stopPropagation()} href={`${this.props.root}proposals/duplicate/${this.props.proposal.id}`} className="btn btn-sm btn-primary" title="Duplica il piano di studi">
                 <FontAwesomeIcon icon={faCopy} />
             </a>}
             {this.props.proposal.state == "draft" && 
-                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)}>
+                <a className="btn btn-sm btn-danger" onClick={this.onDeleteClicked.bind(this)} title="Elimina il piano di studi">
                     <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
                 </a>
             }
