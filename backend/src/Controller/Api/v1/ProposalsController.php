@@ -19,6 +19,7 @@ class ProposalsController extends RestController
         'ChosenExams.CompulsoryGroups.Groups', 'Curricula.Degrees',
         'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ];
 
+
     public $allowedFilters = [ 
         'user_id' => Integer::class,
         'state' => ['type' => String::class, 

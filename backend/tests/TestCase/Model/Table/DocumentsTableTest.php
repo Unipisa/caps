@@ -80,4 +80,31 @@ class DocumentsTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
+
+    public function testAllFinderExcludesData(): void
+    {
+        $document = $this->Documents->find()->firstOrFail();
+
+        $this->assertFalse($document->has('data'));
+    }
+
+    public function testWithDataFinderIncludesData(): void
+    {
+        $document = $this->Documents->find('withData')->firstOrFail();
+
+        $this->assertTrue($document->has('data'));
+    }
+
+    public function testUsersContainDocumentsExcludesData(): void
+    {
+        $user = $this->Documents->Users->get(
+            1,
+            contain: ['Documents.Users', 'Documents.Owners'],
+        );
+
+        $this->assertCount(1, $user->documents);
+        $this->assertFalse($user->documents[0]->has('data'));
+        $this->assertSame(1, $user->documents[0]->user->id);
+        $this->assertSame(1, $user->documents[0]->owner->id);
+    }
 }
