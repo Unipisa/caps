@@ -5,6 +5,10 @@ const { buildSync } = require('esbuild');
 const Module = require('node:module');
 const path = require('node:path');
 
+// Initialize React 17's scheduler before installing the DOM so it uses Node
+// timers instead of a persistent MessageChannel that keeps the test alive.
+require('scheduler');
+
 const dom = new JSDOM('<div id="app"></div>', { url: 'http://localhost/', pretendToBeVisual: true });
 global.window = dom.window;
 global.document = dom.window.document;
