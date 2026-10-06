@@ -5,8 +5,12 @@
 <?= $this->Form->control('type', ['label' => 'Tipo di laurea', 'options' => \App\Model\Entity\DegreeSession::TYPES, 'class' => 'form-control']) ?>
 <?= $this->Form->control('name', ['label' => 'Nome della sessione', 'class' => 'form-control', 'placeholder' => 'es. Sessione estiva']) ?>
 <?= $this->Form->control('start_date', ['label' => 'Data iniziale', 'type' => 'date', 'class' => 'form-control']) ?>
-<?= $this->Form->control('ask_bachelor_university', ['label' => 'Mostra il campo ateneo della laurea triennale', 'type' => 'checkbox']) ?>
-<?= $this->Form->control('ask_second_examiners', ['label' => 'Mostra la lista dei controrelatori proposti', 'type' => 'checkbox']) ?>
+<div class="form-check">
+    <?= $this->Form->control('ask_bachelor_university', ['label' => 'Mostra il campo ateneo della laurea triennale', 'type' => 'checkbox']) ?>
+</div>
+<div class="form-check">
+    <?= $this->Form->control('ask_second_examiners', ['label' => 'Mostra la lista dei controrelatori proposti', 'type' => 'checkbox']) ?>
+</div>
 <?= $this->Form->control('instructions', ['label' => 'Istruzioni finali (facoltative)', 'type' => 'textarea', 'class' => 'form-control', 'rows' => 5, 'help' => 'Testo mostrato alla fine della domanda, prima del pulsante di invio.']) ?>
 <div class="mt-3">
     <?= $this->Form->button('Salva', ['class' => 'btn btn-primary']) ?>
