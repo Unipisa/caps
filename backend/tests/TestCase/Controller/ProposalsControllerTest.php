@@ -81,6 +81,54 @@ class ProposalsControllerTest extends MyIntegrationTestCase
         );
     }
 
+    public function testDuplicateCreatesIndependentDraft(): void
+    {
+        $proposals = $this->getTableLocator()->get('Proposals');
+        $exams = $this->getTableLocator()->get('Exams');
+        $exam = $exams->saveOrFail($exams->newEntity([
+            'name' => 'Algebra', 'code' => 'ALG', 'sector' => 'MAT/02', 'credits' => 6,
+        ]));
+        $original = $proposals->get(1);
+        $original->state = 'approved';
+        $original->note = 'Keep this note';
+        $proposals->saveOrFail($original);
+        $chosenExams = $this->getTableLocator()->get('ChosenExams');
+        $chosenExams->saveOrFail($chosenExams->newEntity([
+            'proposal_id' => 1, 'exam_id' => $exam->id, 'credits' => 6, 'chosen_year' => 2,
+        ]));
+        $freeChoiceExams = $this->getTableLocator()->get('ChosenFreeChoiceExams');
+        $freeChoiceExams->saveOrFail($freeChoiceExams->newEntity([
+            'proposal_id' => 1, 'name' => 'Optional course', 'credits' => 3, 'chosen_year' => 1,
+        ]));
+        $contain = ['ChosenExams', 'ChosenFreeChoiceExams'];
+        $originalData = $proposals->get(1, contain: $contain)->toArray();
+
+        $this->studentSession();
+        $this->get('/proposals/duplicate/1');
+
+        $this->assertResponseCode(302);
+        $this->assertSame(2, $proposals->find()->count());
+        $copy = $proposals->find()->where(['id !=' => 1])->contain($contain)->firstOrFail();
+        $this->assertRedirect('/proposals/edit/' . $copy->id);
+        $this->assertSame('draft', $copy->state);
+        $this->assertNull($copy->submitted_date);
+        $this->assertNull($copy->approved_date);
+        $this->assertSame($original->user_id, $copy->user_id);
+        $this->assertSame($original->curriculum_id, $copy->curriculum_id);
+        $this->assertSame($original->note, $copy->note);
+        foreach (['chosen_exams', 'chosen_free_choice_exams'] as $association) {
+            $this->assertCount(1, $copy->$association);
+            $selection = $copy->$association[0]->toArray();
+            $originalSelection = $originalData[$association][0];
+            $this->assertNotSame($originalSelection['id'], $selection['id']);
+            $this->assertSame($copy->id, $selection['proposal_id']);
+            unset($selection['id'], $selection['proposal_id']);
+            unset($originalSelection['id'], $originalSelection['proposal_id']);
+            $this->assertSame($originalSelection, $selection);
+        }
+        $this->assertEquals($originalData, $proposals->get(1, contain: $contain)->toArray());
+    }
+
     public function testAdminApproveSendsConfiguredEmail(): void
     {
         $this->adminSession();

@@ -447,30 +447,24 @@ class ProposalsController extends AppController
             throw new ForbiddenException('Utente non autorizzato a duplicare questo piano');
         }
 
-        // Create a copy of the proposal, and set the corresponding data
-        $newp = new Proposal($proposal->toArray());
-        
-        $newp['id'] = null;
+        // Omit primary keys instead of setting them to null: CakePHP checks
+        // whether supplied primary keys already exist before inserting.
+        $data = $proposal->toArray();
+        unset($data['id'], $data['user'], $data['curriculum'], $data['modified']);
+        $data['state'] = 'draft';
+        $data['submitted_date'] = null;
+        $data['approved_date'] = null;
 
-        // Set the user to NULL so that it won't be saved
-        $newp->user = null;
-
-        // The new plan should be in the draft state
-        $newp->state = 'draft';
-
-        // Reset also the submitted and approved dates
-        $newp->submitted_date = null;
-        $newp->approved_date  = null;
-
-        // For each of the selected exams we need to clear the ID, so that saving this object will create new entities
-        // for the selections, making this proposal effectively independent of the original one.
-        foreach ($newp->chosen_exams as $key => &$chosen_exam) {
-            $chosen_exam['id'] = null;
+        foreach (['chosen_exams', 'chosen_free_choice_exams'] as $association) {
+            foreach ($data[$association] as $key => $selection) {
+                unset($data[$association][$key]['id'], $data[$association][$key]['proposal_id']);
+            }
         }
 
-        foreach ($newp->chosen_free_choice_exams as $key => &$free_choice_exam) {
-            $free_choice_exam['id'] = null;
-        }
+        // Marshal the selections as new entities belonging to the new proposal.
+        $newp = $this->Proposals->newEntity($data, [
+            'associated' => ['ChosenExams', 'ChosenFreeChoiceExams'],
+        ]);
 
         // Save the proposal and redirect the user to the new plan
         if ($this->Proposals->save($newp)) {
