@@ -1,3 +1,4 @@
+import { degreeSessionTypes } from '../modules/degreeSession';
 import React, { useState, useEffect } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Flash from './Flash';
@@ -38,8 +39,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                     .filter(s => new Date(s.start_date) >= new Date())
                     .map(s => ({
                         id: s.id,
-                        thesis_session_notes: s.degree?.thesis_session_notes || s.thesis_session_notes || null,
-                        label: `${s.degree.name} — ${s.name} (${formatDate(s.start_date)})`
+                        label: `${degreeSessionTypes[s.type]} — ${s.name} (${formatDate(s.start_date)})`
                     }))
                     .sort((a, b) => a.label.localeCompare(b.label));
                 setSessions(futureSessions);
@@ -94,9 +94,6 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
     const handleFileChange = (e) => {
         setAttachments(Array.from(e.target.files));
     };
-
-    const selectedSession = sessions.find(s => String(s.id) === String(degreeSessionId));
-    const thesisSessionNotes = selectedSession?.thesis_session_notes;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -172,11 +169,6 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
         <div id="thesis-defense-add" className="thesis-defense-add">
             <h1>Domanda di laurea</h1>
             {flash && <Flash message={flash.message} type={flash.type} onClose={() => setFlash(null)} />}
-            {thesisSessionNotes && (
-                <div className="card shadow border-left-info mb-3">
-                    <div className="card-body" dangerouslySetInnerHTML={{ __html: thesisSessionNotes }} />
-                </div>
-            )}
             <div className="card mb-3">
                 <div className="card-body">
                     <p className="text-muted">La domanda sarà inviata immediatamente agli amministratori. Dopo l'invio non sarà modificabile.</p>

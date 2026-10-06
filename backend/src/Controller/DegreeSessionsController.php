@@ -9,7 +9,6 @@ class DegreeSessionsController extends AppController
     {
         $this->requireAdmin();
         $sessions = $this->DegreeSessions->find()
-            ->contain(['Degrees'])
             ->order(['DegreeSessions.start_date' => 'DESC'])
             ->all();
         $this->set(compact('sessions'));
@@ -29,9 +28,17 @@ class DegreeSessionsController extends AppController
             $this->Flash->error('Impossibile salvare la sessione di laurea.');
         }
 
-        $degrees = $this->DegreeSessions->Degrees->find('list')
-            ->order(['Degrees.academic_year' => 'DESC', 'Degrees.name' => 'ASC']);
-        $this->set(compact('session', 'degrees'));
+        $this->set(compact('session'));
+    }
+
+    public function duplicate($id)
+    {
+        $this->requireAdmin();
+        $this->request->allowMethod(['get']);
+        $source = $this->DegreeSessions->get($id);
+        $session = $this->DegreeSessions->newEntity($source->extract(['type', 'name', 'start_date']));
+        $this->set(compact('session'));
+        $this->render('edit');
     }
 
     public function delete($id)

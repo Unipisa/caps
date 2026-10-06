@@ -1,3 +1,4 @@
+import { degreeSessionTypes } from '../modules/degreeSession';
 import React, { useState, useEffect } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Flash from './Flash';
@@ -131,7 +132,7 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
 
                         <dt className="col-sm-3">Corso e sessione</dt>
                         <dd className="col-sm-9">
-                            {defense.degree_session?.degree?.name} — {defense.degree_session?.name},
+                            {degreeSessionTypes[defense.degree_session?.type]} — {defense.degree_session?.name},
                             {formatDateSession(defense.degree_session?.start_date)}
                         </dd>
 

@@ -3,15 +3,13 @@ namespace App\Controller\Api\v1;
 
 class DegreeSessionsController extends RestController
 {
-    public static $associations = [
-        'Degrees',
-    ];
+    public static $associations = [];
 
     public $allowedFilters = [
-        'degree.name' => [
+        'type' => [
             'type' => String::class,
-            'dbfield' => 'Degrees.name',
-            'modifier' => 'LIKE',
+            'dbfield' => 'DegreeSessions.type',
+            'options' => ['bachelor', 'master'],
         ],
         'start_date' => [
             'type' => Integer::class,
@@ -53,7 +51,6 @@ class DegreeSessionsController extends RestController
 
         $sessions = $this->DegreeSessions->find()
             ->contain([
-                'Degrees',
                 'ThesisDefenses' => function ($query) {
                     return $query
                         ->contain(['Users'])
@@ -68,7 +65,7 @@ class DegreeSessionsController extends RestController
 
         $rooms = [];
         foreach ($sessions as $session) {
-            $type = (int)$session->degree->years === 3 ? 'LT' : 'LM';
+            $type = $session->type === 'bachelor' ? 'LT' : 'LM';
 
             foreach ($session->thesis_defenses as $defense) {
                 $scheduledAt = (clone $defense->scheduled_at)->setTimezone($timezone);
@@ -129,13 +126,7 @@ class DegreeSessionsController extends RestController
 
     public function index()
     {
-        $query = $this->DegreeSessions->find()->contain([
-            'Degrees' => function ($query) {
-                return $query
-                    ->enableAutoFields(true)
-                    ->select(['Degrees.thesis_session_notes']);
-            },
-        ]);
+        $query = $this->DegreeSessions->find();
         $query = $this->applyFilters($query);
 
         $this->JSONResponse(ResponseCode::Ok, $query);
@@ -144,13 +135,7 @@ class DegreeSessionsController extends RestController
     public function get($id)
     {
         try {
-            $session = $this->DegreeSessions->get($id, ['contain' => [
-                'Degrees' => function ($query) {
-                    return $query
-                        ->enableAutoFields(true)
-                        ->select(['Degrees.thesis_session_notes']);
-                },
-            ]]);
+            $session = $this->DegreeSessions->get($id);
         } catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, 'DegreeSession not found');
             return;
