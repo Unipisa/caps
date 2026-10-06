@@ -24,6 +24,9 @@ class DegreeSessionsTable extends Table
             ->scalar('type')->requirePresence('type', 'create')->notEmptyString('type')
             ->inList('type', array_keys(DegreeSession::TYPES))
             ->scalar('name')->maxLength('name', 255)->notEmptyString('name')
+            ->scalar('instructions')->allowEmptyString('instructions')
+            ->boolean('ask_bachelor_university')->notEmptyString('ask_bachelor_university')
+            ->boolean('ask_second_examiners')->notEmptyString('ask_second_examiners')
             ->date('start_date')->notEmptyDate('start_date');
     }
 

@@ -2,6 +2,9 @@
 declare(strict_types=1);
 namespace App\Model\Table;
 
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\EventInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -31,6 +34,7 @@ class ThesisDefensesTable extends Table
             ->integer('degree_session_id')->notEmptyString('degree_session_id')
             ->integer('user_id')->notEmptyString('user_id')
             ->scalar('phone')->maxLength('phone', 64)->allowEmptyString('phone')
+            ->scalar('bachelor_university')->maxLength('bachelor_university', 255)->allowEmptyString('bachelor_university')
             ->scalar('title')->notEmptyString('title')
             ->scalar('proposed_second_examiners')->allowEmptyString('proposed_second_examiners')
             ->boolean('public')->allowEmptyString('public')
@@ -39,6 +43,21 @@ class ThesisDefensesTable extends Table
             ->scalar('venue')->maxLength('venue', 255)->allowEmptyString('venue')
             ->dateTime('submitted_at')->notEmptyDateTime('submitted_at')
             ->dateTime('managed_at')->allowEmptyDateTime('managed_at');
+    }
+
+    public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
+    {
+        if (!$entity->isNew()) {
+            return;
+        }
+
+        $session = $this->DegreeSessions->get($entity->degree_session_id);
+        if (!$session->ask_bachelor_university) {
+            $entity->bachelor_university = null;
+        }
+        if (!$session->ask_second_examiners) {
+            $entity->proposed_second_examiners = null;
+        }
     }
 
     public function buildRules(RulesChecker $rules): RulesChecker

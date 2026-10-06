@@ -36,7 +36,9 @@ class DegreeSessionsController extends AppController
         $this->requireAdmin();
         $this->request->allowMethod(['get']);
         $source = $this->DegreeSessions->get($id);
-        $session = $this->DegreeSessions->newEntity($source->extract(['type', 'name', 'start_date']));
+        $session = $this->DegreeSessions->newEntity($source->extract([
+            'type', 'name', 'start_date', 'instructions', 'ask_bachelor_university', 'ask_second_examiners',
+        ]));
         $this->set(compact('session'));
         $this->render('edit');
     }

@@ -11,6 +11,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
     const [submittedDefense, setSubmittedDefense] = useState(null);
     const [degreeSessionId, setDegreeSessionId] = useState('');
     const [phone, setPhone] = useState('');
+    const [bachelorUniversity, setBachelorUniversity] = useState('');
     const [title, setTitle] = useState('');
     const [proposedSecondExaminers, setProposedSecondExaminers] = useState('');
     const [isPublic, setIsPublic] = useState(false);
@@ -39,10 +40,14 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                     .filter(s => new Date(s.start_date) >= new Date())
                     .map(s => ({
                         id: s.id,
+                        instructions: s.instructions,
+                        ask_bachelor_university: s.ask_bachelor_university,
+                        ask_second_examiners: s.ask_second_examiners,
                         label: `${degreeSessionTypes[s.type]} — ${s.name} (${formatDate(s.start_date)})`
                     }))
                     .sort((a, b) => a.label.localeCompare(b.label));
                 setSessions(futureSessions);
+                setDegreeSessionId(current => current || (futureSessions[0] ? String(futureSessions[0].id) : ''));
             }
 
             if (submittedResponse && submittedResponse.ok) {
@@ -95,6 +100,8 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
         setAttachments(Array.from(e.target.files));
     };
 
+    const selectedSession = sessions.find(s => String(s.id) === String(degreeSessionId));
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -107,8 +114,9 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
             const payload = {
                 degree_session_id: parseInt(degreeSessionId),
                 phone: phone,
+                bachelor_university: selectedSession?.ask_bachelor_university ? bachelorUniversity : null,
                 title: title,
-                proposed_second_examiners: proposedSecondExaminers,
+                proposed_second_examiners: selectedSession?.ask_second_examiners ? proposedSecondExaminers : null,
                 public: isPublic,
                 thesis_defense_advisors: validAdvisors
             };
@@ -214,6 +222,21 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                             />
                         </div>
 
+                        {selectedSession?.ask_bachelor_university && (
+                            <div className="form-group">
+                                <label className="font-weight-bold" htmlFor="bachelor_university">Laurea triennale conseguita presso (ateneo)</label>
+                                <input
+                                    id="bachelor_university"
+                                    type="text"
+                                    className="form-control"
+                                    maxLength={255}
+                                    value={bachelorUniversity}
+                                    onChange={(e) => setBachelorUniversity(e.target.value)}
+                                    placeholder="Inserire il nome dell'ateneo"
+                                />
+                            </div>
+                        )}
+
                         <div className="mt-2 mb-4">
                             <legend className="h5">Relatori</legend>
                             <div id="advisors-container">
@@ -263,17 +286,19 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                             </button>
                         </div>
 
-                       <div className="form-group">
-                            <label className="font-weight-bold" htmlFor="proposed_second_examiners">Controrelatori proposti</label>
-                            <textarea
-                                id="proposed_second_examiners"
-                                className="form-control"
-                                rows={3}
-                                value={proposedSecondExaminers}
-                                onChange={(e) => setProposedSecondExaminers(e.target.value)}
-                                placeholder="Inserire eventuali controrelatori proposti"
-                            />
-                        </div>
+                        {selectedSession?.ask_second_examiners && (
+                            <div className="form-group">
+                                <label className="font-weight-bold" htmlFor="proposed_second_examiners">Controrelatori proposti</label>
+                                <textarea
+                                    id="proposed_second_examiners"
+                                    className="form-control"
+                                    rows={3}
+                                    value={proposedSecondExaminers}
+                                    onChange={(e) => setProposedSecondExaminers(e.target.value)}
+                                    placeholder="Inserire eventuali controrelatori proposti"
+                                />
+                            </div>
+                        )}
 
                         <div className="form-group form-check">
                             <input
@@ -299,6 +324,12 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                             />
                             <small className="form-text text-muted">È possibile selezionare più file.</small>
                         </div>
+
+                        {selectedSession?.instructions && (
+                            <div className="alert alert-info mt-4" style={{ whiteSpace: 'pre-wrap' }}>
+                                {selectedSession.instructions}
+                            </div>
+                        )}
 
                         <div className="mt-4">
                             <button

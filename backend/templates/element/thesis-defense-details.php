@@ -1,8 +1,9 @@
 <dl class="row">
     <dt class="col-sm-3">Studente</dt><dd class="col-sm-9"><?= h($defense->user->name) ?> (<?= h($defense->user->number) ?>)</dd>
     <dt class="col-sm-3">Telefono</dt><dd class="col-sm-9"><?= $defense->phone ? h($defense->phone) : 'Non indicato' ?></dd>
-    <dt class="col-sm-3">Corso e sessione</dt><dd class="col-sm-9"><?= h($defense->degree_session->degree->name) ?> — <?= h($defense->degree_session->name) ?>, <?= $defense->degree_session->start_date->format('d/m/Y') ?></dd>
+    <dt class="col-sm-3">Corso e sessione</dt><dd class="col-sm-9"><?= h(\App\Model\Entity\DegreeSession::TYPES[$defense->degree_session->type]) ?> — <?= h($defense->degree_session->name) ?>, <?= $defense->degree_session->start_date->format('d/m/Y') ?></dd>
     <dt class="col-sm-3">Titolo</dt><dd class="col-sm-9"><?= nl2br(h($defense->title)) ?></dd>
+    <dt class="col-sm-3">Ateneo della laurea triennale</dt><dd class="col-sm-9"><?= $defense->bachelor_university ? h($defense->bachelor_university) : 'Non indicato' ?></dd>
     <dt class="col-sm-3">Controrelatori proposti</dt><dd class="col-sm-9"><?= $defense->proposed_second_examiners ? nl2br(h($defense->proposed_second_examiners)) : 'Nessuno' ?></dd>
     <dt class="col-sm-3">Pubblicazione</dt><dd class="col-sm-9"><?= $defense->public ? 'Autorizzata' : 'Non autorizzata' ?></dd>
     <dt class="col-sm-3">Stato</dt><dd class="col-sm-9"><?= ['submitted' => 'Inviata', 'approved' => 'Approvata', 'rejected' => 'Respinta'][$defense->state] ?? h($defense->state) ?></dd>

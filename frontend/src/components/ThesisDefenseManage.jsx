@@ -141,6 +141,9 @@ function ThesisDefenseManage({ root, apiRoot, csrfToken, caps, user, defenseId }
                         <dt className="col-sm-3">Titolo</dt>
                         <dd className="col-sm-9">{defense.title}</dd>
 
+                        <dt className="col-sm-3">Ateneo della laurea triennale</dt>
+                        <dd className="col-sm-9">{defense.bachelor_university || 'Non indicato'}</dd>
+
                         <dt className="col-sm-3">Controrelatori proposti</dt>
                         <dd className="col-sm-9">{defense.proposed_second_examiners || 'Nessuno'}</dd>
 
