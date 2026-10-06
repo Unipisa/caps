@@ -1,5 +1,7 @@
 <dl class="row">
     <dt class="col-sm-3">Studente</dt><dd class="col-sm-9"><?= h($defense->user->name) ?> (<?= h($defense->user->number) ?>)</dd>
+    <dt class="col-sm-3">Anno di immatricolazione</dt><dd class="col-sm-9"><?= h($defense->enrollment_year ?? 'Non indicato') ?></dd>
+    <dt class="col-sm-3">Laurea triennale in</dt><dd class="col-sm-9"><?= h($defense->bachelor_degree ?: 'Non indicata') ?></dd>
     <dt class="col-sm-3">Telefono</dt><dd class="col-sm-9"><?= $defense->phone ? h($defense->phone) : 'Non indicato' ?></dd>
     <dt class="col-sm-3">Corso e sessione</dt><dd class="col-sm-9"><?= h(\App\Model\Entity\DegreeSession::TYPES[$defense->degree_session->type]) ?> — <?= h($defense->degree_session->name) ?>, <?= $defense->degree_session->start_date->format('d/m/Y') ?></dd>
     <dt class="col-sm-3">Titolo</dt><dd class="col-sm-9"><?= nl2br(h($defense->title)) ?></dd>

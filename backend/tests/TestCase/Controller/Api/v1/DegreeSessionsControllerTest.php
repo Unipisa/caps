@@ -95,6 +95,7 @@ class DegreeSessionsControllerTest extends MyIntegrationTestCase
             $defense = $defenses->newEntity($data + [
                 'degree_session_id' => $session->id,
                 'title' => 'Titolo',
+                'enrollment_year' => 2020,
                 'state' => 'approved',
                 'venue' => 'Aula Magna',
                 'submitted_at' => new DateTime('now', $utc),

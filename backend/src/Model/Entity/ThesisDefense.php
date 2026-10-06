@@ -7,7 +7,7 @@ class ThesisDefense extends Entity
 {
     protected array $_accessible = [
         'degree_session_id' => true, 'user_id' => true, 'phone' => true,
-        'bachelor_university' => true,
+        'bachelor_university' => true, 'bachelor_degree' => true, 'enrollment_year' => true,
         'title' => true, 'proposed_second_examiners' => true, 'public' => true,
         'state' => true, 'scheduled_at' => true, 'venue' => true,
         'submitted_at' => true, 'managed_at' => true,

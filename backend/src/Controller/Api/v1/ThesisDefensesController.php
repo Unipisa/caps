@@ -157,6 +157,8 @@ class ThesisDefensesController extends RestController
         $defense = $this->ThesisDefenses->patchEntity($defense, [
             'degree_session_id' => $data['degree_session_id'],
             'phone' => $data['phone'] ?? null,
+            'enrollment_year' => $data['enrollment_year'] ?? null,
+            'bachelor_degree' => $data['bachelor_degree'] ?? null,
             'bachelor_university' => $data['bachelor_university'] ?? null,
             'title' => $data['title'],
             'proposed_second_examiners' => $data['proposed_second_examiners'] ?? null,

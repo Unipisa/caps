@@ -2,6 +2,8 @@ import { degreeSessionTypes } from '../modules/degreeSession';
 import React, { useState, useEffect } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Flash from './Flash';
+import SessionInstructions from './SessionInstructions';
+import { uploadThesisDefenseAttachments } from '../modules/thesisDefenseAttachments';
 
 function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesEnabled }) {
     const [sessions, setSessions] = useState([]);
@@ -10,6 +12,8 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
     const [flash, setFlash] = useState(null);
     const [submittedDefense, setSubmittedDefense] = useState(null);
     const [degreeSessionId, setDegreeSessionId] = useState('');
+    const [enrollmentYear, setEnrollmentYear] = useState('');
+    const [bachelorDegree, setBachelorDegree] = useState('');
     const [phone, setPhone] = useState('');
     const [bachelorUniversity, setBachelorUniversity] = useState('');
     const [title, setTitle] = useState('');
@@ -104,6 +108,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!window.confirm('Inviare definitivamente la domanda?')) return;
         setSubmitting(true);
         setFlash(null);
 
@@ -114,6 +119,8 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
             const payload = {
                 degree_session_id: parseInt(degreeSessionId),
                 phone: phone,
+                enrollment_year: enrollmentYear,
+                bachelor_degree: selectedSession?.ask_bachelor_university ? bachelorDegree : null,
                 bachelor_university: selectedSession?.ask_bachelor_university ? bachelorUniversity : null,
                 title: title,
                 proposed_second_examiners: selectedSession?.ask_second_examiners ? proposedSecondExaminers : null,
@@ -130,6 +137,15 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
             const result = await response.json();
 
             if (response.ok) {
+                if (attachments.length) {
+                    try {
+                        await uploadThesisDefenseAttachments(apiRoot, result.data.id, attachments, getAuthHeaders());
+                    } catch (error) {
+                        setSubmittedDefense(result.data);
+                        setFlash({ type: 'error', message: `Domanda inviata. ${error.message}` });
+                        return;
+                    }
+                }
                 setFlash({ type: 'success', message: 'Domanda di partecipazione inviata con successo.' });
                 // Redirect to user page after successful submission
                 setTimeout(() => {
@@ -153,6 +169,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
         return (
             <div id="thesis-defense-add" className="thesis-defense-add">
                 <h1>Domanda di laurea</h1>
+                {flash && <Flash message={flash.message} type={flash.type} />}
                 <Flash
                     message="Hai già una domanda di laurea in attesa di valutazione. Potrai presentarne una nuova quando sarà approvata o respinta."
                     type="error"
@@ -179,7 +196,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
             {flash && <Flash message={flash.message} type={flash.type} onClose={() => setFlash(null)} />}
             <div className="card mb-3">
                 <div className="card-body">
-                    <p className="text-muted">La domanda sarà inviata immediatamente agli amministratori. Dopo l'invio non sarà modificabile.</p>
+                    <p className="text-muted">La domanda sarà inviata immediatamente agli amministratori. Dopo l'invio i dati non saranno modificabili, ma potrai aggiungere allegati dalla pagina della domanda.</p>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label className="font-weight-bold" htmlFor="degree_session_id">Sessione di laurea</label>
@@ -197,6 +214,10 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                             </select>
                         </div>
 
+                        <div className="form-group">
+                            <label className="font-weight-bold" htmlFor="enrollment_year">Anno di immatricolazione</label>
+                            <input id="enrollment_year" type="number" className="form-control" required min="1900" max={new Date().getFullYear()} value={enrollmentYear} onChange={e => setEnrollmentYear(e.target.value)} />
+                        </div>
                         <div className="form-group">
                             <label className="font-weight-bold" htmlFor="phone">Telefono</label>
                             <input
@@ -224,9 +245,12 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
 
                         {selectedSession?.ask_bachelor_university && (
                             <div className="form-group">
+                                <label className="font-weight-bold" htmlFor="bachelor_degree">Laurea triennale in</label>
+                                <input id="bachelor_degree" type="text" className="form-control mb-3" required maxLength={255} value={bachelorDegree} onChange={e => setBachelorDegree(e.target.value)} placeholder="Inserire il corso di laurea" />
                                 <label className="font-weight-bold" htmlFor="bachelor_university">Laurea triennale conseguita presso (ateneo)</label>
                                 <input
                                     id="bachelor_university"
+                                    required
                                     type="text"
                                     className="form-control"
                                     maxLength={255}
@@ -326,9 +350,7 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                         </div>
 
                         {selectedSession?.instructions && (
-                            <div className="alert alert-info mt-4" style={{ whiteSpace: 'pre-wrap' }}>
-                                {selectedSession.instructions}
-                            </div>
+                            <SessionInstructions text={selectedSession.instructions} />
                         )}
 
                         <div className="mt-4">
@@ -336,9 +358,6 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                                 type="submit"
                                 className="btn btn-primary"
                                 disabled={submitting}
-                                onClick={() => {
-                                    if (!window.confirm('Inviare definitivamente la domanda?')) return false;
-                                }}
                             >
                                 {submitting ? (
                                     <>

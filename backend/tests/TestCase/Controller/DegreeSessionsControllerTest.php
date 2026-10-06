@@ -58,6 +58,21 @@ class DegreeSessionsControllerTest extends MyIntegrationTestCase
         $this->assertSame('2027-07-01', $original->start_date->format('Y-m-d'));
     }
 
+    public function testInstructionsTextareaEnablesSettingsRichTextEditor(): void
+    {
+        $this->adminSession();
+        $this->get('/degree-sessions/edit');
+        $this->assertResponseOk();
+
+        // Browsers keep the first class attribute if markup contains duplicates.
+        $document = new \DOMDocument();
+        @$document->loadHTML((string)$this->_response->getBody());
+        $xpath = new \DOMXPath($document);
+        $textarea = $xpath->query('//textarea[@name="instructions"]')->item(0);
+        $this->assertNotNull($textarea);
+        $this->assertContains('caps-settings-html', explode(' ', $textarea->getAttribute('class')));
+    }
+
     public function testStudentCannotDuplicateSession(): void
     {
         $this->studentSession();

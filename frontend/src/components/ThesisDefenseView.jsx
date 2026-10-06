@@ -1,4 +1,5 @@
 import { degreeSessionTypes } from '../modules/degreeSession';
+import { uploadThesisDefenseAttachments } from '../modules/thesisDefenseAttachments';
 import React, { useState, useEffect } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Flash from './Flash';
@@ -11,6 +12,9 @@ function formatDate(value, timezone) {
 }
 
 function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, isAdmin }) {
+    const [uploading, setUploading] = useState(false);
+    const [files, setFiles] = useState([]);
+    const [fileInputKey, setFileInputKey] = useState(0);
     const [defense, setDefense] = useState(null);
     const [loading, setLoading] = useState(true);
     const [flash, setFlash] = useState(null);
@@ -54,6 +58,23 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
             headers['Authorization'] = `Bearer ${caps.adminToken}`;
         }
         return headers;
+    };
+
+    const uploadAttachments = async e => {
+        e.preventDefault();
+        setUploading(true);
+        setFlash(null);
+        try {
+            await uploadThesisDefenseAttachments(apiRoot, defenseId, files, getAuthHeaders());
+            setFiles([]);
+            setFileInputKey(key => key + 1);
+            await loadDefense();
+            setFlash({ type: 'success', message: 'Allegati aggiunti.' });
+        } catch (error) {
+            setFlash({ type: 'error', message: error.message });
+        } finally {
+            setUploading(false);
+        }
     };
 
     const stateLabels = {
@@ -127,6 +148,10 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
                         <dt className="col-sm-3">Studente</dt>
                         <dd className="col-sm-9">{defense.user?.name} ({defense.user?.number})</dd>
 
+                        <dt className="col-sm-3">Anno di immatricolazione</dt>
+                        <dd className="col-sm-9">{defense.enrollment_year || 'Non indicato'}</dd>
+                        <dt className="col-sm-3">Laurea triennale in</dt>
+                        <dd className="col-sm-9">{defense.bachelor_degree || 'Non indicata'}</dd>
                         <dt className="col-sm-3">Telefono</dt>
                         <dd className="col-sm-9">{defense.phone || 'Non indicato'}</dd>
 
@@ -143,7 +168,7 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
                         <dd className="col-sm-9">{defense.bachelor_university || 'Non indicato'}</dd>
 
                         <dt className="col-sm-3">Controrelatori proposti</dt>
-                        <dd className="col-sm-9">{defense.proposed_second_examiners || 'Nessuno'}</dd>
+                        <dd className="col-sm-9" style={{ whiteSpace: 'pre-wrap' }}>{defense.proposed_second_examiners || 'Nessuno'}</dd>
 
                         <dt className="col-sm-3">Pubblicazione</dt>
                         <dd className="col-sm-9">{defense.public ? 'Autorizzata' : 'Non autorizzata'}</dd>
@@ -198,6 +223,13 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
                             {defense.venue || 'Non ancora assegnata'}
                         </dd>
                     </dl>
+                    <form onSubmit={uploadAttachments}>
+                        <label htmlFor="new-attachments">Aggiungi allegati</label>
+                        <input key={fileInputKey} id="new-attachments" type="file" multiple required disabled={uploading} className="form-control-file mb-2" onChange={e => setFiles(Array.from(e.target.files))} />
+                        <button type="submit" className="btn btn-primary" disabled={uploading || !files.length}>
+                            {uploading ? 'Caricamento...' : 'Carica allegati'}
+                        </button>
+                    </form>
                 </div>
             </div>
 
