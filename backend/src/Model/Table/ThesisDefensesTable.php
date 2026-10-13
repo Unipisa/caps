@@ -51,7 +51,7 @@ class ThesisDefensesTable extends Table
 
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
     {
-        if (!$entity->isNew()) {
+        if (!$entity->isNew() || !empty($options['legacyFormImport'])) {
             return;
         }
 
