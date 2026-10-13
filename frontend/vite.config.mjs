@@ -99,11 +99,12 @@ function rewriteScriptTag() {
   };
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production';
 
   return {
-    base: isProduction ? './' : '/',
+    // CakePHP serves compiled assets under /js/, including development builds.
+    base: command === 'build' ? './' : '/',
     plugins: [
       rewriteScriptTag(),
       writeVersionFile(isProduction),
