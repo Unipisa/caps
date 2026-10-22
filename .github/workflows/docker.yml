@@ -32,8 +32,7 @@ jobs:
         id: meta
         uses: crazy-max/ghaction-docker-meta@v4
         with:
-#          images: harbor.cs.dm.unipi.it/caps/caps
-          images: harbor.matb.it/caps/caps
+          images: harbor.cs.dm.unipi.it/caps/caps
           tags: |
             type=ref,event=tag
             type=ref,event=branch
@@ -44,8 +43,7 @@ jobs:
         with:
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
-#          registry: harbor.cs.dm.unipi.it
-          registry: harbor.matb.it
+          registry: harbor.cs.dm.unipi.it
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
