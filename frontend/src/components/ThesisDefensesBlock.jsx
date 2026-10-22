@@ -1,3 +1,4 @@
+import { degreeSessionTypes } from '../modules/degreeSession';
 import React from 'react';
 import LoadingMessage from './LoadingMessage';
 
@@ -40,7 +41,7 @@ class ThesisDefensesBlock extends React.Component {
                                 <h3 className="h5">{defense.degree_session.name}</h3>
                                 
                             </div>
-                            <div className="text-muted mb-2">{defense.degree_session.degree.name}</div>
+                            <div className="text-muted mb-2">{degreeSessionTypes[defense.degree_session.type]}</div>
                             <p className="mb-2">{defense.title}</p>
                             {defense.scheduled_at && <p className="mb-0"><strong>Data:</strong> {formatDate(defense.scheduled_at, this.props.timezone)}{this.props.timezone && <> ({this.props.timezone})</>}</p>}
                             {defense.venue && <p className="mb-0"><strong>Sede:</strong> {defense.venue}</p>}

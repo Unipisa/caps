@@ -234,3 +234,60 @@ backend/
 ```
 
 This local development workflow provides a complete setup for working with CAPS using Composer for the CakePHP backend and Vite for the frontend, allowing developers to work efficiently without Docker dependencies.
+
+## Conversione dei vecchi moduli di laurea
+
+Dalla radice del repository, applicare anche la migrazione che aggiunge
+`thesis_defenses.source_form_id`, quindi effettuare una simulazione:
+
+```bash
+backend/bin/cake migrations migrate
+backend/bin/cake import_thesis_defenses 29 2026-01-01 master --dry-run
+```
+
+Gli argomenti sono l'ID del tipo di modulo (`form_template_id`), la data minima
+**di invio**, inclusa (YYYY-MM-DD), e il tipo di laurea (`master` o `bachelor`).
+29 è il tipo del modulo di esempio 1243; la data è solo un esempio.
+Sono selezionati i moduli inviati, approvati o respinti, mai le bozze. Il modulo
+1243 è una bozza e quindi non viene convertito.
+
+Il comando cerca un appello esistente dello stesso tipo e con `start_date`
+uguale al campo `data` del modulo (YYYY-MM-DD, DD/MM/YYYY o DD-MM-YYYY).
+Se manca o ce n'è più di uno, segnala un errore: creare l'appello oppure usare
+`--session-id ID` per assegnare esplicitamente tutti i moduli selezionati a un
+appello del tipo richiesto. Non vengono creati appelli automaticamente.
+
+Per effettuare l'importazione, ripetere il comando senza `--dry-run`.
+La simulazione prova anche i salvataggi e le regole di validazione in una
+transazione annullata alla fine (può consumare valori AUTO_INCREMENT su MySQL).
+Ogni modulo è convertito atomicamente insieme ai suoi relatori e allegati:
+un errore annulla quel modulo e il comando prosegue con gli altri, restituendo
+un codice di uscita non nullo se si sono verificati errori. Il riepilogo riporta
+conversioni, moduli già convertiti ed errori. Il collegamento univoco al modulo
+originale impedisce duplicati nelle esecuzioni successive; le domande già
+convertite non vengono aggiornate.
+
+La conversione usa i campi del vecchio modello italiano:
+
+| Campo modulo | Campo domanda |
+| --- | --- |
+| `anno_immatricolazione` | `enrollment_year` |
+| `laurea_triennale` | `bachelor_degree` |
+| `conseguimento_lt` | `bachelor_university` |
+| `tel_cellulare` | `phone` |
+| `titolo` | `title` |
+| `controrelatore_1`, `_2`, `_3` | `proposed_second_examiners`, separati da righe |
+| `display_pubblico` | `public` (`si`/`sì`: vero; `no`/vuoto: falso) |
+| `relatore`, `email_relatore` | Relatore principale |
+| `altri_relatori` | Un'unica voce aggiuntiva, testo originale ed email vuota |
+
+Vengono conservati studente, stato, date di invio e valutazione e i dati dei
+vecchi campi anche quando l'appello non li richiede più. Anno di immatricolazione,
+titolo e relatore principale devono essere validi; dati mancanti o non validi
+sono segnalati senza inventare valori. Resta attiva la regola che impedisce più
+domande in attesa per lo stesso studente, anche durante una simulazione.
+
+Gli allegati vengono copiati con nome, MIME type, contenuto e data. I moduli e
+gli allegati originali restano intatti: commenti agli allegati, autorizzazioni
+e altri campi senza una destinazione equivalente restano consultabili lì.
+Il comando non invia email.

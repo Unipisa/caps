@@ -5,6 +5,15 @@ use Cake\Datasource\ConnectionManager;
 
 class ThesisDefenseAttachmentsController extends RestController
 {
+    public function get($id, $action = null)
+    {
+        if ($action !== 'download') {
+            $this->JSONResponse(ResponseCode::NotFound, null, 'Attachment not found');
+            return;
+        }
+        return $this->download($id);
+    }
+
     /**
      * Download a thesis defense attachment.
      * GET /api/v1/thesis-defense-attachments/{id}/download
@@ -12,9 +21,7 @@ class ThesisDefenseAttachmentsController extends RestController
     public function download($id)
     {
         try {
-            $attachment = $this->ThesisDefenseAttachments->get($id, [
-                'contain' => ['ThesisDefenses'],
-            ]);
+            $attachment = $this->ThesisDefenseAttachments->get($id, contain: ['ThesisDefenses']);
         } catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, 'Attachment not found');
             return;
@@ -38,7 +45,7 @@ class ThesisDefenseAttachmentsController extends RestController
             ->withType($attachment->mimetype)
             ->withDownload($attachment->filename)
             ->withStringBody(stream_get_contents($attachment->data));
-        $this->viewBuilder()->setOption('serialize', false);
+        return $this->response;
     }
 
     /**
@@ -53,9 +60,7 @@ class ThesisDefenseAttachmentsController extends RestController
         }
 
         try {
-            $defense = $this->ThesisDefenseAttachments->ThesisDefenses->get($thesisDefenseId, [
-                'contain' => ['Users'],
-            ]);
+            $defense = $this->ThesisDefenseAttachments->ThesisDefenses->get($thesisDefenseId);
         } catch (\Exception $e) {
             $this->JSONResponse(ResponseCode::NotFound, null, 'ThesisDefense not found');
             return;
@@ -68,7 +73,7 @@ class ThesisDefenseAttachmentsController extends RestController
         }
 
         // Handle file upload from the request
-        $files = $this->request->getFile('file');
+        $files = $this->request->getUploadedFiles()['file'] ?? null;
         if (!$files || (is_array($files) && count($files) === 0)) {
             $this->JSONResponse(ResponseCode::BadRequest, null, 'No file uploaded');
             return;
@@ -84,7 +89,7 @@ class ThesisDefenseAttachmentsController extends RestController
             ConnectionManager::get('default')->transactional(function () use ($defense, $files, &$createdAttachments): void {
                 foreach ($files as $file) {
                     if ($file->getError() !== UPLOAD_ERR_OK) {
-                        continue;
+                        throw new \RuntimeException('Caricamento allegato non riuscito.');
                     }
 
                     $attachment = $this->ThesisDefenseAttachments->newEntity([
@@ -94,9 +99,9 @@ class ThesisDefenseAttachmentsController extends RestController
                         'data' => $file->getStream()->getContents(),
                     ]);
 
-                    if ($this->ThesisDefenseAttachments->save($attachment)) {
-                        $createdAttachments[] = $attachment;
-                    }
+                    $this->ThesisDefenseAttachments->saveOrFail($attachment);
+                    unset($attachment->data);
+                    $createdAttachments[] = $attachment;
                 }
             });
         } catch (\Exception $e) {

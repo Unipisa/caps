@@ -5,8 +5,14 @@ use Cake\ORM\Entity;
 
 class DegreeSession extends Entity
 {
+    public const TYPES = [
+        'bachelor' => 'Laurea triennale',
+        'master' => 'Laurea magistrale',
+    ];
+
     protected array $_accessible = [
-        'degree_id' => true, 'name' => true, 'start_date' => true,
-        'degree' => true, 'thesis_defenses' => true,
+        'type' => true, 'name' => true, 'start_date' => true,
+        'instructions' => true, 'ask_bachelor_university' => true, 'ask_second_examiners' => true,
+        'thesis_defenses' => true,
     ];
 }

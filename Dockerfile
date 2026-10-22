@@ -1,4 +1,4 @@
-FROM php:8.5-apache-trixie
+FROM php:8.5.12-apache-trixie
 
 # PHP 8.5's official image already builds cURL and OPcache into PHP. Trying to
 # install either again leaves no shared modules/* artifact for the helper.

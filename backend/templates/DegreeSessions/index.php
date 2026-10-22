@@ -10,15 +10,16 @@
 </div>
 <div class="table-responsive-sm">
     <table class="table">
-        <thead><tr><th>Corso di laurea</th><th>Sessione</th><th>Data iniziale</th><th></th></tr></thead>
+        <thead><tr><th>Tipo di laurea</th><th>Sessione</th><th>Data iniziale</th><th></th></tr></thead>
         <tbody>
         <?php foreach ($sessions as $session): ?>
             <tr>
-                <td><?= h($session->degree->name) ?></td>
+                <td><?= h(\App\Model\Entity\DegreeSession::TYPES[$session->type]) ?></td>
                 <td><?= h($session->name) ?></td>
                 <td><?= $session->start_date->format('d/m/Y') ?></td>
                 <td class="text-right">
                     <?= $this->Html->link('Modifica', ['action' => 'edit', $session->id], ['class' => 'btn btn-sm btn-primary mr-2']) ?>
+                    <?= $this->Html->link('Duplica', ['action' => 'duplicate', $session->id], ['class' => 'btn btn-sm btn-secondary mr-2']) ?>
                     <?= $this->Form->postLink('Elimina', ['action' => 'delete', $session->id], [
                         'class' => 'btn btn-sm btn-danger',
                         'confirm' => 'Eliminare questa sessione?',
