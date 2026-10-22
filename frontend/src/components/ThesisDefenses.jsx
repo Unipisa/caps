@@ -1,3 +1,4 @@
+import { degreeSessionTypes } from '../modules/degreeSession';
 'use strict';
 
 import React from 'react';
@@ -48,7 +49,10 @@ class ThesisDefenses extends ItemsBase {
                             <option value="rejected">respinte</option>
                         </FilterSelect>
                         <FilterInput name="user.surname" label="cognome" value={this.state.query['user.surname'] || ''} />
-                        <FilterInput name="degree_session.degree.name" label="laurea" value={this.state.query['degree_session.degree.name'] || ''} />
+                        <FilterSelect name="degree_session.type" label="tipo di laurea" value={this.state.query['degree_session.type'] || ''}>
+                            <option value="">tutti</option>
+                            {Object.entries(degreeSessionTypes).map(([type, label]) => <option key={type} value={type}>{label}</option>)}
+                        </FilterSelect>
                         <FilterInput name="degree_session.name" label="sessione" value={this.state.query['degree_session.name'] || ''} />
                         <FilterInput name="title" label="titolo" value={this.state.query.title || ''} />
                     </FilterButton>
@@ -78,7 +82,7 @@ class ThesisDefenses extends ItemsBase {
                             <tr>
                                 <th><ColumnHeader self={this} name="state">Stato</ColumnHeader></th>
                                 <th><ColumnHeader self={this} name="user.surname">Studente</ColumnHeader></th>
-                                <th><ColumnHeader self={this} name="degree_session.degree.name">Laurea</ColumnHeader></th>
+                                <th><ColumnHeader self={this} name="degree_session.type">Tipo di laurea</ColumnHeader></th>
                                 <th><ColumnHeader self={this} name="degree_session.name">Sessione</ColumnHeader></th>
                                 <th><ColumnHeader self={this} name="title">Titolo</ColumnHeader></th>
                                 <th><ColumnHeader self={this} name="scheduled_at">Programmazione</ColumnHeader></th>
@@ -117,7 +121,7 @@ function ThesisDefenseRow({row: {item}, root, timezone}) {
     return <tr>
         <td><ThesisDefenseStateBadge defense={item} /></td>
         <td><a href={`${root}users/view/${item.user.id}`}>{item.user.name}</a><br /><small>{item.user.number}</small></td>
-        <td>{item.degree_session.degree.name}</td>
+        <td>{degreeSessionTypes[item.degree_session.type]}</td>
         <td>{item.degree_session.name}<br /><small>{item.degree_session.start_date}</small></td>
         <td>{item.title}</td>
         <td>

@@ -38,12 +38,17 @@ function rewriteScriptTag() {
   const oldScriptTag = /<script\s+type="text\/javascript"\s+src="[^"]*\/js\/caps(?:-[^"]+)?(?:\.min)?\.js"><\/script>/g;
   const oldStylesheetTag = /<link\s+rel="stylesheet"\s+href="[^"]*\/js\/assets\/style-[^"]+\.css"\s*>/g;
   const devStylesheetTag = '<link rel="stylesheet" href="/scss/main.scss">';
+  const devClientTag = '<script type="module" src="/@vite/client"></script>';
   const devScriptTag = '<script type="module" src="/src/caps.js"></script>';
 
   function rewriteHtml(html) {
-    const rewrittenHtml = html
+    let rewrittenHtml = html
       .replace(oldStylesheetTag, '')
       .replace(oldScriptTag, `${devStylesheetTag}\n    ${devScriptTag}`);
+
+    if (!rewrittenHtml.includes(devClientTag)) {
+      rewrittenHtml = rewrittenHtml.replace('</head>', `    ${devClientTag}\n</head>`);
+    }
 
     if (rewrittenHtml.includes(devStylesheetTag)) {
       return rewrittenHtml;
@@ -94,11 +99,12 @@ function rewriteScriptTag() {
   };
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production';
 
   return {
-    base: isProduction ? './' : '/',
+    // CakePHP serves compiled assets under /js/, including development builds.
+    base: command === 'build' ? './' : '/',
     plugins: [
       rewriteScriptTag(),
       writeVersionFile(isProduction),

@@ -76,9 +76,9 @@ class ThesisDefensesController extends AppController
         $sessions = $this->ThesisDefenses->DegreeSessions->find('list', [
             'keyField' => 'id',
             'valueField' => function ($session) {
-                return $session->degree->name . ' — ' . $session->name . ' (' . $session->start_date->format('d/m/Y') . ')';
+                return \App\Model\Entity\DegreeSession::TYPES[$session->type] . ' — ' . $session->name . ' (' . $session->start_date->format('d/m/Y') . ')';
             },
-        ])->contain(['Degrees'])->where(['DegreeSessions.start_date >=' => date('Y-m-d')])
+        ])->where(['DegreeSessions.start_date >=' => date('Y-m-d')])
           ->order(['DegreeSessions.start_date' => 'ASC']);
         $this->set(compact('defense', 'sessions'));
     }
@@ -130,7 +130,7 @@ class ThesisDefensesController extends AppController
     private function getDefense($id)
     {
         return $this->ThesisDefenses->get($id, ['contain' => [
-            'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+            'Users', 'DegreeSessions',
             'ThesisDefenseAdvisors', 'ThesisDefenseAttachments',
         ]]);
     }

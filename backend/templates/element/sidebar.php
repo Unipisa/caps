@@ -88,8 +88,8 @@ $user ??= null;
             </a>
         </li>
         <?php endif; ?>
-        <?php if ($degree_sessions_enabled && false): ?>
-        <li class="nav-item">
+        <?php if ($degree_sessions_enabled): ?>
+        <li class="nav-item<?= $controllerName == 'ThesisDefenses' && $actionName == 'add' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'add']); ?>">
                 <i class="fas mr-1 fa-graduation-cap"></i>
                 <span>Domanda di laurea</span>
@@ -137,7 +137,7 @@ $user ??= null;
         </li>
 
         <?php if ($degree_sessions_enabled): ?>
-        <li class="nav-item<?= $controllerName == 'ThesisDefenses' ? ' active' : '' ?>">
+        <li class="nav-item<?= $controllerName == 'ThesisDefenses' && $actionName != 'add' ? ' active' : '' ?>">
             <a class="nav-link" href="<?= $this->Url->build(['controller' => 'thesisDefenses', 'action' => 'index']) ?>">
                 <i class="fas mr-1 fa-user-graduate"></i>
                 <span>Domande di laurea</span>

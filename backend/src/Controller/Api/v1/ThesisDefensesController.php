@@ -8,7 +8,7 @@ use Cake\ORM\Exception\PersistenceFailedException;
 class ThesisDefensesController extends RestController
 {
     public static $associations = [
-        'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+        'Users', 'DegreeSessions',
         'ThesisDefenseAdvisors', 'ThesisDefenseAttachments',
     ];
 
@@ -20,10 +20,10 @@ class ThesisDefensesController extends RestController
             'dbfield' => 'Users.surname',
             'modifier' => 'LIKE',
         ],
-        'degree_session.degree.name' => [
+        'degree_session.type' => [
             'type' => String::class,
-            'dbfield' => 'Degrees.name',
-            'modifier' => 'LIKE',
+            'dbfield' => 'DegreeSessions.type',
+            'options' => ['bachelor', 'master'],
         ],
         'degree_session.name' => [
             'type' => String::class,
@@ -56,7 +56,7 @@ class ThesisDefensesController extends RestController
             return;
         }
         $query = $this->ThesisDefenses->find()->contain([
-            'Users', 'DegreeSessions', 'DegreeSessions.Degrees', 'ThesisDefenseAdvisors',
+            'Users', 'DegreeSessions', 'ThesisDefenseAdvisors',
         ]);
         $query = $this->applyFilters($query);
 
@@ -74,7 +74,7 @@ class ThesisDefensesController extends RestController
     {
         try {
             $defense = $this->ThesisDefenses->get($id, ['contain' => [
-                'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+                'Users', 'DegreeSessions',
                 'ThesisDefenseAdvisors', 'ThesisDefenseAttachments',
             ]]);
         } catch (\Exception $e) {
@@ -157,6 +157,9 @@ class ThesisDefensesController extends RestController
         $defense = $this->ThesisDefenses->patchEntity($defense, [
             'degree_session_id' => $data['degree_session_id'],
             'phone' => $data['phone'] ?? null,
+            'enrollment_year' => $data['enrollment_year'] ?? null,
+            'bachelor_degree' => $data['bachelor_degree'] ?? null,
+            'bachelor_university' => $data['bachelor_university'] ?? null,
             'title' => $data['title'],
             'proposed_second_examiners' => $data['proposed_second_examiners'] ?? null,
             'public' => !empty($data['public']),
@@ -190,7 +193,7 @@ class ThesisDefensesController extends RestController
         }
 
         $created = $this->ThesisDefenses->get($defense->id, ['contain' => [
-            'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+            'Users', 'DegreeSessions',
             'ThesisDefenseAdvisors',
         ]]);
 
@@ -204,7 +207,7 @@ class ThesisDefensesController extends RestController
     {
         try {
             $defense = $this->ThesisDefenses->get($id, ['contain' => [
-                'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+                'Users', 'DegreeSessions',
                 'ThesisDefenseAdvisors', 'ThesisDefenseAttachments',
             ]]);
         } catch (\Exception $e) {
@@ -246,7 +249,7 @@ class ThesisDefensesController extends RestController
         }
 
         $updated = $this->ThesisDefenses->get($defense->id, ['contain' => [
-            'Users', 'DegreeSessions', 'DegreeSessions.Degrees',
+            'Users', 'DegreeSessions',
             'ThesisDefenseAdvisors', 'ThesisDefenseAttachments',
         ]]);
 
