@@ -28,19 +28,8 @@ class LegacyThesisDefenseImporter
         return $data;
     }
 
-    public function convert(Form $form, string $type, ?int $sessionId = null): EntityInterface
+    public function resolveSession(Form $form, string $type, ?int $sessionId = null): EntityInterface
     {
-        if (!in_array($form->state, ['submitted', 'approved', 'rejected'], true) || !$form->date_submitted) {
-            throw new RuntimeException('Il modulo non è una domanda inviata.');
-        }
-        $data = self::decodeData($form->data);
-        $field = static function (string $key) use ($data): string {
-            $value = $data[$key] ?? '';
-            if (!is_scalar($value) && $value !== null) {
-                throw new RuntimeException("Campo $key non valido.");
-            }
-            return trim((string)$value);
-        };
         $sessions = $this->tables->get('DegreeSessions');
         if ($sessionId !== null) {
             $session = $sessions->get($sessionId);
@@ -48,10 +37,16 @@ class LegacyThesisDefenseImporter
                 throw new RuntimeException('Il tipo dell’appello indicato non corrisponde al tipo di laurea.');
             }
         } else {
+            $data = self::decodeData($form->data);
+            $value = $data['data'] ?? '';
+            if (!is_scalar($value) && $value !== null) {
+                throw new RuntimeException('Campo data non valido.');
+            }
+            $sessionDate = trim((string)$value);
             $date = null;
             foreach (['Y-m-d', 'd/m/Y', 'd-m-Y'] as $format) {
-                $parsed = DateTimeImmutable::createFromFormat('!' . $format, $field('data'));
-                if ($parsed && $parsed->format($format) === $field('data')) {
+                $parsed = DateTimeImmutable::createFromFormat('!' . $format, $sessionDate);
+                if ($parsed && $parsed->format($format) === $sessionDate) {
                     $date = $parsed->format('Y-m-d');
                     break;
                 }
@@ -65,6 +60,23 @@ class LegacyThesisDefenseImporter
             }
             $session = $matches->first();
         }
+        return $session;
+    }
+
+    public function convert(Form $form, string $type, ?int $sessionId = null): EntityInterface
+    {
+        if (!in_array($form->state, ['submitted', 'approved', 'rejected'], true) || !$form->date_submitted) {
+            throw new RuntimeException('Il modulo non è una domanda inviata.');
+        }
+        $data = self::decodeData($form->data);
+        $field = static function (string $key) use ($data): string {
+            $value = $data[$key] ?? '';
+            if (!is_scalar($value) && $value !== null) {
+                throw new RuntimeException("Campo $key non valido.");
+            }
+            return trim((string)$value);
+        };
+        $session = $this->resolveSession($form, $type, $sessionId);
         $public = mb_strtolower($field('display_pubblico'));
         if (!in_array($public, ['', 'si', 'sì', 'no'], true)) {
             throw new RuntimeException('Consenso alla visualizzazione pubblica non riconosciuto.');
@@ -73,7 +85,7 @@ class LegacyThesisDefenseImporter
         $defense = $defenses->newEntity([
             'degree_session_id' => $session->id,
             'user_id' => $form->user_id,
-            'enrollment_year' => $field('anno_immatricolazione'),
+            'enrollment_year' => self::enrollmentYear($field('anno_immatricolazione')),
             'bachelor_degree' => $field('laurea_triennale'),
             'bachelor_university' => $field('conseguimento_lt'),
             'phone' => $field('tel_cellulare'),
@@ -113,13 +125,36 @@ class LegacyThesisDefenseImporter
         }
         $attachments = $this->tables->get('ThesisDefenseAttachments');
         foreach ($this->tables->get('FormAttachments')->find()->where(['form_id' => $form->id]) as $source) {
+            $data = is_resource($source->data) ? stream_get_contents($source->data) : $source->data;
+            // Legacy attachments also contain comments without an uploaded file.
+            // Leave those rows on the original form; malformed actual files still fail validation.
+            if (trim((string)$source->filename) === '' && trim((string)$source->mimetype) === ''
+                && ($data === null || $data === '')) {
+                continue;
+            }
             $attachment = $attachments->newEntity([
                 'thesis_defense_id' => $defense->id, 'filename' => $source->filename,
-                'mimetype' => $source->mimetype, 'data' => $source->data, 'created' => $source->created,
+                'mimetype' => $source->mimetype, 'data' => $data, 'created' => $source->created,
             ]);
             $this->save($attachments, $attachment);
         }
         return $defense;
+    }
+
+    private static function enrollmentYear(string $value): int
+    {
+        if (preg_match('/^[0-9]{4}$/D', $value)) {
+            return (int)$value;
+        }
+        if (preg_match('/^([0-9]{4})\s*\/\s*([0-9]{4}|[0-9]{2})$/D', $value, $matches)) {
+            $year = (int)$matches[1];
+            $next = $year + 1;
+            $expected = strlen($matches[2]) === 2 ? substr((string)$next, -2) : (string)$next;
+            if ($matches[2] === $expected) {
+                return $year;
+            }
+        }
+        throw new RuntimeException('Anno di immatricolazione non valido: usare YYYY, YYYY/YYYY o YYYY/YY con anni consecutivi.');
     }
 
     private function save(\Cake\ORM\Table $table, EntityInterface $entity, array $options = []): void

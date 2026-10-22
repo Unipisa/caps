@@ -267,11 +267,18 @@ conversioni, moduli già convertiti ed errori. Il collegamento univoco al modulo
 originale impedisce duplicati nelle esecuzioni successive; le domande già
 convertite non vengono aggiornate.
 
+Tra i moduli selezionati, per lo stesso studente e appello viene mantenuto solo
+l'ultimo invio (`date_submitted` più recente; a parità, ID più alto). Ogni modulo
+precedente viene escluso con un avviso che indica gli ID escluso e mantenuto;
+il riepilogo conta separatamente i duplicati. Con `--session-id` il confronto
+usa l'appello imposto. Se l'ultimo invio non è valido, viene segnalato un errore
+senza ripiegare sui precedenti. I moduli originali non vengono modificati.
+
 La conversione usa i campi del vecchio modello italiano:
 
 | Campo modulo | Campo domanda |
 | --- | --- |
-| `anno_immatricolazione` | `enrollment_year` |
+| `anno_immatricolazione` | `enrollment_year`: anno iniziale per `YYYY/YYYY` o `YYYY/YY`, oppure anno singolo `YYYY` |
 | `laurea_triennale` | `bachelor_degree` |
 | `conseguimento_lt` | `bachelor_university` |
 | `tel_cellulare` | `phone` |
@@ -287,7 +294,10 @@ titolo e relatore principale devono essere validi; dati mancanti o non validi
 sono segnalati senza inventare valori. Resta attiva la regola che impedisce più
 domande in attesa per lo stesso studente, anche durante una simulazione.
 
-Gli allegati vengono copiati con nome, MIME type, contenuto e data. I moduli e
+Gli allegati vengono copiati con nome, MIME type, contenuto e data. Le righe
+senza nome file, MIME type e contenuto binario vengono ignorate: i commenti
+senza file rimangono consultabili soltanto nel modulo originale. Un file con
+contenuto ma metadati mancanti continua a essere segnalato come errore. I moduli e
 gli allegati originali restano intatti: commenti agli allegati, autorizzazioni
 e altri campi senza una destinazione equivalente restano consultabili lì.
 Il comando non invia email.

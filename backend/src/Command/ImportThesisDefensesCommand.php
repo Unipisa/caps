@@ -43,14 +43,14 @@ class ImportThesisDefensesCommand extends Command
             'form_template_id' => (int)$templateId,
             'date_submitted >=' => $since,
             'state !=' => 'draft',
-        ])->orderBy(['id' => 'ASC']);
+        ])->orderBy(['date_submitted' => 'DESC', 'id' => 'DESC']);
         $defenses = $this->fetchTable('ThesisDefenses');
         if (!$defenses->getSchema()->hasColumn('source_form_id')) {
             $io->err('Eseguire prima bin/cake migrations migrate.');
             return self::CODE_ERROR;
         }
         $importer = new LegacyThesisDefenseImporter($this->getTableLocator());
-        $counts = ['converted' => 0, 'skipped' => 0, 'errors' => 0];
+        $counts = ['converted' => 0, 'skipped' => 0, 'duplicates' => 0, 'errors' => 0];
         $dryRun = (bool)$args->getOption('dry-run');
         $connection = $defenses->getConnection();
         $connection->enableSavePoints(true);
@@ -58,16 +58,28 @@ class ImportThesisDefensesCommand extends Command
         if ($dryRun) {
             $connection->begin();
         }
+        $latestForms = [];
         try {
             foreach ($forms as $form) {
                 try {
+                    $session = $importer->resolveSession(
+                        $form, $args->getArgument('type'), $sessionId === null ? null : (int)$sessionId,
+                    );
+                    $key = $form->user_id . ':' . $session->id;
+                    if (isset($latestForms[$key])) {
+                        $counts['duplicates']++;
+                        $io->warning("Modulo {$form->id}: duplicato ignorato; mantenuto il modulo più recente {$latestForms[$key]} (studente {$form->user_id}, appello {$session->id}).");
+                        continue;
+                    }
+                    // Reserve the latest submission even if its conversion fails: never fall back silently.
+                    $latestForms[$key] = $form->id;
                     if ($defenses->exists(['source_form_id' => $form->id])) {
                         $counts['skipped']++;
                         $io->out("Modulo {$form->id}: già convertito.");
                         continue;
                     }
                     $defense = $connection->transactional(fn () => $importer->convert(
-                        $form, $args->getArgument('type'), $sessionId === null ? null : (int)$sessionId,
+                        $form, $args->getArgument('type'), (int)$session->id,
                     ));
                     $counts['converted']++;
                     $io->out("Modulo {$form->id}: " . ($dryRun ? 'convertibile' : "creata domanda {$defense->id}") . ".");
@@ -81,7 +93,7 @@ class ImportThesisDefensesCommand extends Command
                 $connection->rollback();
             }
         }
-        $io->out(($dryRun ? 'SIMULAZIONE — ' : '') . "Convertiti: {$counts['converted']}; già convertiti: {$counts['skipped']}; errori: {$counts['errors']}.");
+        $io->out(($dryRun ? 'SIMULAZIONE — ' : '') . "Convertiti: {$counts['converted']}; già convertiti: {$counts['skipped']}; errori: {$counts['errors']}; duplicati ignorati: {$counts['duplicates']}.");
         return $counts['errors'] ? self::CODE_ERROR : self::CODE_SUCCESS;
     }
 }
