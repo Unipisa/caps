@@ -57,7 +57,9 @@ class AttachmentsTable extends Table
      */
     public function findWithData(SelectQuery $query): SelectQuery
     {
-        return $query;
+        // Association queries can have already applied findAll(). Explicitly
+        // add every column so the previously excluded contents are restored.
+        return $query->select($this);
     }
 
     /**

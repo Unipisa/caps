@@ -96,6 +96,13 @@ class AttachmentsTableTest extends TestCase
         $this->assertTrue($attachment->has('data'));
     }
 
+    public function testWithDataFinderRestoresPreviouslyExcludedData(): void
+    {
+        $attachment = $this->Attachment->find()->find('withData')->firstOrFail();
+
+        $this->assertTrue($attachment->has('data'));
+    }
+
     public function testProposalsContainAttachmentsExcludesData(): void
     {
         $proposal = $this->Attachment->Proposals->get(
