@@ -30,7 +30,7 @@ compiled.paths = module.paths;
 compiled._compile(bundle.outputFiles[0].text, filename);
 const ThesisDefenseView = compiled.exports.default;
 
-test('submitted applications accept attachments and refresh their list', async () => {
+test('submitted applications show session instructions, accept attachments and refresh their list', async () => {
     const container = document.getElementById('app');
     global.FormData = dom.window.FormData;
     let uploaded = false;
@@ -45,6 +45,7 @@ test('submitted applications accept attachments and refresh their list', async (
         return { ok: true, json: async () => ({ data: {
             id: 42, state: 'submitted', enrollment_year: 2020, bachelor_degree: 'Matematica',
             proposed_second_examiners: 'First\nSecond',
+            degree_session: { instructions: '<p><strong>Istruzioni finali</strong></p><p>Caricare la tesi. <a href="https://example.org/tesi">Dettagli</a><script>alert(1)</script></p>' },
             thesis_defense_attachments: uploaded ? [{ id: 7, filename: 'thesis.txt' }] : [],
         } }) };
     };
@@ -58,6 +59,10 @@ test('submitted applications accept attachments and refresh their list', async (
         assert.ok(container.textContent.includes('Matematica'));
         const examiners = Array.from(container.querySelectorAll('dd')).find(el => el.textContent === 'First\nSecond');
         assert.equal(examiners.style.whiteSpace, 'pre-wrap');
+        assert.equal(container.querySelector('.alert-info strong').textContent, 'Istruzioni finali');
+        assert.ok(container.querySelector('.alert-info').textContent.includes('Caricare la tesi.'));
+        assert.equal(container.querySelector('.alert-info a').href, 'https://example.org/tesi');
+        assert.equal(container.querySelector('.alert-info script'), null);
         act(() => Simulate.change(document.getElementById('new-attachments'), {
             target: { files: [new dom.window.File(['test'], 'thesis.txt')] }
         }));
@@ -66,6 +71,7 @@ test('submitted applications accept attachments and refresh their list', async (
         assert.ok(container.querySelector('a[href="/api/v1/thesis_defense_attachments/7/download"]'));
         assert.ok(container.textContent.includes('Allegati aggiunti.'));
         assert.ok(container.querySelector('form button').disabled);
+        assert.ok(container.querySelector('.alert-info').textContent.includes('Istruzioni finali'));
     } finally {
         act(() => ReactDOM.unmountComponentAtNode(container));
         delete global.fetch;

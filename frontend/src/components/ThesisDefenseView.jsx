@@ -3,6 +3,7 @@ import { uploadThesisDefenseAttachments } from '../modules/thesisDefenseAttachme
 import React, { useState, useEffect } from 'react';
 import LoadingMessage from './LoadingMessage';
 import Flash from './Flash';
+import SessionInstructions from './SessionInstructions';
 
 function formatDate(value, timezone) {
     if (!value) return 'Non ancora assegnata';
@@ -157,7 +158,7 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
 
                         <dt className="col-sm-3">Corso e sessione</dt>
                         <dd className="col-sm-9">
-                            {degreeSessionTypes[defense.degree_session?.type]} — {defense.degree_session?.name},
+                            {degreeSessionTypes[defense.degree_session?.type]} — {defense.degree_session?.name},{' '}
                             {formatDateSession(defense.degree_session?.start_date)}
                         </dd>
 
@@ -223,6 +224,9 @@ function ThesisDefenseView({ root, apiRoot, csrfToken, caps, user, defenseId, is
                             {defense.venue || 'Non ancora assegnata'}
                         </dd>
                     </dl>
+                    {defense.degree_session?.instructions && (
+                        <SessionInstructions text={defense.degree_session.instructions} />
+                    )}
                     <form onSubmit={uploadAttachments}>
                         <label htmlFor="new-attachments">Aggiungi allegati</label>
                         <input key={fileInputKey} id="new-attachments" type="file" multiple required disabled={uploading} className="form-control-file mb-2" onChange={e => setFiles(Array.from(e.target.files))} />
