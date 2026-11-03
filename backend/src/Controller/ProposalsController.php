@@ -81,11 +81,13 @@ class ProposalsController extends AppController
         parent::beforeFilter($event);
     }
 
-    private function get_proposal($id)
+    private function get_proposal($id, bool $withAttachmentData = false)
     {
         return $this->Proposals->findById($id)
             ->contain([ 'Users', 'ChosenExams', 'ChosenFreeChoiceExams', 'Curricula', 'ChosenExams.Exams',
-                'ChosenExams.Exams.Tags', 'Attachments', 'Attachments.Users', 'ChosenExams.CompulsoryExams',
+                'ChosenExams.Exams.Tags',
+                'Attachments' => ['finder' => $withAttachmentData ? 'withData' : 'all'],
+                'Attachments.Users', 'ChosenExams.CompulsoryExams',
                 'ChosenExams.CompulsoryGroups', 'ChosenExams.FreeChoiceExams',
                 'ChosenExams.CompulsoryGroups.Groups',
                 'Curricula.Degrees', 'ProposalAuths', 'Attachments.Proposals', 'Attachments.Proposals.ProposalAuths' ])
@@ -335,11 +337,12 @@ class ProposalsController extends AppController
 
     public function pdf($id)
     {
-        $proposal = $this->get_proposal($id);
+        $show_comments = $this->request->getQuery('show_comments', false);
+        // Rendering attachments in the PDF verifies signatures synchronously.
+        $proposal = $this->get_proposal($id, (bool)$show_comments);
         $settings = $this->getSettings();
         $Caps = Configure::read('Caps');
         $app_path = APP;
-        $show_comments = $this->request->getQuery('show_comments', false);
 
         // authorization
         $secrets = $this->getSecrets();

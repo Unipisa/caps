@@ -108,4 +108,21 @@ class AttachmentsTableTest extends TestCase
         $this->assertSame(1, $proposal->attachments[0]->user->id);
         $this->assertSame(1, $proposal->attachments[0]->proposal->id);
     }
+
+    public function testProposalsContainAttachmentsWithDataIncludesContents(): void
+    {
+        $proposal = $this->Attachment->Proposals->get(
+            1,
+            contain: [
+                'Attachments' => ['finder' => 'withData'],
+                'Attachments.Users',
+                'Attachments.Proposals',
+            ],
+        );
+
+        $this->assertCount(1, $proposal->attachments);
+        $this->assertTrue($proposal->attachments[0]->has('data'));
+        $this->assertSame(1, $proposal->attachments[0]->user->id);
+        $this->assertSame(1, $proposal->attachments[0]->proposal->id);
+    }
 }
