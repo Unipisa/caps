@@ -30,7 +30,7 @@ compiled.paths = module.paths;
 compiled._compile(bundle.outputFiles[0].text, filename);
 const ThesisDefenseAdd = compiled.exports.default;
 
-test('enabled fields and instructions appear on load and follow the selected session', async () => {
+test('session starts unselected and enabled fields and instructions follow the selection', async () => {
     const sessions = [
         { id: 1, type: 'master', name: 'A', start_date: '2099-01-01', ask_bachelor_university: true, ask_second_examiners: false, instructions: '<p><strong>Istruzioni A</strong><br><a href="https://example.org">Link</a><a href="javascript:alert(1)">Unsafe</a><script>alert(1)</script></p>' },
         { id: 2, type: 'master', name: 'B', start_date: '2099-01-01', ask_bachelor_university: false, ask_second_examiners: true, instructions: 'Istruzioni B' },
@@ -42,6 +42,16 @@ test('enabled fields and instructions appear on load and follow the selected ses
             ReactDOM.render(React.createElement(ThesisDefenseAdd, { root: '/', apiRoot: '/api/v1/', user: { id: 1 } }), container);
         });
         const select = document.getElementById('degree_session_id');
+        assert.equal(select.value, '');
+        assert.equal(select.selectedOptions[0].textContent, 'Selezionare una sessione');
+        assert.equal(select.validity.valueMissing, true);
+        assert.equal(document.getElementById('bachelor_university'), null);
+        assert.equal(document.getElementById('bachelor_degree'), null);
+        assert.equal(document.getElementById('proposed_second_examiners'), null);
+        assert.ok(!container.textContent.includes('Istruzioni A'));
+        assert.ok(!container.textContent.includes('Istruzioni B'));
+
+        act(() => Simulate.change(select, { target: { value: '1' } }));
         assert.equal(select.value, '1');
         assert.ok(document.getElementById('bachelor_university').required);
         assert.ok(document.getElementById('bachelor_degree').required);

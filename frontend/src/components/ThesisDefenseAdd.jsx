@@ -51,7 +51,6 @@ function ThesisDefenseAdd({ root, apiRoot, csrfToken, caps, user, formTemplatesE
                     }))
                     .sort((a, b) => a.label.localeCompare(b.label));
                 setSessions(futureSessions);
-                setDegreeSessionId(current => current || (futureSessions[0] ? String(futureSessions[0].id) : ''));
             }
 
             if (submittedResponse && submittedResponse.ok) {
