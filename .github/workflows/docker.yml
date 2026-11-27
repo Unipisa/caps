@@ -52,7 +52,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name: Trigger update on Watchtower
-        if: ${{ github.event_name != 'pull_request' }}
+      - name: Notify Omicron CI (develop)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
+        env:
+          OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_DEVELOP }}
         run: |
-          curl -H "Authorization: Bearer ${{ secrets.WATCHTOWER_CAPS_SECRET }}" https://watchtower.caps.dm.unipi.it/v1/update
+          curl -X POST "https://ci.omicron.dm.unipi.it/update?api_key=${OMICRON_API_KEY}" -fsS
+      - name: Notify Omicron CI (Matematica)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        env:
+          OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_MATEMATICA }}
+        run: |
+          curl -X POST "https://ci.omicron.dm.unipi.it/update?api_key=${OMICRON_API_KEY}" -fsS
+      - name: Notify Omicron CI (Fisica)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        env:
+          OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_FISICA }}
+        run: |
+          curl -X POST "https://ci.omicron.dm.unipi.it/update?api_key=${OMICRON_API_KEY}" -fsS
