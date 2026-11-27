@@ -73,7 +73,7 @@ test('submitted applications show session instructions, accept attachments and r
         assert.ok(container.querySelector('form button').disabled);
         assert.ok(container.querySelector('.alert-info').textContent.includes('Istruzioni finali'));
     } finally {
-        act(() => ReactDOM.unmountComponentAtNode(container));
+        act(() => { ReactDOM.unmountComponentAtNode(container); });
         delete global.fetch;
         dom.window.close();
     }
