@@ -39,7 +39,10 @@ jobs:
             type=semver,pattern={{version}}
       - name: Login to Docker Registry
         uses: docker/login-action@v4
-        if: ${{ github.event_name != 'pull_request' }}
+        if: >-
+          github.event_name == 'push' &&
+          github.repository == 'Unipisa/caps' &&
+          (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
         with:
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
@@ -47,25 +50,37 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'pull_request' }}
+        if: >-
+          github.event_name == 'push' &&
+          github.repository == 'Unipisa/caps' &&
+          (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Notify Omicron CI (develop)
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
+        if: >-
+          github.event_name == 'push' &&
+          github.repository == 'Unipisa/caps' &&
+          github.ref == 'refs/heads/develop'
         env:
           OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_DEVELOP }}
         run: |
           curl -X POST "https://ci.omicron.dm.unipi.it/update?api_key=${OMICRON_API_KEY}" -fsS
       - name: Notify Omicron CI (Matematica)
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        if: >-
+          github.event_name == 'push' &&
+          github.repository == 'Unipisa/caps' &&
+          github.ref == 'refs/heads/master'
         env:
           OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_MATEMATICA }}
         run: |
           curl -X POST "https://ci.omicron.dm.unipi.it/update?api_key=${OMICRON_API_KEY}" -fsS
       - name: Notify Omicron CI (Fisica)
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        if: >-
+          github.event_name == 'push' &&
+          github.repository == 'Unipisa/caps' &&
+          github.ref == 'refs/heads/master'
         env:
           OMICRON_API_KEY: ${{ secrets.OMICRON_API_KEY_FISICA }}
         run: |
